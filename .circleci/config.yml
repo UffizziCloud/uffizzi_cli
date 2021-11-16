@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  build:
+  test:
     docker:
       - image: ruby:3.0.2
     steps:
@@ -11,3 +11,20 @@ jobs:
             gem install bundler -v 2.2.31
             bundle install
             bundle exec rake test
+  lint:
+    docker:
+      - image: ruby:3.0.2
+    steps:
+      - checkout
+      - run:
+          name: Run tests
+          command: |
+            gem install bundler -v 2.2.31
+            bundle install
+            bundle exec rubocop
+
+workflows:
+  build_and_test:
+    jobs:
+      - test
+      - lint
