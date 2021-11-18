@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  gem:
+    build: .
+    volumes:
+      - ./:/gem:cached
+      - ~/.ssh:/root/.ssh
+      - ~/.bash_history:/root/.bash_history
+      - bundle_cache:/bundle_cache
+    environment:
+      - BUNDLE_PATH=/bundle_cache
+      - GEM_HOME=/bundle_cache
+      - GEM_PATH=/bundle_cache
+
+  bundle_cache:
+    image: busybox
+    volumes:
+      - bundle_cache:/bundle_cache
+
+volumes:
+  bundle_cache:
+  public:
