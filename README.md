@@ -1,4 +1,4 @@
-# uffizzi_cli 
+# uffizzi_cli [![CircleCI](https://circleci.com/gh/UffizziCloud/uffizzi_cli/tree/master.svg?style=shield)](https://circleci.com/gh/UffizziCloud/uffizzi_cli/tree/master)
 
 ## Installation
 
