@@ -21,3 +21,7 @@ services:
 volumes:
   bundle_cache:
   public:
+
+networks:
+  default:
+    name: 'uffizzi_default_network'

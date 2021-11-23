@@ -1,0 +1,6 @@
+{  
+    "status": 422,
+    "headers": {},
+    "body": "{\"errors\":{\"password\":[\"Email or password is incorrect.\"]}}"
+}
+    
