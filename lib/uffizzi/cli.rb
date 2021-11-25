@@ -1,14 +1,8 @@
 # frozen_string_literal: true
 
 require 'thor'
-require 'io/console'
-require 'net/http'
-require 'json'
-require 'fileutils'
 
 module Uffizzi
-  SUCCESS_CODE = '201'
-  CONFIG_PATH = "#{Dir.home}/uffizzi/config.json"
 
   class CLI < Thor
     desc 'version', 'show version'

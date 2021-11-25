@@ -2,15 +2,11 @@
 
 require 'io/console'
 require 'json'
-require 'fileutils'
 require 'uffizzi'
 
 module Uffizzi
   class CLI::Login
   
-    SUCCESS_CODE = '201'
-    CONFIG_PATH = "#{Dir.home}/uffizzi/config.json"
-
     def initialize(options)
       @options = options
     end
@@ -22,33 +18,22 @@ module Uffizzi
         user: @options[:user],
         password: password.strip
       }
-      res = Requester.request(params, @options[:hostname])
-      if res[:code] == SUCCESS_CODE
+      response = HttpClient.make_request(params, @options[:hostname])
+
+      case response
+      when Net::HTTPCreated then
         account_data = {
-          id: res[:body]['user']['accounts'].first['id'],
+          id: HttpClient.get_body_from_response(response)['user']['accounts'].first['id']
         }
         data = {
           account: account_data,
           hostname: @options[:hostname],
-          cookie: res[:cookie].first.split(';').first,
+          cookie: HttpClient.get_cookie_from_response(response)
         }
-        file = create_file(CONFIG_PATH)
-        file.write(data.to_json)
+        Config.write(data)
       else
-        puts res[:body]["errors"].first.pop
+        puts HttpClient.get_body_from_response(response)["errors"].first.pop
       end
-    end
-
-    private
-
-    def create_file(path)
-      dir = File.dirname(path)
-
-      unless File.directory?(dir)
-        FileUtils.mkdir_p(dir)
-      end
-
-      File.new(path, 'w')
     end
   end
 end

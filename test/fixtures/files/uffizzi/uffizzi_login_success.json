@@ -1,8 +1,11 @@
-{  
-    "status": 201,
-    "headers": {
-        "set-cookie": ["_uffizzi=GZnQIEv1RkxVwr%2FmxDzFjosaf0m5VI4I9uZopqVWpUvJmA71%2BLjDfPqbeI9gXVjGoDJ1HSYWSKG2zKEF7PHPw%2F9WmLOKq8z2yfOPiDc2Llp6jvZkMfv83TEhKh2gME5LOReZOPgyrv%2FKoQ9WsvDeWgQ4sVZ0e6vzuXJzQi6MPx85QfqI22knbmqwKg6RfAjI--GsNBpUqiCdWNzl7W--kTkiHrfJHZTUJkuDsf8Wmw%3D%3D; path=/; HttpOnly"]
-    },
-    "body": "{\"user\":{\"accounts\":[{\"id\":2}]}}"
-}
-    
+{
+    "body":{
+      "user":{
+        "accounts":[
+          {
+            "id":2
+          }
+        ]
+      }
+    }
+  }

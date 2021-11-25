@@ -3,6 +3,8 @@
 require 'test_helper'
 require 'uffizzi/cli'
 require 'net/http'
+require 'uffizzi/config'
+require 'io/console'
 
 class UffizziTest < Minitest::Test
   def test_that_it_has_a_version_number
@@ -20,16 +22,17 @@ class UffizziTest < Minitest::Test
     cli.options = { user: command_params[:user], hostname: command_params[:hostname] }
 
     IO::console.stub(:getpass, command_params[:password]) do
-      success_login_data = json_fixture('files/uffizzi/uffizzi_login_success.json')
-      body = { user: { email: command_params[:user], password: command_params[:password] } }.to_json
-      stubbed_uffizzi_login = stub_uffizzi_login(command_params[:hostname], body, success_login_data)
+      headers = { "set-cookie": "_uffizzi=test; path=/; HttpOnly" }
+      body = json_fixture('files/uffizzi/uffizzi_login_success.json')[:body]
 
-      File.delete(Uffizzi::CONFIG_PATH) if File.exist?(Uffizzi::CONFIG_PATH)
+      stubbed_uffizzi_login = stub_uffizzi_login(command_params[:hostname], 201, body, headers)
+
+      Uffizzi::Config.delete
 
       cli.login
 
       assert_requested(stubbed_uffizzi_login)
-      assert(File.exist?(Uffizzi::CONFIG_PATH))
+      assert(Uffizzi::Config.exists?)
     end
   end
 
@@ -44,16 +47,15 @@ class UffizziTest < Minitest::Test
     cli.options = { user: command_params[:user], hostname: command_params[:hostname] }
 
     IO::console.stub(:getpass, command_params[:password]) do
-      failed_login_data = json_fixture('files/uffizzi/uffizzi_login_failed.json')
-      body = { user: { email: command_params[:user], password: command_params[:password] } }.to_json
-      stubbed_uffizzi_login = stub_uffizzi_login(command_params[:hostname], body, failed_login_data)
+      body = json_fixture('files/uffizzi/uffizzi_login_failed.json')[:body]
+      stubbed_uffizzi_login = stub_uffizzi_login(command_params[:hostname], 422, body, {})
 
-      File.delete(Uffizzi::CONFIG_PATH) if File.exist?(Uffizzi::CONFIG_PATH)
+      Uffizzi::Config.delete
 
       cli.login
 
       assert_requested(stubbed_uffizzi_login)
-      refute(File.exist?(Uffizzi::CONFIG_PATH))
+      refute(Uffizzi::Config.exists?)
     end
   end
 end
