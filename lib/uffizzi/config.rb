@@ -5,11 +5,9 @@ require 'fileutils'
 
 module Uffizzi
   class Config
-
     CONFIG_PATH = "#{Dir.home}/uffizzi/config.json"
 
     class << self
-
       def write(data)
         file = create
         file.write(data.to_json)
@@ -30,6 +28,7 @@ module Uffizzi
 
       def read_option(option)
         return unless exists?
+
         data = JSON.parse(File.read(CONFIG_PATH))
 
         data[option]
@@ -37,7 +36,7 @@ module Uffizzi
 
       private
 
-      def create    
+      def create
         dir = File.dirname(CONFIG_PATH)
 
         unless File.directory?(dir)

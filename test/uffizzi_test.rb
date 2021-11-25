@@ -22,7 +22,7 @@ class UffizziTest < Minitest::Test
     cli.options = { user: command_params[:user], hostname: command_params[:hostname] }
 
     IO::console.stub(:getpass, command_params[:password]) do
-      headers = { "set-cookie": "_uffizzi=test; path=/; HttpOnly" }
+      headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
       body = json_fixture('files/uffizzi/uffizzi_login_success.json')[:body]
 
       stubbed_uffizzi_login = stub_uffizzi_login(command_params[:hostname], 201, body, headers)
