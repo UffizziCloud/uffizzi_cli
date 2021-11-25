@@ -1,11 +1,11 @@
 {
-    "body":{
-      "user":{
-        "accounts":[
-          {
-            "id":2
-          }
-        ]
-      }
+  "body":{
+    "user":{
+      "accounts":[
+        {
+          "id":2
+        }
+      ]
     }
   }
+}
