@@ -25,7 +25,6 @@ class UffizziTest < Minitest::Test
       hostname: 'http://web:7000',
     }
 
-
     cli.options = { user: command_params[:user], hostname: command_params[:hostname] }
 
     IO::console.stub(:getpass, command_params[:password]) do

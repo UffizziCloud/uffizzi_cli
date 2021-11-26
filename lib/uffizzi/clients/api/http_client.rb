@@ -21,15 +21,16 @@ module Uffizzi
       private
 
       def build_request(uri, params, method, require_cookies)
+        headers = { 'Content-Type' => 'application/json' }
         request = case method
                          when :get
-                           Net::HTTP::Get.new(uri.path, 'Content-Type' => 'application/json')
+                           Net::HTTP::Get.new(uri.path, headers)
                          when :post
-                           Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
+                           Net::HTTP::Post.new(uri.path, headers)
                          when :delete
-                           Net::HTTP::Delete.new(uri.path, 'Content-Type' => 'application/json')
+                           Net::HTTP::Delete.new(uri.path, headers)
                          when :put
-                           Net::HTTP::Put.new(uri.path, 'Content-Type' => 'application/json')
+                           Net::HTTP::Put.new(uri.path, headers)
                          end
         
         request["set-cookie"] = Config.read_option(:cookie) if require_cookies

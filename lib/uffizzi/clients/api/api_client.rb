@@ -9,6 +9,28 @@ module ApiClient
     uri = session_uri(hostname)
     response = Uffizzi::HttpClient.make_request(uri, :post, false, params)
 
-    response
+    {
+      body: response_body(response),
+      headers: response_cookie(response),
+      code: response.code
+    }
+  end
+
+  private
+
+  def response_body(response)
+    return nil if response.body.nil?
+    body = JSON.parse(response.body, symbolize_names: true)
+
+    body
+  end
+
+  def response_cookie(response)
+    cookies = response.to_hash['set-cookie']
+    return nil if cookies.nil?
+    cookie_content = cookies.first
+    cookie = cookie_content.split(';').first
+
+    cookie
   end
 end

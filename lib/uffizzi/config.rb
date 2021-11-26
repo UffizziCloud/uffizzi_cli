@@ -8,9 +8,9 @@ module Uffizzi
     CONFIG_PATH = "#{Dir.home}/.uffizzi/config.json"
 
     class << self
-      def write(data)
+      def write(body, cookie, hostname)
         file = create
-        file.write(data.to_json)
+        file.write(prepare_config_data(body, cookie, hostname))
         file.close
       end
 
@@ -38,6 +38,19 @@ module Uffizzi
       end
 
       private
+
+      def prepare_config_data(body, cookie, hostname)
+        account_data = {
+          id: body[:user][:accounts].first[:id],
+        }
+        data = {
+          account: account_data,
+          hostname: hostname,
+          cookie: cookie,
+        }
+
+        data.to_json
+      end
 
       def create
         dir = File.dirname(CONFIG_PATH)

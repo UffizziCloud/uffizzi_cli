@@ -7,7 +7,6 @@ require 'uffizzi'
 module Uffizzi
   class CLI::Login
     include ApiClient
-    include ApiResponse
 
     def initialize(options)
       @options = options
@@ -22,32 +21,14 @@ module Uffizzi
           password: password.strip,
         }
       }
+
       response = create_session(@options[:hostname], params)
-      response_body = response_body(response)
-      response_cookie = response_cookie(response)
 
-      case response
-      when Net::HTTPCreated
-        data = prepare_config_data(response_body, response_cookie)
-        Config.write(data)
+      if Net::HTTPResponse::CODE_TO_OBJ[response[:code]] == Net::HTTPCreated
+        Config.write(response[:body], response[:cookie], @options[:hostname])
       else
-        puts response_body[:errors].first.pop
+        response[:body][:errors].each { |error| puts error.pop }
       end
-    end
-
-    private
-
-    def prepare_config_data(response_body, response_cookie)
-      account_data = {
-        id: response_body[:user][:accounts].first[:id],
-      }
-      data = {
-        account: account_data,
-        hostname: @options[:hostname],
-        cookie: response_cookie,
-      }
-
-      data
     end
   end
 end
