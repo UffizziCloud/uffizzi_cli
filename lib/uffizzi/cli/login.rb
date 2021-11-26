@@ -6,6 +6,9 @@ require 'uffizzi'
 
 module Uffizzi
   class CLI::Login
+    include ApiClient
+    include ApiResponse
+
     def initialize(options)
       @options = options
     end
@@ -14,25 +17,37 @@ module Uffizzi
       password = IO::console.getpass('Enter Password: ')
 
       params = {
-        user: @options[:user],
-        password: password.strip,
+        user: {
+          email: @options[:user],
+          password: password.strip,
+        }
       }
-      response = HttpClient.make_request(params, @options[:hostname])
+      response = create_session(@options[:hostname], params)
+      response_body = response_body(response)
+      response_cookie = response_cookie(response)
 
       case response
       when Net::HTTPCreated
-        account_data = {
-          id: HttpClient.get_body_from_response(response)['user']['accounts'].first['id'],
-        }
-        data = {
-          account: account_data,
-          hostname: @options[:hostname],
-          cookie: HttpClient.get_cookie_from_response(response),
-        }
+        data = prepare_config_data(response_body, response_cookie)
         Config.write(data)
       else
-        puts HttpClient.get_body_from_response(response)['errors'].first.pop
+        puts response_body[:errors].first.pop
       end
+    end
+
+    private
+
+    def prepare_config_data(response_body, response_cookie)
+      account_data = {
+        id: response_body[:user][:accounts].first[:id],
+      }
+      data = {
+        account: account_data,
+        hostname: @options[:hostname],
+        cookie: response_cookie,
+      }
+
+      data
     end
   end
 end

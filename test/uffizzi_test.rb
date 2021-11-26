@@ -5,19 +5,26 @@ require 'uffizzi/cli'
 require 'net/http'
 require 'uffizzi/config'
 require 'io/console'
+require 'factory_bot'
 
 class UffizziTest < Minitest::Test
+
+  include FactoryBot::Syntax::Methods
+  FactoryBot.find_definitions
+
   def test_that_it_has_a_version_number
     refute_nil(::Uffizzi::VERSION)
   end
 
   def test_login_success
     cli = Uffizzi::CLI.new
+
     command_params = {
-      user: 'test@email.com',
-      password: 'test_pass',
-      hostname: 'http://web:7000/api/cli/v1/session',
+      user: generate(:email),
+      password: generate(:string),
+      hostname: 'http://web:7000',
     }
+
 
     cli.options = { user: command_params[:user], hostname: command_params[:hostname] }
 
@@ -39,9 +46,9 @@ class UffizziTest < Minitest::Test
   def test_login_failed
     cli = Uffizzi::CLI.new
     command_params = {
-      user: 'test@email.com',
-      password: 'test_pass',
-      hostname: 'http://web:7000/api/cli/v1/session',
+      user: generate(:email),
+      password: generate(:string),
+      hostname: 'http://web:7000',
     }
 
     cli.options = { user: command_params[:user], hostname: command_params[:hostname] }

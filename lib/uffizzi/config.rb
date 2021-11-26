@@ -5,7 +5,7 @@ require 'fileutils'
 
 module Uffizzi
   class Config
-    CONFIG_PATH = "#{Dir.home}/uffizzi/config.json"
+    CONFIG_PATH = "#{Dir.home}/.uffizzi/config.json"
 
     class << self
       def write(data)
@@ -19,7 +19,11 @@ module Uffizzi
       end
 
       def read
-        File.read(CONFIG_PATH) if exists?
+        unless exists?
+          puts "Config file doesn't exists"
+          return nil
+        end
+        JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
       end
 
       def exists?
@@ -27,9 +31,8 @@ module Uffizzi
       end
 
       def read_option(option)
-        return unless exists?
-
-        data = JSON.parse(File.read(CONFIG_PATH))
+        data = read
+        return nil if data.nil?
 
         data[option]
       end
