@@ -12,7 +12,7 @@ module ApiClient
     {
       body: response_body(response),
       headers: response_cookie(response),
-      code: response.code
+      code: response.class
     }
   end
 

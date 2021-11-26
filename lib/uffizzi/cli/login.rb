@@ -24,7 +24,7 @@ module Uffizzi
 
       response = create_session(@options[:hostname], params)
 
-      if Net::HTTPResponse::CODE_TO_OBJ[response[:code]] == Net::HTTPCreated
+      if response[:code] == Net::HTTPCreated
         Config.write(response[:body], response[:cookie], @options[:hostname])
       else
         response[:body][:errors].each { |error| puts error.pop }

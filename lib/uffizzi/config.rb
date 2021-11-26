@@ -19,11 +19,9 @@ module Uffizzi
       end
 
       def read
-        unless exists?
-          puts "Config file doesn't exists"
-          return nil
-        end
         JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
+      rescue Errno::ENOENT => e
+        puts e
       end
 
       def exists?
