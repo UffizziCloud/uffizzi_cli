@@ -8,13 +8,20 @@ module Uffizzi
     CONFIG_PATH = "#{Dir.home}/.uffizzi/config.json"
 
     class << self
-      def create(account_id, cookie, hostname)
-        data = prepare_config_data(account_id, cookie, hostname)
-        data.each_pair { |key, value| write_option(key, value) }
+      def create(body, cookie, hostname)
+        write(prepare_config_data(body, cookie, hostname))
       end
 
       def delete
         File.delete(CONFIG_PATH) if exists?
+      end
+
+      def read
+        JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
+      rescue Errno::ENOENT => e
+        puts e
+      rescue JSON::ParserError
+        puts "Config file is in incorrect format"
       end
 
       def exists?
@@ -29,17 +36,8 @@ module Uffizzi
         data[option]
       end
 
-      def option_exists?(option)
-        data = read
-        return false if data.nil?
-
-        data.key?(option)
-      end
-
       def write_option(key, value)
-        data = exists? ? read : {}
-        return nil if data.nil?
-
+        data = read
         data[key] = value
         write(data.to_json)
       end
@@ -63,14 +61,6 @@ module Uffizzi
 
       private
 
-      def read
-        JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
-      rescue Errno::ENOENT => e
-        puts e
-      rescue JSON::ParserError
-        puts 'Config file is in incorrect format'
-      end
-
       def write(data)
         file = create_file
         file.write(data)
@@ -83,6 +73,8 @@ module Uffizzi
           hostname: hostname,
           cookie: cookie,
         }
+
+        data.to_json
       end
 
       def create_file
