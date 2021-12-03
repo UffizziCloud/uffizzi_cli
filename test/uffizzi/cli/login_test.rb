@@ -9,7 +9,7 @@ class LoginTest < Minitest::Test
     @command_params = {
       user: generate(:email),
       password: generate(:string),
-      hostname: 'http://web:7000',
+      hostname: Uffizzi.configuration.hostname,
     }
 
     @cli.options = { user: @command_params[:user], hostname: @command_params[:hostname] }
