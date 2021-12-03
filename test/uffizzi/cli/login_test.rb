@@ -22,7 +22,7 @@ class LoginTest < Minitest::Test
 
       stubbed_uffizzi_login = stub_uffizzi_login(@command_params[:hostname], 201, body, headers)
 
-      Uffizzi::ConfigFile.delete
+      refute(Uffizzi::ConfigFile.exists?)
 
       @cli.login
 
@@ -36,11 +36,11 @@ class LoginTest < Minitest::Test
       body = json_fixture('files/uffizzi/uffizzi_login_failed.json')
       stubbed_uffizzi_login = stub_uffizzi_login(@command_params[:hostname], 422, body, {})
 
-      Uffizzi::ConfigFile.delete
-
       buffer = StringIO.new
       $stdout = buffer
-      
+
+      refute(Uffizzi::ConfigFile.exists?)
+
       @cli.login
 
       $stdout = STDOUT

@@ -2,6 +2,11 @@ require 'minitest/autorun'
 require_relative '../config/config'
 
 class Minitest::Test
+
+  def before_setup
+    Uffizzi::ConfigFile.delete
+  end
+
   def sign_in
     @cookie = "_uffizzi=test"
     login_body = json_fixture('files/uffizzi/uffizzi_login_success.json')

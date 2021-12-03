@@ -21,7 +21,6 @@ class ConfigTest < Minitest::Test
     assert_equal(result[:hostname], Uffizzi.configuration.hostname)
   end
 
-
   def test_get_without_property
     result = @cli.config("get")
 

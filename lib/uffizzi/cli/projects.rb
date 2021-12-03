@@ -19,7 +19,7 @@ module Uffizzi
         end
         print_projects(projects)
       else
-        response[:body][:errors].each { |error| puts error.pop }
+        ApiClient.print_errors(response[:body][:errors])
       end
     end
 
