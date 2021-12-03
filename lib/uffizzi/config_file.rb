@@ -8,8 +8,8 @@ module Uffizzi
     CONFIG_PATH = "#{Dir.home}/.uffizzi/config.json"
 
     class << self
-      def create(body, cookie, hostname)
-        write(prepare_config_data(body, cookie, hostname))
+      def create(account_id, cookie, hostname)
+        write(prepare_config_data(account_id, cookie, hostname))
       end
 
       def delete
@@ -74,9 +74,9 @@ module Uffizzi
         file.close
       end
 
-      def prepare_config_data(body, cookie, hostname)
+      def prepare_config_data(account_id, cookie, hostname)
         data = {
-          account_id: body[:user][:accounts].first[:id],
+          account_id: account_id,
           hostname: hostname,
           cookie: cookie,
         }
