@@ -1,5 +1,4 @@
 require 'minitest/autorun'
-require 'minitest/hooks/default'
 require_relative '../config/config'
 
 class Minitest::Test
