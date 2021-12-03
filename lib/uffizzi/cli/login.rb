@@ -28,7 +28,8 @@ module Uffizzi
           puts "No account related to this email"
           return
         end
-        ConfigFile.create(response[:body], response[:headers], @options[:hostname])
+        account_id = response[:body][:user][:accounts].first[:id]
+        ConfigFile.create(account_id, response[:headers], @options[:hostname])
       else
         response[:body][:errors].each { |error| puts error.pop }
       end

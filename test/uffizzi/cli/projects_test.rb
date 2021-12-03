@@ -5,16 +5,13 @@ require 'test_helper'
 class ProjectsTest < Minitest::Test
   def setup
     @cli = Uffizzi::CLI.new
-    @cookie = "_uffizzi=test"
-    @hostname = "http://web:7000"
-    @login_body = json_fixture('files/uffizzi/uffizzi_login_success.json')
 
-    Uffizzi::ConfigFile.create(@login_body, @cookie, @hostname)
+    sign_in
   end
   
   def test_projects_success
     body = json_fixture('files/uffizzi/uffizzi_projects_success.json')
-    stubbed_uffizzi_projects = stub_uffizzi_projects(@hostname, 200, body, {})
+    stubbed_uffizzi_projects = stub_uffizzi_projects(Uffizzi.configuration.hostname, 200, body, {})
 
     buffer = StringIO.new
     $stdout = buffer
@@ -29,7 +26,7 @@ class ProjectsTest < Minitest::Test
 
   def test_projects_unauthorized
     body = json_fixture('files/uffizzi/uffizzi_projects_failed.json')
-    stubbed_uffizzi_projects = stub_uffizzi_projects(@hostname, 401, body, {})
+    stubbed_uffizzi_projects = stub_uffizzi_projects(Uffizzi.configuration.hostname, 401, body, {})
 
     error = assert_raises(StandardError) do
       @cli.projects
