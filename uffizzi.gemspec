@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler', '~> 2.2'
   spec.add_development_dependency 'byebug'
+  spec.add_development_dependency 'factory_bot'
   spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'minitest-power_assert'
   spec.add_development_dependency 'mocha'
