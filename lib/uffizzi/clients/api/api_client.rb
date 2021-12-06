@@ -20,7 +20,7 @@ module ApiClient
   end
 
 
-  def self.print_errors(errors)
+  def print_errors(errors)
     puts errors.keys.reduce([]) { |acc, key| acc.push(errors[key]) }
   end
 
