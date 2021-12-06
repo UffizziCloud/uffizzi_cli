@@ -21,12 +21,7 @@ module ApiClient
 
 
   def self.print_errors(errors)
-    all_errors_messages = []
-    errors.each do |error|
-      _field_name, *error_messages = error
-      all_errors_messages.push(*error_messages)
-    end
-    all_errors_messages.each { |error_message| puts error_message }
+    puts errors.keys.reduce([]) { |acc, key| acc.push(errors[key]) }
   end
 
   private

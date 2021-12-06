@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require_relative '../config/config'
+require_relative '../config/uffizzi'
 
 class Minitest::Test
 
