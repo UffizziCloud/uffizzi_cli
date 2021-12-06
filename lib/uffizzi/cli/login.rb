@@ -31,7 +31,7 @@ module Uffizzi
         account_id = response[:body][:user][:accounts].first[:id]
         ConfigFile.create(account_id, response[:headers], @options[:hostname])
       else
-        ApiClient.print_errors(response[:body][:errors])
+        print_errors(response[:body][:errors])
       end
     end
 
