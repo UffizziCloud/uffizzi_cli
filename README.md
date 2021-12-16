@@ -1,6 +1,6 @@
 # Uffizzi Command-line Interface
 
-[![CircleCI](https://circleci.com/gh/UffizziCloud/uffizzi_cli/tree/master.svg?style=shield)](https://circleci.com/gh/UffizziCloud/uffizzi_cli/tree/master)
+[![CircleCI](https://circleci.com/gh/UffizziCloud/uffizzi_cli/tree/main.svg?style=shield)](https://circleci.com/gh/UffizziCloud/uffizzi_cli/tree/main)
 
 ## Installation
 
