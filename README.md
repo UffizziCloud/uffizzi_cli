@@ -12,7 +12,7 @@ The fastest and easiest way to get started with Uffizzi is via the fully hosted 
 
 Alternatively, you can self-host Uffizzi via the open-source repositories available here on GitHub. The remainder of this README is intended for users interested in self-hosting Uffizzi or for those who are just curious about how Uffizzi works.
 
-### Uffizzi Architecture  
+## Uffizzi Architecture  
 
 Uffizzi consists of the following components:  
 
