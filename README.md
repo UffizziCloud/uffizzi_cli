@@ -13,7 +13,7 @@ Preview code before it’s merged—whether frontend, backend or microserivce. D
 **Uffizzi Architecture**  
 
 Dependencies:  
- * Kubernetes (k8s) Cluster  
+ * Kubernetes (k8s) cluster  
  * Postgres database  
  * Redis cache  
 
