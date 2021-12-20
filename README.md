@@ -2,7 +2,6 @@
 
 A command-line interace (CLI) for [Uffizzi App](https://github.com/UffizziCloud/uffizzi_app) 
 
-
 ## Uffizzi Overview
 
 **Uffizzi Full-stack Previews Engine**
