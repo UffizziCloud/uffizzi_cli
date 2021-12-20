@@ -1,4 +1,23 @@
-# uffizzi_cli 
+# Uffizzi CLI  
+
+A command-line interace (CLI) for [Uffizzi App](https://github.com/UffizziCloud/uffizzi_app) 
+
+
+## Uffizzi Overview
+
+**Uffizzi Full-stack Previews Engine**
+
+Define your full-stack apps and microservices with a familiar syntax based on Docker Compose, then Uffizzi will create on-demand test environments when you open pull requests or build new images. Preview URLs are updated when there’s a new commit, so your team can catch issues early, iterate quickly, and accelerate your release cycles.   
+
+&nbsp;    
+**Uffizzi Architecture**  
+
+Uffizzi consists of the following components:  
+
+* [Uffizzi App](https://github.com/UffizziCloud/uffizzi_app) - The primary REST API for creating and managing Previews  
+* [Uffizzi Controller](https://github.com/UffizziCloud/uffizzi_controller) - A smart proxy service that handles requests from Uffizzi App to the Kubernetes API  
+* Uffizzi CLI (this repository) - A command-line interface for Uffizzi App    
+* [Uffizzi Dashboard](https://uffizzi.com) - A graphical user interface for Uffizzi App  
 
 ## Installation
 
