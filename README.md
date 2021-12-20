@@ -8,7 +8,7 @@ Uffizzi is the Full-stack Previews Engine that makes it easy for your team to pr
 
 ## Getting started with Uffizzi  
 
-The fastest and easiest way to get started with Uffizzi is via the fully hosted version available at https://uffizzi.com, which includes free plans for small team and qualifying open-source projects.   
+The fastest and easiest way to get started with Uffizzi is via the fully hosted version available at https://uffizzi.com, which includes free plans for small teams and qualifying open-source projects.   
 
 Alternatively, you can self-host Uffizzi via the open-source repositories available here on GitHub. The remainder of this README is intended for users interested in self-hosting Uffizzi or for those who are just curious about how Uffizzi works.
 
