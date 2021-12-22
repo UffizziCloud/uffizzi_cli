@@ -37,12 +37,16 @@ module Uffizzi
 
       def write_option(key, value)
         data = read
+        return nil if data.nil?
+
         data[key] = value
         write(data.to_json)
       end
 
       def delete_option(key)
         data = read
+        return nil if data.nil?
+
         new_data = data.except(key)
         write(new_data.to_json)
       end
@@ -52,8 +56,10 @@ module Uffizzi
       end
 
       def list
-        config_data = read
-        config_data.each do |property, value|
+        data = read
+        return nil if data.nil?
+
+        data.each do |property, value|
           puts "#{property} - #{value}"
         end
       end
