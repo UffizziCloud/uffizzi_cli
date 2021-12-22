@@ -1,15 +1,13 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'uffizzi'
 
 class ConfigTest < Minitest::Test
   def setup
     @cli = Uffizzi::CLI.new
 
     sign_in
-
-    @buffer = StringIO.new
-    $stdout = @buffer
   end
 
   def test_list
@@ -33,31 +31,21 @@ class ConfigTest < Minitest::Test
   def test_get_with_property
     result = @cli.config('get', 'cookie')
 
-    $stdout = STDOUT
-    @buffer.rewind
-
-    assert_equal(@buffer.read.strip, Uffizzi::ConfigFile.read_option(:cookie))
-    refute(result)
+    assert_equal(Uffizzi::ConfigFile.read_option(:cookie), Uffizzi.ui.last_message)
   end
 
   def test_get_with_wrong_property
     unexisted_property = 'unexisted_property'
     result = @cli.config('get', unexisted_property)
 
-    $stdout = STDOUT
-    @buffer.rewind
-
-    assert_equal(@buffer.read.strip, "The option #{unexisted_property} doesn't exist in config file")
+    assert_equal("The option #{unexisted_property} doesn't exist in config file", Uffizzi.ui.last_message)
     refute(result)
   end
 
   def test_set_without_property_and_value
     result = @cli.config('set')
 
-    $stdout = STDOUT
-    @buffer.rewind
-
-    assert_equal(@buffer.read.strip, "No property provided\nNo value provided")
+    assert_equal("No property provided\nNo value provided", Uffizzi.ui.last_message)
     refute(result)
   end
 
@@ -74,11 +62,11 @@ class ConfigTest < Minitest::Test
   def test_set_with_property_and_value
     new_cookie = '_uffizzi=test2'
 
-    refute_equal(new_cookie, Uffizzi::ConfigFile.read_option(:cookie))
+    refute_equal(Uffizzi::ConfigFile.read_option(:cookie), new_cookie)
 
     result = @cli.config('set', 'cookie', new_cookie)
 
-    assert_equal(new_cookie, Uffizzi::ConfigFile.read_option(:cookie))
+    assert_equal(Uffizzi::ConfigFile.read_option(:cookie), new_cookie)
     refute(result)
   end
 

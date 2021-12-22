@@ -27,7 +27,7 @@ module ApiClient
   end
 
   def print_errors(errors)
-    puts errors.keys.reduce([]) { |acc, key| acc.push(errors[key]) }
+    Uffizzi.ui.say(errors.keys.reduce([]) { |acc, key| acc.push(errors[key]) })
   end
 
   private

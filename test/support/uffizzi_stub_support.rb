@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'uffizzi'
+require 'uffizzi/clients/api/api_routes'
 
 module UffizziStubSupport
   include ApiRoutes

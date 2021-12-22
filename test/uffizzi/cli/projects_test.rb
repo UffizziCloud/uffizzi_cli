@@ -30,9 +30,6 @@ class ProjectsTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_projects_success_one_project.json')
     stubbed_uffizzi_projects = stub_uffizzi_projects(Uffizzi.configuration.hostname, 200, body, {})
 
-    buffer = StringIO.new
-    $stdout = buffer
-
     result = @cli.projects
 
     $stdout = STDOUT

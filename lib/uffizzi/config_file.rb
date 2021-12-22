@@ -2,6 +2,7 @@
 
 require 'json'
 require 'fileutils'
+require 'uffizzi'
 
 module Uffizzi
   class ConfigFile
@@ -19,9 +20,9 @@ module Uffizzi
       def read
         JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
       rescue Errno::ENOENT => e
-        puts e
+        Uffizzi.ui.say(e)
       rescue JSON::ParserError
-        puts "Config file is in incorrect format"
+        Uffizzi.ui.say("Config file is in incorrect format")
       end
 
       def exists?
@@ -32,7 +33,7 @@ module Uffizzi
         data = read
         return nil if data.nil?
 
-        puts "The option #{option} doesn't exist in config file" if data[option].nil?
+        Uffizzi.ui.say("The option #{option} doesn't exist in config file") if data[option].nil?
         data[option]
       end
 
@@ -55,7 +56,7 @@ module Uffizzi
       def list
         config_data = read
         config_data.each do |property, value|
-          puts "#{property} - #{value}"
+          Uffizzi.ui.say("#{property} - #{value}")
         end
       end
 

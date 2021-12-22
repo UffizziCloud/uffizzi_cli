@@ -3,6 +3,7 @@
 require 'io/console'
 require 'uffizzi'
 require 'uffizzi/response_helper'
+require 'uffizzi/clients/api/api_client'
 
 module Uffizzi
   class CLI::Login
