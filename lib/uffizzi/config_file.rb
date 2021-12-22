@@ -2,6 +2,7 @@
 
 require 'json'
 require 'fileutils'
+require 'uffizzi'
 
 module Uffizzi
   class ConfigFile
