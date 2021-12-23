@@ -10,4 +10,10 @@ module UffizziStubSupport
 
     stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
   end
+
+  def stub_uffizzi_projects(base_url, status, body, headers)
+    url = projects_uri(base_url)
+
+    stub_request(:get, url).to_return(status: status, body: body.to_json, headers: headers)
+  end
 end

@@ -1,9 +1,7 @@
 {
-  "body": {
-    "errors": {
-      "password": [
-        "Email or password is incorrect."
-      ]
-    }
+  "errors": {
+    "password": [
+      "Email or password is incorrect."
+    ]
   }
 }

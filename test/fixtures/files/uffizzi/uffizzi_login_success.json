@@ -1,11 +1,10 @@
 {
-  "body":{
-    "user":{
-      "accounts":[
-        {
-          "id":2
-        }
-      ]
-    }
+  "user": {
+    "accounts": [
+      {
+        "id": 1,
+        "state": "active"
+      }
+    ]
   }
 }

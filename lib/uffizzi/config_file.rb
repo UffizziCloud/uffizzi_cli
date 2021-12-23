@@ -4,14 +4,12 @@ require 'json'
 require 'fileutils'
 
 module Uffizzi
-  class Config
+  class ConfigFile
     CONFIG_PATH = "#{Dir.home}/.uffizzi/config.json"
 
     class << self
-      def write(body, cookie, hostname)
-        file = create
-        file.write(prepare_config_data(body, cookie, hostname))
-        file.close
+      def create(body, cookie, hostname)
+        write(prepare_config_data(body, cookie, hostname))
       end
 
       def delete
@@ -26,6 +24,7 @@ module Uffizzi
         data = read
         return nil if data.nil?
 
+        puts "The option #{option} doesn't exist in config file" if data[option].nil?
         data[option]
       end
 
@@ -36,20 +35,48 @@ module Uffizzi
         data.key?(option)
       end
 
+      def write_option(key, value)
+        data = read
+        data[key] = value
+        write(data.to_json)
+      end
+
+      def delete_option(key)
+        data = read
+        new_data = data.except(key)
+        write(new_data.to_json)
+      end
+
+      def rewrite_cookie(cookie)
+        write_option(:cookie, cookie)
+      end
+
+      def list
+        config_data = read
+        config_data.each do |property, value|
+          puts "#{property} - #{value}"
+        end
+      end
+
       private
 
       def read
         JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
       rescue Errno::ENOENT => e
         puts e
+      rescue JSON::ParserError
+        puts "Config file is in incorrect format"
+      end
+
+      def write(data)
+        file = create_file
+        file.write(data)
+        file.close
       end
 
       def prepare_config_data(body, cookie, hostname)
-        account_data = {
-          id: body[:user][:accounts].first[:id],
-        }
         data = {
-          account: account_data,
+          account_id: body[:user][:accounts].first[:id],
           hostname: hostname,
           cookie: cookie,
         }
@@ -57,7 +84,7 @@ module Uffizzi
         data.to_json
       end
 
-      def create
+      def create_file
         dir = File.dirname(CONFIG_PATH)
 
         unless File.directory?(dir)
