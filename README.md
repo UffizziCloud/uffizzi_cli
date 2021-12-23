@@ -25,6 +25,62 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 Run rubocop:
 `bundle exec rubocop -A`
 
+## Commands
+
+### login ###
+
+```
+$ login -u your@email.com -h localhost:8080
+```
+Loggin you in app which you set in hostname option.
+
+
+### login options ###
+
+Option      | Aliase          | Description
+-------     | -------         | -----------
+`--user`    | `-u`            | Your email for logging in
+`--hostname`| `-h`            | Adress of your app
+
+### projects ###
+
+```
+$ projects
+```
+
+Shows all your projects' slugs
+
+### config ###
+
+Use this command to configure your cli app. This command has 4 subcommands `list`, `get`, `set` and `delete`.
+
+```
+$ config list
+```
+Shows all options and their values from config file.
+
+```
+$ config get OPTION
+```
+
+Shows value of specified option.
+
+```
+$ config set OPTION VALUE
+```
+
+Sets specified value for specified option. If specified option already exists and has value it will be overwritten.
+
+```
+$ config delete OPTION
+```
+
+Deletes specified option.
+
+## Usage
+
+If you need basic authentication you should set options `basic_auth_user` and `basic_auth_password` via `config set` command.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/UffizziCloud/uffizzi_cli.
