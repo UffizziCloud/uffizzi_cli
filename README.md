@@ -30,9 +30,9 @@ Run rubocop:
 ### login ###
 
 ```
-$ login -u your@email.com -h localhost:8080
+$ uffizzi login -u your@email.com -h localhost:8080
 ```
-Loggin you in app which you set in hostname option.
+Logging you into the app which you set in the hostname option.
 
 
 ### login options ###
@@ -42,44 +42,42 @@ Option      | Aliase          | Description
 `--user`    | `-u`            | Your email for logging in
 `--hostname`| `-h`            | Adress of your app
 
+If hostname uses basic authentication you can specify options for it by setting `basic_auth_user` and `basic_auth_password` via `config set` command.
+
 ### projects ###
 
 ```
-$ projects
+$ uffizzi projects
 ```
 
 Shows all your projects' slugs
 
 ### config ###
 
-Use this command to configure your cli app. This command has 4 subcommands `list`, `get`, `set` and `delete`.
+Use this command to configure your cli app. This command has 4 subcommands `list`, `get`, `set`, and `delete`.
 
 ```
-$ config list
+$ uffizzi config list
 ```
-Shows all options and their values from config file.
+Shows all options and their values from the config file.
 
 ```
-$ config get OPTION
+$ uffizzi config get OPTION
 ```
 
-Shows value of specified option.
+Shows the value of the specified option.
 
 ```
-$ config set OPTION VALUE
+$ uffizzi config set OPTION VALUE
 ```
 
-Sets specified value for specified option. If specified option already exists and has value it will be overwritten.
+Sets specified value for specified option. If a specified option already exists and has value it will be overwritten.
 
 ```
-$ config delete OPTION
+$ uffizzi config delete OPTION
 ```
 
 Deletes specified option.
-
-## Usage
-
-If you need basic authentication you should set options `basic_auth_user` and `basic_auth_password` via `config set` command.
 
 ## Contributing
 
