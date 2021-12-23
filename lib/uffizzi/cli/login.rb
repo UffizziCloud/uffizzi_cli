@@ -49,5 +49,11 @@ module Uffizzi
     def account_valid?(account)
       account[:state] == 'active'
     end
+
+    private
+
+    def account_valid?(account)
+      account[:state] == "active"
+    end
   end
 end
