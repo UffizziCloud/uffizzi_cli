@@ -1,0 +1,10 @@
+{
+  "projects": [
+    {
+      "slug": "project_slug_1"
+    },
+    {
+      "slug": "project_slug_2"
+    }
+  ]
+}

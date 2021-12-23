@@ -2,7 +2,7 @@
 
 require 'net/http'
 require 'json'
-require 'uffizzi/config'
+require 'uffizzi/config_file'
 
 module Uffizzi
   class HttpClient
@@ -11,8 +11,14 @@ module Uffizzi
         uri = URI(request_uri)
         Net::HTTP.start(uri.host, uri.port) do |http|
           request = build_request(uri, params, method, require_cookies)
+
           http.request(request)
         end
+
+        if response.class == Net::HTTPUnauthorized
+          raise StandardError.new "Not authorized"
+        end
+        response
       end
 
       private
@@ -29,8 +35,8 @@ module Uffizzi
                          when :put
                            Net::HTTP::Put.new(uri.path, headers)
                          end
-
-        request["set-cookie"] = Config.read_option(:cookie) if require_cookies
+        
+        request["Cookie"] = ConfigFile.read_option(:cookie) if require_cookies
         request.body = params.to_json
         request.basic_auth(ENV['BASIC_AUTH_USER'], ENV['BASIC_AUTH_PASSWORD']) if (!ENV['BASIC_AUTH_USER'].nil? && !ENV['BASIC_AUTH_PASSWORD'].nil?)
 

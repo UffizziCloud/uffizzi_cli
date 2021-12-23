@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'io/console'
-require 'json'
 require 'uffizzi'
 
 module Uffizzi
@@ -25,10 +24,20 @@ module Uffizzi
       response = create_session(@options[:hostname], params)
 
       if response[:code] == Net::HTTPCreated
-        Config.write(response[:body], response[:cookie], @options[:hostname])
+        unless account_valid?(response[:body][:user][:accounts].first)
+          puts "No account related to this email"
+          return
+        end
+        ConfigFile.create(response[:body], response[:headers], @options[:hostname])
       else
         response[:body][:errors].each { |error| puts error.pop }
       end
+    end
+
+    private
+
+    def account_valid?(account)
+      account[:state] == "active"
     end
   end
 end
