@@ -18,12 +18,6 @@ module Uffizzi
         File.delete(CONFIG_PATH) if exists?
       end
 
-      def read
-        JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
-      rescue Errno::ENOENT => e
-        puts e
-      end
-
       def exists?
         File.exist?(CONFIG_PATH)
       end
@@ -37,11 +31,18 @@ module Uffizzi
 
       def option_exists?(option)
         data = read
+        return false if data.nil?
 
         data.key?(option)
       end
 
       private
+
+      def read
+        JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
+      rescue Errno::ENOENT => e
+        puts e
+      end
 
       def prepare_config_data(body, cookie, hostname)
         account_data = {
