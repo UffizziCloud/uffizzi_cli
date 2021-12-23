@@ -35,6 +35,12 @@ module Uffizzi
         data[option]
       end
 
+      def option_exists?(option)
+        data = read
+
+        data.key?(option)
+      end
+
       private
 
       def prepare_config_data(body, cookie, hostname)
