@@ -15,21 +15,29 @@ module Uffizzi
       response = fetch_projects(hostname)
 
       if response[:code] == Net::HTTPOK
-        projects = response[:body][:projects]
-        if projects.empty?
-          puts 'No projects related to this email'
-          return
-        end
-        if projects.size == 1
-          ConfigFile.write_option(:project, projects.first[:slug])
-        end
-        print_projects(projects)
+        handle_succeed_response(response)
       else
-        ApiClient.print_errors(response[:body][:errors])
+        handle_failed_response(response)
       end
     end
 
     private
+
+    def handle_failed_response(response)
+      ApiClient.print_errors(response[:body][:errors])
+    end
+
+    def handle_succeed_response(response)
+      projects = response[:body][:projects]
+      if projects.empty?
+        puts 'No projects related to this email'
+        return
+      end
+      if projects.size == 1
+        ConfigFile.write_option(:project, projects.first[:slug])
+      end
+      print_projects(projects)
+    end
 
     def print_projects(projects)
       projects.each do |project|
