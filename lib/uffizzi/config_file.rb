@@ -36,6 +36,7 @@ module Uffizzi
       end
 
       def write_option(key, value)
+        write({}) unless exists?
         data = read
         return nil if data.nil?
 

@@ -31,6 +31,8 @@ module Uffizzi
           return
         end
         ConfigFile.delete_option(property.to_sym)
+      else
+        puts "#{command} is not a uffizzi config command"
       end
     end
   end
