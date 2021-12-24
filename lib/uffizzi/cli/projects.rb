@@ -19,6 +19,9 @@ module Uffizzi
           puts "No projects related to this email"
           return
         end
+        if projects.size == 1
+          ConfigFile.write_option(:project, projects.first[:slug])
+        end
         print_projects(projects)
       else
         ApiClient.print_errors(response[:body][:errors])

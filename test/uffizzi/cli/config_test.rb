@@ -83,6 +83,17 @@ class ConfigTest < Minitest::Test
     refute(result)
   end
 
+  def test_set_without_config
+    cookie = "_uffizzi=test"
+
+    Uffizzi::ConfigFile.delete
+
+    result = @cli.config("set", "cookie", cookie)
+
+    assert_equal(cookie, Uffizzi::ConfigFile.read_option(:cookie))
+    refute(result)
+  end
+
   def test_delete_without_property
     result = @cli.config("delete")
 

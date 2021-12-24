@@ -10,7 +10,7 @@ class ProjectsTest < Minitest::Test
   end
   
   def test_projects_success
-    body = json_fixture('files/uffizzi/uffizzi_projects_success.json')
+    body = json_fixture('files/uffizzi/uffizzi_projects_success_two_projects.json')
     stubbed_uffizzi_projects = stub_uffizzi_projects(Uffizzi.configuration.hostname, 200, body, {})
 
     buffer = StringIO.new
@@ -20,7 +20,24 @@ class ProjectsTest < Minitest::Test
 
     $stdout = STDOUT
     
+    refute(Uffizzi::ConfigFile.read_option([:project]))
     assert_equal(result, body[:projects])
+    assert_requested(stubbed_uffizzi_projects)
+  end
+
+  def test_success_with_one_project
+    body = json_fixture('files/uffizzi/uffizzi_projects_success_one_project.json')
+    stubbed_uffizzi_projects = stub_uffizzi_projects(Uffizzi.configuration.hostname, 200, body, {})
+
+    buffer = StringIO.new
+    $stdout = buffer
+
+    result = @cli.projects
+
+    $stdout = STDOUT
+
+    assert_equal(result, body[:projects])
+    assert_equal(body[:projects].first[:slug], Uffizzi::ConfigFile.read_option(:project))
     assert_requested(stubbed_uffizzi_projects)
   end
 

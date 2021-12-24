@@ -5,9 +5,9 @@ module Uffizzi
     class << self
       def logged_in?
         logged_in = ConfigFile.exists? &&
-        !ConfigFile.read_option(:account_id).nil? &&
-        !ConfigFile.read_option(:cookie).nil? &&
-        !ConfigFile.read_option(:hostname).nil?
+        ConfigFile.option_exists?(:account_id) &&
+        ConfigFile.option_exists?(:cookie) &&
+        ConfigFile.option_exists?(:hostname)
 
         puts "You are not logged in." unless logged_in
 
