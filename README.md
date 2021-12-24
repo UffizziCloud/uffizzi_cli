@@ -52,6 +52,8 @@ $ uffizzi projects
 
 Shows all your projects' slugs
 
+If you have only one project it will be added to your config file automatically, if there's more than one project you need to set up your project manually with the command `uffizzi config set YOUR_PROJECT_SLUG`
+
 ### config ###
 
 Use this command to configure your cli app. This command has 4 subcommands `list`, `get`, `set`, and `delete`.
