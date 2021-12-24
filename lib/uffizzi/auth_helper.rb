@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Uffizzi
-  module SessionHelper
+  module AuthHelper
     class << self
-      def logged_in?
+      def signed_in?
         logged_in = ConfigFile.exists? &&
           ConfigFile.option_exists?(:account_id) &&
           ConfigFile.option_exists?(:cookie) &&

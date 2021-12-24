@@ -2,14 +2,14 @@
 
 require 'io/console'
 require 'uffizzi'
-require 'uffizzi/session_helper'
+require 'uffizzi/auth_helper'
 
 module Uffizzi
   class CLI::Projects
     include ApiClient
 
     def run
-      return unless Uffizzi::SessionHelper.logged_in?
+      return unless Uffizzi::AuthHelper.signed_in?
 
       hostname = ConfigFile.read_option(:hostname)
       response = fetch_projects(hostname)
