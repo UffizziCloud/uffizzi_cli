@@ -19,7 +19,7 @@ module Uffizzi
         user: {
           email: @options[:user],
           password: password.strip,
-        }
+        },
       }
 
       response = create_session(@options[:hostname], params)
