@@ -19,7 +19,6 @@ module ApiClient
     build_response(response)
   end
 
-
   def print_errors(errors)
     puts errors.keys.reduce([]) { |acc, key| acc.push(errors[key]) }
   end
@@ -43,6 +42,7 @@ module ApiClient
   def response_cookie(response)
     cookies = response.to_hash['set-cookie']
     return nil if cookies.nil?
+
     cookie_content = cookies.first
     cookie = cookie_content.split(';').first
     Uffizzi::ConfigFile.rewrite_cookie(cookie) if Uffizzi::ConfigFile.exists?

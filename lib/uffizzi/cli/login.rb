@@ -25,7 +25,7 @@ module Uffizzi
 
       if response[:code] == Net::HTTPCreated
         unless account_valid?(response[:body][:user][:accounts].first)
-          puts "No account related to this email"
+          puts 'No account related to this email'
           return
         end
         account_id = response[:body][:user][:accounts].first[:id]
@@ -38,7 +38,7 @@ module Uffizzi
     private
 
     def account_valid?(account)
-      account[:state] == "active"
+      account[:state] == 'active'
     end
   end
 end
