@@ -8,7 +8,7 @@ class ProjectsTest < Minitest::Test
 
     sign_in
   end
-  
+
   def test_projects_success
     body = json_fixture('files/uffizzi/uffizzi_projects_success_two_projects.json')
     stubbed_uffizzi_projects = stub_uffizzi_projects(Uffizzi.configuration.hostname, 200, body, {})
@@ -18,9 +18,10 @@ class ProjectsTest < Minitest::Test
 
     result = @cli.projects
 
-    $stdout = STDOUT
-    
     refute(Uffizzi::ConfigFile.read_option([:project]))
+
+    $stdout = STDOUT
+
     assert_equal(result, body[:projects])
     assert_requested(stubbed_uffizzi_projects)
   end
@@ -49,7 +50,7 @@ class ProjectsTest < Minitest::Test
       @cli.projects
     end
 
-    assert_match(error.message, "Not authorized")
+    assert_match(error.message, 'Not authorized')
     assert_requested(stubbed_uffizzi_projects)
   end
 end

@@ -10,13 +10,14 @@ module Uffizzi
 
     def run
       return unless Uffizzi::SessionHelper.logged_in?
+
       hostname = ConfigFile.read_option(:hostname)
       response = fetch_projects(hostname)
 
       if response[:code] == Net::HTTPOK
         projects = response[:body][:projects]
         if projects.empty?
-          puts "No projects related to this email"
+          puts 'No projects related to this email'
           return
         end
         if projects.size == 1
@@ -32,7 +33,7 @@ module Uffizzi
 
     def print_projects(projects)
       projects.each do |project|
-        puts "#{project[:slug]}"
+        puts (project[:slug]).to_s
       end
     end
   end
