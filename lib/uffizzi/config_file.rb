@@ -65,7 +65,7 @@ module Uffizzi
       rescue Errno::ENOENT => e
         puts e
       rescue JSON::ParserError
-        puts "Config file is in incorrect format"
+        puts 'Config file is in incorrect format'
       end
 
       def write(data)

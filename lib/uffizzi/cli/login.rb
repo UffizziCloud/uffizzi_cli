@@ -53,7 +53,7 @@ module Uffizzi
     private
 
     def account_valid?(account)
-      account[:state] == "active"
+      account[:state] == 'active'
     end
   end
 end
