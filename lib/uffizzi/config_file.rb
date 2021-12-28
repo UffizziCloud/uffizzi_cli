@@ -82,7 +82,7 @@ module Uffizzi
       end
 
       def prepare_config_data(account_id, cookie, hostname)
-        data = {
+        {
           account_id: account_id,
           hostname: hostname,
           cookie: cookie,
