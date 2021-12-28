@@ -9,7 +9,8 @@ module Uffizzi
 
     class << self
       def create(account_id, cookie, hostname)
-        write(prepare_config_data(account_id, cookie, hostname))
+        data = prepare_config_data(account_id, cookie, hostname)
+        data.each_pair { |key, value| write_option(key, value) }
       end
 
       def delete
@@ -36,8 +37,7 @@ module Uffizzi
       end
 
       def write_option(key, value)
-        write({}) unless exists?
-        data = read
+        data = exists? ? read : {}
         return nil if data.nil?
 
         data[key] = value
@@ -87,8 +87,6 @@ module Uffizzi
           hostname: hostname,
           cookie: cookie,
         }
-
-        data.to_json
       end
 
       def create_file
