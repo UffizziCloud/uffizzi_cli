@@ -24,7 +24,7 @@ module Uffizzi
     private
 
     def handle_failed_response(response)
-      ApiClient.print_errors(response[:body][:errors])
+      print_errors(response[:body][:errors])
     end
 
     def handle_succeed_response(response)

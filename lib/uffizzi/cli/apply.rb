@@ -15,10 +15,34 @@ module Uffizzi
     def run
       hostname = ConfigFile.read_option(:hostname)
       params = prepare_params
-      create_compose_file(hostname, params)
+      response = create_compose_file(hostname, params)
+
+      if response[:code] == Net::HTTPCreated
+        handle_succeed_response(hostname, response)
+      else
+        handle_failed_response(response)
+      end
     end
 
     private
+
+    def handle_failed_response(response)
+      print_errors(response[:body][:errors])
+    end
+
+    def handle_succeed_response(hostname, response)
+      template_payload = response[:body][:compose_files].first[:template][:payload]
+
+      params = { deployment: template_payload }
+
+      response = create_deployment(hostname, params)
+
+      if response[:code] == Net::HTTPCreated
+        Uffizzi.ui.say('deployment created')
+      else
+        handle_failed_response(response)
+      end
+    end
 
     def prepare_params
       begin

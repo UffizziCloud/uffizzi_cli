@@ -55,7 +55,7 @@ class ComposeFileService
     end
 
     def prepare_file_path(env_file_path)
-      Uffizzi.ui.say('env_file contains an empty value') if env_file_path.empty? || env_file_path.nil?
+      Uffizzi.ui.say('env_file contains an empty value') if env_file_path.nil? || env_file_path.empty?
 
       pathname = Pathname.new(env_file_path)
 

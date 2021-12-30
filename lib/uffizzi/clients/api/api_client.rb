@@ -33,8 +33,21 @@ module ApiClient
     build_response(response)
   end
 
+  def create_deployment(hostname, params)
+    uri = deployments_uri(hostname)
+    response = Uffizzi::HttpClient.make_request(uri, :post, true, params)
+
+    build_response(response)
+  end
+
   def print_errors(errors)
-    Uffizzi.ui.say(errors.keys.reduce([]) { |acc, key| acc.push(errors[key]) })
+    errors.each_key do |key|
+      if errors[key].is_a?(Array)
+        errors[key].each { |error_message| Uffizzi.ui.say(error_message) }
+      else
+        Uffizzi.ui.say(errors[key])
+      end
+    end
   end
 
   private

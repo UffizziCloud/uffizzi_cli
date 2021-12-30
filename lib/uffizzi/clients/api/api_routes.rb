@@ -12,4 +12,8 @@ module ApiRoutes
   def compose_files_uri(hostname)
     "#{hostname}/api/cli/v1/compose_files"
   end
+
+  def deployments_uri(hostname)
+    "#{hostname}/api/cli/v1/deployments"
+  end
 end
