@@ -10,9 +10,15 @@ module Uffizzi
           ConfigFile.option_exists?(:hostname)
       end
 
+<<<<<<< HEAD
       def project_set?
         ConfigFile.exists? &&
           ConfigFile.option_exists?(:project)
+=======
+        Uffizzi.ui.say('You are not logged in.') unless logged_in
+
+        logged_in
+>>>>>>> fixes after rebase
       end
     end
   end

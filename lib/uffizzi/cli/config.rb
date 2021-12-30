@@ -40,6 +40,11 @@ module Uffizzi
         handle_set_command(property, value)
       when 'delete'
         handle_delete_command(property)
+<<<<<<< HEAD
+=======
+      else
+        Uffizzi.ui.say("#{command} is not a uffizzi config command")
+>>>>>>> fixes after rebase
       end
     end
 
@@ -48,6 +53,7 @@ module Uffizzi
     end
 
     def handle_get_command(property)
+<<<<<<< HEAD
       option = ConfigFile.read_option(property.to_sym)
       message = option.nil? ? "The option #{property} doesn't exist in config file" : option
 
@@ -55,10 +61,33 @@ module Uffizzi
     end
 
     def handle_set_command(property, value)
+=======
+      if property.nil?
+        Uffizzi.ui.say('No property provided')
+        return
+      end
+      option = ConfigFile.read_option(property.to_sym)
+      Uffizzi.ui.say(option) unless option.nil?
+    end
+
+    def handle_set_command(property, value)
+      if property.nil? || value.nil?
+        Uffizzi.ui.say('No property provided') if property.nil?
+        Uffizzi.ui.say('No value provided') if value.nil?
+        return
+      end
+>>>>>>> fixes after rebase
       ConfigFile.write_option(property.to_sym, value)
     end
 
     def handle_delete_command(property)
+<<<<<<< HEAD
+=======
+      if property.nil?
+        Uffizzi.ui.say('No property provided')
+        return
+      end
+>>>>>>> fixes after rebase
       ConfigFile.delete_option(property.to_sym)
     end
   end
