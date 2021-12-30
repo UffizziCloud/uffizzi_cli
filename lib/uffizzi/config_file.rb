@@ -22,7 +22,7 @@ module Uffizzi
       rescue Errno::ENOENT => e
         Uffizzi.ui.say(e)
       rescue JSON::ParserError
-        Uffizzi.ui.say("Config file is in incorrect format")
+        Uffizzi.ui.say('Config file is in incorrect format')
       end
 
       def exists?

@@ -13,7 +13,7 @@ class ComposeFileService
 
       {
         env_files: prepare_env_files_data(env_files, compose_file_path),
-        config_files: prepare_config_files_data(config_files, compose_file_path)
+        config_files: prepare_config_files_data(config_files, compose_file_path),
       }
     end
 
@@ -24,17 +24,17 @@ class ComposeFileService
         env_file_data = Psych.load(File.read("#{compose_file_path}/#{env_file}"))
         {
           env_file_path: env_file,
-          env_file_data: env_file_data
+          env_file_data: env_file_data,
         }
       end
     end
 
     def prepare_config_files_data(config_files, compose_file_path)
-        config_files.map do |config_file|
+      config_files.map do |config_file|
         config_file_data = Psych.load(File.read("#{compose_file_path}/#{config_file}"))
         {
           config_file_path: config_file,
-          config_file_data: config_file_data
+          config_file_data: config_file_data,
         }
       end
     end
@@ -63,16 +63,14 @@ class ComposeFileService
     end
 
     def parse_env_file(env_file)
-      env_files = case env_file
-                  when String
-                    [prepare_file_path(env_file)]
-                  when Array
-                    env_file.map { |env_file_path| prepare_file_path(env_file_path) }
-                  else
-                    Uffizzi.ui.say("Unsupported type of #{:env_file} option")
+      case env_file
+      when String
+        [prepare_file_path(env_file)]
+      when Array
+        env_file.map { |env_file_path| prepare_file_path(env_file_path) }
+      else
+        Uffizzi.ui.say("Unsupported type of #{:env_file} option")
       end
-
-      env_files
     end
 
     def prepare_services_env_files(services)
@@ -88,7 +86,7 @@ class ComposeFileService
       service_data.each_pair do |key, value|
         key_sym = key.to_sym
         if key_sym == :env_file
-            env_files_data << parse_env_file(value)
+          env_files_data << parse_env_file(value)
         end
       end
 

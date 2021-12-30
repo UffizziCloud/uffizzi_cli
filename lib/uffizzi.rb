@@ -8,6 +8,7 @@ require_relative 'uffizzi/config_file'
 
 module Uffizzi
   class Error < StandardError; end
+
   class << self
     def ui
       @ui ||= Uffizzi::UI::Shell.new

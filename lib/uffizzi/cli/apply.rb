@@ -15,7 +15,7 @@ module Uffizzi
     def run
       hostname = ConfigFile.read_option(:hostname)
       params = prepare_params
-      response = create_compose_file(hostname, params)
+      create_compose_file(hostname, params)
     end
 
     private
@@ -32,14 +32,14 @@ module Uffizzi
       dependencies = ComposeFileService.parse(compose_file_data, compose_file_dir)
       project = ConfigFile.read_option(:project)
       compose_file_params = {
-          name: File.basename(@options[:file]),
-          payload: compose_file_data
+        name: File.basename(@options[:file]),
+        payload: compose_file_data,
       }
 
       {
         compose_file: compose_file_params,
         project: project,
-        payload: dependencies
+        payload: dependencies,
       }
     end
   end
