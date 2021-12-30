@@ -40,6 +40,13 @@ module ApiClient
     build_response(response)
   end
 
+  def create_deployment(hostname, params)
+    uri = deployments_uri(hostname)
+    response = Uffizzi::HttpClient.make_request(uri, :post, true, params)
+
+    build_response(response)
+  end
+
   def describe_compose_file(hostname, params, project_slug)
     uri = compose_file_uri(hostname, project_slug)
     response = Uffizzi::HttpClient.make_request(uri, :get, true, params)

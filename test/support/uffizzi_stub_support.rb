@@ -36,4 +36,16 @@ module UffizziStubSupport
 
     stub_request(:get, url).to_return(status: 401, body: body.to_json)
   end
+
+  def stub_uffizzi_create_compose(base_url, status, body, headers)
+    url = compose_files_uri(base_url)
+
+    stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
+  end
+
+  def stub_uffizzi_create_deployment(base_url, status, body, headers)
+    url = deployments_uri(base_url)
+
+    stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
+  end
 end
