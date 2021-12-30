@@ -30,7 +30,7 @@ module Uffizzi
     def handle_succeed_response(response)
       projects = response[:body][:projects]
       if projects.empty?
-        puts 'No projects related to this email'
+        Uffizzi.ui.say('No projects related to this email')
         return
       end
       if projects.size == 1
@@ -41,7 +41,7 @@ module Uffizzi
 
     def print_projects(projects)
       projects.each do |project|
-        puts (project[:slug]).to_s
+        Uffizzi.ui.say((project[:slug]).to_s)
       end
     end
   end

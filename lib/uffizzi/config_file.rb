@@ -2,27 +2,19 @@
 
 require 'json'
 require 'fileutils'
-require 'uffizzi'
 
 module Uffizzi
   class ConfigFile
     CONFIG_PATH = "#{Dir.home}/.uffizzi/config.json"
 
     class << self
-      def create(body, cookie, hostname)
-        write(prepare_config_data(body, cookie, hostname))
+      def create(account_id, cookie, hostname)
+        data = prepare_config_data(account_id, cookie, hostname)
+        data.each_pair { |key, value| write_option(key, value) }
       end
 
       def delete
         File.delete(CONFIG_PATH) if exists?
-      end
-
-      def read
-        JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
-      rescue Errno::ENOENT => e
-        Uffizzi.ui.say(e)
-      rescue JSON::ParserError
-        Uffizzi.ui.say('Config file is in incorrect format')
       end
 
       def exists?
@@ -37,14 +29,25 @@ module Uffizzi
         data[option]
       end
 
-      def write_option(key, value)
+      def option_exists?(option)
         data = read
+        return false if data.nil?
+
+        data.key?(option)
+      end
+
+      def write_option(key, value)
+        data = exists? ? read : {}
+        return nil if data.nil?
+
         data[key] = value
         write(data.to_json)
       end
 
       def delete_option(key)
         data = read
+        return nil if data.nil?
+
         new_data = data.except(key)
         write(new_data.to_json)
       end
@@ -54,13 +57,23 @@ module Uffizzi
       end
 
       def list
-        config_data = read
-        config_data.each do |property, value|
+        data = read
+        return nil if data.nil?
+
+        data.each do |property, value|
           Uffizzi.ui.say("#{property} - #{value}")
         end
       end
 
       private
+
+      def read
+        JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
+      rescue Errno::ENOENT => e
+        Uffizzi.ui.say(e)
+      rescue JSON::ParserError
+        Uffizzi.ui.say('Config file is in incorrect format')
+      end
 
       def write(data)
         file = create_file
@@ -69,13 +82,11 @@ module Uffizzi
       end
 
       def prepare_config_data(account_id, cookie, hostname)
-        data = {
+        {
           account_id: account_id,
           hostname: hostname,
           cookie: cookie,
         }
-
-        data.to_json
       end
 
       def create_file

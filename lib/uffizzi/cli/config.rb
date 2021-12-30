@@ -19,7 +19,7 @@ module Uffizzi
       when 'delete'
         handle_delete_command(property)
       else
-        puts "#{command} is not a uffizzi config command"
+        Uffizzi.ui.say("#{command} is not a uffizzi config command")
       end
     end
 
@@ -31,17 +31,17 @@ module Uffizzi
 
     def handle_get_command(property)
       if property.nil?
-        puts 'No property provided'
+        Uffizzi.ui.say('No property provided')
         return
       end
       option = ConfigFile.read_option(property.to_sym)
-      puts option unless option.nil?
+      Uffizzi.ui.say(option) unless option.nil?
     end
 
     def handle_set_command(property, value)
       if property.nil? || value.nil?
-        puts 'No property provided' if property.nil?
-        puts 'No value provided' if value.nil?
+        Uffizzi.ui.say('No property provided') if property.nil?
+        Uffizzi.ui.say('No value provided') if value.nil?
         return
       end
       ConfigFile.write_option(property.to_sym, value)
@@ -49,7 +49,7 @@ module Uffizzi
 
     def handle_delete_command(property)
       if property.nil?
-        puts 'No property provided'
+        Uffizzi.ui.say('No property provided')
         return
       end
       ConfigFile.delete_option(property.to_sym)
