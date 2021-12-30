@@ -29,8 +29,14 @@ module UffizziStubSupport
     stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
   end
 
-  def stub_uffizzi_create_deployment(base_url, status, body, headers)
-    url = deployments_uri(base_url)
+  def stub_uffizzi_create_deployment(base_url, project_id, status, body, headers)
+    url = deployments_uri(base_url, project_id)
+
+    stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
+  end
+
+  def stub_uffizzi_deploy_containers(base_url, project_id, deployment_id, status, body, headers)
+    url = deploy_containers_uri(base_url, project_id, deployment_id)
 
     stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
   end

@@ -1,4 +1,7 @@
 {
+    "project": {
+      "id":1
+    },
     "compose_files":[
       {
         "id":1,

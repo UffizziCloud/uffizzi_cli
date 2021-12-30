@@ -13,13 +13,18 @@ class ApplyTest < Minitest::Test
   def test_apply_success
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 201, body, {})
+    project_id = body[:project][:id]
     body = json_fixture('files/uffizzi/uffizzi_create_deployment_success.json')
-    stubbed_uffizzi_create_deployment = stub_uffizzi_create_deployment(Uffizzi.configuration.hostname, 201, body, {})
+    stubbed_uffizzi_create_deployment = stub_uffizzi_create_deployment(Uffizzi.configuration.hostname, project_id, 201, body, {})
+    deployment_id = body[:deployment][:id]
+    stubbed_uffizzi_deploy_containers = stub_uffizzi_deploy_containers(Uffizzi.configuration.hostname, project_id, deployment_id, 204, {},
+                                                                       {})
 
     @cli.options = { file: 'test/compose_files/test_compose_success.yml' }
     @cli.apply
 
     assert_equal('deployment created', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_deploy_containers)
     assert_requested(stubbed_uffizzi_create_deployment)
     assert_requested(stubbed_uffizzi_create_compose)
   end

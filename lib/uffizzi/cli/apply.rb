@@ -18,7 +18,7 @@ module Uffizzi
       response = create_compose_file(hostname, params)
 
       if response[:code] == Net::HTTPCreated
-        handle_succeed_response(hostname, response)
+        handle_succeed_compose_file_creation_response(hostname, response)
       else
         handle_failed_response(response)
       end
@@ -30,14 +30,29 @@ module Uffizzi
       print_errors(response[:body][:errors])
     end
 
-    def handle_succeed_response(hostname, response)
+    def handle_succeed_compose_file_creation_response(hostname, response)
       template_payload = response[:body][:compose_files].first[:template][:payload]
+      project_id = response[:body][:project][:id]
 
       params = { deployment: template_payload }
 
-      response = create_deployment(hostname, params)
+      response = create_deployment(hostname, project_id, params)
 
       if response[:code] == Net::HTTPCreated
+        handle_succeed_deployment_creation_response(hostname, project_id, response)
+      else
+        handle_failed_response(response)
+      end
+    end
+
+    def handle_succeed_deployment_creation_response(hostname, project_id, response)
+      deployment_id = response[:body][:deployment][:id]
+
+      params = { deployment_id: deployment_id }
+
+      response = deploy_containers(hostname, project_id, deployment_id, params)
+
+      if response[:code] == Net::HTTPNoContent
         Uffizzi.ui.say('deployment created')
       else
         handle_failed_response(response)

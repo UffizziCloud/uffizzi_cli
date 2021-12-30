@@ -33,8 +33,15 @@ module ApiClient
     build_response(response)
   end
 
-  def create_deployment(hostname, params)
-    uri = deployments_uri(hostname)
+  def create_deployment(hostname, project_id, params)
+    uri = deployments_uri(hostname, project_id)
+    response = Uffizzi::HttpClient.make_request(uri, :post, true, params)
+
+    build_response(response)
+  end
+
+  def deploy_containers(hostname, project_id, deployment_id, params)
+    uri = deploy_containers_uri(hostname, project_id, deployment_id)
     response = Uffizzi::HttpClient.make_request(uri, :post, true, params)
 
     build_response(response)
