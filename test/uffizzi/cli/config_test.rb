@@ -22,6 +22,7 @@ class ConfigTest < Minitest::Test
     @config.get('cookie')
 
     assert_equal(Uffizzi::ConfigFile.read_option(:cookie), Uffizzi.ui.last_message)
+    assert_equal(Uffizzi::ConfigFile.read_option(:cookie), result)
   end
 
   def test_get_with_wrong_property

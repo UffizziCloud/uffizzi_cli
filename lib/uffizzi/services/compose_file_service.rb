@@ -11,11 +11,20 @@ class ComposeFileService
 
       env_files = prepare_services_env_files(compose_data['services']).flatten.uniq
       config_files = fetch_configs(compose_data['configs'])
+<<<<<<< HEAD
       prepare_dependencies(env_files, config_files, compose_file_path)
+=======
+
+      {
+        env_files: prepare_env_files_data(env_files, compose_file_path),
+        config_files: prepare_config_files_data(config_files, compose_file_path),
+      }
+>>>>>>> linter fixes
     end
 
     private
 
+<<<<<<< HEAD
     def prepare_dependencies(env_files, config_files, compose_file_path)
       prepare_dependency_files_data(env_files + config_files, compose_file_path)
     end
@@ -27,6 +36,24 @@ class ComposeFileService
           path: dependency_file,
           source: dependency_file,
           content: Base64.encode64(dependency_file_data),
+=======
+    def prepare_env_files_data(env_files, compose_file_path)
+      env_files.map do |env_file|
+        env_file_data = Psych.load(File.read("#{compose_file_path}/#{env_file}"))
+        {
+          env_file_path: env_file,
+          env_file_data: env_file_data,
+        }
+      end
+    end
+
+    def prepare_config_files_data(config_files, compose_file_path)
+      config_files.map do |config_file|
+        config_file_data = Psych.load(File.read("#{compose_file_path}/#{config_file}"))
+        {
+          config_file_path: config_file,
+          config_file_data: config_file_data,
+>>>>>>> linter fixes
         }
       end
     end
@@ -55,10 +82,15 @@ class ComposeFileService
     def parse_env_file(env_file)
       case env_file
       when String
+<<<<<<< HEAD
         Uffizzi.ui.say('env_file contains an empty value') if env_file.nil? || env_file.empty?
         [prepare_file_path(env_file)]
       when Array
         Uffizzi.ui.say('env_file contains an empty value') if env_file.any? { |file| file.nil? || file.empty? }
+=======
+        [prepare_file_path(env_file)]
+      when Array
+>>>>>>> linter fixes
         env_file.map { |env_file_path| prepare_file_path(env_file_path) }
       else
         Uffizzi.ui.say("Unsupported type of #{:env_file} option")
