@@ -118,6 +118,12 @@ Creates deployment based on specified compose file
 
 You need to set project before this command via `uffizzi config set project YOUR_PROJECT_SLUG` command
 
+### apply options ###
+
+Option      | Aliase          | Description
+-------     | -------         | -----------
+`--file`    | `-f`            | Path to your compose file
+
 ## Git workflow for the app:
 
 1. Clone the repository and checkout to `develop` branch
