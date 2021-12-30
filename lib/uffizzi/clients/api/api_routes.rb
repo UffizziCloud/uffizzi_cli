@@ -8,4 +8,8 @@ module ApiRoutes
   def projects_uri(hostname)
     "#{hostname}/api/cli/v1/projects"
   end
+
+  def compose_files_uri(hostname)
+    "#{hostname}/api/cli/v1/compose_files"
+  end
 end

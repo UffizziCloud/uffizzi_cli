@@ -26,6 +26,13 @@ module ApiClient
     build_response(response)
   end
 
+  def create_compose_file(hostname, params)
+    uri = compose_files_uri(hostname)
+    response = Uffizzi::HttpClient.make_request(uri, :post, true, params)
+
+    build_response(response)
+  end
+
   def print_errors(errors)
     Uffizzi.ui.say(errors.keys.reduce([]) { |acc, key| acc.push(errors[key]) })
   end

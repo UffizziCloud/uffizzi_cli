@@ -42,5 +42,12 @@ module Uffizzi
       require_relative 'cli/config'
       Config.new.run(command, property, value)
     end
+
+    desc 'apply', 'apply'
+    method_option :file, required: true, aliases: '-f'
+    def apply
+      require_relative 'cli/apply'
+      Apply.new(options).run
+    end
   end
 end
