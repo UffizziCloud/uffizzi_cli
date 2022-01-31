@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'io/console'
-require 'json'
 require 'uffizzi'
 
 module Uffizzi
@@ -15,20 +14,43 @@ module Uffizzi
     def run
       password = IO::console.getpass('Enter Password: ')
 
-      params = {
+      params = prepare_request_params(password)
+
+      response = create_session(@options[:hostname], params)
+
+      if response[:code] == Net::HTTPCreated
+        handle_succeed_response(response)
+      else
+        handle_failed_response(response)
+      end
+    end
+
+    private
+
+    def prepare_request_params(password)
+      {
         user: {
           email: @options[:user],
           password: password.strip,
         },
       }
+    end
 
-      response = create_session(@options[:hostname], params)
+    def handle_failed_response(response)
+      print_errors(response[:body][:errors])
+    end
 
-      if response[:code] == Net::HTTPCreated
-        Config.write(response[:body], response[:cookie], @options[:hostname])
-      else
-        response[:body][:errors].each { |error| puts error.pop }
+    def handle_succeed_response(response)
+      unless account_valid?(response[:body][:user][:accounts].first)
+        puts 'No account related to this email'
+        return
       end
+      account_id = response[:body][:user][:accounts].first[:id]
+      ConfigFile.create(account_id, response[:headers], @options[:hostname])
+    end
+
+    def account_valid?(account)
+      account[:state] == 'active'
     end
   end
 end

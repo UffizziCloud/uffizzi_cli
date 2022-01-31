@@ -2,17 +2,26 @@
 
 require 'net/http'
 require 'json'
-require 'uffizzi/config'
+require 'uffizzi/config_file'
 
 module Uffizzi
   class HttpClient
     class << self
       def make_request(request_uri, method, require_cookies, params = {})
         uri = URI(request_uri)
-        Net::HTTP.start(uri.host, uri.port) do |http|
+        use_ssl = request_uri.start_with?('https')
+
+        response = Net::HTTP.start(uri.host, uri.port, use_ssl: use_ssl) do |http|
           request = build_request(uri, params, method, require_cookies)
+
           http.request(request)
         end
+
+        if response.instance_of?(Net::HTTPUnauthorized)
+          raise StandardError.new('Not authorized')
+        end
+
+        response
       end
 
       private
@@ -29,11 +38,12 @@ module Uffizzi
                   when :put
                     Net::HTTP::Put.new(uri.path, headers)
         end
-
-        request['set-cookie'] = Config.read_option(:cookie) if require_cookies
-        request.body = params.to_json
-        if Config.exists? && Config.option_exists?(:basic_auth_user) && Config.option_exists?(:basic_auth_password)
-          request.basic_auth(Config.read_option(:basic_auth_user), Config.read_option(:basic_auth_password))
+        if request.instance_of?(Net::HTTP::Post)
+          request.body = params.to_json
+        end
+        request['Cookie'] = ConfigFile.read_option(:cookie) if require_cookies
+        if ConfigFile.exists? && ConfigFile.option_exists?(:basic_auth_user) && ConfigFile.option_exists?(:basic_auth_password)
+          request.basic_auth(ConfigFile.read_option(:basic_auth_user), ConfigFile.read_option(:basic_auth_password))
         end
         request
       end
