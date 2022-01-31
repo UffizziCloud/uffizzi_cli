@@ -1,17 +1,13 @@
-## Contributing uffizzi_cli
+## Contributing to the Uffizzi Command-line Interface
 
-Thanks for your interest we are actively working to define how you can contribute - please follow for updates!
+First, thank you for considering contributing to Uffizzi! You are what drive the open source community.
 
-Uffizzi welcomes contributions from everyone -
+Uffizzi welcomes all contributions from everyone, not just Pull Requests. You can also help by filing detailed bug reports, proposing new features, and sharing Continuous Previews and Uffizzi with your local community.
 
-## Procedures:
+**Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://kcd.im/pull-request)
 
--Fork the project on Github
+If you find a security vulnerability, DO NOT open an issue. Email <info@uffizzi.com> instead.
 
--Make any changes you want to uffizzi_cli, commit them, and push them to your fork
+## Community
 
--Create a pull request against main, and a maintainer will come by and review your inputs. They may ask for some changes or more information, and hopefully your contribution will be merged to the main branch!
-
-## Communication:
-
-If you need any help contributing, several maintainers are on the uffizzi users slack group https://join.slack.com/t/uffizzi/shared_invite/zt-ffr4o3x0-J~0yVT6qgFV~wmGm19Ux9A.  You'll see the channel #cp_manifesto-contributing.
+Please join us on the [Uffizzi Slack](https://join.slack.com/t/uffizzi/shared_invite/zt-ffr4o3x0-J~0yVT6qgFV~wmGm19Ux9A) where we look forward to discussing any feature requests, bugs, and other proposed changes.
