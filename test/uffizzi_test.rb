@@ -8,7 +8,6 @@ require 'io/console'
 require 'factory_bot'
 
 class UffizziTest < Minitest::Test
-
   include FactoryBot::Syntax::Methods
   FactoryBot.find_definitions
 
