@@ -32,7 +32,7 @@ module Uffizzi
 
         request['set-cookie'] = Config.read_option(:cookie) if require_cookies
         request.body = params.to_json
-        if Config.option_exists?(:basic_auth_user) && Config.option_exists?(:basic_auth_password)
+        if Config.exists? && Config.option_exists?(:basic_auth_user) && Config.option_exists?(:basic_auth_password)
           request.basic_auth(Config.read_option(:basic_auth_user), Config.read_option(:basic_auth_password))
         end
         request
