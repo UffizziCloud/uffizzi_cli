@@ -43,11 +43,11 @@ module Uffizzi
       Config.new.run(command, property, value)
     end
 
-    desc 'apply', 'apply'
-    method_option :file, required: true, aliases: '-f'
-    def apply
-      require_relative 'cli/apply'
-      Apply.new(options).run
+    desc 'compose', 'compose'
+    method_option :file, required: false, aliases: '-f'
+    def compose(command)
+      require_relative 'cli/compose'
+      Compose.new(options).run(command)
     end
   end
 end

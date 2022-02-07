@@ -9,6 +9,15 @@ module Uffizzi
           ConfigFile.option_exists?(:cookie) &&
           ConfigFile.option_exists?(:hostname)
       end
+
+      def project_set?
+        project_set = ConfigFile.exists? &&
+          ConfigFile.option_exists?(:project)
+
+        Uffizzi.ui.say('This command needs project to be set in config file') unless project_set
+
+        project_set
+      end
     end
   end
 end

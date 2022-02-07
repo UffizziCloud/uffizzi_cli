@@ -10,21 +10,25 @@ class ComposeFileService
 
       env_files = prepare_services_env_files(compose_data['services']).flatten.uniq
       config_files = fetch_configs(compose_data['configs'])
-
-      {
-        env_files: prepare_env_files_data(env_files, compose_file_path),
-        config_files: prepare_config_files_data(config_files, compose_file_path),
-      }
+      prepare_dependencies(env_files, config_files, compose_file_path)
     end
 
     private
+
+    def prepare_dependencies(env_files, config_files, compose_file_path)
+      prepared_env_files = prepare_env_files_data(env_files, compose_file_path)
+      prepared_config_files = prepare_config_files_data(config_files, compose_file_path)
+
+      prepared_env_files + prepared_config_files
+    end
 
     def prepare_env_files_data(env_files, compose_file_path)
       env_files.map do |env_file|
         env_file_data = Psych.load(File.read("#{compose_file_path}/#{env_file}"))
         {
-          env_file_path: env_file,
-          env_file_data: env_file_data,
+          path: env_file,
+          source: env_file,
+          content: Base64.encode64(env_file_data),
         }
       end
     end
@@ -33,8 +37,9 @@ class ComposeFileService
       config_files.map do |config_file|
         config_file_data = Psych.load(File.read("#{compose_file_path}/#{config_file}"))
         {
-          config_file_path: config_file,
-          config_file_data: config_file_data,
+          path: config_file,
+          source: config_file,
+          content: Base64.encode64(config_file_data),
         }
       end
     end
@@ -48,16 +53,16 @@ class ComposeFileService
       configs_data.each_pair do |config_name, config_data|
         Uffizzi.ui.say("#{config_name} has an empty file") if config_data['file'].empty? || config_data['file'].nil?
 
-        configs << config_data['file']
+        configs << prepare_file_path(config_data['file'])
       end
 
       configs
     end
 
-    def prepare_file_path(env_file_path)
-      Uffizzi.ui.say('env_file contains an empty value') if env_file_path.nil? || env_file_path.empty?
+    def prepare_file_path(file_path)
+      Uffizzi.ui.say('env_file contains an empty value') if file_path.nil? || file_path.empty?
 
-      pathname = Pathname.new(env_file_path)
+      pathname = Pathname.new(file_path)
 
       pathname.cleanpath.to_s.strip.delete_prefix('/')
     end

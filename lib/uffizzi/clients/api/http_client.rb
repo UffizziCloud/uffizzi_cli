@@ -17,6 +17,10 @@ module Uffizzi
           http.request(request)
         end
 
+        if response.instance_of?(Net::HTTPNotFound)
+          raise StandardError.new('Not found')
+        end
+
         if response.instance_of?(Net::HTTPUnauthorized)
           raise StandardError.new('Not authorized')
         end

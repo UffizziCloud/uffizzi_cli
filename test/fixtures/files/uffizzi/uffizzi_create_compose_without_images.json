@@ -1,7 +1,7 @@
 {
   "errors":{
     "path":[
-      "Service hello-world has neither an image nor a build context specified. At least one must be provided."
+      "Invalid compose file"
     ]
   }
 }

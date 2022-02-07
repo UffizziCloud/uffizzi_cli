@@ -14,6 +14,6 @@ configs:
   defaulf_conf:
     file: config_files/config_file.conf
 
-ingress:
+x-uffizzi-ingress:
   service: hello-world
   port: 80

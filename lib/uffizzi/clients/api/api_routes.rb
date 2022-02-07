@@ -9,15 +9,11 @@ module ApiRoutes
     "#{hostname}/api/cli/v1/projects"
   end
 
-  def compose_files_uri(hostname)
-    "#{hostname}/api/cli/v1/compose_files"
+  def compose_file_uri(hostname, project_slug)
+    "#{hostname}/api/cli/v1/projects/#{project_slug}/compose_file"
   end
 
-  def deployments_uri(hostname, project_id)
-    "#{hostname}/api/cli/v1/projects/#{project_id}/deployments"
-  end
-
-  def deploy_containers_uri(hostname, project_id, deployment_id)
-    "#{hostname}/api/cli/v1/projects/#{project_id}/deployments/#{deployment_id}/deploy_containers"
+  def validate_compose_file_uri(hostname, project_slug)
+    "#{compose_files_uri(hostname, project_slug)}/validate"
   end
 end
