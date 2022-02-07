@@ -14,6 +14,15 @@ module Uffizzi
         ConfigFile.exists? &&
           ConfigFile.option_exists?(:project)
       end
+
+      def project_set?
+        project_set = ConfigFile.exists? &&
+          ConfigFile.option_exists?(:project)
+
+        Uffizzi.ui.say('This command needs project to be set in config file') unless project_set
+
+        project_set
+      end
     end
   end
 end
