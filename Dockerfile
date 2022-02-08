@@ -13,3 +13,5 @@ COPY Gemfile* /gem/
 RUN bundle install --jobs 4
 
 COPY . /gem
+
+ENV PATH=/bundle_cache/bin:${PATH}
