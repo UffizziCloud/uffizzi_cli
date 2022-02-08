@@ -31,9 +31,9 @@ module Uffizzi
       Logout.new.run
     end
 
-    desc "project", "project"
-    require_relative "cli/project"
-    subcommand "project", CLI::Project
+    desc 'project', 'project'
+    require_relative 'cli/project'
+    subcommand 'project', CLI::Project
 
     desc 'config', 'config'
     def config(command, property = nil, value = nil)

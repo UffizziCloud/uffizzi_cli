@@ -1,31 +1,31 @@
-# Uffizzi CLI  
+# Uffizzi CLI
 
-A command-line interace (CLI) for [Uffizzi App](https://github.com/UffizziCloud/uffizzi_app) 
+A command-line interace (CLI) for [Uffizzi App](https://github.com/UffizziCloud/uffizzi_app)
 
 ## Uffizzi Overview
 
-Uffizzi is the Full-stack Previews Engine that makes it easy for your team to preview code changes before merging—whether frontend, backend or microserivce. Define your full-stack apps with a familiar syntax based on Docker Compose, and Uffizzi will create on-demand test environments when you open pull requests or build new images. Preview URLs are updated when there’s a new commit, so your team can catch issues early, iterate quickly, and accelerate your release cycles.  
+Uffizzi is the Full-stack Previews Engine that makes it easy for your team to preview code changes before merging—whether frontend, backend or microserivce. Define your full-stack apps with a familiar syntax based on Docker Compose, and Uffizzi will create on-demand test environments when you open pull requests or build new images. Preview URLs are updated when there’s a new commit, so your team can catch issues early, iterate quickly, and accelerate your release cycles.
 
-## Getting started with Uffizzi  
+## Getting started with Uffizzi
 
-The fastest and easiest way to get started with Uffizzi is via the fully hosted version available at https://uffizzi.com, which includes free plans for small teams and qualifying open-source projects.   
+The fastest and easiest way to get started with Uffizzi is via the fully hosted version available at https://uffizzi.com, which includes free plans for small teams and qualifying open-source projects.
 
 Alternatively, you can self-host Uffizzi via the open-source repositories available here on GitHub. The remainder of this README is intended for users interested in self-hosting Uffizzi or for those who are just curious about how Uffizzi works.
 
-## Uffizzi Architecture  
+## Uffizzi Architecture
 
-Uffizzi consists of the following components:  
+Uffizzi consists of the following components:
 
-* [Uffizzi App](https://github.com/UffizziCloud/uffizzi_app) - The primary REST API for creating and managing Previews  
-* [Uffizzi Controller](https://github.com/UffizziCloud/uffizzi_controller) - A smart proxy service that handles requests from Uffizzi App to the Kubernetes API  
-* Uffizzi CLI (this repository) - A command-line interface for Uffizzi App    
-* [Uffizzi Dashboard](https://app.uffizzi.com) - A graphical user interface for Uffizzi App, available as a paid service at https://uffizzi.com  
+- [Uffizzi App](https://github.com/UffizziCloud/uffizzi_app) - The primary REST API for creating and managing Previews
+- [Uffizzi Controller](https://github.com/UffizziCloud/uffizzi_controller) - A smart proxy service that handles requests from Uffizzi App to the Kubernetes API
+- Uffizzi CLI (this repository) - A command-line interface for Uffizzi App
+- [Uffizzi Dashboard](https://app.uffizzi.com) - A graphical user interface for Uffizzi App, available as a paid service at https://uffizzi.com
 
-To host Uffizzi yourself, you will also need the following external dependencies:  
+To host Uffizzi yourself, you will also need the following external dependencies:
 
- * Kubernetes (k8s) cluster  
- * Postgres database  
- * Redis cache 
+- Kubernetes (k8s) cluster
+- Postgres database
+- Redis cache
 
 ## Installation
 
@@ -54,40 +54,81 @@ Run rubocop:
 
 ## Commands
 
-### login ###
+### login
 
 ```
 $ uffizzi login -u your@email.com -h localhost:8080
 ```
+
 Logging you into the app which you set in the hostname option.
 
+### login options
 
-### login options ###
-
-Option      | Aliase          | Description
--------     | -------         | -----------
-`--user`    | `-u`            | Your email for logging in
-`--hostname`| `-h`            | Adress of your app
+| Option       | Aliase | Description               |
+| ------------ | ------ | ------------------------- |
+| `--user`     | `-u`   | Your email for logging in |
+| `--hostname` | `-h`   | Adress of your app        |
 
 If hostname uses basic authentication you can specify options for it by setting `basic_auth_user` and `basic_auth_password` via `config set` command.
 
-### projects ###
+### project
 
 ```
-$ uffizzi projects
+$ uffizzi project
+```
+
+Use this command to configure your projects. This command has 2 subcommands `list` and `compose`.
+
+```
+$ uffizzi project list
 ```
 
 Shows all your projects' slugs
 
 If you have only one project it will be added to your config file automatically, if there's more than one project you need to set up your project manually with the command `uffizzi config set YOUR_PROJECT_SLUG`
 
-### config ###
+### compose
+
+```
+$ uffizzi project compose
+```
+
+That's the subcommand for project command. Use it to configure your compose file. This command has 3 subcommands `add`, `describe` and `remove`.
+
+```
+$ uffizzi project compose add -f path_to_your_compose_file.yml
+```
+
+Creates compose file in uffizzi app for project specified in config file
+
+```
+$ uffizzi project compose describe
+```
+
+Shows you the content of compose file related to your project specified in config file
+
+```
+$ uffizzi project compose remove
+```
+
+Removes compose file related to project specified in config file
+
+You need to set project before use any of these commands via `uffizzi config set project YOUR_PROJECT_SLUG` command
+
+### compose options
+
+| Option   | Aliase | Description               |
+| -------- | ------ | ------------------------- |
+| `--file` | `-f`   | Path to your compose file |
+
+### config
 
 Use this command to configure your cli app. This command has 4 subcommands `list`, `get`, `set`, and `delete`.
 
 ```
 $ uffizzi config list
 ```
+
 Shows all options and their values from the config file.
 
 ```

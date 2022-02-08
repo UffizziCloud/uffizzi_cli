@@ -7,11 +7,10 @@ require 'thor'
 
 module Uffizzi
   class CLI::Project < Thor
-
-    desc "compose", "compose"
+    desc 'compose', 'compose'
     method_option :file, required: false, aliases: '-f'
-    require_relative "project/compose"
-    subcommand "compose", Uffizzi::CLI::Project::Compose
+    require_relative 'project/compose'
+    subcommand 'compose', Uffizzi::CLI::Project::Compose
 
     desc 'list', 'list'
     def list

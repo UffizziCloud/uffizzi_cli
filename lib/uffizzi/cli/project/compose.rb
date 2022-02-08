@@ -8,7 +8,6 @@ require 'thor'
 
 module Uffizzi
   class CLI::Project::Compose < Thor
-
     desc 'add', 'add'
     def add
       Compose.new(options, 'add').run

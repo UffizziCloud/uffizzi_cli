@@ -112,7 +112,7 @@ class ComposeTest < Minitest::Test
       @compose.describe
     end
 
-    assert_equal("Compose file not found", error.message)
+    assert_equal('Compose file not found', error.message)
     assert_requested(stubbed_uffizzi_describe_compose)
   end
 end
