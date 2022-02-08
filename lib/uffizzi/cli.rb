@@ -31,23 +31,15 @@ module Uffizzi
       Logout.new.run
     end
 
-    desc 'projects', 'projects'
-    def projects
-      require_relative 'cli/projects'
-      Projects.new.run
-    end
+    desc "project", "project"
+    method_option :file, required: false, aliases: '-f'
+    require_relative "cli/project"
+    subcommand "project", CLI::Project
 
     desc 'config', 'config'
     def config(command, property = nil, value = nil)
       require_relative 'cli/config'
       Config.new.run(command, property, value)
-    end
-
-    desc 'compose', 'compose'
-    method_option :file, required: false, aliases: '-f'
-    def compose(command)
-      require_relative 'cli/compose'
-      Compose.new(options).run(command)
     end
   end
 end

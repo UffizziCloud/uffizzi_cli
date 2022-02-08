@@ -18,7 +18,7 @@ module Uffizzi
         end
 
         if response.instance_of?(Net::HTTPNotFound)
-          raise StandardError.new('Not found')
+          raise StandardError.new('Compose file not found')
         end
 
         if response.instance_of?(Net::HTTPUnauthorized)

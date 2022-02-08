@@ -5,7 +5,7 @@ require 'uffizzi'
 require 'uffizzi/clients/api/api_client'
 
 module Uffizzi
-  class Config
+  class CLI::Config
     include ApiClient
 
     def run(command, property, value)

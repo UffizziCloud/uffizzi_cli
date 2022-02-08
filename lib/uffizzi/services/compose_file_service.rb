@@ -2,6 +2,7 @@
 
 require 'psych'
 require 'pathname'
+require 'base64'
 
 class ComposeFileService
   class << self
