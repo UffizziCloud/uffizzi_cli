@@ -4,16 +4,16 @@ require 'test_helper'
 
 class ProjectsTest < Minitest::Test
   def setup
-    @cli = Uffizzi::CLI.new
+    @project = Uffizzi::CLI::Project.new
 
     sign_in
   end
 
-  def test_projects_success
+  def test_project_list_success
     body = json_fixture('files/uffizzi/uffizzi_projects_success_two_projects.json')
     stubbed_uffizzi_projects = stub_uffizzi_projects(Uffizzi.configuration.hostname, 200, body, {})
 
-    result = @cli.projects
+    result = @project.list
 
     refute(Uffizzi::ConfigFile.read_option([:project]))
 
@@ -21,23 +21,23 @@ class ProjectsTest < Minitest::Test
     assert_requested(stubbed_uffizzi_projects)
   end
 
-  def test_success_with_one_project
+  def test_project_list_success_with_one_project
     body = json_fixture('files/uffizzi/uffizzi_projects_success_one_project.json')
     stubbed_uffizzi_projects = stub_uffizzi_projects(Uffizzi.configuration.hostname, 200, body, {})
 
-    result = @cli.projects
+    result = @project.list
 
     assert_equal(result, body[:projects])
     assert_equal(body[:projects].first[:slug], Uffizzi::ConfigFile.read_option(:project))
     assert_requested(stubbed_uffizzi_projects)
   end
 
-  def test_projects_unauthorized
+  def test_project_list_unauthorized
     body = json_fixture('files/uffizzi/uffizzi_projects_failed.json')
     stubbed_uffizzi_projects = stub_uffizzi_projects(Uffizzi.configuration.hostname, 401, body, {})
 
     error = assert_raises(StandardError) do
-      @cli.projects
+      @project.list
     end
 
     assert_match(error.message, 'Not authorized')

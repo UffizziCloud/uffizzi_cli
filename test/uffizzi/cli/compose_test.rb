@@ -4,7 +4,7 @@ require 'test_helper'
 
 class ComposeTest < Minitest::Test
   def setup
-    @cli = Uffizzi::CLI.new
+    @compose = Uffizzi::CLI::Project::Compose.new
 
     sign_in
     Uffizzi::ConfigFile.write_option(:project, 'dbp')
@@ -15,8 +15,8 @@ class ComposeTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 201, body, {}, @project_slug)
 
-    @cli.options = { file: 'test/compose_files/test_compose_success.yml' }
-    @cli.compose('add')
+    @compose.options = { file: 'test/compose_files/test_compose_success.yml' }
+    @compose.add
 
     assert_equal('compose file created', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_compose)
@@ -28,8 +28,8 @@ class ComposeTest < Minitest::Test
 
     error_message = body[:errors][:path].last
 
-    @cli.options = { file: 'test/compose_files/test_compose_without_images.yml' }
-    @cli.compose('add')
+    @compose.options = { file: 'test/compose_files/test_compose_without_images.yml' }
+    @compose.add
 
     assert_equal(error_message, Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_compose)
@@ -38,10 +38,10 @@ class ComposeTest < Minitest::Test
   def test_compose_add_with_invalid_path_to_dependency_file
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 201, body, {}, @project_slug)
-    @cli.options = { file: 'test/compose_files/test_compose_with_invalid_env_path.yml' }
+    @compose.options = { file: 'test/compose_files/test_compose_with_invalid_env_path.yml' }
 
     assert_raises(Errno::ENOENT) do
-      @cli.compose('add')
+      @compose.add
     end
 
     refute_requested(stubbed_uffizzi_create_compose)
@@ -50,10 +50,10 @@ class ComposeTest < Minitest::Test
   def test_compose_add_with_empty_path_to_dependency_file
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 201, body, {}, @project_slug)
-    @cli.options = { file: 'test/compose_files/test_compose_with_empty_env_path.yml' }
+    @compose.options = { file: 'test/compose_files/test_compose_with_empty_env_path.yml' }
 
     assert_raises(TypeError) do
-      @cli.compose('add')
+      @compose.add
     end
 
     assert_equal('env_file contains an empty value', Uffizzi.ui.last_message)
@@ -66,8 +66,8 @@ class ComposeTest < Minitest::Test
 
     error_message = body[:errors][:compose_file].last
 
-    @cli.options = { file: 'test/compose_files/test_compose_success.yml' }
-    @cli.compose('add')
+    @compose.options = { file: 'test/compose_files/test_compose_success.yml' }
+    @compose.add
 
     assert_equal(error_message, Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_compose)
@@ -77,7 +77,7 @@ class ComposeTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_remove_compose = stub_uffizzi_remove_compose(Uffizzi.configuration.hostname, 204, body, {}, @project_slug)
 
-    @cli.compose('remove')
+    @compose.remove
 
     assert_equal('compose file deleted', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_remove_compose)
@@ -89,7 +89,7 @@ class ComposeTest < Minitest::Test
 
     error_message = body[:errors][:compose_file].last
 
-    @cli.compose('remove')
+    @compose.remove
 
     assert_equal(error_message, Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_remove_compose)
@@ -99,7 +99,7 @@ class ComposeTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_describe_compose_success.json')
     stubbed_uffizzi_describe_compose = stub_uffizzi_describe_compose(Uffizzi.configuration.hostname, 200, body, {}, @project_slug)
 
-    @cli.compose('describe')
+    @compose.describe
 
     assert_requested(stubbed_uffizzi_describe_compose)
   end
@@ -109,10 +109,10 @@ class ComposeTest < Minitest::Test
     stubbed_uffizzi_describe_compose = stub_uffizzi_describe_compose(Uffizzi.configuration.hostname, 404, body, {}, @project_slug)
 
     error = assert_raises(StandardError) do
-      @cli.compose('describe')
+      @compose.describe
     end
 
-    assert_equal("Not found", error.message)
+    assert_equal("Compose file not found", error.message)
     assert_requested(stubbed_uffizzi_describe_compose)
   end
 end

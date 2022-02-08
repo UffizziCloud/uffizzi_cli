@@ -32,7 +32,6 @@ module Uffizzi
     end
 
     desc "project", "project"
-    method_option :file, required: false, aliases: '-f'
     require_relative "cli/project"
     subcommand "project", CLI::Project
 

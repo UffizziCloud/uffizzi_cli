@@ -9,26 +9,27 @@ module Uffizzi
   class CLI::Project < Thor
 
     desc "compose", "compose"
+    method_option :file, required: false, aliases: '-f'
     require_relative "project/compose"
     subcommand "compose", Uffizzi::CLI::Project::Compose
 
     desc 'list', 'list'
     def list
-      options[:command] = 'list'
-      Project.new(options).run
+      Project.new(options, 'list').run
     end
 
     class Project
       include ApiClient
 
-      def initialize(options)
+      def initialize(options, command)
         @options = options
+        @command = command
       end
 
       def run
         return unless Uffizzi::AuthHelper.signed_in?
 
-        case @options[:command]
+        case @command
         when 'list'
           handle_list_command
         end

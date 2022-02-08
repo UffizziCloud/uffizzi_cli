@@ -11,40 +11,37 @@ module Uffizzi
 
     desc 'add', 'add'
     def add
-      options[:command] = 'add'
-      Compose.new(options).run
+      Compose.new(options, 'add').run
     end
 
     desc 'remove', 'remove'
     def remove
-      options[:command] = 'remove'
-      Compose.new(options).run
+      Compose.new(options, 'remove').run
     end
 
     desc 'describe', 'describe'
     def describe
-      options[:command] = 'describe'
-      Compose.new(options).run
+      Compose.new(options, 'describe').run
     end
 
     desc 'validate', 'validate'
     def validate
-      options[:command] = 'validate'
-      Compose.new(options).run
+      Compose.new(options, 'validate').run
     end
 
     class Compose
       include ApiClient
 
-      def initialize(options)
+      def initialize(options, command)
         @options = options
+        @command = command
       end
 
       def run
         return if !Uffizzi::AuthHelper.signed_in? || !Uffizzi::AuthHelper.project_set?
 
         file_path = @options[:file]
-        case @options[:command]
+        case @command
         when 'add'
           handle_add_command(file_path)
         when 'remove'
