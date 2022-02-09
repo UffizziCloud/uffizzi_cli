@@ -9,7 +9,7 @@ module Uffizzi
     include ApiClient
 
     def run
-      return unless Uffizzi::AuthHelper.signed_in?
+      return 'You are not logged in' unless Uffizzi::AuthHelper.signed_in?
 
       hostname = ConfigFile.read_option(:hostname)
       response = fetch_projects(hostname)

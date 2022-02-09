@@ -2,6 +2,7 @@
 
 require 'io/console'
 require 'uffizzi'
+require 'uffizzi/response_helper'
 
 module Uffizzi
   class CLI::Login
@@ -13,12 +14,10 @@ module Uffizzi
 
     def run
       password = IO::console.getpass('Enter Password: ')
-
       params = prepare_request_params(password)
-
       response = create_session(@options[:hostname], params)
 
-      if response[:code] == Net::HTTPCreated
+      if Uffizzi::ResponseHelper.created?(response)
         handle_succeed_response(response)
       else
         handle_failed_response(response)
@@ -41,11 +40,10 @@ module Uffizzi
     end
 
     def handle_succeed_response(response)
-      unless account_valid?(response[:body][:user][:accounts].first)
-        puts 'No account related to this email'
-        return
-      end
-      account_id = response[:body][:user][:accounts].first[:id]
+      account = response[:body][:user][:accounts].first
+      return puts 'No account related to this email' unless account_valid?(account)
+
+      account_id = account[:id]
       ConfigFile.create(account_id, response[:headers], @options[:hostname])
     end
 

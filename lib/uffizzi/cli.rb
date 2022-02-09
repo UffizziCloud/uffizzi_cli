@@ -17,6 +17,12 @@ module Uffizzi
       Login.new(options).run
     end
 
+    desc 'logout', 'logout'
+    def logout
+      require_relative 'cli/logout'
+      Logout.new.run
+    end
+
     desc 'projects', 'projects'
     def projects
       require_relative 'cli/projects'

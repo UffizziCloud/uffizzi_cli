@@ -12,6 +12,13 @@ module ApiClient
     build_response(response)
   end
 
+  def destroy_session(hostname)
+    uri = session_uri(hostname)
+    response = Uffizzi::HttpClient.make_request(uri, :delete, true)
+
+    build_response(response)
+  end
+
   def fetch_projects(hostname)
     uri = projects_uri(hostname)
     response = Uffizzi::HttpClient.make_request(uri, :get, true)
