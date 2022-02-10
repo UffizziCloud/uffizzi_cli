@@ -6,7 +6,8 @@ module Uffizzi
   class CLI < Thor
     desc 'version', 'show version'
     def version
-      puts Uffizzi::VERSION
+      require_relative 'version'
+      pp Uffizzi::VERSION
     end
 
     desc 'login', 'login'
