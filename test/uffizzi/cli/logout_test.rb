@@ -14,7 +14,12 @@ class LogoutTest < Minitest::Test
     stubbed_uffizzi_logout = stub_uffizzi_logout(host_name, 204, headers)
     assert(Uffizzi::ConfigFile.exists?)
 
+    buffer = StringIO.new
+    $stdout = buffer
+
     @cli.logout
+
+    $stdout = STDOUT
 
     assert_requested(stubbed_uffizzi_logout)
     refute(Uffizzi::ConfigFile.exists?)
@@ -28,7 +33,12 @@ class LogoutTest < Minitest::Test
     host_name = Uffizzi.configuration.hostname
     stubbed_uffizzi_logout = stub_uffizzi_logout(host_name, 204, headers)
 
+    buffer = StringIO.new
+    $stdout = buffer
+
     @cli.logout
+
+    $stdout = STDOUT
 
     assert_not_requested(stubbed_uffizzi_logout)
     refute(Uffizzi::ConfigFile.exists?)

@@ -1,0 +1,19 @@
+uffizzi-logout - log out of a Uffizzi user account
+================================================================
+
+## SYNOPSIS
+
+`uffizzi logout`
+
+## DESCRIPTION
+    The uffizzi logout command logs out of a Uffizzi user account.
+
+    For more information on logout, see:
+    https://docs.uffizzi.com/references/cli
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi
+    help for details.
+
+## EXAMPLES
+   uffizzi logout

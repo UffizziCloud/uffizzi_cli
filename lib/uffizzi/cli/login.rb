@@ -41,10 +41,9 @@ module Uffizzi
 
     def handle_succeed_response(response)
       account = response[:body][:user][:accounts].first
-      return puts 'No account related to this email' unless account_valid?(account)
+      return Uffizzi.ui.say('No account related to this email') unless account_valid?(account)
 
-      account_id = account[:id]
-      ConfigFile.create(account_id, response[:headers], @options[:hostname])
+      ConfigFile.create(account[:id], response[:headers], @options[:hostname])
     end
 
     def account_valid?(account)

@@ -4,12 +4,16 @@ require 'thor'
 
 module Uffizzi
   class CLI < Thor
-    desc 'version', 'show version'
+    require_relative 'cli/common'
+
+    class_option :help, type: :boolean, aliases: '-h'
+
+    desc 'version', 'Show Version'
     def version
       puts Uffizzi::VERSION
     end
 
-    desc 'login', 'login'
+    desc 'login', 'Login into Uffizzi'
     method_option :user, required: true, aliases: '-u'
     method_option :hostname, required: true, aliases: '-h'
     def login
@@ -17,8 +21,10 @@ module Uffizzi
       Login.new(options).run
     end
 
-    desc 'logout', 'logout'
+    desc 'logout', 'Logout from Uffizzi'
     def logout
+      return Cli::Common.show_manual(:logout) if options[:help]
+
       require_relative 'cli/logout'
       Logout.new.run
     end
