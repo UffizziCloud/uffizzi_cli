@@ -7,7 +7,7 @@ module Uffizzi
     desc 'version', 'show version'
     def version
       require_relative 'version'
-      pp Uffizzi::VERSION
+      puts Uffizzi::VERSION
     end
 
     desc 'login', 'login'
