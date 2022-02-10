@@ -17,7 +17,11 @@ module ApiRoutes
     "#{compose_files_uri(hostname, project_slug)}/validate"
   end
 
-  def deployments_uri(hostname)
-    "#{hostname}/api/cli/v1/deployments"
+  def deployments_uri(hostname, project_slug)
+    "#{hostname}/api/cli/v1/projects/#{project_slug}/deployments"
+  end
+
+  def deployment_uri(hostname, project_slug, deployment_id)
+    "#{hostname}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}"
   end
 end

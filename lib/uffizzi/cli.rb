@@ -38,5 +38,11 @@ module Uffizzi
     desc 'config', 'config'
     require_relative 'cli/config'
     subcommand 'config', CLI::Config
+
+    desc 'preview', 'preview'
+    method_option :help, required: false, aliases: '-h'
+    method_option :project, required: false
+    require_relative 'cli/preview'
+    subcommand 'preview', CLI::Preview
   end
 end
