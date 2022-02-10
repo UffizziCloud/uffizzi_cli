@@ -37,7 +37,8 @@ module Uffizzi
       end
 
       def run
-        return if !Uffizzi::AuthHelper.signed_in? || !Uffizzi::AuthHelper.project_set?
+        return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
+        return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
 
         file_path = @options[:file]
         case @command

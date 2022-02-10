@@ -26,7 +26,7 @@ module Uffizzi
       end
 
       def run
-        return unless Uffizzi::AuthHelper.signed_in?
+        return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
 
         case @command
         when 'list'
