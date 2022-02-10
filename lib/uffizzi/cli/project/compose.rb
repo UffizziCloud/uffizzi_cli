@@ -3,6 +3,7 @@
 require 'io/console'
 require 'uffizzi'
 require 'uffizzi/auth_helper'
+require 'uffizzi/response_helper'
 require 'uffizzi/services/compose_file_service'
 require 'thor'
 
@@ -65,7 +66,7 @@ module Uffizzi
         params = prepare_params(file_path)
         response = add_compose_file(hostname, params, project_slug)
 
-        if response[:code] == Net::HTTPCreated
+        if ResponseHelper.created?(response)
           Uffizzi.ui.say('compose file created')
         else
           handle_failed_response(response)
@@ -76,7 +77,8 @@ module Uffizzi
         hostname = ConfigFile.read_option(:hostname)
         project_slug = ConfigFile.read_option(:project)
         response = remove_compose_file(hostname, {}, project_slug)
-        if response[:code] == Net::HTTPNoContent
+
+        if ResponseHelper.no_content?(response)
           Uffizzi.ui.say('compose file deleted')
         else
           handle_failed_response(response)
@@ -88,7 +90,7 @@ module Uffizzi
         project_slug = ConfigFile.read_option(:project)
         response = describe_compose_file(hostname, {}, project_slug)
 
-        if response[:code] == Net::HTTPOK
+        if ResponseHelper.ok?(response)
           compose_file_content = response[:body][:compose_file][:content]
           Uffizzi.ui.say(Base64.decode64(compose_file_content))
         else
@@ -106,7 +108,7 @@ module Uffizzi
         params = prepare_params(file_path)
         response = validate_compose_file(hostname, params, project_slug)
 
-        if response[:code] == Net::HTTPOK
+        if ResponseHelper.ok?(response)
           Uffizzi.ui.say('compose file is valid')
         else
           handle_failed_response(response)

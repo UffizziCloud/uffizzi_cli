@@ -3,6 +3,7 @@
 require 'io/console'
 require 'uffizzi'
 require 'uffizzi/auth_helper'
+require 'uffizzi/response_helper'
 require 'thor'
 
 module Uffizzi
@@ -40,7 +41,7 @@ module Uffizzi
         hostname = ConfigFile.read_option(:hostname)
         response = fetch_projects(hostname)
 
-        if response[:code] == Net::HTTPOK
+        if ResponseHelper.ok?(response)
           handle_succeed_response(response)
         else
           handle_failed_response(response)
