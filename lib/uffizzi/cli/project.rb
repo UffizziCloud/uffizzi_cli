@@ -15,6 +15,10 @@ module Uffizzi
     require_relative 'project/compose'
     subcommand 'compose', Uffizzi::CLI::Project::Compose
 
+    desc 'secrets', 'Secrets Acctions'
+    require_relative 'project/secret'
+    subcommand 'secret', Uffizzi::CLI::Project::Secret
+
     desc 'list', 'list'
     def list
       run('list')
