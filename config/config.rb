@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'ostruct'
+
 module Uffizzi
   def self.configuration
     @configuration ||= OpenStruct.new
