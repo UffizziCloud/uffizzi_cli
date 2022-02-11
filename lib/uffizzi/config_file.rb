@@ -75,8 +75,10 @@ module Uffizzi
         JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
       rescue Errno::ENOENT => e
         Uffizzi.ui.say(e)
+        nil
       rescue JSON::ParserError
         Uffizzi.ui.say('Config file is in incorrect format')
+        nil
       end
 
       def write(data)
