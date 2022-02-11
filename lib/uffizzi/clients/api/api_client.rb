@@ -40,6 +40,20 @@ module ApiClient
     build_response(response)
   end
 
+  def bulk_create_secrets(hostname, project_slug, params)
+    uri = secrets_uri(hostname, project_slug)
+    response = Uffizzi::HttpClient.make_post_request(uri, true, params)
+
+    build_response(response)
+  end
+
+  def delete_secret(hostname, project_slug, params)
+    uri = secrets_uri(hostname, project_slug)
+    response = Uffizzi::HttpClient.make_delete_request(uri, true, params)
+
+    build_response(response)
+  end
+
   def describe_compose_file(hostname, project_slug)
     uri = compose_file_uri(hostname, project_slug)
     response = Uffizzi::HttpClient.make_get_request(uri)
@@ -94,6 +108,10 @@ module ApiClient
     response = Uffizzi::HttpClient.make_post_request(uri, params)
 
     build_response(response)
+  end
+
+  def print_errors(errors)
+    puts errors.keys.reduce([]) { |acc, key| acc.push(errors[key]) }
   end
 
   private

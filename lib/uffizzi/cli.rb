@@ -30,6 +30,12 @@ module Uffizzi
       Logout.new.run
     end
 
+    desc 'projects', 'projects'
+    def projects
+      require_relative 'cli/projects'
+      Projects.new.run
+    end
+
     desc 'project', 'project'
     require_relative 'cli/project'
     subcommand 'project', CLI::Project
