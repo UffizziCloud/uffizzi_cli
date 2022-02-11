@@ -17,30 +17,16 @@ class ComposeFileService
     private
 
     def prepare_dependencies(env_files, config_files, compose_file_path)
-      prepared_env_files = prepare_env_files_data(env_files, compose_file_path)
-      prepared_config_files = prepare_config_files_data(config_files, compose_file_path)
-
-      prepared_env_files + prepared_config_files
+      prepare_dependency_files_data(env_files + config_files, compose_file_path)
     end
 
-    def prepare_env_files_data(env_files, compose_file_path)
-      env_files.map do |env_file|
-        env_file_data = Psych.load(File.read("#{compose_file_path}/#{env_file}"))
+    def prepare_dependency_files_data(dependency_files, compose_file_path)
+      dependency_files.map do |dependency_file|
+        dependency_file_data = Psych.load(File.read("#{compose_file_path}/#{dependency_file}"))
         {
-          path: env_file,
-          source: env_file,
-          content: Base64.encode64(env_file_data),
-        }
-      end
-    end
-
-    def prepare_config_files_data(config_files, compose_file_path)
-      config_files.map do |config_file|
-        config_file_data = Psych.load(File.read("#{compose_file_path}/#{config_file}"))
-        {
-          path: config_file,
-          source: config_file,
-          content: Base64.encode64(config_file_data),
+          path: dependency_file,
+          source: dependency_file,
+          content: Base64.encode64(dependency_file_data),
         }
       end
     end
