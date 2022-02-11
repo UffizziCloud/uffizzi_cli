@@ -30,10 +30,8 @@ module Uffizzi
     end
 
     def handle_get_command(property)
-      if property.nil?
-        Uffizzi.ui.say('No property provided')
-        return
-      end
+      return Uffizzi.ui.say('No property provided') if property.nil?
+
       option = ConfigFile.read_option(property.to_sym)
       Uffizzi.ui.say(option) unless option.nil?
     end
@@ -48,10 +46,8 @@ module Uffizzi
     end
 
     def handle_delete_command(property)
-      if property.nil?
-        Uffizzi.ui.say('No property provided')
-        return
-      end
+      return Uffizzi.ui.say('No property provided') if property.nil?
+
       ConfigFile.delete_option(property.to_sym)
     end
   end

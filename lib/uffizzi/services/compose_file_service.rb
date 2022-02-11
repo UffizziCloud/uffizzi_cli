@@ -7,7 +7,7 @@ require 'base64'
 class ComposeFileService
   class << self
     def parse(compose_content, compose_file_path)
-      compose_data = load_compose_data(compose_content)
+      compose_data = parse_compose_content_to_object(compose_content)
 
       env_files = prepare_services_env_files(compose_data['services']).flatten.uniq
       config_files = fetch_configs(compose_data['configs'])
@@ -61,8 +61,6 @@ class ComposeFileService
     end
 
     def prepare_file_path(file_path)
-      Uffizzi.ui.say('env_file contains an empty value') if file_path.nil? || file_path.empty?
-
       pathname = Pathname.new(file_path)
 
       pathname.cleanpath.to_s.strip.delete_prefix('/')
@@ -71,8 +69,10 @@ class ComposeFileService
     def parse_env_file(env_file)
       case env_file
       when String
+        Uffizzi.ui.say('env_file contains an empty value') if env_file.nil? || env_file.empty?
         [prepare_file_path(env_file)]
       when Array
+        Uffizzi.ui.say('env_file contains an empty value') if env_file.any? { |file| file.nil? || file.empty? }
         env_file.map { |env_file_path| prepare_file_path(env_file_path) }
       else
         Uffizzi.ui.say("Unsupported type of #{:env_file} option")
@@ -99,7 +99,7 @@ class ComposeFileService
       env_files_data
     end
 
-    def load_compose_data(compose_content)
+    def parse_compose_content_to_object(compose_content)
       begin
         compose_data = Psych.safe_load(compose_content)
       rescue Psych::SyntaxError

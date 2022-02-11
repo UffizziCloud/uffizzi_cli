@@ -58,16 +58,19 @@ module Uffizzi
           Uffizzi.ui.say('No projects related to this email')
           return
         end
-        if projects.size == 1
-          ConfigFile.write_option(:project, projects.first[:slug])
-        end
+        set_default_project(projects.first) if projects.size == 1
         print_projects(projects)
       end
 
       def print_projects(projects)
-        projects.each do |project|
-          Uffizzi.ui.say((project[:slug]).to_s)
+        projects_list = projects.reduce('') do |acc, project|
+          "#{acc}#{project[:slug]}\n"
         end
+        Uffizzi.ui.say(projects_list)
+      end
+
+      def set_default_project(project)
+        ConfigFile.write_option(:project, project[:slug])
       end
     end
   end

@@ -22,11 +22,6 @@ module Uffizzi
       def no_content?(response)
         response[:code] == Net::HTTPNoContent
       end
-<<<<<<< HEAD
-    end
-  end
-end
-=======
 
       def ok?(response)
         response[:code] == Net::HTTPOK
@@ -34,4 +29,3 @@ end
     end
   end
 end
->>>>>>> added response_helper

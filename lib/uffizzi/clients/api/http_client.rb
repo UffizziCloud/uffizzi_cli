@@ -3,6 +3,7 @@
 require 'net/http'
 require 'json'
 require 'uffizzi/config_file'
+require 'uffizzi/response_helper'
 
 module Uffizzi
   class HttpClient

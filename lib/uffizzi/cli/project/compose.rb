@@ -57,10 +57,8 @@ module Uffizzi
       private
 
       def handle_add_command(file_path)
-        if file_path.nil?
-          Uffizzi.ui.say('No file provided')
-          return
-        end
+        return Uffizzi.ui.say('No file provided') if file_path.nil?
+
         hostname = ConfigFile.read_option(:hostname)
         project_slug = ConfigFile.read_option(:project)
         params = prepare_params(file_path)
@@ -99,10 +97,8 @@ module Uffizzi
       end
 
       def handle_validate_command(file_path)
-        if file_path.nil?
-          Uffizzi.ui.say('No file provided')
-          return
-        end
+        return Uffizzi.ui.say('No file provided') if file_path.nil?
+
         hostname = ConfigFile.read_option(:hostname)
         project_slug = ConfigFile.read_option(:project)
         params = prepare_params(file_path)
@@ -123,8 +119,7 @@ module Uffizzi
         begin
           compose_file_data = File.read(file_path)
         rescue Errno::ENOENT => e
-          Uffizzi.ui.say(e)
-          return
+          return Uffizzi.ui.say(e)
         end
 
         compose_file_dir = File.dirname(file_path)

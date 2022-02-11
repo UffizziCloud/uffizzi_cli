@@ -13,11 +13,10 @@ class ProjectsTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_projects_success_two_projects.json')
     stubbed_uffizzi_projects = stub_uffizzi_projects(Uffizzi.configuration.hostname, 200, body, {})
 
-    result = @project.list
+    @project.list
 
     refute(Uffizzi::ConfigFile.read_option([:project]))
 
-    assert_equal(result, body[:projects])
     assert_requested(stubbed_uffizzi_projects)
   end
 
@@ -25,9 +24,8 @@ class ProjectsTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_projects_success_one_project.json')
     stubbed_uffizzi_projects = stub_uffizzi_projects(Uffizzi.configuration.hostname, 200, body, {})
 
-    result = @project.list
+    @project.list
 
-    assert_equal(result, body[:projects])
     assert_equal(body[:projects].first[:slug], Uffizzi::ConfigFile.read_option(:project))
     assert_requested(stubbed_uffizzi_projects)
   end

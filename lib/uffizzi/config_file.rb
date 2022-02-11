@@ -60,9 +60,14 @@ module Uffizzi
         data = read
         return nil if data.nil?
 
-        data.each do |property, value|
-          Uffizzi.ui.say("#{property} - #{value}")
+        content = data.reduce('') do |acc, pair|
+          property, value = pair
+          "#{acc}#{property} - #{value}\n"
         end
+
+        Uffizzi.ui.say(content)
+
+        data
       end
 
       private
@@ -71,8 +76,10 @@ module Uffizzi
         JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
       rescue Errno::ENOENT => e
         Uffizzi.ui.say(e)
+        nil
       rescue JSON::ParserError
         Uffizzi.ui.say('Config file is in incorrect format')
+        nil
       end
 
       def write(data)
