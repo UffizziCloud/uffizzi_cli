@@ -9,14 +9,14 @@ require 'thor'
 
 module Uffizzi
   class CLI::Project::Compose < Thor
-    desc 'add', 'add'
-    def add
-      Compose.new(options, 'add').run
+    desc 'set', 'set'
+    def set
+      Compose.new(options, 'set').run
     end
 
-    desc 'remove', 'remove'
-    def remove
-      Compose.new(options, 'remove').run
+    desc 'unset', 'unset'
+    def unset
+      Compose.new(options, 'unset').run
     end
 
     desc 'describe', 'describe'
@@ -43,10 +43,10 @@ module Uffizzi
 
         file_path = @options[:file]
         case @command
-        when 'add'
-          handle_add_command(file_path)
-        when 'remove'
-          handle_remove_command
+        when 'set'
+          handle_set_command(file_path)
+        when 'unset'
+          handle_unset_command
         when 'describe'
           handle_describe_command
         when 'validate'
@@ -56,13 +56,13 @@ module Uffizzi
 
       private
 
-      def handle_add_command(file_path)
+      def handle_set_command(file_path)
         return Uffizzi.ui.say('No file provided') if file_path.nil?
 
         hostname = ConfigFile.read_option(:hostname)
         project_slug = ConfigFile.read_option(:project)
         params = prepare_params(file_path)
-        response = add_compose_file(hostname, params, project_slug)
+        response = set_compose_file(hostname, params, project_slug)
 
         if ResponseHelper.created?(response)
           Uffizzi.ui.say('compose file created')
@@ -71,10 +71,10 @@ module Uffizzi
         end
       end
 
-      def handle_remove_command
+      def handle_unset_command
         hostname = ConfigFile.read_option(:hostname)
         project_slug = ConfigFile.read_option(:project)
-        response = remove_compose_file(hostname, {}, project_slug)
+        response = unset_compose_file(hostname, {}, project_slug)
 
         if ResponseHelper.no_content?(response)
           Uffizzi.ui.say('compose file deleted')

@@ -11,7 +11,7 @@ module UffizziComposeStubSupport
     stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
   end
 
-  def stub_uffizzi_remove_compose(base_url, status, body, headers, project_slug)
+  def stub_uffizzi_unset_compose(base_url, status, body, headers, project_slug)
     url = compose_file_uri(base_url, project_slug)
 
     stub_request(:delete, url).to_return(status: status, body: body.to_json, headers: headers)

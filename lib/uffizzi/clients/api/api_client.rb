@@ -26,14 +26,14 @@ module ApiClient
     build_response(response)
   end
 
-  def add_compose_file(hostname, params, project_slug)
+  def set_compose_file(hostname, params, project_slug)
     uri = compose_file_uri(hostname, project_slug)
     response = Uffizzi::HttpClient.make_request(uri, :post, true, params)
 
     build_response(response)
   end
 
-  def remove_compose_file(hostname, params, project_slug)
+  def unset_compose_file(hostname, params, project_slug)
     uri = compose_file_uri(hostname, project_slug)
     response = Uffizzi::HttpClient.make_request(uri, :delete, true, params)
 

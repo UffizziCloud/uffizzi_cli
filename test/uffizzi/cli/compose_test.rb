@@ -11,88 +11,88 @@ class ComposeTest < Minitest::Test
     @project_slug = Uffizzi::ConfigFile.read_option(:project)
   end
 
-  def test_compose_add_success
+  def test_compose_set_success
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 201, body, {}, @project_slug)
 
     @compose.options = { file: 'test/compose_files/test_compose_success.yml' }
-    @compose.add
+    @compose.set
 
     assert_equal('compose file created', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_compose)
   end
 
-  def test_compose_add_with_invalid_compose
+  def test_compose_set_with_invalid_compose
     body = json_fixture('files/uffizzi/uffizzi_create_compose_without_images.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 422, body, {}, @project_slug)
 
     error_message = body[:errors][:path].last
 
     @compose.options = { file: 'test/compose_files/test_compose_without_images.yml' }
-    @compose.add
+    @compose.set
 
     assert_equal(error_message, Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_compose)
   end
 
-  def test_compose_add_with_invalid_path_to_dependency_file
+  def test_compose_set_with_invalid_path_to_dependency_file
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 201, body, {}, @project_slug)
     @compose.options = { file: 'test/compose_files/test_compose_with_invalid_env_path.yml' }
 
     assert_raises(Errno::ENOENT) do
-      @compose.add
+      @compose.set
     end
 
     refute_requested(stubbed_uffizzi_create_compose)
   end
 
-  def test_compose_add_with_empty_path_to_dependency_file
+  def test_compose_set_with_empty_path_to_dependency_file
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 201, body, {}, @project_slug)
     @compose.options = { file: 'test/compose_files/test_compose_with_empty_env_path.yml' }
 
     assert_raises(TypeError) do
-      @compose.add
+      @compose.set
     end
 
     assert_equal('env_file contains an empty value', Uffizzi.ui.last_message)
     refute_requested(stubbed_uffizzi_create_compose)
   end
 
-  def test_compose_add_with_already_existed_compose_file
+  def test_compose_set_with_already_existed_compose_file
     body = json_fixture('files/uffizzi/uffizzi_create_compose_with_already_existed_compose_file.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 422, body, {}, @project_slug)
 
     error_message = body[:errors][:compose_file].last
 
     @compose.options = { file: 'test/compose_files/test_compose_success.yml' }
-    @compose.add
+    @compose.set
 
     assert_equal(error_message, Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_compose)
   end
 
-  def test_compose_remove_success
+  def test_compose_unset_success
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
-    stubbed_uffizzi_remove_compose = stub_uffizzi_remove_compose(Uffizzi.configuration.hostname, 204, body, {}, @project_slug)
+    stubbed_uffizzi_unset_compose = stub_uffizzi_unset_compose(Uffizzi.configuration.hostname, 204, body, {}, @project_slug)
 
-    @compose.remove
+    @compose.unset
 
     assert_equal('compose file deleted', Uffizzi.ui.last_message)
-    assert_requested(stubbed_uffizzi_remove_compose)
+    assert_requested(stubbed_uffizzi_unset_compose)
   end
 
-  def test_compose_remove_with_not_existed_compose_file
+  def test_compose_unset_with_not_existed_compose_file
     body = json_fixture('files/uffizzi/uffizzi_compose_with_not_existed_compose_file.json')
-    stubbed_uffizzi_remove_compose = stub_uffizzi_remove_compose(Uffizzi.configuration.hostname, 422, body, {}, @project_slug)
+    stubbed_uffizzi_unset_compose = stub_uffizzi_unset_compose(Uffizzi.configuration.hostname, 422, body, {}, @project_slug)
 
     error_message = body[:errors][:compose_file].last
 
-    @compose.remove
+    @compose.unset
 
     assert_equal(error_message, Uffizzi.ui.last_message)
-    assert_requested(stubbed_uffizzi_remove_compose)
+    assert_requested(stubbed_uffizzi_unset_compose)
   end
 
   def test_compose_describe_success
