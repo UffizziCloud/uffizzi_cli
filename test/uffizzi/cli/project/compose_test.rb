@@ -108,11 +108,11 @@ class ComposeTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_compose_with_not_existed_compose_file.json')
     stubbed_uffizzi_describe_compose = stub_uffizzi_describe_compose(Uffizzi.configuration.hostname, 404, body, {}, @project_slug)
 
-    error = assert_raises(StandardError) do
-      @compose.describe
-    end
+    @compose.describe
 
-    assert_equal('Compose file not found', error.message)
+    error_message = body[:errors][:compose_file].last
+
+    assert_equal(error_message, Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_describe_compose)
   end
 end

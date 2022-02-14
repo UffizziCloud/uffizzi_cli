@@ -68,7 +68,7 @@ module ApiClient
 
   def build_response(response)
     {
-      body: response.instance_of?(Net::HTTPNotFound) ? nil : response_body(response),
+      body: response_body(response),
       headers: response_cookie(response),
       code: response.class,
     }
