@@ -10,7 +10,7 @@ module ApiRoutes
   end
 
   def secrets_uri(hostname, project_slug)
-    "#{hostname}/api/cli/v1/projects#{project_slug}/secrets"
+    "#{hostname}/api/cli/v1/projects/#{project_slug}/secrets"
   end
 
   def session_uri(hostname)

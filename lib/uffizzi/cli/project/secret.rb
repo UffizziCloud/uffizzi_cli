@@ -4,7 +4,9 @@ require 'uffizzi'
 require 'thor'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
+require 'uffizzi/shell'
 require 'io/console'
+require 'byebug'
 module Uffizzi
   class CLI::Project::Secret < Thor
     desc 'list', 'List Secrets'
@@ -13,11 +15,13 @@ module Uffizzi
     end
 
     desc 'create', 'Create secrets'
+    argument :secret_name, requred: true
     def create
       Secret.new('create').run
     end
 
     desc 'delete', 'Delete a secret'
+    argument :id, requred: true
     def delete
       Secret.new('delete').run
     end
@@ -47,13 +51,14 @@ module Uffizzi
       def handle_list_command
         return Uffizzi.ui.say('You are not logged in') unless AuthHelper.signed_in?
 
-        response = fetch_secrets(@hostname, @project_slug, params)
+        response = fetch_secrets(@hostname, @project_slug)
         return Uffizzi.ui.say(response[:body]) if ResponseHelper.ok?(response)
 
         handle_failed_response(response)
       end
 
       def handle_create_command
+        byebug
         bulk_create_secrets(@hostname, @project_slug, params)
       end
 
