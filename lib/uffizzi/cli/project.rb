@@ -8,6 +8,8 @@ require 'thor'
 
 module Uffizzi
   class CLI::Project < Thor
+    include ApiClient
+
     desc 'compose', 'compose'
     method_option :file, required: false, aliases: '-f'
     require_relative 'project/compose'
@@ -15,63 +17,54 @@ module Uffizzi
 
     desc 'list', 'list'
     def list
-      Project.new(options, 'list').run
+      run(options, 'list')
     end
 
-    class Project
-      include ApiClient
+  private
 
-      def initialize(options, command)
-        @options = options
-        @command = command
+    def run(options, command)
+      return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
+
+      case command
+      when 'list'
+        handle_list_command
       end
+    end
 
-      def run
-        return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
+    def handle_list_command
+      hostname = ConfigFile.read_option(:hostname)
+      response = fetch_projects(hostname)
 
-        case @command
-        when 'list'
-          handle_list_command
-        end
+      if ResponseHelper.ok?(response)
+        handle_succeed_response(response)
+      else
+        handle_failed_response(response)
       end
+    end
 
-      private
+    def handle_failed_response(response)
+      print_errors(response[:body][:errors])
+    end
 
-      def handle_list_command
-        hostname = ConfigFile.read_option(:hostname)
-        response = fetch_projects(hostname)
-
-        if ResponseHelper.ok?(response)
-          handle_succeed_response(response)
-        else
-          handle_failed_response(response)
-        end
+    def handle_succeed_response(response)
+      projects = response[:body][:projects]
+      if projects.empty?
+        Uffizzi.ui.say('No projects related to this email')
+        return
       end
+      set_default_project(projects.first) if projects.size == 1
+      print_projects(projects)
+    end
 
-      def handle_failed_response(response)
-        print_errors(response[:body][:errors])
+    def print_projects(projects)
+      projects_list = projects.reduce('') do |acc, project|
+        "#{acc}#{project[:slug]}\n"
       end
+      Uffizzi.ui.say(projects_list)
+    end
 
-      def handle_succeed_response(response)
-        projects = response[:body][:projects]
-        if projects.empty?
-          Uffizzi.ui.say('No projects related to this email')
-          return
-        end
-        set_default_project(projects.first) if projects.size == 1
-        print_projects(projects)
-      end
-
-      def print_projects(projects)
-        projects_list = projects.reduce('') do |acc, project|
-          "#{acc}#{project[:slug]}\n"
-        end
-        Uffizzi.ui.say(projects_list)
-      end
-
-      def set_default_project(project)
-        ConfigFile.write_option(:project, project[:slug])
-      end
+    def set_default_project(project)
+      ConfigFile.write_option(:project, project[:slug])
     end
   end
 end
