@@ -47,9 +47,9 @@ module ApiClient
     build_response(response)
   end
 
-  def delete_secret(hostname, project_slug, params)
-    uri = secrets_uri(hostname, project_slug)
-    response = Uffizzi::HttpClient.make_delete_request(uri, true, params)
+  def delete_secret(hostname, project_slug, id)
+    uri = secret_uri(hostname, project_slug, id)
+    response = Uffizzi::HttpClient.make_delete_request(uri, true)
 
     build_response(response)
   end

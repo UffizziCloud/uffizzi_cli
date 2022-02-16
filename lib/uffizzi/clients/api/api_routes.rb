@@ -1,12 +1,22 @@
 # frozen_string_literal: true
 
+require 'cgi'
+
 module ApiRoutes
   def compose_file_uri(hostname, project_slug)
     "#{hostname}/api/cli/v1/projects/#{project_slug}/compose_file"
+
+  def session_uri(hostname)
+    "#{hostname}/api/cli/v1/session"
   end
 
   def projects_uri(hostname)
     "#{hostname}/api/cli/v1/projects"
+  end
+
+  def secret_uri(hostname, project_slug, id)
+    path_id = CGI.escape(id)
+    "#{hostname}/api/cli/v1/projects/#{project_slug}/secrets/#{path_id}"
   end
 
   def secrets_uri(hostname, project_slug)

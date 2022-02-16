@@ -9,66 +9,41 @@ require 'io/console'
 require 'byebug'
 module Uffizzi
   class CLI::Project::Secret < Thor
+    include ApiClient
+
     desc 'list', 'List Secrets'
     def list
-      Secret.new('list').run
+      return Uffizzi.ui.say('You are not logged in') unless AuthHelper.signed_in?
+
+      project_slug = ConfigFile.read_option(:project)
+      return Uffizzi.ui.say('Please use the --project option to specify the project name') if project_slug.nil?
+
+      hostname = ConfigFile.read_option(:hostname)
+      project_slug = ConfigFile.read_option(:project)
+      response = fetch_secrets(hostname, project_slug)
+      return Uffizzi.ui.say(response[:body]) if ResponseHelper.ok?(response)
+
+      handle_failed_response(response)
     end
 
     desc 'create', 'Create secrets'
-    argument :secret_name, requred: true
-    def create
-      Secret.new('create').run
+    def create(secret_name)
+      bulk_create_secrets(@hostname, @project_slug, params)
     end
 
     desc 'delete', 'Delete a secret'
-    argument :id, requred: true
-    def delete
-      Secret.new('delete').run
+    def delete(id)
+      project_slug = ConfigFile.read_option(:project)
+      return Uffizzi.ui.say('Please use the --project option to specify the project name') if project_slug.nil?
+
+      hostname = ConfigFile.read_option(:hostname)
+      delete_secret(hostname, project_slug, id)
     end
 
-    class Secret
-      include ApiClient
+    private
 
-      def initialize(command)
-        @command = command
-        @hostname = ConfigFile.read_option(:hostname)
-        @project_slug = ConfigFile.read_option(:project)
-      end
-
-      def run
-        return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-
-        case @command
-        when 'list'
-          handle_list_command
-        when 'create'
-          handle_create_command
-        when 'delete'
-          handle_delete_command
-        end
-      end
-
-      def handle_list_command
-        return Uffizzi.ui.say('You are not logged in') unless AuthHelper.signed_in?
-
-        response = fetch_secrets(@hostname, @project_slug)
-        return Uffizzi.ui.say(response[:body]) if ResponseHelper.ok?(response)
-
-        handle_failed_response(response)
-      end
-
-      def handle_create_command
-        byebug
-        bulk_create_secrets(@hostname, @project_slug, params)
-      end
-
-      def handle_delete_command
-        delete_secret(@hostname, @project_slug, params)
-      end
-
-      def handle_failed_response(response)
-        print_errors(response[:body][:errors])
-      end
+    def handle_failed_response(response)
+      print_errors(response[:body][:errors])
     end
   end
 end
