@@ -1,0 +1,38 @@
+{
+  "compose_file": {
+    "id": 28,
+    "source": "/gem/test/compose_files/test_compose_success.yml",
+    "repository_id": null,
+    "branch": null,
+    "path": "/gem/test/compose_files/test_compose_success.yml",
+    "auto_deploy": "disabled",
+    "added_by_id": 1,
+    "project_id": 1,
+    "created_at": "Mon, 07 Feb 2022 11:15:08.639681000 UTC +00:00",
+    "updated_at": "Mon, 07 Feb 2022 11:24:38.518528000 UTC +00:00",
+    "state": "invalid_file",
+    "payload": {
+      "errors": {
+        "path": [
+          "Service ingress has not defined"
+        ]
+      },
+      "dependencies": [
+        {
+          "path": "local.env"
+        },
+        {
+          "path": "env_files/env_file.env"
+        },
+        {
+          "path": "vote.conf"
+        },
+        {
+          "path": "config_files/config_file.conf"
+        }
+      ]
+    },
+    "content": "c2VydmljZXM6CiAgaGVsbG8td29ybGQ6CiAgICBpbWFnZTogbmdpbngKICAg\nIGVudl9maWxlOgogICAgICAtIGxvY2FsLmVudgogICAgICAtIC4vZW52X2Zp\nbGVzL2Vudl9maWxlLmVudgogICAgY29uZmlnczoKICAgICAgLSBzb3VyY2U6\nIHZvdGVfY29uZgogICAgICAgIHRhcmdldDogL2V0Yy9uZ2lueHoKCmNvbmZp\nZ3M6CiAgdm90ZV9jb25mOgogICAgZmlsZTogLi92b3RlLmNvbmYKICBkZWZh\ndWxmX2NvbmY6CiAgICBmaWxlOiBjb25maWdfZmlsZXMvY29uZmlnX2ZpbGUu\nY29uZgoKeC11ZmZpenppLWluZ3Jlc3M6CiAgc2VydmljZTogaGVsbG8td29y\nbGQKICBwb3J0OiA4MAo=\n",
+    "kind": "main"
+  }
+}

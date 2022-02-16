@@ -26,11 +26,6 @@ module Uffizzi
       run(options, 'describe')
     end
 
-    desc 'validate', 'validate'
-    def validate
-      run(options, 'validate')
-    end
-
     private
 
     def run(options, command)
@@ -81,25 +76,14 @@ module Uffizzi
       hostname = ConfigFile.read_option(:hostname)
       project_slug = ConfigFile.read_option(:project)
       response = describe_compose_file(hostname, {}, project_slug)
+      compose_file = response[:body][:compose_file]
 
       if ResponseHelper.ok?(response)
-        compose_file_content = response[:body][:compose_file][:content]
-        Uffizzi.ui.say(Base64.decode64(compose_file_content))
-      else
-        handle_failed_response(response)
-      end
-    end
-
-    def handle_validate_command(file_path)
-      return Uffizzi.ui.say('No file provided') if file_path.nil?
-
-      hostname = ConfigFile.read_option(:hostname)
-      project_slug = ConfigFile.read_option(:project)
-      params = prepare_params(file_path)
-      response = validate_compose_file(hostname, params, project_slug)
-
-      if ResponseHelper.ok?(response)
-        Uffizzi.ui.say('compose file is valid')
+        if compose_file_valid?(compose_file)
+          Uffizzi.ui.say(Base64.decode64(compose_file[:content]))
+        else
+          print_errors(compose_file[:payload][:errors])
+        end
       else
         handle_failed_response(response)
       end
@@ -107,6 +91,10 @@ module Uffizzi
 
     def handle_failed_response(response)
       print_errors(response[:body][:errors])
+    end
+
+    def compose_file_valid?(compose_file)
+      compose_file[:state] == "valid_file"
     end
 
     def prepare_params(file_path)

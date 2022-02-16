@@ -95,24 +95,24 @@ class ComposeTest < Minitest::Test
     assert_requested(stubbed_uffizzi_unset_compose)
   end
 
-  def test_compose_describe_success
-    body = json_fixture('files/uffizzi/uffizzi_describe_compose_success.json')
-    stubbed_uffizzi_describe_compose = stub_uffizzi_describe_compose(Uffizzi.configuration.hostname, 200, body, {}, @project_slug)
+  def test_compose_describe_valid_file
+    body = json_fixture('files/uffizzi/uffizzi_describe_compose_valid_file.json')
+    stubbed_uffizzi_unset_compose = stub_uffizzi_describe_compose(Uffizzi.configuration.hostname, 200, body, {}, @project_slug)
 
     @compose.describe
 
-    assert_requested(stubbed_uffizzi_describe_compose)
+    assert_requested(stubbed_uffizzi_unset_compose)
   end
 
-  def test_compose_describe_with_not_existed_compose_file
-    body = json_fixture('files/uffizzi/uffizzi_compose_with_not_existed_compose_file.json')
-    stubbed_uffizzi_describe_compose = stub_uffizzi_describe_compose(Uffizzi.configuration.hostname, 404, body, {}, @project_slug)
+  def test_compose_describe_invalid_file
+    body = json_fixture('files/uffizzi/uffizzi_describe_compose_invalid_file.json')
+    stubbed_uffizzi_unset_compose = stub_uffizzi_describe_compose(Uffizzi.configuration.hostname, 200, body, {}, @project_slug)
+
+    error_message = body[:compose_file][:payload][:errors][:path].last
 
     @compose.describe
 
-    error_message = body[:errors][:compose_file].last
-
     assert_equal(error_message, Uffizzi.ui.last_message)
-    assert_requested(stubbed_uffizzi_describe_compose)
+    assert_requested(stubbed_uffizzi_unset_compose)
   end
 end
