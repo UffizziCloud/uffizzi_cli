@@ -22,9 +22,8 @@ module Uffizzi
     end
 
     desc 'logout', 'Logout from Uffizzi'
-    argument :help, type: :string, required: false
-    def logout
-      return Cli::Common.show_manual(:logout) if has_help_option?(options)
+    def logout(help = nil)
+      return Cli::Common.show_manual(:logout) if help || options[:help]
 
       require_relative 'cli/logout'
       Logout.new.run
@@ -40,12 +39,6 @@ module Uffizzi
     def config(command, property = nil, value = nil)
       require_relative 'cli/config'
       Config.new.run(command, property, value)
-    end
-
-    private
-
-    def has_help_option?(options)
-      options[:help] || ARGV.last == 'help'
     end
   end
 end
