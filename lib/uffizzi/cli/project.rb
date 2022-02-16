@@ -17,12 +17,12 @@ module Uffizzi
 
     desc 'list', 'list'
     def list
-      run(options, 'list')
+      run('list')
     end
 
-  private
+    private
 
-    def run(options, command)
+    def run(command)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
 
       case command

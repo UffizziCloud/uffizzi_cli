@@ -94,7 +94,7 @@ module Uffizzi
     end
 
     def compose_file_valid?(compose_file)
-      compose_file[:state] == "valid_file"
+      compose_file[:state] == 'valid_file'
     end
 
     def prepare_params(file_path)
