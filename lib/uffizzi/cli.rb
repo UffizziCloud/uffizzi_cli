@@ -6,10 +6,9 @@ require 'uffizzi'
 module Uffizzi
   class CLI < Thor
     require_relative 'cli/common'
+    class_option :help, type: :boolean, aliases: ['-h', 'help']
 
-    class_option :help, type: :boolean, aliases: HELP_MAPPINGS
-
-    desc 'version', 'Show Version'
+    desc 'version', 'show version'
     def version
       require_relative 'version'
       Uffizzi.ui.say(Uffizzi::VERSION)
@@ -17,7 +16,7 @@ module Uffizzi
 
     desc 'login', 'Login into Uffizzi'
     method_option :user, required: true, aliases: '-u'
-    method_option :hostname, required: true, aliases: '-h'
+    method_option :hostname, required: true
     def login
       require_relative 'cli/login'
       Login.new(options).run
@@ -40,7 +39,6 @@ module Uffizzi
     subcommand 'config', CLI::Config
 
     desc 'preview', 'preview'
-    method_option :help, required: false, aliases: '-h'
     method_option :project, required: false
     require_relative 'cli/preview'
     subcommand 'preview', CLI::Preview
