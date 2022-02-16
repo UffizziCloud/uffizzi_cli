@@ -6,8 +6,7 @@ module Uffizzi
   class CLI < Thor
     require_relative 'cli/common'
 
-    class_option :help, type: :boolean, aliases: ['-h', 'help']
-    argument :help, type: :string, required: false
+    class_option :help, type: :boolean, aliases: HELP_MAPPINGS
 
     desc 'version', 'Show Version'
     def version
@@ -23,6 +22,7 @@ module Uffizzi
     end
 
     desc 'logout', 'Logout from Uffizzi'
+    argument :help, type: :string, required: false
     def logout
       return Cli::Common.show_manual(:logout) if has_help_option?(options)
 
