@@ -57,7 +57,7 @@ Run rubocop:
 ### login
 
 ```
-$ uffizzi login -u your@email.com -h localhost:8080
+$ uffizzi login -u your@email.com --hostname localhost:8080
 ```
 
 Logging you into the app which you set in the hostname option.
@@ -67,7 +67,7 @@ Logging you into the app which you set in the hostname option.
 | Option       | Aliase | Description               |
 | ------------ | ------ | ------------------------- |
 | `--user`     | `-u`   | Your email for logging in |
-| `--hostname` | `-h`   | Adress of your app        |
+| `--hostname` |        | Adress of your app        |
 
 If hostname uses basic authentication you can specify options for it by setting `basic_auth_user` and `basic_auth_password` via `config set` command.
 
@@ -93,22 +93,22 @@ If you have only one project it will be added to your config file automatically,
 $ uffizzi project compose
 ```
 
-That's the subcommand for project command. Use it to configure your compose file. This command has 3 subcommands `add`, `describe` and `remove`.
+That's the subcommand for project command. Use it to configure your compose file. This command has 3 subcommands `set`, `describe` and `unset`.
 
 ```
-$ uffizzi project compose add -f path_to_your_compose_file.yml
+$ uffizzi project compose set -f path_to_your_compose_file.yml
 ```
 
-Creates compose file in uffizzi app for project specified in config file
+Creates a new or updates existed compose file in uffizzi app for project specified in config file
 
 ```
 $ uffizzi project compose describe
 ```
 
-Shows you the content of compose file related to your project specified in config file
+Shows the content of compose file related to project specified in config file if it's valid or validation errors if it's not
 
 ```
-$ uffizzi project compose remove
+$ uffizzi project compose unset
 ```
 
 Removes compose file related to project specified in config file
