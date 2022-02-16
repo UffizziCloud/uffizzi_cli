@@ -5,10 +5,32 @@ require 'uffizzi'
 require 'uffizzi/clients/api/api_client'
 
 module Uffizzi
-  class CLI::Config
+  class CLI::Config < Thor
     include ApiClient
 
-    def run(command, property, value)
+    desc 'list', 'list'
+    def list
+      run('list')
+    end
+
+    desc 'get', 'get'
+    def get(property)
+      run('get', property)
+    end
+
+    desc 'set', 'set'
+    def set(property, value)
+      run('set', property, value)
+    end
+
+    desc 'delete', 'delete'
+    def delete(property)
+      run('delete', property)
+    end
+
+    private
+
+    def run(command, property = nil, value = nil)
       case command
       when 'list'
         handle_list_command
@@ -18,12 +40,8 @@ module Uffizzi
         handle_set_command(property, value)
       when 'delete'
         handle_delete_command(property)
-      else
-        Uffizzi.ui.say("#{command} is not a uffizzi config command")
       end
     end
-
-    private
 
     def handle_list_command
       ConfigFile.list

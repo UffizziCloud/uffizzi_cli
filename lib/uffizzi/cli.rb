@@ -36,9 +36,7 @@ module Uffizzi
     subcommand 'project', CLI::Project
 
     desc 'config', 'config'
-    def config(command, property = nil, value = nil)
-      require_relative 'cli/config'
-      Config.new.run(command, property, value)
-    end
+    require_relative 'cli/config'
+    subcommand 'config', CLI::Config
   end
 end
