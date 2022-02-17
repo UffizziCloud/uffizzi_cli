@@ -48,4 +48,21 @@ module UffizziStubSupport
 
     stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
   end
+
+  def stub_uffizzi_project_secret_list(base_url, status, body, headers, project_slug)
+    url = secrets_uri(base_url, project_slug)
+
+    stub_request(:get, url).to_return(status: status, body: body.to_json, headers: headers)
+  end
+
+  def stub_uffizzi_project_secret_create(base_url, status, body, headers, project_slug)
+    url = secrets_uri(base_url, project_slug) + '/bulk_create'
+    stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
+  end
+
+  def stub_uffizzi_project_secret_delete(base_url, status, body, headers, project_slug, secret_id)
+    url = secret_uri(base_url, project_slug, secret_id)
+
+    stub_request(:delete, url).to_return(status: status, body: '', headers: headers)
+  end
 end
