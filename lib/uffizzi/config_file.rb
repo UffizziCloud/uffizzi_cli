@@ -23,22 +23,21 @@ module Uffizzi
 
       def read_option(option)
         data = read
-        return nil if data.nil?
+        return nil unless data.is_a?(Hash)
 
-        Uffizzi.ui.say("The option #{option} doesn't exist in config file") if data[option].nil?
         data[option]
       end
 
       def option_exists?(option)
         data = read
-        return false if data.nil?
+        return false unless data.is_a?(Hash)
 
         data.key?(option)
       end
 
       def write_option(key, value)
         data = exists? ? read : {}
-        return nil if data.nil?
+        return nil unless data.is_a?(Hash)
 
         data[key] = value
         write(data.to_json)
@@ -46,7 +45,7 @@ module Uffizzi
 
       def delete_option(key)
         data = read
-        return nil if data.nil?
+        return nil unless data.is_a?(Hash)
 
         new_data = data.except(key)
         write(new_data.to_json)
@@ -58,7 +57,7 @@ module Uffizzi
 
       def list
         data = read
-        return nil if data.nil?
+        return nil unless data.is_a?(Hash)
 
         content = data.reduce('') do |acc, pair|
           property, value = pair
@@ -76,10 +75,8 @@ module Uffizzi
         JSON.parse(File.read(CONFIG_PATH), symbolize_names: true)
       rescue Errno::ENOENT => e
         Uffizzi.ui.say(e)
-        nil
       rescue JSON::ParserError
         Uffizzi.ui.say('Config file is in incorrect format')
-        nil
       end
 
       def write(data)
@@ -99,9 +96,7 @@ module Uffizzi
       def create_file
         dir = File.dirname(CONFIG_PATH)
 
-        unless File.directory?(dir)
-          FileUtils.mkdir_p(dir)
-        end
+        FileUtils.mkdir_p(dir) unless File.directory?(dir)
 
         File.new(CONFIG_PATH, 'w')
       end

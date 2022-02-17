@@ -48,24 +48,17 @@ module Uffizzi
     end
 
     def handle_get_command(property)
-      return Uffizzi.ui.say('No property provided') if property.nil?
-
       option = ConfigFile.read_option(property.to_sym)
-      Uffizzi.ui.say(option) unless option.nil?
+      message = option.nil? ? "The option #{property} doesn't exist in config file" : option
+
+      Uffizzi.ui.say(message)
     end
 
     def handle_set_command(property, value)
-      if property.nil? || value.nil?
-        Uffizzi.ui.say('No property provided') if property.nil?
-        Uffizzi.ui.say('No value provided') if value.nil?
-        return
-      end
       ConfigFile.write_option(property.to_sym, value)
     end
 
     def handle_delete_command(property)
-      return Uffizzi.ui.say('No property provided') if property.nil?
-
       ConfigFile.delete_option(property.to_sym)
     end
   end
