@@ -56,7 +56,7 @@ module Uffizzi
       if ResponseHelper.created?(response)
         Uffizzi.ui.say('compose file created')
       else
-        handle_failed_response(response)
+        ResponseHelper.handle_failed_response(response)
       end
     end
 
@@ -68,7 +68,7 @@ module Uffizzi
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say('compose file deleted')
       else
-        handle_failed_response(response)
+        ResponseHelper.handle_failed_response(response)
       end
     end
 
@@ -82,15 +82,11 @@ module Uffizzi
         if compose_file_valid?(compose_file)
           Uffizzi.ui.say(Base64.decode64(compose_file[:content]))
         else
-          print_errors(compose_file[:payload][:errors])
+          ResponseHelper.handle_invalid_compose_response(response)
         end
       else
-        handle_failed_response(response)
+        ResponseHelper.handle_failed_response(response)
       end
-    end
-
-    def handle_failed_response(response)
-      print_errors(response[:body][:errors])
     end
 
     def compose_file_valid?(compose_file)

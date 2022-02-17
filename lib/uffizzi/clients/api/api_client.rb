@@ -54,16 +54,6 @@ module ApiClient
     build_response(response)
   end
 
-  def print_errors(errors)
-    errors.each_key do |key|
-      if errors[key].is_a?(Array)
-        errors[key].each { |error_message| Uffizzi.ui.say(error_message) }
-      else
-        Uffizzi.ui.say(errors[key])
-      end
-    end
-  end
-
   private
 
   def build_response(response)

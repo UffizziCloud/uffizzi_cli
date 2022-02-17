@@ -38,12 +38,8 @@ module Uffizzi
       if ResponseHelper.ok?(response)
         handle_succeed_response(response)
       else
-        handle_failed_response(response)
+        ResponseHelper.handle_failed_response(response)
       end
-    end
-
-    def handle_failed_response(response)
-      print_errors(response[:body][:errors])
     end
 
     def handle_succeed_response(response)
