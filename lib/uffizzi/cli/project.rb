@@ -48,10 +48,8 @@ module Uffizzi
 
     def handle_succeed_response(response)
       projects = response[:body][:projects]
-      if projects.empty?
-        Uffizzi.ui.say('No projects related to this email')
-        return
-      end
+      return Uffizzi.ui.say('No projects related to this email') if projects.empty?
+
       set_default_project(projects.first) if projects.size == 1
       print_projects(projects)
     end
