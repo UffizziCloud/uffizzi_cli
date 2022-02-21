@@ -24,4 +24,12 @@ module ApiRoutes
   def deployment_uri(hostname, project_slug, deployment_id)
     "#{hostname}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}"
   end
+
+  def activity_items_uri(hostname, project_slug, deployment_id)
+    "#{hostname}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/activity_items"
+  end
+
+  def deploy_containers_uri(hostname, project_slug, deployment_id)
+    "#{hostname}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/deploy_containers"
+  end
 end

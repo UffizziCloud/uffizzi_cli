@@ -1,15 +1,18 @@
 # frozen_string_literal: true
 
 require 'uffizzi'
+require 'tty-spinner'
 require 'uffizzi/auth_helper'
 
 module Uffizzi
   class CLI::Preview < Thor
     include ApiClient
 
+    @spinner
+
     class << self
-      def help(_shell, _subcommand = false)
-        return Cli::Common.show_manual(:preview)
+      def help(_shell, _subcommand)
+        Cli::Common.show_manual(:preview)
       end
     end
 
@@ -41,7 +44,7 @@ module Uffizzi
       run(options, 'describe', nil, deployment)
     end
 
-  private
+    private
 
     def run(options, command, file_path, deployment)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
@@ -64,10 +67,10 @@ module Uffizzi
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       response = fetch_deployments(hostname, project_slug)
 
-      if response[:code] == Net::HTTPOK
+      if ResponseHelper.ok?(response)
         handle_succeed_list_response(response)
       else
-        handle_failed_response(response)
+        ResponseHelper.handle_failed_response(response)
       end
     end
 
@@ -77,18 +80,105 @@ module Uffizzi
       params = file_path.nil? ? {} : prepare_params(file_path)
       response = create_deployment(hostname, project_slug, params)
 
-      if response[:code] == Net::HTTPCreated
-        handle_succeed_create_response(response)
+      if ResponseHelper.created?(response)
+        handle_succeed_create_response(hostname, project_slug, response)
       else
-        handle_failed_response(response)
+        ResponseHelper.handle_failed_response(response)
+      end
+    end
+
+    def handle_succeed_create_response(hostname, project_slug, response)
+      deployment = response[:body][:deployment]
+      deployment_id = deployment[:id]
+      params = { id: deployment_id }
+
+      response = deploy_containers(hostname, project_slug, deployment_id, params)
+
+      if ResponseHelper.no_content?(response)
+        Uffizzi.ui.say("Preview created with name deployment-#{deployment_id}")
+        print_deployment_progress(hostname, deployment, project_slug, response)
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
+    end
+
+    def print_deployment_progress(hostname, deployment, project_slug, response)
+      deployment_id = deployment[:id]
+      params = { deployment_id: deployment_id }
+
+      @spinner = TTY::Spinner.new('[:spinner] Creating containers...', format: :dots)
+      @spinner.auto_spin
+
+      activity_items = []
+
+      loop do
+        response = get_activity_items(hostname, project_slug, deployment_id, params)
+        handle_activity_items_response(response)
+        return unless @spinner.spinning?
+
+        activity_items = response[:body][:activity_items]
+        break unless activity_items.empty?
+
+        sleep(5)
+      end
+
+      @spinner.success
+
+      Uffizzi.ui.say('Done')
+
+      @spinner = TTY::Spinner::Multi.new('[:spinner] Deploying preview...', format: :dots, style: {
+                                           middle: '  ',
+                                           bottom: '  ',
+                                         })
+
+      containers_spinners = create_containers_spinners(activity_items)
+
+      loop do
+        response = get_activity_items(hostname, project_slug, deployment_id, params)
+        handle_activity_items_response(response)
+        return if @spinner.done?
+
+        activity_items = response[:body][:activity_items]
+        check_activity_items_state(activity_items, containers_spinners)
+        break if activity_items.all? { |activity_item| activity_item[:state] == 'deployed' || activity_item[:state] == 'failed' }
+
+        sleep(5)
+      end
+
+      Uffizzi.ui.say('Done')
+      preview_url = "http://#{deployment[:preview_url]}"
+      Uffizzi.ui.say(preview_url) if @spinner.success?
+    end
+
+    def create_containers_spinners(activity_items)
+      activity_items.map do |activity_item|
+        sp = @spinner.register("[:spinner] #{activity_item[:name]}")
+        sp.auto_spin
+        {
+          name: activity_item[:name],
+          spinner: sp,
+        }
+      end
+    end
+
+    def check_activity_items_state(activity_items, containers_spinners)
+      activity_items.each do |activity_item|
+        if activity_item[:state] != 'deploying'
+          container_spinner = containers_spinners.detect { |spinner| spinner[:name] == activity_item[:name] }
+          spinner = container_spinner[:spinner]
+          case activity_item[:state]
+          when 'deployed'
+            spinner.success
+          when 'failed'
+            spinner.error
+          end
+        end
       end
     end
 
     def handle_delete_command(options, deployment)
-      if !deployment_name_valid?(deployment)
-        Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format")
-        return
-      end
+      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment)
+
       hostname = ConfigFile.read_option(:hostname)
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       deployment_id = deployment.split('-').last
@@ -96,18 +186,16 @@ module Uffizzi
 
       response = delete_deployment(hostname, project_slug, deployment_id, params)
 
-      if response[:code] == Net::HTTPNoContent
-        handle_succeed_delete_response(response, deployment_id)
+      if ResponseHelper.no_content?(response)
+        handle_succeed_delete_response(deployment_id)
       else
-        handle_failed_response(response)
+        ResponseHelper.handle_failed_response(response)
       end
     end
 
     def handle_describe_command(options, deployment)
-      if !deployment_name_valid?(deployment)
-        Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format")
-        return
-      end
+      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment)
+
       hostname = ConfigFile.read_option(:hostname)
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       deployment_id = deployment.split('-').last
@@ -115,10 +203,17 @@ module Uffizzi
 
       response = describe_deployment(hostname, project_slug, deployment_id, params)
 
-      if response[:code] == Net::HTTPOK
+      if ResponseHelper.ok?(response)
         handle_succeed_describe_response(response)
       else
-        handle_failed_response(response)
+        ResponseHelper.handle_failed_response(response)
+      end
+    end
+
+    def handle_activity_items_response(response)
+      unless ResponseHelper.ok?(response)
+        @spinner.error
+        ResponseHelper.handle_failed_response(response)
       end
     end
 
@@ -129,18 +224,15 @@ module Uffizzi
       end
     end
 
-    def handle_succeed_create_response(response)
-      deployment = response[:body][:deployment]
-      Uffizzi.ui.say("Preview created with name deployment-#{deployment[:id]}")
-    end
-
-    def handle_succeed_delete_response(response, deployment_id)
+    def handle_succeed_delete_response(deployment_id)
       Uffizzi.ui.say("Preview deployment-#{deployment_id} deleted")
     end
 
     def handle_succeed_describe_response(response)
       deployment = response[:body][:deployment]
-      Uffizzi.ui.say(deployment)
+      deployment.each_key do |key|
+        Uffizzi.ui.say("#{key}: #{deployment[key]}")
+      end
     end
 
     def prepare_params(file_path)
@@ -164,10 +256,6 @@ module Uffizzi
         compose_file: compose_file_params,
         dependencies: dependencies,
       }
-    end
-
-    def handle_failed_response(response)
-      print_errors(response[:body][:errors])
     end
 
     def deployment_name_valid?(deployment)
