@@ -66,6 +66,8 @@ class ComposeFileService
     end
 
     def prepare_services_env_files(services)
+      return [] if services.nil?
+
       services.keys.map do |service|
         service_env_files = prepare_service_env_files(services.fetch(service))
 
