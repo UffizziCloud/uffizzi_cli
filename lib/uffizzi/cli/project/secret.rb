@@ -42,15 +42,17 @@ module Uffizzi
       when 'delete'
         handle_delete_command(project_slug, args)
       else
-        Uffizzi.ui.say("The subcommand #{command} does not exist, please run 'uffizzi project secret help' to get the list of available subcommands")
+        error_message = "The subcommand #{command} does not exist, please run 'uffizzi project secret help' \
+        to get the list of available subcommands"
+        Uffizzi.ui.say(error_message)
       end
     end
 
     def handle_list_command(project_slug)
       hostname = ConfigFile.read_option(:hostname)
       response = fetch_secrets(hostname, project_slug)
-      secrets = response[:body][:secrets].map{ |secret| [secret[:name]] }
-      table_header = "NAME"
+      secrets = response[:body][:secrets].map { |secret| [secret[:name]] }
+      table_header = 'NAME'
       table_data = [[table_header], *secrets]
       return Uffizzi.ui.print_table(table_data) if ResponseHelper.ok?(response)
 
@@ -74,7 +76,7 @@ module Uffizzi
       response = delete_secret(hostname, project_slug, id)
 
       if ResponseHelper.no_content?(response)
-        Uffizzi.ui.say('The secret was successfully deleted') 
+        Uffizzi.ui.say('The secret was successfully deleted')
       else
         handle_failed_response(response)
       end

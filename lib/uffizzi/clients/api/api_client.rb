@@ -41,7 +41,7 @@ module ApiClient
   end
 
   def bulk_create_secrets(hostname, project_slug, params)
-    uri = secrets_uri(hostname, project_slug) + '/bulk_create'
+    uri = "#{secrets_uri(hostname, project_slug)}/bulk_create"
     response = Uffizzi::HttpClient.make_post_request(uri, true, params)
 
     build_response(response)
