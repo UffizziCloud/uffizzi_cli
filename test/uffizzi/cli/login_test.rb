@@ -19,7 +19,7 @@ class LoginTest < Minitest::Test
     pp '----------------'
     pp RUBY_PLATFORM
 
-    IO::console.stubs(:getpass).returns(@command_params[:password])
+    # IO::console.stubs(:getpass).returns(@command_params[:password])
 
     headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
     body = json_fixture('files/uffizzi/uffizzi_login_success.json')
