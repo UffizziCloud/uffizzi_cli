@@ -50,21 +50,22 @@ module Uffizzi
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
       return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
 
+      project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
+
       case command
       when 'list'
-        handle_list_command(options)
+        handle_list_command(project_slug)
       when 'create'
-        handle_create_command(options, file_path)
+        handle_create_command(file_path, project_slug)
       when 'delete'
-        handle_delete_command(options, deployment)
+        handle_delete_command(deployment, project_slug)
       when 'describe'
-        handle_describe_command(options, deployment)
+        handle_describe_command(deployment, project_slug)
       end
     end
 
-    def handle_list_command(options)
+    def handle_list_command(project_slug)
       hostname = ConfigFile.read_option(:hostname)
-      project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       response = fetch_deployments(hostname, project_slug)
 
       if ResponseHelper.ok?(response)
@@ -74,9 +75,8 @@ module Uffizzi
       end
     end
 
-    def handle_create_command(options, file_path)
+    def handle_create_command(file_path, project_slug)
       hostname = ConfigFile.read_option(:hostname)
-      project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       params = file_path.nil? ? {} : prepare_params(file_path)
       response = create_deployment(hostname, project_slug, params)
 
@@ -152,35 +152,35 @@ module Uffizzi
 
     def create_containers_spinners(activity_items)
       activity_items.map do |activity_item|
-        sp = @spinner.register("[:spinner] #{activity_item[:name]}")
-        sp.auto_spin
+        container_spinner = @spinner.register("[:spinner] #{activity_item[:name]}")
+        container_spinner.auto_spin
         {
           name: activity_item[:name],
-          spinner: sp,
+          spinner: container_spinner,
         }
       end
     end
 
     def check_activity_items_state(activity_items, containers_spinners)
-      activity_items.each do |activity_item|
-        if activity_item[:state] != 'deploying'
-          container_spinner = containers_spinners.detect { |spinner| spinner[:name] == activity_item[:name] }
-          spinner = container_spinner[:spinner]
-          case activity_item[:state]
-          when 'deployed'
-            spinner.success
-          when 'failed'
-            spinner.error
-          end
+      finished_activity_items = activity_items.filter do |activity_item|
+        activity_item[:state] == 'deployed' || activity_item[:state] == 'failed'
+      end
+      finished_activity_items.each do |activity_item|
+        container_spinner = containers_spinners.detect { |spinner| spinner[:name] == activity_item[:name] }
+        spinner = container_spinner[:spinner]
+        case activity_item[:state]
+        when 'deployed'
+          spinner.success
+        when 'failed'
+          spinner.error
         end
       end
     end
 
-    def handle_delete_command(options, deployment)
+    def handle_delete_command(deployment, project_slug)
       return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment)
 
       hostname = ConfigFile.read_option(:hostname)
-      project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       deployment_id = deployment.split('-').last
       params = { id: deployment_id }
 
@@ -193,11 +193,10 @@ module Uffizzi
       end
     end
 
-    def handle_describe_command(options, deployment)
+    def handle_describe_command(deployment, project_slug)
       return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment)
 
       hostname = ConfigFile.read_option(:hostname)
-      project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       deployment_id = deployment.split('-').last
       params = { id: deployment_id }
 
@@ -259,7 +258,11 @@ module Uffizzi
     end
 
     def deployment_name_valid?(deployment)
-      !(deployment =~ /^deployment-[0-9]+$/).nil?
+      return false unless deployment.start_with?('deployment-')
+      return false unless deployment.split('-').size == 2
+
+      deployment_id = deployment.split('-').last
+      deployment_id.to_i.to_s == deployment_id
     end
   end
 end
