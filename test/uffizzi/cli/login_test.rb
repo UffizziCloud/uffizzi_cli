@@ -17,8 +17,8 @@ class LoginTest < Minitest::Test
 
   def test_login_success
     pp '----------------'
-    pp IO::console.class
-    pp IO::console.methods
+    pp IO.console.class
+    pp IO.console.methods
 
     IO::console.stubs(:getpass).returns(@command_params[:password])
 
