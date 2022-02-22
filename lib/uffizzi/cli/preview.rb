@@ -96,13 +96,13 @@ module Uffizzi
 
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say("Preview created with name deployment-#{deployment_id}")
-        print_deployment_progress(hostname, deployment, project_slug, response)
+        print_deployment_progress(hostname, deployment, project_slug)
       else
         ResponseHelper.handle_failed_response(response)
       end
     end
 
-    def print_deployment_progress(hostname, deployment, project_slug, response)
+    def print_deployment_progress(hostname, deployment, project_slug)
       deployment_id = deployment[:id]
       params = { deployment_id: deployment_id }
 

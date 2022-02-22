@@ -20,6 +20,7 @@ require 'uffizzi/shell'
 include FixtureSupport
 include UffizziStubSupport
 include UffizziComposeStubSupport
+include UffizziPreviewStubSupport
 
 WebMock.disable_net_connect!
 
