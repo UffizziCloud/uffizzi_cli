@@ -16,6 +16,10 @@ class LoginTest < Minitest::Test
   end
 
   def test_login_success
+    pp '----------------'
+    pp IO::console.class
+    pp IO::console.methods
+
     IO::console.stubs(:getpass).returns(@command_params[:password])
 
     headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
