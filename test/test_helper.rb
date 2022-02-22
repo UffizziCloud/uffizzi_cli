@@ -5,7 +5,6 @@ Dir[File.expand_path('support/**/*.rb', __dir__)].sort.each { |f| require f }
 
 require 'factory_bot'
 require 'net/http'
-require 'io/console'
 require 'byebug'
 require 'minitest/autorun'
 require 'webmock/minitest'

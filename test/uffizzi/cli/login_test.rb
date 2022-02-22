@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'io/console'
 
 class LoginTest < Minitest::Test
   def setup
