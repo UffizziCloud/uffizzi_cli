@@ -20,4 +20,4 @@ jobs:
           ruby-version: 3.0.2
           bundler-cache: true
       - name: Run tests
-        run: bundle exec rake test
+        run: bundle exec rake test TESTOPTS='-v'
