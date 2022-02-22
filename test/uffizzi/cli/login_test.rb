@@ -17,6 +17,8 @@ class LoginTest < Minitest::Test
 
   def test_login_success
     pp '----------------'
+    pp IO.class
+    pp IO.methods
     pp IO.console.class
     pp IO.console.methods
 
