@@ -2,10 +2,6 @@
 
 require 'test_helper'
 
-class ConsoleMock
-  def getpass; end
-end
-
 class LoginTest < Minitest::Test
   def setup
     @cli = Uffizzi::CLI.new
