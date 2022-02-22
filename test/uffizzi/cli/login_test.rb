@@ -2,6 +2,10 @@
 
 require 'test_helper'
 
+class ConsoleMock
+  def getpass; end
+end
+
 class LoginTest < Minitest::Test
   def setup
     @cli = Uffizzi::CLI.new
@@ -16,10 +20,9 @@ class LoginTest < Minitest::Test
   end
 
   def test_login_success
-    pp '----------------'
-    pp RUBY_PLATFORM
-
-    # IO::console.stubs(:getpass).returns(@command_params[:password])
+    console_mock = mock('console_mock')
+    console_mock.stubs(:getpass).returns(@command_params[:password])
+    IO.stubs(:console).returns(console_mock)
 
     headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
     body = json_fixture('files/uffizzi/uffizzi_login_success.json')
@@ -35,7 +38,9 @@ class LoginTest < Minitest::Test
   end
 
   def test_login_failed
-    IO::console.stubs(:getpass).returns(@command_params[:password])
+    console_mock = mock('console_mock')
+    console_mock.stubs(:getpass).returns(@command_params[:password])
+    IO.stubs(:console).returns(console_mock)
 
     body = json_fixture('files/uffizzi/uffizzi_login_failed.json')
     stubbed_uffizzi_login = stub_uffizzi_login(@command_params[:hostname], 422, body, {})
