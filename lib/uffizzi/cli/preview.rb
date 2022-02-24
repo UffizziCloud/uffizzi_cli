@@ -104,7 +104,6 @@ module Uffizzi
 
     def print_deployment_progress(hostname, deployment, project_slug)
       deployment_id = deployment[:id]
-      params = { deployment_id: deployment_id }
 
       @spinner = TTY::Spinner.new('[:spinner] Creating containers...', format: :dots)
       @spinner.auto_spin
@@ -112,7 +111,7 @@ module Uffizzi
       activity_items = []
 
       loop do
-        response = get_activity_items(hostname, project_slug, deployment_id, params)
+        response = get_activity_items(hostname, project_slug, deployment_id)
         handle_activity_items_response(response)
         return unless @spinner.spinning?
 
@@ -134,7 +133,7 @@ module Uffizzi
       containers_spinners = create_containers_spinners(activity_items)
 
       loop do
-        response = get_activity_items(hostname, project_slug, deployment_id, params)
+        response = get_activity_items(hostname, project_slug, deployment_id)
         handle_activity_items_response(response)
         return if @spinner.done?
 
@@ -182,9 +181,8 @@ module Uffizzi
 
       hostname = ConfigFile.read_option(:hostname)
       deployment_id = deployment.split('-').last
-      params = { id: deployment_id }
 
-      response = delete_deployment(hostname, project_slug, deployment_id, params)
+      response = delete_deployment(hostname, project_slug, deployment_id)
 
       if ResponseHelper.no_content?(response)
         handle_succeed_delete_response(deployment_id)
@@ -198,9 +196,8 @@ module Uffizzi
 
       hostname = ConfigFile.read_option(:hostname)
       deployment_id = deployment.split('-').last
-      params = { id: deployment_id }
 
-      response = describe_deployment(hostname, project_slug, deployment_id, params)
+      response = describe_deployment(hostname, project_slug, deployment_id)
 
       if ResponseHelper.ok?(response)
         handle_succeed_describe_response(response)

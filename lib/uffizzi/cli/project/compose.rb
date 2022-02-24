@@ -64,7 +64,7 @@ module Uffizzi
     def handle_unset_command
       hostname = ConfigFile.read_option(:hostname)
       project_slug = ConfigFile.read_option(:project)
-      response = unset_compose_file(hostname, {}, project_slug)
+      response = unset_compose_file(hostname, project_slug)
 
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say('compose file deleted')
@@ -76,7 +76,7 @@ module Uffizzi
     def handle_describe_command
       hostname = ConfigFile.read_option(:hostname)
       project_slug = ConfigFile.read_option(:project)
-      response = describe_compose_file(hostname, {}, project_slug)
+      response = describe_compose_file(hostname, project_slug)
       compose_file = response[:body][:compose_file]
 
       if ResponseHelper.ok?(response)

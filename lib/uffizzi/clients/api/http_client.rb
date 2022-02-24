@@ -8,25 +8,25 @@ require 'uffizzi/response_helper'
 module Uffizzi
   class HttpClient
     class << self
-      def make_get_request(request_uri, cookies_required, params = {})
-        make_request(:get, request_uri, cookies_required, params)
+      def make_get_request(request_uri, cookies_required)
+        make_request(:get, request_uri, cookies_required)
       end
 
       def make_post_request(request_uri, cookies_required, params = {})
         make_request(:post, request_uri, cookies_required, params)
       end
 
-      def make_put_request(request_uri, cookies_required, params = {})
-        make_request(:put, request_uri, cookies_required, params)
+      def make_put_request(request_uri, cookies_required)
+        make_request(:put, request_uri, cookies_required)
       end
 
-      def make_delete_request(request_uri, cookies_required, params = {})
-        make_request(:delete, request_uri, cookies_required, params)
+      def make_delete_request(request_uri, cookies_required)
+        make_request(:delete, request_uri, cookies_required)
       end
 
       private
 
-      def make_request(method, request_uri, require_cookies, params)
+      def make_request(method, request_uri, require_cookies, params = {})
         uri = URI(request_uri)
         use_ssl = request_uri.start_with?('https')
 
