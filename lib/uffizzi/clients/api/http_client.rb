@@ -59,7 +59,7 @@ module Uffizzi
                   when :put
                     Net::HTTP::Put.new(uri.path, headers)
         end
-        unless params.empty?
+        if request.instance_of?(Net::HTTP::Post)
           request.body = params.to_json
         end
         request['Cookie'] = ConfigFile.read_option(:cookie) if require_cookies
