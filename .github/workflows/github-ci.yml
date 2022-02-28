@@ -61,3 +61,8 @@ jobs:
         with:
           push: true
           tags: uffizzicloud/uffizzi-cli:$GITHUB_REF_NAME
+      - name: Release Gem
+        uses: cadwallion/publish-rubygems-action@master
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
