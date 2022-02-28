@@ -10,13 +10,14 @@ WORKDIR /gem
 ENV GEM_HOME="/usr/local/bundle"
 ENV PATH $GEM_HOME/bin:$GEM_HOME/gems/bin:$PATH
 
+RUN gem install uffizzi-cli
+RUN gem install bundler -v 2.3.8
+
 COPY lib/uffizzi/version.rb /gem/lib/uffizzi/
 COPY uffizzi.gemspec /gem/
 COPY Gemfile* /gem/
 RUN bundle install --jobs 4
 
 COPY . /gem
-
-RUN rake install
 
 CMD ["uffizzi"]
