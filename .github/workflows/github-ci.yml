@@ -1,5 +1,12 @@
 name: Uffizzi CLI CI/CD
-on: [push]
+on:
+  release:
+    types: [published]
+  push:
+    branches:
+      - "*"
+    tags:
+      - v*
 jobs:
   lint:
     runs-on: ubuntu-latest
