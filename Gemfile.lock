@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (0.1.1)
+    uffizzi-cli (0.1.2)
       thor
 
 GEM
