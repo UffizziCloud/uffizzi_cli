@@ -1,7 +1,8 @@
 name: Uffizzi CLI Release
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - v*
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -23,5 +24,5 @@ jobs:
       - name: Release Gem
         uses: cadwallion/publish-rubygems-action@master
         env:
-          GITHUB_TOKEN: ${{secrets.PERSONAL_GITHUB_ACCESS_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
