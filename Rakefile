@@ -14,3 +14,8 @@ require 'rubocop/rake_task'
 RuboCop::RakeTask.new
 
 task default: [:test, :rubocop]
+
+desc 'Generate roff output files from ronn format'
+task :generate_docs do
+  sh 'ronn --roff man/*.ronn'
+end

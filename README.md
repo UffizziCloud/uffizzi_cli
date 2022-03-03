@@ -108,6 +108,37 @@ $ uffizzi config delete OPTION
 
 Deletes specified option.
 
+## Git workflow for the app:
+
+1. Clone the repository and checkout to `develop` branch
+
+2. Pull repository to ensure you have the latest changes
+```
+git pull --rebase develop
+```
+
+3. Start new branch from `develop`
+```
+git checkout -b feature/short_issue_description (e.g. feature/add_domain_settings)
+```
+
+4. Make changes you need for the feature, commit them to the repo
+```
+git add .
+git commit -m 'short commit description' (e.g. git commit -m 'added domain settings')
+git push origin FEATURE_NAME
+```
+
+4. You already can create PR with develop branch as a target. Once the feature is ready let us know in the channel - we will review
+
+5. Merge your feature to `qa` branch and push. Ensure your pipeline is successful
+```
+git checkout qa
+git pull --rebase qa
+git merge --no-ff FEATURE_NAME
+git push origin qa
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/UffizziCloud/uffizzi_cli.

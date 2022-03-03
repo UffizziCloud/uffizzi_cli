@@ -16,37 +16,41 @@ class LoginTest < Minitest::Test
   end
 
   def test_login_success
-    IO::console.stub(:getpass, @command_params[:password]) do
-      headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
-      body = json_fixture('files/uffizzi/uffizzi_login_success.json')
+    console_mock = mock('console_mock')
+    console_mock.stubs(:getpass).returns(@command_params[:password])
+    IO.stubs(:console).returns(console_mock)
 
-      stubbed_uffizzi_login = stub_uffizzi_login(@command_params[:hostname], 201, body, headers)
+    headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
+    body = json_fixture('files/uffizzi/uffizzi_login_success.json')
 
-      refute(Uffizzi::ConfigFile.exists?)
+    stubbed_uffizzi_login = stub_uffizzi_login(@command_params[:hostname], 201, body, headers)
 
-      @cli.login
+    refute(Uffizzi::ConfigFile.exists?)
 
-      assert_requested(stubbed_uffizzi_login)
-      assert(Uffizzi::ConfigFile.exists?)
-    end
+    @cli.login
+
+    assert_requested(stubbed_uffizzi_login)
+    assert(Uffizzi::ConfigFile.exists?)
   end
 
   def test_login_failed
-    IO::console.stub(:getpass, @command_params[:password]) do
-      body = json_fixture('files/uffizzi/uffizzi_login_failed.json')
-      stubbed_uffizzi_login = stub_uffizzi_login(@command_params[:hostname], 422, body, {})
+    console_mock = mock('console_mock')
+    console_mock.stubs(:getpass).returns(@command_params[:password])
+    IO.stubs(:console).returns(console_mock)
 
-      buffer = StringIO.new
-      $stdout = buffer
+    body = json_fixture('files/uffizzi/uffizzi_login_failed.json')
+    stubbed_uffizzi_login = stub_uffizzi_login(@command_params[:hostname], 422, body, {})
 
-      refute(Uffizzi::ConfigFile.exists?)
+    buffer = StringIO.new
+    $stdout = buffer
 
-      @cli.login
+    refute(Uffizzi::ConfigFile.exists?)
 
-      $stdout = STDOUT
+    @cli.login
 
-      assert_requested(stubbed_uffizzi_login)
-      refute(Uffizzi::ConfigFile.exists?)
-    end
+    $stdout = STDOUT
+
+    assert_requested(stubbed_uffizzi_login)
+    refute(Uffizzi::ConfigFile.exists?)
   end
 end
