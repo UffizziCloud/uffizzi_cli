@@ -52,6 +52,8 @@ module Uffizzi
       hostname = ConfigFile.read_option(:hostname)
       response = fetch_secrets(hostname, project_slug)
       secrets = response[:body][:secrets].map { |secret| [secret[:name]] }
+      return Uffizzi.ui.say('There are no secrets for the project') if secrets.empty?
+
       table_header = 'NAME'
       table_data = [[table_header], *secrets]
       return Uffizzi.ui.print_table(table_data) if ResponseHelper.ok?(response)
