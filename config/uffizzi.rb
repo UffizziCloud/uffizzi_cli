@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'ostruct'
+
 module Uffizzi
   def self.configuration
     @configuration ||= OpenStruct.new
@@ -12,5 +13,8 @@ module Uffizzi
 
   configure do |config|
     config.hostname = 'http://web:7000'
+    config.credential_types = {
+      dockerhub: 'UffizziCore::Credential::DockerHub',
+    }
   end
 end

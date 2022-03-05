@@ -27,6 +27,13 @@ module ApiClient
     build_response(response)
   end
 
+  def create_credential(hostname, params)
+    uri = credentials_uri(hostname)
+    response = Uffizzi::HttpClient.make_request(uri, :post, params)
+
+    build_response(response)
+  end
+
   def set_compose_file(hostname, params, project_slug)
     uri = compose_file_uri(hostname, project_slug)
     response = Uffizzi::HttpClient.make_post_request(uri, params)

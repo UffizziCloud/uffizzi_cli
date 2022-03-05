@@ -48,5 +48,11 @@ module Uffizzi
     method_option :project, required: false
     require_relative 'cli/preview'
     subcommand 'preview', CLI::Preview
+
+    desc 'connect CREDENTIAL_TYPE', 'Connect credentials into Uffizzi'
+    def connect(credential_type)
+      require_relative 'cli/connect'
+      Connect.new.run(credential_type)
+    end
   end
 end

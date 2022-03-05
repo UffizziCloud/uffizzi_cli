@@ -47,4 +47,8 @@ module ApiRoutes
   def events_uri(hostname, project_slug, deployment_id)
     "#{hostname}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/events"
   end
+
+  def credentials_uri(hostname)
+    "#{hostname}/api/cli/v1/account/credentials"
+  end
 end
