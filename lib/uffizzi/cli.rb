@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'thor'
+require 'uffizzi'
 
 module Uffizzi
   class CLI < Thor
@@ -11,7 +12,7 @@ module Uffizzi
     desc 'version', 'Show Version'
     def version
       require_relative 'version'
-      puts Uffizzi::VERSION
+      Uffizzi.ui.say(Uffizzi::VERSION)
     end
 
     desc 'login', 'Login into Uffizzi'
@@ -30,16 +31,12 @@ module Uffizzi
       Logout.new.run
     end
 
-    desc 'projects', 'projects'
-    def projects
-      require_relative 'cli/projects'
-      Projects.new.run
-    end
+    desc 'project', 'project'
+    require_relative 'cli/project'
+    subcommand 'project', CLI::Project
 
     desc 'config', 'config'
-    def config(command, property = nil, value = nil)
-      require_relative 'cli/config'
-      Config.new.run(command, property, value)
-    end
+    require_relative 'cli/config'
+    subcommand 'config', CLI::Config
   end
 end

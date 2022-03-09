@@ -9,6 +9,11 @@ module Uffizzi
           ConfigFile.option_exists?(:cookie) &&
           ConfigFile.option_exists?(:hostname)
       end
+
+      def project_set?
+        ConfigFile.exists? &&
+          ConfigFile.option_exists?(:project)
+      end
     end
   end
 end

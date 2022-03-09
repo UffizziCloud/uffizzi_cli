@@ -15,9 +15,11 @@ require_relative '../config/uffizzi'
 require 'uffizzi'
 require 'uffizzi/cli'
 require 'uffizzi/config_file'
+require 'uffizzi/shell'
 
 include FixtureSupport
 include UffizziStubSupport
+include UffizziComposeStubSupport
 
 WebMock.disable_net_connect!
 
@@ -27,6 +29,9 @@ FactoryBot.find_definitions
 class Minitest::Test
   def before_setup
     super
+
+    $stdout = StringIO.new
+    $stdout.truncate(0)
 
     Uffizzi::ConfigFile.delete
   end

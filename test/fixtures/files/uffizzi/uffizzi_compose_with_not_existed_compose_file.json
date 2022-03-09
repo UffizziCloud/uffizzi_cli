@@ -1,0 +1,7 @@
+{
+  "errors":{
+    "compose_file":[
+      "A compose file is not exists for this project"
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "errors":{
+    "compose_file":[
+      "A compose file already exists for this project"
+    ]
+  }
+}

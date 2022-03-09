@@ -41,14 +41,9 @@ class LoginTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_login_failed.json')
     stubbed_uffizzi_login = stub_uffizzi_login(@command_params[:hostname], 422, body, {})
 
-    buffer = StringIO.new
-    $stdout = buffer
-
     refute(Uffizzi::ConfigFile.exists?)
 
     @cli.login
-
-    $stdout = STDOUT
 
     assert_requested(stubbed_uffizzi_login)
     refute(Uffizzi::ConfigFile.exists?)
