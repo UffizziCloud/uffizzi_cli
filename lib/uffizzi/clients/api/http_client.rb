@@ -8,19 +8,19 @@ require 'uffizzi/response_helper'
 module Uffizzi
   class HttpClient
     class << self
-      def make_get_request(request_uri, cookies_required)
+      def make_get_request(request_uri, cookies_required = true)
         make_request(:get, request_uri, cookies_required)
       end
 
-      def make_post_request(request_uri, cookies_required, params = {})
+      def make_post_request(request_uri, params = {}, cookies_required = true)
         make_request(:post, request_uri, cookies_required, params)
       end
 
-      def make_put_request(request_uri, cookies_required)
+      def make_put_request(request_uri, cookies_required = true)
         make_request(:put, request_uri, cookies_required)
       end
 
-      def make_delete_request(request_uri, cookies_required)
+      def make_delete_request(request_uri, cookies_required = true)
         make_request(:delete, request_uri, cookies_required)
       end
 
@@ -34,10 +34,6 @@ module Uffizzi
           request = build_request(uri, params, method, require_cookies)
 
           http.request(request)
-        end
-
-        if response.instance_of?(Net::HTTPNotFound)
-          raise StandardError.new('Compose file not found')
         end
 
         if response.instance_of?(Net::HTTPUnauthorized)
