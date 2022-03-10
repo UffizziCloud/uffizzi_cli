@@ -1,4 +1,4 @@
-FROM ruby:3.0.3-alpine
+FROM ruby:3.0.3-alpine AS builder
 
 RUN apk --update add --no-cache \
   curl-dev \
@@ -29,5 +29,14 @@ RUN bundle install --jobs 4
 COPY . .
 
 RUN bundle exec rake install
+
+# M-M-M-M-MULTISTAGE!!!
+FROM ruby:3.0.3-alpine
+
+WORKDIR /root/
+
+COPY --from=builder /gem/pkg/uffizzi-cli* .
+
+RUN gem install ./uffizzi-cli*
 
 ENTRYPOINT ["/usr/local/bundle/bin/uffizzi"]
