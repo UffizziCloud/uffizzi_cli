@@ -32,7 +32,7 @@ To host Uffizzi yourself, you will also need the following external dependencies
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'uffizzi'
+gem 'uffizzi-cli'
 ```
 
 And then execute:
@@ -41,7 +41,15 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install uffizzi
+    $ gem install uffizzi-cli
+
+### Docker image
+
+We also provide an image on Docker Hub:
+
+```bash
+docker run -it --rm uffizzi/cli login
+```
 
 ## Development
 
@@ -68,7 +76,7 @@ Run single test
 ### login
 
 ```
-$ uffizzi login -u your@email.com --hostname localhost:8080
+$ uffizzi login --user your@email.com --hostname localhost:8080
 ```
 
 Logging you into the app which you set in the hostname option.
@@ -178,7 +186,7 @@ git checkout -b feature/short_issue_description (e.g. feature/add_domain_setting
 ```
 git add .
 git commit -m 'short commit description' (e.g. git commit -m 'added domain settings')
-git push origin FEATURE_NAME
+git push origin BRANCH_NAME
 ```
 
 4. You already can create PR with develop branch as a target. Once the feature is ready let us know in the channel - we will review
@@ -187,7 +195,7 @@ git push origin FEATURE_NAME
 ```
 git checkout qa
 git pull --rebase qa
-git merge --no-ff FEATURE_NAME
+git merge --no-ff BRANCH_NAME
 git push origin qa
 ```
 
