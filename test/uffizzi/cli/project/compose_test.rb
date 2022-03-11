@@ -9,6 +9,9 @@ class ComposeTest < Minitest::Test
     sign_in
     Uffizzi::ConfigFile.write_option(:project, 'dbp')
     @project_slug = Uffizzi::ConfigFile.read_option(:project)
+    ENV.delete('IMAGE')
+    ENV.delete('CONFIG_SOURCE')
+    ENV.delete('PORT')
   end
 
   def test_compose_set_success
@@ -20,6 +23,63 @@ class ComposeTest < Minitest::Test
 
     assert_equal('compose file created', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_compose)
+  end
+
+  def test_compose_set_with_env_vars_success
+    body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
+    stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 201, body, {}, @project_slug)
+    ENV['IMAGE'] = 'nginx'
+    ENV['CONFIG_SOURCE'] = 'vote.conf'
+    ENV['PORT'] = '80'
+
+    @compose.options = { file: 'test/compose_files/test_compose_with_env_vars.yml' }
+    @compose.set
+
+    assert_equal('compose file created', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_compose)
+  end
+
+  def test_compose_set_with_env_vars_failed
+    body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
+    stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 201, body, {}, @project_slug)
+    ENV['IMAGE'] = 'nginx'
+    ENV['CONFIG_SOURCE'] = 'vote.conf'
+
+    @compose.options = { file: 'test/compose_files/test_compose_with_env_vars.yml' }
+    error = assert_raises(StandardError) do
+      @compose.set
+    end
+
+    assert_equal("Environment variable PORT doesn't exist", error.message)
+    refute_requested(stubbed_uffizzi_create_compose)
+  end
+
+  def test_compose_set_with_default_env_var_success
+    body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
+    stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 201, body, {}, @project_slug)
+    ENV['CONFIG_SOURCE'] = 'vote.conf'
+    ENV['PORT'] = '80'
+
+    @compose.options = { file: 'test/compose_files/test_compose_with_env_vars.yml' }
+    @compose.set
+
+    assert_equal('compose file created', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_compose)
+  end
+
+  def test_compose_set_with_error_env_var_failed
+    body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
+    stubbed_uffizzi_create_compose = stub_uffizzi_create_compose(Uffizzi.configuration.hostname, 201, body, {}, @project_slug)
+    ENV['IMAGE'] = 'nginx'
+    ENV['PORT'] = '80'
+
+    @compose.options = { file: 'test/compose_files/test_compose_with_env_vars.yml' }
+    error = assert_raises(StandardError) do
+      @compose.set
+    end
+
+    assert_equal('No_config_source', error.message)
+    refute_requested(stubbed_uffizzi_create_compose)
   end
 
   def test_compose_set_with_invalid_compose

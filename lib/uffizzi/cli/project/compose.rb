@@ -95,7 +95,7 @@ module Uffizzi
 
     def prepare_params(file_path)
       begin
-        compose_file_data = File.read(file_path)
+        compose_file_data = ComposeFileService.process_env_variables(File.read(file_path))
       rescue Errno::ENOENT => e
         return Uffizzi.ui.say(e)
       end

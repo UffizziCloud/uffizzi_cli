@@ -14,7 +14,43 @@ class ComposeFileService
       prepare_dependencies(env_files, config_files, compose_file_path)
     end
 
+    def process_env_variables(compose_file_data)
+      compose_file_data.gsub(/\$\{?([?:\-_A-Za-z0-9]+)\}?/) do |var|
+        var_content = var.match(/[?:\-_A-Za-z0-9]+/).to_s
+        fetch_var_value(var_content)
+      end
+    end
+
     private
+
+    def fetch_var_value(var_content)
+      var_name = var_content.match(/^[_A-Za-z0-9]+/).to_s
+      var_value = ENV[var_name]
+      return var_value unless var_value.nil?
+      return fetch_var_default_value(var_content) if var_has_default_value?(var_content)
+
+      if var_has_error_message?(var_content)
+        error_message = fetch_env_error_message(var_content)
+        raise StandardError.new(error_message)
+      end
+      raise StandardError.new("Environment variable #{var_name} doesn't exist")
+    end
+
+    def var_has_default_value?(var_content)
+      var_content.include?('-')
+    end
+
+    def fetch_var_default_value(var_content)
+      var_content.split('-', 2).last
+    end
+
+    def var_has_error_message?(var_content)
+      var_content.include?('?')
+    end
+
+    def fetch_env_error_message(var_content)
+      var_content.split('?', 2).last
+    end
 
     def prepare_dependencies(env_files, config_files, compose_file_path)
       prepare_dependency_files_data(env_files + config_files, compose_file_path)
