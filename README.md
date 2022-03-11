@@ -48,8 +48,15 @@ Or install it yourself as:
 We also provide an image on Docker Hub:
 
 ```bash
-docker run -it --rm uffizzi/cli login
+docker run -it --rm uffizzi/cli project list
 ```
+
+If you specify the following environment variables, the Docker image's
+entrypoint script can log you into Uffizzi before executing your command.
+
+- `UFFIZZI_USER`
+- `UFFIZZI_HOSTNAME`
+- `UFFIZZI_PASSWORD`
 
 ## Development
 

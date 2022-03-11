@@ -35,8 +35,10 @@ FROM ruby:3.0.3-alpine
 
 WORKDIR /root/
 
-COPY --from=builder /gem/pkg/uffizzi-cli* .
+COPY docker-entrypoint.sh .
+RUN chmod +x docker-entrypoint.sh
 
+COPY --from=builder /gem/pkg/uffizzi-cli* .
 RUN gem install ./uffizzi-cli*
 
-ENTRYPOINT ["/usr/local/bundle/bin/uffizzi"]
+ENTRYPOINT ["/root/docker-entrypoint.sh"]
