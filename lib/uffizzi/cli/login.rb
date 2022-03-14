@@ -14,11 +14,7 @@ module Uffizzi
     end
 
     def run
-      if ENV['UFFIZZI_PASSWORD']
-        password = ENV['UFFIZZI_PASSWORD']
-      else
-        password = IO::console.getpass('Enter Password: ')
-      end
+      password = ENV['UFFIZZI_PASSWORD'] || IO::console.getpass('Enter Password: ')
 
       params = prepare_request_params(password)
       response = create_session(@options[:hostname], params)
