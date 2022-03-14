@@ -23,7 +23,7 @@ class LoginTest < Minitest::Test
     headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
     body = json_fixture('files/uffizzi/uffizzi_login_success.json')
 
-    stubbed_uffizzi_login = stub_uffizzi_login(@command_params[:hostname], 201, body, headers)
+    stubbed_uffizzi_login = stub_uffizzi_login_success(body, headers)
 
     refute(Uffizzi::ConfigFile.exists?)
 
@@ -39,7 +39,7 @@ class LoginTest < Minitest::Test
     IO.stubs(:console).returns(console_mock)
 
     body = json_fixture('files/uffizzi/uffizzi_login_failed.json')
-    stubbed_uffizzi_login = stub_uffizzi_login(@command_params[:hostname], 422, body, {})
+    stubbed_uffizzi_login = stub_uffizzi_login_failed(body)
 
     refute(Uffizzi::ConfigFile.exists?)
 
