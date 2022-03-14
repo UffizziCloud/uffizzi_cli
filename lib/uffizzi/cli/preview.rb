@@ -215,7 +215,7 @@ module Uffizzi
 
     def handle_succeed_list_response(response)
       deployments = response[:body][:deployments] || []
-      return Uffizzi.ui.say("The project has no active deployments") if deployments.empty?
+      return Uffizzi.ui.say('The project has no active deployments') if deployments.empty?
 
       deployments.each do |deployment|
         Uffizzi.ui.say("deployment-#{deployment[:id]}")
