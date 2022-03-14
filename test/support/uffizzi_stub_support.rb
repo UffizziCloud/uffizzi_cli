@@ -5,8 +5,9 @@ require 'uffizzi/clients/api/api_routes'
 module UffizziStubSupport
   include ApiRoutes
 
-  def stub_uffizzi_login_success(body, headers)
+  def stub_uffizzi_login_success(body)
     url = session_uri(Uffizzi.configuration.hostname)
+    headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
 
     stub_request(:post, url).to_return(status: 201, body: body.to_json, headers: headers)
   end
@@ -17,8 +18,9 @@ module UffizziStubSupport
     stub_request(:post, url).to_return(status: 422, body: body.to_json)
   end
 
-  def stub_uffizzi_logout(headers)
+  def stub_uffizzi_logout
     url = session_uri(Uffizzi.configuration.hostname)
+    headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
 
     stub_request(:delete, url).to_return(status: 204, body: '', headers: headers)
   end

@@ -20,10 +20,9 @@ class LoginTest < Minitest::Test
     console_mock.stubs(:getpass).returns(@command_params[:password])
     IO.stubs(:console).returns(console_mock)
 
-    headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
     body = json_fixture('files/uffizzi/uffizzi_login_success.json')
 
-    stubbed_uffizzi_login = stub_uffizzi_login_success(body, headers)
+    stubbed_uffizzi_login = stub_uffizzi_login_success(body)
 
     refute(Uffizzi::ConfigFile.exists?)
 
