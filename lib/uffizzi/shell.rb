@@ -9,8 +9,8 @@ module Uffizzi
         @shell = Thor::Shell::Color.new
       end
 
-      def say(msg)
-        @shell.say(msg)
+      def say(message)
+        @shell.say(message)
       end
 
       def print_in_columns(messages)
@@ -25,12 +25,12 @@ module Uffizzi
         @shell.send(:stdout).string.strip
       end
 
-      def error(msg)
-        @shell.say(msg, Thor::Shell::Color::RED)
+      def error(message)
+        @shell.say(message, Thor::Shell::Color::RED)
       end
 
-      def success(msg)
-        @shell.say(msg, Thor::Shell::Color::GREEN)
+      def success(message)
+        @shell.say(message, Thor::Shell::Color::GREEN)
       end
     end
   end
