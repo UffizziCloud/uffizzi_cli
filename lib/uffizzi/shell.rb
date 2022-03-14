@@ -28,6 +28,10 @@ module Uffizzi
       def error(msg)
         @shell.say(msg, Thor::Shell::Color::RED)
       end
+
+      def success(msg)
+        @shell.say(msg, Thor::Shell::Color::GREEN)
+      end
     end
   end
 end

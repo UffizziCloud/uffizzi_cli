@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'uffizzi'
-# require 'io/console'
 
 module Uffizzi
   class CLI::Connect
@@ -30,7 +29,14 @@ module Uffizzi
         type: Uffizzi.configuration.credential_types[:dockerhub],
       }
 
-      pp params
+      hostname = ConfigFile.read_option(:hostname)
+      response = create_credential(hostname, params)
+
+      if ResponseHelper.created?(response)
+        Uffizzi.ui.success('Successfully connected to DockerHub')
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
     end
   end
 end

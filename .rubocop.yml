@@ -55,6 +55,9 @@ Style/ClassAndModuleChildren:
   Description: 'Checks style of children classes and modules.'
   Enabled: false
 
+Style/OptionalBooleanParameter:
+  Enabled: false
+
 Metrics/ClassLength:
   Description: 'Avoid classes longer than 100 lines of code.'
   Enabled: false

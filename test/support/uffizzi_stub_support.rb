@@ -66,4 +66,16 @@ module UffizziStubSupport
 
     stub_request(:delete, url).to_return(status: 204, body: '')
   end
+
+  def stub_uffizzi_create_credential(body)
+    uri = credentials_uri(Uffizzi.configuration.hostname)
+
+    stub_request(:post, uri).to_return(status: 201, body: body.to_json)
+  end
+
+  def stub_uffizzi_create_credential_fail(body)
+    uri = credentials_uri(Uffizzi.configuration.hostname)
+
+    stub_request(:post, uri).to_return(status: 422, body: body.to_json)
+  end
 end
