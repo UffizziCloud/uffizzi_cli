@@ -12,8 +12,4 @@ module ApiRoutes
   def compose_file_uri(hostname, project_slug)
     "#{hostname}/api/cli/v1/projects/#{project_slug}/compose_file"
   end
-
-  def validate_compose_file_uri(hostname, project_slug)
-    "#{compose_files_uri(hostname, project_slug)}/validate"
-  end
 end
