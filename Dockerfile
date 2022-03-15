@@ -33,6 +33,8 @@ RUN bundle exec rake install
 # M-M-M-M-MULTISTAGE!!!
 FROM ruby:3.0.3-alpine
 
+RUN apk --update add --no-cache mandoc
+
 WORKDIR /root/
 
 COPY docker-entrypoint.sh .
