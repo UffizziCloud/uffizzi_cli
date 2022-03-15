@@ -29,7 +29,7 @@ To host Uffizzi yourself, you will also need the following external dependencies
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's `Gemfile`:
 
 ```ruby
 gem 'uffizzi-cli'
@@ -57,6 +57,7 @@ entrypoint script can log you into Uffizzi before executing your command.
 - `UFFIZZI_USER`
 - `UFFIZZI_HOSTNAME`
 - `UFFIZZI_PASSWORD`
+- `UFFIZZI_PROJECT` (optional)
 
 ## Development
 

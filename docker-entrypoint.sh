@@ -8,9 +8,13 @@ if
 	[ $UFFIZZI_PASSWORD ]
 then
 	uffizzi login --user "${UFFIZZI_USER}" --hostname "${UFFIZZI_HOSTNAME}"
+	if [ $UFFIZZI_PROJECT ]
+	then
+		uffizzi config set project "${UFFIZZI_PROJECT}"
+	fi
 else
 	echo "Specify environment variables to login before executing Uffizzi CLI."
-	echo "UFFIZZI_USER, UFFIZZI_HOSTNAME, and UFFIZZI_PASSWORD"
+	echo "UFFIZZI_USER, UFFIZZI_HOSTNAME, UFFIZZI_PASSWORD, and optionally UFFIZZI_PROJECT"
 fi
 
 exec uffizzi "$@"
