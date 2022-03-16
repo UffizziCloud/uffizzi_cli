@@ -12,25 +12,27 @@ module Uffizzi
 
     desc 'set [OPTIONS]', 'set'
     def set
-      run(options, 'set')
+      run('set')
     end
 
     desc 'unset', 'unset'
     def unset
-      run(options, 'unset')
+      run('unset')
     end
 
     desc 'describe', 'describe'
     def describe
-      run(options, 'describe')
+      run('describe')
     end
 
     private
 
-    def run(options, command)
+    def run(command)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
+      return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?(options)
 
+      @project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
+      @hostname = ConfigFile.read_option(:hostname)
       file_path = options[:file]
       case command
       when 'set'
@@ -39,18 +41,14 @@ module Uffizzi
         handle_unset_command
       when 'describe'
         handle_describe_command
-      when 'validate'
-        handle_validate_command(file_path)
       end
     end
 
     def handle_set_command(file_path)
       return Uffizzi.ui.say('No file provided') if file_path.nil?
 
-      hostname = ConfigFile.read_option(:hostname)
-      project_slug = ConfigFile.read_option(:project)
       params = prepare_params(file_path)
-      response = set_compose_file(hostname, params, project_slug)
+      response = set_compose_file(@hostname, params, @project_slug)
 
       if ResponseHelper.created?(response)
         Uffizzi.ui.say('compose file created')

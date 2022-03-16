@@ -13,10 +13,18 @@ module Uffizzi
     end
 
     def run
-      password = ENV['UFFIZZI_PASSWORD'] || IO::console.getpass('Enter Password: ')
-
-      params = prepare_request_params(password)
-      response = create_session(@options[:hostname], params)
+      if @options[:hostname].nil? && !ConfigFile.option_has_value?(:hostname)
+        no_hostname_message = 'Uffizzi hostname is not set. To set hostname, run uffizzi config set hostname VALUE, ' \
+                              'or to login with an alternate hostname, run uffizzi login --hostname=HOSTNAME'
+        return Uffizzi.ui.say(no_hostname_message)
+      end
+      hostname = @options[:hostname] || ConfigFile.read_option(:hostname)
+      Uffizzi.ui.say('Login to Uffizzi to your previews.')
+      username = Uffizzi.ui.ask('Username: ')
+      password = ENV['UFFIZZI_PASSWORD'] || Uffizzi.ui.ask('Password: ', echo: false)
+      Uffizzi.ui.say("\n")
+      params = prepare_request_params(username, password)
+      response = create_session(hostname, params)
 
       if ResponseHelper.created?(response)
         handle_succeed_response(response)
@@ -27,11 +35,11 @@ module Uffizzi
 
     private
 
-    def prepare_request_params(password)
+    def prepare_request_params(username, password)
       {
         user: {
-          email: @options[:user],
-          password: password.strip,
+          email: username,
+          password: password,
         },
       }
     end
@@ -40,7 +48,7 @@ module Uffizzi
       account = response[:body][:user][:accounts].first
       return Uffizzi.ui.say('No account related to this email') unless account_valid?(account)
 
-      ConfigFile.create(account[:id], response[:headers], @options[:hostname])
+      ConfigFile.write_option(:account, account[:id])
     end
 
     def account_valid?(account)

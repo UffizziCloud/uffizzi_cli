@@ -48,7 +48,7 @@ module Uffizzi
         Uffizzi.ui.disable_stdout
       end
       raise Uffizzi::Error.new('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      raise Uffizzi::Error.new('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
+      raise Uffizzi::Error.new('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?(options)
 
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
 

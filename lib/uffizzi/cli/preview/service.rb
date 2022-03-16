@@ -12,7 +12,7 @@ module Uffizzi
     desc 'logs [LOGS_TYPE] [DEPLOYMENT_ID] [CONTAINER_NAME]', 'logs'
     def logs(logs_type, deployment_name, container_name = args)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
+      return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?(options)
 
       deployment_id = PreviewService.read_deployment_id(deployment_name)
       response = service_logs_response(logs_type, deployment_id, container_name)
@@ -28,7 +28,7 @@ module Uffizzi
     desc 'logs [DEPLOYMENT_ID]', 'list'
     def list(deployment_name)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
+      return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?(options)
 
       project_slug = ConfigFile.read_option(:project)
       hostname = ConfigFile.read_option(:hostname)

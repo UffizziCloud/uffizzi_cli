@@ -20,5 +20,6 @@ module Uffizzi
       amazon: 'UffizziCore::Credential::Amazon',
       github_container_registry: 'UffizziCore::Credential::GithubContainerRegistry',
     }
+    config.default_hostname = 'app.uffizzi.com'
   end
 end

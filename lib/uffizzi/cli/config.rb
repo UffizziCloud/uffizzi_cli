@@ -7,13 +7,19 @@ module Uffizzi
   class CLI::Config < Thor
     include ApiClient
 
+    class << self
+      def help(_shell, _subcommand)
+        Cli::Common.show_manual(:login)
+      end
+    end
+
     desc 'list', 'list'
     def list
       run('list')
     end
 
     desc 'get [PROPERTY]', 'get'
-    def get(property)
+    def get_value(property)
       run('get', property)
     end
 
@@ -22,10 +28,19 @@ module Uffizzi
       run('set', property, value)
     end
 
-    desc 'delete [PROPERTY]', 'delete'
-    def delete(property)
-      run('delete', property)
+    desc 'unset [PROPERTY]', 'unset'
+    def unset(property)
+      run('unset', property)
     end
+
+    desc 'setup', 'setup'
+    def setup
+      run('setup')
+    end
+
+    map('get-value' => :get_value)
+
+    default_task :setup
 
     private
 
@@ -37,9 +52,22 @@ module Uffizzi
         handle_get_command(property)
       when 'set'
         handle_set_command(property, value)
-      when 'delete'
-        handle_delete_command(property)
+      when 'unset'
+        handle_unset_command(property)
+      when 'setup'
+        handle_setup_command
       end
+    end
+
+    def handle_setup_command
+      Uffizzi.ui.say("Configure the default properties that will be used to authenticate with your \
+                      \nUffizzi API service and manage previews.\n")
+      hostname = Uffizzi.ui.ask('Hostname: ', default: Uffizzi.configuration.default_hostname.to_s)
+      project = Uffizzi.ui.ask('Project: ')
+      ConfigFile.delete
+      ConfigFile.write_option(:hostname, hostname)
+      ConfigFile.write_option(:project, project)
+      Uffizzi.ui.say('To login, run: uffizzi login')
     end
 
     def handle_list_command
@@ -55,10 +83,12 @@ module Uffizzi
 
     def handle_set_command(property, value)
       ConfigFile.write_option(property.to_sym, value)
+      Uffizzi.ui.say("Updated property [#{property}]")
     end
 
-    def handle_delete_command(property)
-      ConfigFile.delete_option(property.to_sym)
+    def handle_unset_command(property)
+      ConfigFile.unset_option(property.to_sym)
+      Uffizzi.ui.say("Unset property [#{property}]")
     end
   end
 end

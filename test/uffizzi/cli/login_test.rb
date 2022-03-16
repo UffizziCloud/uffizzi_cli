@@ -33,10 +33,6 @@ class LoginTest < Minitest::Test
   end
 
   def test_login_failed
-    console_mock = mock('console_mock')
-    console_mock.stubs(:getpass).returns(@command_params[:password])
-    IO.stubs(:console).returns(console_mock)
-
     body = json_fixture('files/uffizzi/uffizzi_login_failed.json')
     stubbed_uffizzi_login = stub_uffizzi_login_failed(body)
 

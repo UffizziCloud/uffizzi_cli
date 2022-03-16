@@ -1,0 +1,56 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-CONFIG" "" "March 2022" ""
+.SH "NAME"
+\fBuffizzi config \- configure the Uffizzi command\-line interface (CLI)\fR
+.SH "SYNOPSIS"
+uffizzi config COMMAND [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.SH "DESCRIPTION"
+The uffizzi config command lets you configure this command\-line application\. If COMMAND is not specified, uffizzi config launches an interactive set up guide\.
+.P
+For more information on configuration options, see:
+https://docs\.uffizzi\.com/references/cli
+.fi
+.SH "UFFIZZI WIDE FLAGS"
+These flags are available to all commands: \-\-project\. Run $ uffizzi help for details\.
+.SH "COMMANDS"
+COMMAND is one of the following:
+.P
+.nf
+ get\-value OPTION
+    Displays the value of the specified option\.
+
+ list
+    Lists all options and their values from the config file\.
+
+ set OPTION VALUE
+    Sets the value of the specified option\.
+
+ unset OPTION
+    Deletes the value of the specified option\.
+.fi
+.SH "OPTIONS"
+OPTION is one of the following:
+.P
+.nf
+ hostname
+    The hostname of the Uffizzi API service you want to access\. Defaults to
+    app\.uffizzi\.com\.
+
+ name
+    Your name\.
+
+ project
+    The current active project\. This project is used as the default unless
+    \-\-project is pass as an argument\.
+.fi
+.SH "EXAMPLES"
+To list the uffizzi configuration options, run:
+.P
+    $ uffizzi config list
+
+To set a new current active project for uffizzi, run:
+
+    $ uffizzi config set project my\-project
+.fi
+

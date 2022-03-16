@@ -4,11 +4,16 @@ require 'uffizzi'
 
 module Uffizzi
   class CLI < Thor
+    require_relative 'cli/common'
+
+    class_option :help, type: :boolean, aliases: HELP_MAPPINGS
+    class_option :project, type: :string
+
     def self.exit_on_failure?
       true
     end
 
-    desc 'version', 'show version'
+    desc 'version', 'Show Version'
     def version
       require_relative 'version'
       Uffizzi.ui.say(Uffizzi::VERSION)
