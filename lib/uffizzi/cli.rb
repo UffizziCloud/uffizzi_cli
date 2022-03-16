@@ -50,9 +50,9 @@ module Uffizzi
     subcommand 'preview', CLI::Preview
 
     desc 'connect CREDENTIAL_TYPE', 'Connect credentials into Uffizzi'
-    def connect(credential_type)
+    def connect(credential_type, credential_file_path = nil)
       require_relative 'cli/connect'
-      Connect.new.run(credential_type)
+      Connect.new.run(credential_type, credential_file_path)
     end
   end
 end

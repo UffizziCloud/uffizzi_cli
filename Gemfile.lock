@@ -23,6 +23,8 @@ GEM
       rexml
     factory_bot (6.2.0)
       activesupport (>= 5.0.0)
+    faker (2.20.0)
+      i18n (>= 1.8.11, < 2)
     hashdiff (1.0.1)
     i18n (1.8.11)
       concurrent-ruby (~> 1.0)
@@ -98,6 +100,7 @@ DEPENDENCIES
   bundler (~> 2.2)
   byebug
   factory_bot
+  faker
   minitest
   minitest-power_assert
   mocha
