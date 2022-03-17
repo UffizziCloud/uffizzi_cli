@@ -27,7 +27,7 @@ module Uffizzi
       response = create_session(hostname, params)
 
       if ResponseHelper.created?(response)
-        handle_succeed_response(response)
+        handle_succeed_response(response, hostname)
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -44,10 +44,12 @@ module Uffizzi
       }
     end
 
-    def handle_succeed_response(response)
+    def handle_succeed_response(response, hostname)
       account = response[:body][:user][:accounts].first
       return Uffizzi.ui.say('No account related to this email') unless account_valid?(account)
 
+      ConfigFile.write_option(:hostname, hostname)
+      ConfigFile.write_option(:cookie, response[:headers])
       ConfigFile.write_option(:account, account[:id])
     end
 
