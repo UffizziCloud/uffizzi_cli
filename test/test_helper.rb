@@ -44,8 +44,4 @@ class Minitest::Test
     @account_id = login_body[:user][:accounts].first[:id]
     Uffizzi::ConfigFile.create(@account_id, @cookie, Uffizzi.configuration.hostname)
   end
-
-  def shell_last_message
-    @mock_shell.last_message
-  end
 end
