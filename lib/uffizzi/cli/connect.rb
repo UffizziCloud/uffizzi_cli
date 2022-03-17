@@ -25,7 +25,7 @@ module Uffizzi
 
     def handle_docker_hub
       IO::console.write('Username: ')
-      username = IO::console.gets
+      username = IO::console.gets.strip
 
       password = IO::console.getpass('Password: ')
 
@@ -47,10 +47,10 @@ module Uffizzi
 
     def handle_azure
       IO::console.write('Registry Domain: ')
-      registry_url = IO::console.gets
+      registry_url = IO::console.gets.strip
 
       IO::console.write('Docker ID: ')
-      username = IO::console.gets
+      username = IO::console.gets.strip
 
       password = IO::console.getpass('Password/Access Token: ')
 
@@ -73,10 +73,10 @@ module Uffizzi
 
     def handle_amazon
       IO::console.write('Registry Domain: ')
-      registry_url = IO::console.gets
+      registry_url = IO::console.gets.strip
 
       IO::console.write('Access key ID: ')
-      username = IO::console.gets
+      username = IO::console.gets.strip
 
       password = IO::console.getpass('Secret access key: ')
 
