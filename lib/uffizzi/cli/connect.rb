@@ -17,7 +17,7 @@ module Uffizzi
       when 'gcr'
         handle_google(credential_file_path)
       else
-        Uffizzi.ui.error('Unsupported credential type.')
+        Uffizzi.ui.say('Unsupported credential type.')
       end
     end
 
@@ -39,7 +39,7 @@ module Uffizzi
       response = create_credential(hostname, params)
 
       if ResponseHelper.created?(response)
-        Uffizzi.ui.success('Successfully connected to DockerHub')
+        Uffizzi.ui.say('Successfully connected to DockerHub')
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -65,7 +65,7 @@ module Uffizzi
       response = create_credential(hostname, params)
 
       if ResponseHelper.created?(response)
-        Uffizzi.ui.success('Successfully connected to ACR')
+        Uffizzi.ui.say('Successfully connected to ACR')
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -91,7 +91,7 @@ module Uffizzi
       response = create_credential(hostname, params)
 
       if ResponseHelper.created?(response)
-        Uffizzi.ui.success('Successfully connected to ECR')
+        Uffizzi.ui.say('Successfully connected to ECR')
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -113,7 +113,7 @@ module Uffizzi
       response = create_credential(hostname, params)
 
       if ResponseHelper.created?(response)
-        Uffizzi.ui.success('Successfully connected to GCR')
+        Uffizzi.ui.say('Successfully connected to GCR')
       else
         ResponseHelper.handle_failed_response(response)
       end

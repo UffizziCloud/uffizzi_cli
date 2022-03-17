@@ -24,14 +24,6 @@ module Uffizzi
       def last_message
         @shell.send(:stdout).string.strip
       end
-
-      def error(message)
-        @shell.say(message, Thor::Shell::Color::RED)
-      end
-
-      def success(message)
-        @shell.say(message, Thor::Shell::Color::GREEN)
-      end
     end
   end
 end
