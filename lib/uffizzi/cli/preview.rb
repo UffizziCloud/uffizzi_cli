@@ -16,6 +16,10 @@ module Uffizzi
       end
     end
 
+    desc 'service', 'service'
+    require_relative 'preview/service'
+    subcommand 'service', Uffizzi::CLI::Preview::Service
+
     desc 'list', 'list'
     def list
       return Cli::Common.show_manual(:list) if options[:help]

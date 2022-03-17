@@ -46,4 +46,10 @@ module UffizziPreviewStubSupport
 
     stub_request(:get, url).to_return(status: 200, body: body.to_json)
   end
+
+  def stub_uffizzi_preview_services_list(base_url, status, body, headers, params)
+    url = preview_services_uri(base_url, params[:project_slug], params[:deployment_id])
+
+    stub_request(:get, url).to_return(status: status, body: body.to_json, headers: headers)
+  end
 end
