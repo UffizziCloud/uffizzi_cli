@@ -81,13 +81,10 @@ module Uffizzi
       def read
         data = File.read(CONFIG_PATH)
         options = data.split("\n")
-        result = {}
-        options.each do |option|
+        options.reduce({}) do |acc, option|
           key, value = option.split('=', 2)
-          result[key.strip.to_sym] = value.strip
+          acc.merge({ key.strip.to_sym => value.strip })
         end
-
-        result
       rescue Errno::ENOENT => e
         Uffizzi.ui.say(e)
       end
@@ -100,12 +97,9 @@ module Uffizzi
       end
 
       def prepare_data(data)
-        result = ''
-        data.each_key do |key|
-          result = "#{result}#{key} = #{data[key]}\n"
+        data.reduce('') do |acc, option|
+          "#{acc}#{option.first} = #{option.last}\n"
         end
-
-        result
       end
 
       def prepare_config_data(account_id, cookie, hostname)
