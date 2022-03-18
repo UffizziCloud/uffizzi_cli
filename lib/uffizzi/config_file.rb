@@ -98,7 +98,8 @@ module Uffizzi
 
       def prepare_data(data)
         data.reduce('') do |acc, option|
-          "#{acc}#{option.first} = #{option.last}\n"
+          key, value = option
+          "#{acc}#{key} = #{value}\n"
         end
       end
 
