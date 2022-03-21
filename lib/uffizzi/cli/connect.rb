@@ -47,7 +47,7 @@ module Uffizzi
 
     def handle_azure
       IO::console.write('Registry Domain: ')
-      registry_url = IO::console.gets.strip
+      registry_url = prepare_registry_url(IO::console.gets.strip)
 
       IO::console.write('Docker ID: ')
       username = IO::console.gets.strip
@@ -73,7 +73,7 @@ module Uffizzi
 
     def handle_amazon
       IO::console.write('Registry Domain: ')
-      registry_url = IO::console.gets.strip
+      registry_url = prepare_registry_url(IO::console.gets.strip)
 
       IO::console.write('Access key ID: ')
       username = IO::console.gets.strip
@@ -117,6 +117,12 @@ module Uffizzi
       else
         ResponseHelper.handle_failed_response(response)
       end
+    end
+
+    def prepare_registry_url(registry_url)
+      return if registry_url.match?(/^(?:http(s)?:\/\/)/)
+
+      "https://#{registry_url}"
     end
   end
 end
