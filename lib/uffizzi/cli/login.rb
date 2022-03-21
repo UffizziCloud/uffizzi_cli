@@ -50,7 +50,7 @@ module Uffizzi
 
       ConfigFile.write_option(:hostname, hostname)
       ConfigFile.write_option(:cookie, response[:headers])
-      ConfigFile.write_option(:account, account[:id])
+      ConfigFile.write_option(:account_id, account[:id])
     end
 
     def account_valid?(account)
