@@ -9,17 +9,10 @@ class LogoutTest < Minitest::Test
   end
 
   def test_logout_success
-    headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
-    host_name = Uffizzi.configuration.hostname
-    stubbed_uffizzi_logout = stub_uffizzi_logout(host_name, 204, headers)
+    stubbed_uffizzi_logout = stub_uffizzi_logout
     assert(Uffizzi::ConfigFile.exists?)
 
-    buffer = StringIO.new
-    $stdout = buffer
-
     @cli.logout
-
-    $stdout = STDOUT
 
     assert_requested(stubbed_uffizzi_logout)
     refute(Uffizzi::ConfigFile.exists?)
@@ -29,16 +22,9 @@ class LogoutTest < Minitest::Test
     Uffizzi::ConfigFile.delete
     refute(Uffizzi::ConfigFile.exists?)
 
-    headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
-    host_name = Uffizzi.configuration.hostname
-    stubbed_uffizzi_logout = stub_uffizzi_logout(host_name, 204, headers)
-
-    buffer = StringIO.new
-    $stdout = buffer
+    stubbed_uffizzi_logout = stub_uffizzi_logout
 
     @cli.logout
-
-    $stdout = STDOUT
 
     assert_not_requested(stubbed_uffizzi_logout)
     refute(Uffizzi::ConfigFile.exists?)

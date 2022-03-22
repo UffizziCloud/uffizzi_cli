@@ -2,12 +2,35 @@
 
 require 'io/console'
 require 'uffizzi'
+require 'uffizzi/clients/api/api_client'
 
 module Uffizzi
-  class Config
+  class CLI::Config < Thor
     include ApiClient
 
-    def run(command, property, value)
+    desc 'list', 'list'
+    def list
+      run('list')
+    end
+
+    desc 'get', 'get'
+    def get(property)
+      run('get', property)
+    end
+
+    desc 'set', 'set'
+    def set(property, value)
+      run('set', property, value)
+    end
+
+    desc 'delete', 'delete'
+    def delete(property)
+      run('delete', property)
+    end
+
+    private
+
+    def run(command, property = nil, value = nil)
       case command
       when 'list'
         handle_list_command
@@ -17,40 +40,25 @@ module Uffizzi
         handle_set_command(property, value)
       when 'delete'
         handle_delete_command(property)
-      else
-        puts "#{command} is not a uffizzi config command"
       end
     end
-
-    private
 
     def handle_list_command
       ConfigFile.list
     end
 
     def handle_get_command(property)
-      if property.nil?
-        puts 'No property provided'
-        return
-      end
       option = ConfigFile.read_option(property.to_sym)
-      puts option unless option.nil?
+      message = option.nil? ? "The option #{property} doesn't exist in config file" : option
+
+      Uffizzi.ui.say(message)
     end
 
     def handle_set_command(property, value)
-      if property.nil? || value.nil?
-        puts 'No property provided' if property.nil?
-        puts 'No value provided' if value.nil?
-        return
-      end
       ConfigFile.write_option(property.to_sym, value)
     end
 
     def handle_delete_command(property)
-      if property.nil?
-        puts 'No property provided'
-        return
-      end
       ConfigFile.delete_option(property.to_sym)
     end
   end

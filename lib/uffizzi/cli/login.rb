@@ -3,6 +3,7 @@
 require 'io/console'
 require 'uffizzi'
 require 'uffizzi/response_helper'
+require 'uffizzi/clients/api/api_client'
 
 module Uffizzi
   class CLI::Login
@@ -17,10 +18,10 @@ module Uffizzi
       params = prepare_request_params(password)
       response = create_session(@options[:hostname], params)
 
-      if Uffizzi::ResponseHelper.created?(response)
+      if ResponseHelper.created?(response)
         handle_succeed_response(response)
       else
-        handle_failed_response(response)
+        ResponseHelper.handle_failed_response(response)
       end
     end
 
@@ -33,10 +34,6 @@ module Uffizzi
           password: password.strip,
         },
       }
-    end
-
-    def handle_failed_response(response)
-      print_errors(response[:body][:errors])
     end
 
     def handle_succeed_response(response)

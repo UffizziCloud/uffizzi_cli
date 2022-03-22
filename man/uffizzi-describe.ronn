@@ -1,0 +1,29 @@
+uffizzi preview describe - show metadata for a preview
+================================================================
+
+## SYNOPSIS
+    uffizzi preview describe [PREVIEW_ID] [UFFIZZI_WIDE_FLAG ...] 
+
+## DESCRIPTION
+    Shows metadata for a project given a valid preview ID. 
+
+    This command can fail for the following reasons:
+        - The preview specified does not exist.
+        - The preview specified belongs to a different project.
+    
+    For more information on Uffizzi previews, see:
+    https://docs.uffizzi.com/cli/preview
+
+## POSITIONAL ARGUMENTS
+    [PREVIEW_ID]
+        ID for the preview you want to describe.  
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi 
+    help for details.
+
+## EXAMPLES
+    The following command prints metadata for the preview with ID 
+    deployment-213:
+
+        $ uffizzi preview describe deployment-213

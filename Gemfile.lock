@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (0.1.4.3)
+    uffizzi-cli (0.2.0)
       thor
 
 GEM
@@ -78,6 +78,9 @@ GEM
       rubocop (~> 1.0)
     ruby-progressbar (1.11.0)
     thor (1.2.1)
+    tty-cursor (0.7.1)
+    tty-spinner (0.9.3)
+      tty-cursor (~> 0.7)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unicode (0.4.4.4)
@@ -106,6 +109,7 @@ DEPENDENCIES
   rubocop
   rubocop-minitest
   rubocop-rake
+  tty-spinner
   uffizzi-cli!
   webmock
 

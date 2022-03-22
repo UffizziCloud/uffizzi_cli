@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
 require 'thor'
+require 'uffizzi'
 
 module Uffizzi
   class CLI < Thor
     require_relative 'cli/common'
+    class_option :help, type: :boolean, aliases: ['-h', 'help']
 
-    class_option :help, type: :boolean, aliases: HELP_MAPPINGS
-
-    desc 'version', 'Show Version'
+    desc 'version', 'show version'
     def version
       require_relative 'version'
-      puts Uffizzi::VERSION
+      Uffizzi.ui.say(Uffizzi::VERSION)
     end
 
     desc 'login', 'Login into Uffizzi'
     method_option :user, required: true, aliases: '-u'
-    method_option :hostname, required: true, aliases: '-h'
+    method_option :hostname, required: true
     def login
       require_relative 'cli/login'
       Login.new(options).run
@@ -30,16 +30,17 @@ module Uffizzi
       Logout.new.run
     end
 
-    desc 'projects', 'projects'
-    def projects
-      require_relative 'cli/projects'
-      Projects.new.run
-    end
+    desc 'project', 'project'
+    require_relative 'cli/project'
+    subcommand 'project', CLI::Project
 
     desc 'config', 'config'
-    def config(command, property = nil, value = nil)
-      require_relative 'cli/config'
-      Config.new.run(command, property, value)
-    end
+    require_relative 'cli/config'
+    subcommand 'config', CLI::Config
+
+    desc 'preview', 'preview'
+    method_option :project, required: false
+    require_relative 'cli/preview'
+    subcommand 'preview', CLI::Preview
   end
 end

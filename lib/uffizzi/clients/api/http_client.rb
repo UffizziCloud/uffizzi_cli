@@ -3,11 +3,30 @@
 require 'net/http'
 require 'json'
 require 'uffizzi/config_file'
+require 'uffizzi/response_helper'
 
 module Uffizzi
   class HttpClient
     class << self
-      def make_request(request_uri, method, require_cookies, params = {})
+      def make_get_request(request_uri, cookies_required = true)
+        make_request(:get, request_uri, cookies_required)
+      end
+
+      def make_post_request(request_uri, params = {}, cookies_required = true)
+        make_request(:post, request_uri, cookies_required, params)
+      end
+
+      def make_put_request(request_uri, cookies_required = true)
+        make_request(:put, request_uri, cookies_required)
+      end
+
+      def make_delete_request(request_uri, cookies_required = true)
+        make_request(:delete, request_uri, cookies_required)
+      end
+
+      private
+
+      def make_request(method, request_uri, require_cookies, params = {})
         uri = URI(request_uri)
         use_ssl = request_uri.start_with?('https')
 
@@ -23,8 +42,6 @@ module Uffizzi
 
         response
       end
-
-      private
 
       def build_request(uri, params, method, require_cookies)
         headers = { 'Content-Type' => 'application/json' }
@@ -45,6 +62,7 @@ module Uffizzi
         if ConfigFile.exists? && ConfigFile.option_exists?(:basic_auth_user) && ConfigFile.option_exists?(:basic_auth_password)
           request.basic_auth(ConfigFile.read_option(:basic_auth_user), ConfigFile.read_option(:basic_auth_password))
         end
+
         request
       end
     end
