@@ -20,8 +20,8 @@ module Uffizzi
     end
 
     desc 'login [OPTIONS]', 'Login into Uffizzi'
-    method_option :user, required: true, aliases: '-u'
-    method_option :hostname, required: true
+    method_option :hostname, required: false
+    method_option :username, required: false, aliases: '-u'
     def login
       require_relative 'cli/login'
       Login.new(options).run

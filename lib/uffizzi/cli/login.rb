@@ -20,7 +20,7 @@ module Uffizzi
       end
       hostname = @options[:hostname] || ConfigFile.read_option(:hostname)
       Uffizzi.ui.say('Login to Uffizzi to your previews.')
-      username = Uffizzi.ui.ask('Username: ')
+      username = @options[:username] || Uffizzi.ui.ask('Username: ')
       password = ENV['UFFIZZI_PASSWORD'] || Uffizzi.ui.ask('Password: ', echo: false)
       Uffizzi.ui.say("\n")
       params = prepare_request_params(username, password)

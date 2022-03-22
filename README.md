@@ -91,9 +91,10 @@ Logging you into the app which you set in the hostname option or config file
 
 ### login options
 
-| Option       | Description                  |
-| ------------ | -----------------------------|
-| `--hostname` | Adress of your app(optional) |
+| Option       | Aliase | Description                         |
+| ------------ | ------ | ----------------------------------- |
+| `--username` | `-u`   | Your email for logging in(optional) |
+| `--hostname` |        | Adress of your app(optional)        |
 
 If hostname uses basic authentication you can specify options for it by setting `basic_auth_user` and `basic_auth_password` via `config set` command.
 
