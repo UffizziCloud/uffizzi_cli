@@ -18,7 +18,7 @@ module Uffizzi
       params = prepare_request_params(password)
       response = create_session(@options[:hostname], params)
 
-      if Uffizzi::ResponseHelper.created?(response)
+      if ResponseHelper.created?(response)
         handle_succeed_response(response)
       else
         ResponseHelper.handle_failed_response(response)

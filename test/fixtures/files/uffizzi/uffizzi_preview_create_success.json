@@ -1,0 +1,72 @@
+{
+  "deployment": {
+    "id": 160,
+    "kind": "standard",
+    "project_id": 2,
+    "created_at": "2022-02-22T11:58:09.290Z",
+    "updated_at": "2022-02-22T11:58:12.511Z",
+    "state": "active",
+    "preview_url": "preview_url",
+    "tag": "latest",
+    "branch": null,
+    "commit": "",
+    "image_id": "nginx",
+    "ingress_container_ready": false,
+    "ingress_container_state": "pending",
+    "creation_source": "compose_file_manual",
+    "containers": [
+      {
+        "id": 270,
+        "kind": "",
+        "image": "library/nginx",
+        "tag": "latest",
+        "variables": [
+          
+        ],
+        "secret_variables": [
+          
+        ],
+        "created_at": "2022-02-22T11:58:09.309Z",
+        "updated_at": "2022-02-22T11:58:12.490Z",
+        "memory_limit": 125,
+        "memory_request": 125,
+        "entrypoint": null,
+        "command": null,
+        "port": 80,
+        "public": true,
+        "repo_id": 270,
+        "continuously_deploy": "enabled",
+        "receive_incoming_requests": true
+      },
+      {
+        "id": 271,
+        "kind": "",
+        "image": "library/redis",
+        "tag": "latest",
+        "variables": [
+          
+        ],
+        "secret_variables": [
+          
+        ],
+        "created_at": "2022-02-22T11:58:09.322Z",
+        "updated_at": "2022-02-22T11:58:12.506Z",
+        "memory_limit": 125,
+        "memory_request": 125,
+        "entrypoint": null,
+        "command": null,
+        "port": null,
+        "public": false,
+        "repo_id": 271,
+        "continuously_deploy": "enabled",
+        "receive_incoming_requests": false
+      }
+    ],
+    "deployed_by": {
+      "id": 1,
+      "kind": "",
+      "email": "",
+      "avatar_url": null
+    }
+  }
+}

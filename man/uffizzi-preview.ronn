@@ -1,0 +1,33 @@
+uffizzi preview - manage previews
+================================================================
+
+## SYNOPSIS
+    uffizzi preview COMMAND [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Manage Uffizzi previews
+
+    For more information on Uffizzi previews, see:
+    https://docs.uffizzi.com/cli/preview
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi 
+    help for details.
+
+## COMMANDS
+    COMMAND is one of the following:
+
+     create
+        Create a preview
+
+     delete
+        Delete a preview
+
+     describe
+        Display details of a preview
+
+     list
+        List all previews
+
+## 
+Run 'uffizzi preview COMMAND --help' for more information on a command.

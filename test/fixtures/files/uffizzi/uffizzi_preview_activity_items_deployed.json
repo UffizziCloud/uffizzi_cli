@@ -1,0 +1,12 @@
+{
+  "activity_items": [
+    {
+      "name": "nginx",
+      "state": "deployed"
+    },
+    {
+      "name": "redis",
+      "state": "deployed"
+    }
+  ]
+}
