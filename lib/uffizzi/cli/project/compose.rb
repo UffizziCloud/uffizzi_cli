@@ -5,6 +5,7 @@ require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
 require 'uffizzi/services/compose_file_service'
+require 'uffizzi/services/env_variables_service'
 require 'thor'
 
 module Uffizzi
@@ -95,7 +96,7 @@ module Uffizzi
 
     def prepare_params(file_path)
       begin
-        compose_file_data = File.read(file_path)
+        compose_file_data = EnvVariablesService.substitute_env_variables(File.read(file_path))
       rescue Errno::ENOENT => e
         return Uffizzi.ui.say(e)
       end
