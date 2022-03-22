@@ -20,4 +20,20 @@ class ServiceTest < Minitest::Test
 
     assert_requested(stubbed_uffizzi_preview_services_list)
   end
+
+  def test_list_preview_service_logs
+    body = json_fixture('files/uffizzi/uffizzi_preview_service_logs_success.json')
+    container_name = 'redis'
+    deployment_id = 318
+    params = {
+      project_slug: @project_slug,
+      deployment_id: deployment_id,
+      container_name: container_name,
+    }
+    stubbed_uffizzi_preview_service_logs = stub_uffizzi_preview_service_logs(Uffizzi.configuration.hostname, 200, body, {}, params)
+
+    @service.logs('container', "deployment-#{deployment_id}", container_name)
+
+    assert_requested(stubbed_uffizzi_preview_service_logs)
+  end
 end
