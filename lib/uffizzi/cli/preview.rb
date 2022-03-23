@@ -44,6 +44,13 @@ module Uffizzi
       run(options, 'describe', nil, deployment)
     end
 
+    desc 'events', 'events'
+    def events(deployment)
+      return Cli::Common.show_manual(:events) if options[:help]
+
+      run(options, 'events', nil, deployment)
+    end
+
     private
 
     def run(options, command, file_path, deployment)
@@ -51,6 +58,7 @@ module Uffizzi
       return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
 
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
+      @hostname = ConfigFile.read_option(:hostname)
 
       case command
       when 'list'
@@ -61,12 +69,13 @@ module Uffizzi
         handle_delete_command(deployment, project_slug)
       when 'describe'
         handle_describe_command(deployment, project_slug)
+      when 'events'
+        handle_events_command(deployment, project_slug)
       end
     end
 
     def handle_list_command(project_slug)
-      hostname = ConfigFile.read_option(:hostname)
-      response = fetch_deployments(hostname, project_slug)
+      response = fetch_deployments(@hostname, project_slug)
 
       if ResponseHelper.ok?(response)
         handle_succeed_list_response(response)
@@ -76,33 +85,50 @@ module Uffizzi
     end
 
     def handle_create_command(file_path, project_slug)
-      hostname = ConfigFile.read_option(:hostname)
       params = file_path.nil? ? {} : prepare_params(file_path)
-      response = create_deployment(hostname, project_slug, params)
+      response = create_deployment(@hostname, project_slug, params)
 
       if ResponseHelper.created?(response)
-        handle_succeed_create_response(hostname, project_slug, response)
+        handle_succeed_create_response(project_slug, response)
       else
         ResponseHelper.handle_failed_response(response)
       end
     end
 
-    def handle_succeed_create_response(hostname, project_slug, response)
+    def handle_events_command(deployment, project_slug)
+      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment)
+
+      deployment_id = deployment.split('-').last
+
+      response = fetch_events(@hostname, project_slug, deployment_id)
+
+      if ResponseHelper.ok?(response)
+        handle_succeed_events_response(response)
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
+    end
+
+    def handle_succeed_events_response(response)
+      Uffizzi.ui.print_in_columns(response[:body][:events])
+    end
+
+    def handle_succeed_create_response(project_slug, response)
       deployment = response[:body][:deployment]
       deployment_id = deployment[:id]
       params = { id: deployment_id }
 
-      response = deploy_containers(hostname, project_slug, deployment_id, params)
+      response = deploy_containers(@hostname, project_slug, deployment_id, params)
 
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say("Preview created with name deployment-#{deployment_id}")
-        print_deployment_progress(hostname, deployment, project_slug)
+        print_deployment_progress(deployment, project_slug)
       else
         ResponseHelper.handle_failed_response(response)
       end
     end
 
-    def print_deployment_progress(hostname, deployment, project_slug)
+    def print_deployment_progress(deployment, project_slug)
       deployment_id = deployment[:id]
 
       @spinner = TTY::Spinner.new('[:spinner] Creating containers...', format: :dots)
@@ -111,7 +137,7 @@ module Uffizzi
       activity_items = []
 
       loop do
-        response = get_activity_items(hostname, project_slug, deployment_id)
+        response = get_activity_items(@hostname, project_slug, deployment_id)
         handle_activity_items_response(response)
         return unless @spinner.spinning?
 
@@ -133,7 +159,7 @@ module Uffizzi
       containers_spinners = create_containers_spinners(activity_items)
 
       loop do
-        response = get_activity_items(hostname, project_slug, deployment_id)
+        response = get_activity_items(@hostname, project_slug, deployment_id)
         handle_activity_items_response(response)
         return if @spinner.done?
 
@@ -179,10 +205,9 @@ module Uffizzi
     def handle_delete_command(deployment, project_slug)
       return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment)
 
-      hostname = ConfigFile.read_option(:hostname)
       deployment_id = deployment.split('-').last
 
-      response = delete_deployment(hostname, project_slug, deployment_id)
+      response = delete_deployment(@hostname, project_slug, deployment_id)
 
       if ResponseHelper.no_content?(response)
         handle_succeed_delete_response(deployment_id)
@@ -194,10 +219,9 @@ module Uffizzi
     def handle_describe_command(deployment, project_slug)
       return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment)
 
-      hostname = ConfigFile.read_option(:hostname)
       deployment_id = deployment.split('-').last
 
-      response = describe_deployment(hostname, project_slug, deployment_id)
+      response = describe_deployment(@hostname, project_slug, deployment_id)
 
       if ResponseHelper.ok?(response)
         handle_succeed_describe_response(response)
