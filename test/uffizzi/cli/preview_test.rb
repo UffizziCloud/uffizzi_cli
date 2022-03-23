@@ -161,4 +161,20 @@ class PreviewTest < Minitest::Test
     assert_requested(stubbed_uffizzi_preview_deploy_containers)
     assert_requested(stubbed_uffizzi_preview_create)
   end
+
+  def test_events_preview_success
+    events_body = json_fixture('files/uffizzi/uffizzi_preview_events_success.json')
+    deployment_id = 1
+    stubbed_uffizzi_preview_events_success = stub_uffizzi_preview_events_success(events_body, deployment_id, @project_slug)
+
+    @preview.events("deployment-#{deployment_id}")
+
+    assert_requested(stubbed_uffizzi_preview_events_success)
+
+    event = events_body[:events].first
+
+    event_message = "{:first_timestamp=>\"#{event[:first_timestamp]}\", :last_timestamp=>\"#{event[:last_timestamp]}\", " \
+                    ":reason=>\"#{event[:reason]}\", :message=>\"#{event[:message]}\"}"
+    assert_equal(event_message, Uffizzi.ui.last_message)
+  end
 end
