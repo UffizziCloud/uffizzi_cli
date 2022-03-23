@@ -170,11 +170,5 @@ class PreviewTest < Minitest::Test
     @preview.events("deployment-#{deployment_id}")
 
     assert_requested(stubbed_uffizzi_preview_events_success)
-
-    event = events_body[:events].first
-
-    event_message = "{:first_timestamp=>\"#{event[:first_timestamp]}\", :last_timestamp=>\"#{event[:last_timestamp]}\", " \
-                    ":reason=>\"#{event[:reason]}\", :message=>\"#{event[:message]}\"}"
-    assert_equal(event_message, Uffizzi.ui.last_message)
   end
 end
