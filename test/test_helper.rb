@@ -31,8 +31,8 @@ class Minitest::Test
   def before_setup
     super
 
-    $stdout = StringIO.new
-    $stdout.truncate(0)
+    @mock_shell = MockShell.new
+    Uffizzi::UI::Shell.stubs(:new).returns(@mock_shell)
 
     Uffizzi::ConfigFile.delete
   end
