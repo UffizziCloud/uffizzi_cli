@@ -120,7 +120,7 @@ module Uffizzi
     end
 
     def prepare_registry_url(registry_url)
-      return if registry_url.match?(/^(?:http(s)?:\/\/)/)
+      return registry_url if registry_url.match?(/^(?:http(s)?:\/\/)/)
 
       "https://#{registry_url}"
     end
