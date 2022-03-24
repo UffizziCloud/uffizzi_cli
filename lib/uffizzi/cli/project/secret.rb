@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 require 'uffizzi'
-require 'thor'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
 require 'uffizzi/shell'
-require 'io/console'
-require 'byebug'
+
 module Uffizzi
   class CLI::Project::Secret < Thor
     include ApiClient
@@ -58,7 +56,7 @@ module Uffizzi
       table_data = [[table_header], *secrets]
       return Uffizzi.ui.print_table(table_data) if ResponseHelper.ok?(response)
 
-      handle_failed_response(response)
+      ResponseHelper.handle_failed_response(response)
     end
 
     def handle_create_command(project_slug, id)
@@ -70,7 +68,7 @@ module Uffizzi
       response = bulk_create_secrets(hostname, project_slug, params)
       return Uffizzi.ui.say('The secret was successfully created') if ResponseHelper.created?(response)
 
-      handle_failed_response(response)
+      ResponseHelper.handle_failed_response(response)
     end
 
     def handle_delete_command(project_slug, id)
@@ -80,12 +78,8 @@ module Uffizzi
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say('The secret was successfully deleted')
       else
-        handle_failed_response(response)
+        ResponseHelper.handle_failed_response(response)
       end
-    end
-
-    def handle_failed_response(response)
-      print_errors(response[:body][:errors])
     end
   end
 end

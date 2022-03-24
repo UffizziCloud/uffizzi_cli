@@ -15,7 +15,7 @@ module Uffizzi
     require_relative 'project/compose'
     subcommand 'compose', Uffizzi::CLI::Project::Compose
 
-    desc 'secret', 'Secrets Acctions'
+    desc 'secret', 'Secrets Actions'
     require_relative 'project/secret'
     subcommand 'secret', Uffizzi::CLI::Project::Secret
 
