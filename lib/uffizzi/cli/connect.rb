@@ -98,6 +98,8 @@ module Uffizzi
     end
 
     def handle_google(credential_file_path)
+      return Uffizzi.ui.say('Path to google service account key file wasn\'t specified.') if credential_file_path.nil?
+
       begin
         credential_content = File.read(credential_file_path)
       rescue Errno::ENOENT => e
