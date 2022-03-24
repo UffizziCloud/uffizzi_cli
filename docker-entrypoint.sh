@@ -7,7 +7,7 @@ if
 	[ $UFFIZZI_HOSTNAME ] &&
 	[ $UFFIZZI_PASSWORD ]
 then
-	uffizzi login --user "${UFFIZZI_USER}" --hostname "${UFFIZZI_HOSTNAME}"
+	uffizzi login --username "${UFFIZZI_USER}" --hostname "${UFFIZZI_HOSTNAME}"
 	if [ $UFFIZZI_PROJECT ]
 	then
 		uffizzi config set project "${UFFIZZI_PROJECT}"
