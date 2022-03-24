@@ -8,12 +8,15 @@ require 'uffizzi/services/preview_service'
 module Uffizzi
   class CLI::Preview::Service < Thor
     include ApiClient
+    LOGS_REQUIRED_ARGUMENTS_NUMBER = 3
 
     desc 'logs', 'logs'
-    def logs(logs_type, deployment_name, container_name)
+    def logs(*args)
+      return Cli::Common.show_manual(:preview_service_logs) if args.length != LOGS_REQUIRED_ARGUMENTS_NUMBER
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
       return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
 
+      logs_type, deployment_name, container_name = args
       deployment_id = deployment_name.split('-').last
       response = service_logs_response(logs_type, deployment_id, container_name)
       return Uffizzi.ui.say(response[:errors]) if response[:errors]
