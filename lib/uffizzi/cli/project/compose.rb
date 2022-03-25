@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
-require 'io/console'
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
 require 'uffizzi/services/compose_file_service'
 require 'uffizzi/services/env_variables_service'
-require 'thor'
 
 module Uffizzi
   class CLI::Project::Compose < Thor
