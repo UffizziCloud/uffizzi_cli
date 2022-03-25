@@ -20,40 +20,40 @@ module Uffizzi
     def list
       return Cli::Common.show_manual(:list) if options[:help]
 
-      run(options, 'list', nil, nil)
+      run(options, 'list')
     end
 
     desc 'create', 'create'
     def create(file_path = nil)
       return Cli::Common.show_manual(:create) if options[:help]
 
-      run(options, 'create', file_path, nil)
+      run(options, 'create', file_path: file_path)
     end
 
     desc 'delete', 'delete'
-    def delete(deployment)
+    def delete(deployment_name)
       return Cli::Common.show_manual(:delete) if options[:help]
 
-      run(options, 'delete', nil, deployment)
+      run(options, 'delete', deployment_name: deployment_name)
     end
 
     desc 'describe', 'describe'
-    def describe(deployment)
+    def describe(deployment_name)
       return Cli::Common.show_manual(:describe) if options[:help]
 
-      run(options, 'describe', nil, deployment)
+      run(options, 'describe', deployment_name: deployment_name)
     end
 
     desc 'events', 'events'
     def events(deployment_name)
       return Cli::Common.show_manual(:events) if options[:help]
 
-      run(options, 'events', nil, deployment_name)
+      run(options, 'events', deployment_name: deployment_name)
     end
 
     private
 
-    def run(options, command, file_path, deployment_name)
+    def run(options, command, file_path: nil, deployment_name: nil)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
       return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
 
