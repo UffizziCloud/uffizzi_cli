@@ -83,7 +83,7 @@ module ApiClient
     build_response(response)
   end
 
-  def describe_compose_file(hostname, params, project_slug)
+  def describe_compose_file(hostname, project_slug)
     uri = compose_file_uri(hostname, project_slug)
     response = Uffizzi::HttpClient.make_get_request(uri)
 
