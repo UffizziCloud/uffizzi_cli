@@ -6,7 +6,7 @@ module Uffizzi
   module UI
     class Shell
       def initialize
-        @shell = Thor::Shell::Color.new
+        @shell = Thor::Shell::Basic.new
       end
 
       def say(message)
