@@ -5,6 +5,7 @@ require_relative 'http_client'
 
 module ApiClient
   include ApiRoutes
+
   def create_session(hostname, params = {})
     uri = session_uri(hostname)
     response = Uffizzi::HttpClient.make_post_request(uri, params, false)
@@ -35,7 +36,28 @@ module ApiClient
 
   def unset_compose_file(hostname, project_slug)
     uri = compose_file_uri(hostname, project_slug)
-    response = Uffizzi::HttpClient.make_delete_request(uri, true)
+    response = Uffizzi::HttpClient.make_delete_request(uri)
+
+    build_response(response)
+  end
+
+  def fetch_secrets(hostname, project_slug)
+    uri = secrets_uri(hostname, project_slug)
+    response = Uffizzi::HttpClient.make_get_request(uri)
+
+    build_response(response)
+  end
+
+  def bulk_create_secrets(hostname, project_slug, params)
+    uri = "#{secrets_uri(hostname, project_slug)}/bulk_create"
+    response = Uffizzi::HttpClient.make_post_request(uri, params)
+
+    build_response(response)
+  end
+
+  def delete_secret(hostname, project_slug, id)
+    uri = secret_uri(hostname, project_slug, id)
+    response = Uffizzi::HttpClient.make_delete_request(uri)
 
     build_response(response)
   end
@@ -70,7 +92,7 @@ module ApiClient
 
   def delete_deployment(hostname, project_slug, deployment_id)
     uri = deployment_uri(hostname, project_slug, deployment_id)
-    response = Uffizzi::HttpClient.make_delete_request(uri, true)
+    response = Uffizzi::HttpClient.make_delete_request(uri)
 
     build_response(response)
   end

@@ -13,6 +13,14 @@ module Uffizzi
         @shell.say(msg)
       end
 
+      def print_in_columns(messages)
+        @shell.print_in_columns(messages)
+      end
+
+      def print_table(table_data)
+        @shell.print_table(table_data)
+      end
+
       def last_message
         @shell.send(:stdout).string.strip
       end
