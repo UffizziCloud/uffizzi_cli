@@ -13,10 +13,7 @@ class SecretTest < Minitest::Test
 
   def test_secret_list_success
     body = json_fixture('files/uffizzi/uffizzi_project_secrets_success.json')
-    stubbed_uffizzi_secrets = stub_uffizzi_project_secret_list(Uffizzi.configuration.hostname, 200, body, {}, @project_slug)
-
-    buffer = StringIO.new
-    $stdout = buffer
+    stubbed_uffizzi_secrets = stub_uffizzi_project_secret_list(body, @project_slug)
 
     result = @secret.list
     _table_header, *secrets = result
@@ -30,10 +27,8 @@ class SecretTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_projects_success_one_project.json')
     secret_name = 'my secret'
     secret_value = 'password'
-    stubbed_uffizzi_secrets = stub_uffizzi_project_secret_create(Uffizzi.configuration.hostname, 201, body, {}, @project_slug)
+    stubbed_uffizzi_secrets = stub_uffizzi_project_secret_create(body, @project_slug)
 
-    buffer = StringIO.new
-    $stdout = buffer
     $stdin = StringIO.new(secret_value)
     @secret.create(secret_name)
 
@@ -43,10 +38,8 @@ class SecretTest < Minitest::Test
 
   def test_secret_delete_success
     secret_name = 'my secret'
-    stubbed_uffizzi_secrets = stub_uffizzi_project_secret_delete(Uffizzi.configuration.hostname, 204, '', {}, @project_slug, secret_name)
+    stubbed_uffizzi_secrets = stub_uffizzi_project_secret_delete(@project_slug, secret_name)
 
-    buffer = StringIO.new
-    $stdout = buffer
     @secret.delete(secret_name)
 
     assert_equal('The secret was successfully deleted', Uffizzi.ui.last_message)

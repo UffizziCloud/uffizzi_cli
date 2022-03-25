@@ -49,20 +49,21 @@ module UffizziStubSupport
     stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
   end
 
-  def stub_uffizzi_project_secret_list(base_url, status, body, headers, project_slug)
-    url = secrets_uri(base_url, project_slug)
+  def stub_uffizzi_project_secret_list(body, project_slug)
+    url = secrets_uri(Uffizzi.configuration.hostname, project_slug)
 
-    stub_request(:get, url).to_return(status: status, body: body.to_json, headers: headers)
+    stub_request(:get, url).to_return(status: 200, body: body.to_json)
   end
 
-  def stub_uffizzi_project_secret_create(base_url, status, body, headers, project_slug)
-    url = "#{secrets_uri(base_url, project_slug)}/bulk_create"
-    stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
+  def stub_uffizzi_project_secret_create(body, project_slug)
+    url = "#{secrets_uri(Uffizzi.configuration.hostname, project_slug)}/bulk_create"
+
+    stub_request(:post, url).to_return(status: 201, body: body.to_json)
   end
 
-  def stub_uffizzi_project_secret_delete(base_url, status, _body, headers, project_slug, secret_id)
-    url = secret_uri(base_url, project_slug, secret_id)
+  def stub_uffizzi_project_secret_delete(project_slug, secret_id)
+    url = secret_uri(Uffizzi.configuration.hostname, project_slug, secret_id)
 
-    stub_request(:delete, url).to_return(status: status, body: '', headers: headers)
+    stub_request(:delete, url).to_return(status: 204, body: '')
   end
 end
