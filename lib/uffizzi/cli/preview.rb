@@ -95,9 +95,9 @@ module Uffizzi
     end
 
     def handle_events_command(deployment_name, project_slug)
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment_name)
+      deployment_id = read_deployment_id(deployment_name)
 
-      deployment_id = deployment_name.split('-').last
+      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
       response = fetch_events(ConfigFile.read_option(:hostname), project_slug, deployment_id)
 
@@ -202,9 +202,9 @@ module Uffizzi
     end
 
     def handle_delete_command(deployment_name, project_slug)
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment_name)
+      deployment_id = read_deployment_id(deployment_name)
 
-      deployment_id = deployment_name.split('-').last
+      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
       response = delete_deployment(ConfigFile.read_option(:hostname), project_slug, deployment_id)
 
@@ -216,9 +216,9 @@ module Uffizzi
     end
 
     def handle_describe_command(deployment_name, project_slug)
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment_name)
+      deployment_id = read_deployment_id(deployment_name)
 
-      deployment_id = deployment_name.split('-').last
+      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
       response = describe_deployment(ConfigFile.read_option(:hostname), project_slug, deployment_id)
 
@@ -279,12 +279,14 @@ module Uffizzi
       }
     end
 
-    def deployment_name_valid?(deployment)
-      return false unless deployment.start_with?('deployment-')
-      return false unless deployment.split('-').size == 2
+    def read_deployment_id(deployment_name)
+      return nil unless deployment_name.start_with?('deployment-')
+      return nil unless deployment_name.split('-').size == 2
 
-      deployment_id = deployment.split('-').last
-      deployment_id.to_i.to_s == deployment_id
+      deployment_id = deployment_name.split('-').last
+      return nil if deployment_id.to_i.to_s != deployment_id
+
+      deployment_id
     end
   end
 end
