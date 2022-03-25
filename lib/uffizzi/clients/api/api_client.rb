@@ -29,7 +29,7 @@ module ApiClient
 
   def create_credential(hostname, params)
     uri = credentials_uri(hostname)
-    response = Uffizzi::HttpClient.make_request(uri, :post, params)
+    response = Uffizzi::HttpClient.make_post_request(uri, params)
 
     build_response(response)
   end
