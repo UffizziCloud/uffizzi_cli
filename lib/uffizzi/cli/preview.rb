@@ -45,15 +45,15 @@ module Uffizzi
     end
 
     desc 'events', 'events'
-    def events(deployment)
+    def events(deployment_name)
       return Cli::Common.show_manual(:events) if options[:help]
 
-      run(options, 'events', nil, deployment)
+      run(options, 'events', nil, deployment_name)
     end
 
     private
 
-    def run(options, command, file_path, deployment)
+    def run(options, command, file_path, deployment_name)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
       return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
 
@@ -65,11 +65,11 @@ module Uffizzi
       when 'create'
         handle_create_command(file_path, project_slug)
       when 'delete'
-        handle_delete_command(deployment, project_slug)
+        handle_delete_command(deployment_name, project_slug)
       when 'describe'
-        handle_describe_command(deployment, project_slug)
+        handle_describe_command(deployment_name, project_slug)
       when 'events'
-        handle_events_command(deployment, project_slug)
+        handle_events_command(deployment_name, project_slug)
       end
     end
 
@@ -94,10 +94,10 @@ module Uffizzi
       end
     end
 
-    def handle_events_command(deployment, project_slug)
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment)
+    def handle_events_command(deployment_name, project_slug)
+      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment_name)
 
-      deployment_id = deployment.split('-').last
+      deployment_id = deployment_name.split('-').last
 
       response = fetch_events(ConfigFile.read_option(:hostname), project_slug, deployment_id)
 
@@ -201,10 +201,10 @@ module Uffizzi
       end
     end
 
-    def handle_delete_command(deployment, project_slug)
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment)
+    def handle_delete_command(deployment_name, project_slug)
+      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment_name)
 
-      deployment_id = deployment.split('-').last
+      deployment_id = deployment_name.split('-').last
 
       response = delete_deployment(ConfigFile.read_option(:hostname), project_slug, deployment_id)
 
@@ -215,10 +215,10 @@ module Uffizzi
       end
     end
 
-    def handle_describe_command(deployment, project_slug)
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment)
+    def handle_describe_command(deployment_name, project_slug)
+      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") unless deployment_name_valid?(deployment_name)
 
-      deployment_id = deployment.split('-').last
+      deployment_id = deployment_name.split('-').last
 
       response = describe_deployment(ConfigFile.read_option(:hostname), project_slug, deployment_id)
 
