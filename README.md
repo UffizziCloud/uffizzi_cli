@@ -52,6 +52,17 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 Run rubocop:
 `bundle exec rubocop -A`
 
+## Testing
+
+Run tests:
+`bundle exec rake test`
+
+Run tests from a file:
+`bundle exec rake test TEST=test/uffizzi/cli/preview_test.rb`
+
+Run single test
+`bundle exec rake test TEST=test/uffizzi/cli/preview_test.rb TESTOPTS="--name=test_name"`
+
 ## Commands
 
 ### login

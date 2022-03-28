@@ -48,4 +48,34 @@ module UffizziStubSupport
 
     stub_request(:post, url).to_return(status: status, body: body.to_json, headers: headers)
   end
+
+  def stub_uffizzi_project_secret_list(body, project_slug)
+    url = secrets_uri(Uffizzi.configuration.hostname, project_slug)
+
+    stub_request(:get, url).to_return(status: 200, body: body.to_json)
+  end
+
+  def stub_uffizzi_project_secret_create(body, project_slug)
+    url = "#{secrets_uri(Uffizzi.configuration.hostname, project_slug)}/bulk_create"
+
+    stub_request(:post, url).to_return(status: 201, body: body.to_json)
+  end
+
+  def stub_uffizzi_project_secret_delete(project_slug, secret_id)
+    url = secret_uri(Uffizzi.configuration.hostname, project_slug, secret_id)
+
+    stub_request(:delete, url).to_return(status: 204, body: '')
+  end
+
+  def stub_uffizzi_create_credential(body)
+    uri = credentials_uri(Uffizzi.configuration.hostname)
+
+    stub_request(:post, uri).to_return(status: 201, body: body.to_json)
+  end
+
+  def stub_uffizzi_create_credential_fail(body)
+    uri = credentials_uri(Uffizzi.configuration.hostname)
+
+    stub_request(:post, uri).to_return(status: 422, body: body.to_json)
+  end
 end

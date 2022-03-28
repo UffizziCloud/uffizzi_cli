@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'io/console'
 require 'uffizzi'
 require 'uffizzi/response_helper'
 require 'uffizzi/clients/api/api_client'
@@ -14,7 +13,8 @@ module Uffizzi
     end
 
     def run
-      password = IO::console.getpass('Enter Password: ')
+      password = ENV['UFFIZZI_PASSWORD'] || IO::console.getpass('Enter Password: ')
+
       params = prepare_request_params(password)
       response = create_session(@options[:hostname], params)
 
