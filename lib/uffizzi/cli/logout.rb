@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'io/console'
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 

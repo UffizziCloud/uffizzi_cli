@@ -9,8 +9,8 @@ module Uffizzi
         @shell = Thor::Shell::Basic.new
       end
 
-      def say(msg)
-        @shell.say(msg)
+      def say(message)
+        @shell.say(message)
       end
 
       def print_in_columns(messages)

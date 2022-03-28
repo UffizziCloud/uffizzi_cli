@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-require 'io/console'
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
-require 'thor'
 
 module Uffizzi
   class CLI::Project < Thor
