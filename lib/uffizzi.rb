@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'io/console'
+require 'tty-spinner'
 
 require 'uffizzi/shell'
 require 'uffizzi/version'
