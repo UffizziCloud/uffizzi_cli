@@ -9,7 +9,7 @@ module Uffizzi
     def run(credential_type)
       return Uffizzi.ui.say('Unsupported credential type.') unless credential_type_supported?(credential_type)
 
-      credential_type_name = case credential_type
+      connection_type = case credential_type
                              when 'docker-hub'
                                Uffizzi.configuration.credential_types[:dockerhub]
                              when 'acr'
@@ -20,10 +20,10 @@ module Uffizzi
                                Uffizzi.configuration.credential_types[:google]
       end
 
-      response = delete_credential(ConfigFile.read_option(:hostname), credential_type_name)
+      response = delete_credential(ConfigFile.read_option(:hostname), connection_type)
 
       if ResponseHelper.no_content?(response)
-        Uffizzi.ui.say("Successfully disconnected #{credential_source(credential_type)} credential")
+        Uffizzi.ui.say("Successfully disconnected #{connection_name(credential_type)} connection")
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -35,7 +35,7 @@ module Uffizzi
       ['docker-hub', 'acr', 'ecr', 'gcr'].include?(credential_type)
     end
 
-    def credential_source(credential_type)
+    def connection_name(credential_type)
       {
         'docker-hub' => 'DockerHub',
         'acr' => 'ACR',
