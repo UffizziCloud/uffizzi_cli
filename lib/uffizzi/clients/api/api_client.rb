@@ -30,6 +30,8 @@ module ApiClient
   def create_credential(hostname, params)
     uri = credentials_uri(hostname)
     response = Uffizzi::HttpClient.make_post_request(uri, params)
+
+    build_response(response)
   end
 
   def fetch_deployment_services(hostname, project_slug, deployment_id)
