@@ -43,8 +43,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-minitest'
   spec.add_development_dependency 'rubocop-rake'
-  spec.add_development_dependency 'tty-spinner'
   spec.add_development_dependency 'webmock'
 
   spec.add_dependency 'thor'
+  spec.add_dependency 'tty-spinner'
 end
