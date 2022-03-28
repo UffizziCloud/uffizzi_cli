@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Uffizzi
-  VERSION = '0.3.1'
+  VERSION = '0.2.3'
 end
