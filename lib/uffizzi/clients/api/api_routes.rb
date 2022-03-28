@@ -63,8 +63,4 @@ module ApiRoutes
   def preview_service_logs_uri(hostname, project_slug, deployment_id, container_name)
     "#{hostname}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers/#{container_name}/logs"
   end
-
-  def preview_service_build_logs_uri(hostname, project_slug, deployment_id, container_name)
-    "#{hostname}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers/#{container_name}/build/logs"
-  end
 end

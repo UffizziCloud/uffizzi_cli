@@ -53,13 +53,6 @@ module ApiClient
     build_response(response)
   end
 
-  def fetch_deployment_service_build_logs(hostname, project_slug, deployment_id, container_name)
-    uri = preview_service_build_logs_uri(hostname, project_slug, deployment_id, container_name)
-    response = Uffizzi::HttpClient.make_get_request(uri)
-
-    build_response(response)
-  end
-
   def set_compose_file(hostname, params, project_slug)
     uri = compose_file_uri(hostname, project_slug)
     response = Uffizzi::HttpClient.make_post_request(uri, params)

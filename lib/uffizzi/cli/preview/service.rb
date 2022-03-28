@@ -54,10 +54,8 @@ module Uffizzi
       case logs_type
       when 'container'
         fetch_deployment_service_logs(hostname, project_slug, deployment_id, container_name)
-      when 'build'
-        fetch_deployment_service_build_logs(hostname, project_slug, deployment_id, container_name)
       else
-        { errors: 'Unknown log type' }
+        raise Thor::Error.new('Unknown log type')
       end
     end
 
