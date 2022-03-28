@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (0.3.6)
+    uffizzi-cli (0.3.7)
       thor
       tty-spinner
 
