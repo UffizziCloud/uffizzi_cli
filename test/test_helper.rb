@@ -4,6 +4,7 @@ $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 Dir[File.expand_path('support/**/*.rb', __dir__)].sort.each { |f| require f }
 
 require 'factory_bot'
+require 'faker'
 require 'net/http'
 require 'io/console'
 require 'byebug'
@@ -31,8 +32,8 @@ class Minitest::Test
   def before_setup
     super
 
-    $stdout = StringIO.new
-    $stdout.truncate(0)
+    @mock_shell = MockShell.new
+    Uffizzi::UI::Shell.stubs(:new).returns(@mock_shell)
 
     Uffizzi::ConfigFile.delete
   end

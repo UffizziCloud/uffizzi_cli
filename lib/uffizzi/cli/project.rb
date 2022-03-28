@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-require 'io/console'
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
-require 'thor'
 
 module Uffizzi
   class CLI::Project < Thor
@@ -14,6 +12,10 @@ module Uffizzi
     method_option :file, required: false, aliases: '-f'
     require_relative 'project/compose'
     subcommand 'compose', Uffizzi::CLI::Project::Compose
+
+    desc 'secret', 'Secrets Actions'
+    require_relative 'project/secret'
+    subcommand 'secret', Uffizzi::CLI::Project::Secret
 
     desc 'list', 'list'
     def list

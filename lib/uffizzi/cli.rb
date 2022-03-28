@@ -30,6 +30,12 @@ module Uffizzi
       Logout.new.run
     end
 
+    desc 'projects', 'projects'
+    def projects
+      require_relative 'cli/projects'
+      Projects.new.run
+    end
+
     desc 'project', 'project'
     require_relative 'cli/project'
     subcommand 'project', CLI::Project
@@ -42,5 +48,11 @@ module Uffizzi
     method_option :project, required: false
     require_relative 'cli/preview'
     subcommand 'preview', CLI::Preview
+
+    desc 'connect CREDENTIAL_TYPE', 'Connect credentials into Uffizzi'
+    def connect(credential_type, credential_file_path = nil)
+      require_relative 'cli/connect'
+      Connect.new.run(credential_type, credential_file_path)
+    end
   end
 end

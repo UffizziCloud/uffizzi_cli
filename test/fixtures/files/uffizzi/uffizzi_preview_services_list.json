@@ -1,0 +1,14 @@
+{
+  "containers": [
+    {
+      "id": 321,
+      "name": "webhooks-test-app:latest",
+      "memory_limit": null,
+      "memory_request": null,
+      "continuously_deploy": "disabled",
+      "variables": null,
+      "secret_variables": null,
+      "container_config_files": []
+    }
+  ]
+}

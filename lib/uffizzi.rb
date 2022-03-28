@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
+require 'io/console'
+
 require 'uffizzi/shell'
 require 'uffizzi/version'
 require 'uffizzi/clients/api/api_client'
 require 'uffizzi/clients/api/api_routes'
 require 'uffizzi/config_file'
+require_relative '../config/uffizzi'
 
 module Uffizzi
   class Error < StandardError; end
