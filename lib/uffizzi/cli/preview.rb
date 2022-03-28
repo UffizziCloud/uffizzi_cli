@@ -3,6 +3,7 @@
 require 'uffizzi'
 require 'tty-spinner'
 require 'uffizzi/auth_helper'
+require 'uffizzi/services/preview_service'
 
 module Uffizzi
   class CLI::Preview < Thor
@@ -15,6 +16,10 @@ module Uffizzi
         Cli::Common.show_manual(:preview)
       end
     end
+
+    desc 'service', 'service'
+    require_relative 'preview/service'
+    subcommand 'service', Uffizzi::CLI::Preview::Service
 
     desc 'list', 'list'
     def list
@@ -95,7 +100,7 @@ module Uffizzi
     end
 
     def handle_events_command(deployment_name, project_slug)
-      deployment_id = read_deployment_id(deployment_name)
+      deployment_id = PreviewService.read_deployment_id(deployment_name)
 
       return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
@@ -202,7 +207,7 @@ module Uffizzi
     end
 
     def handle_delete_command(deployment_name, project_slug)
-      deployment_id = read_deployment_id(deployment_name)
+      deployment_id = PreviewService.read_deployment_id(deployment_name)
 
       return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
@@ -216,7 +221,7 @@ module Uffizzi
     end
 
     def handle_describe_command(deployment_name, project_slug)
-      deployment_id = read_deployment_id(deployment_name)
+      deployment_id = PreviewService.read_deployment_id(deployment_name)
 
       return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
@@ -277,16 +282,6 @@ module Uffizzi
         compose_file: compose_file_params,
         dependencies: dependencies,
       }
-    end
-
-    def read_deployment_id(deployment_name)
-      return nil unless deployment_name.start_with?('deployment-')
-      return nil unless deployment_name.split('-').size == 2
-
-      deployment_id = deployment_name.split('-').last
-      return nil if deployment_id.to_i.to_s != deployment_id
-
-      deployment_id
     end
   end
 end

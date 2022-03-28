@@ -51,4 +51,8 @@ module ApiRoutes
   def credentials_uri(hostname)
     "#{hostname}/api/cli/v1/account/credentials"
   end
+
+  def preview_services_uri(hostname, project_slug, deployment_id)
+    "#{hostname}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers"
+  end
 end
