@@ -14,7 +14,7 @@ class ServiceTest < Minitest::Test
   def test_list_preview_services
     body = json_fixture('files/uffizzi/uffizzi_preview_services_list.json')
     deployment_id = 318
-    stubbed_uffizzi_preview_services_list = stub_uffizzi_preview_services_list(body, {}, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_services_list = stub_uffizzi_preview_services_list(body, @project_slug, deployment_id)
 
     @service.list("deployment-#{deployment_id}")
 
