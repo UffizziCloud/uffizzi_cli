@@ -41,6 +41,13 @@ module ApiClient
     build_response(response)
   end
 
+  def delete_credential(hostname, credential_type)
+    uri = delete_credential_uri(hostname, credential_type)
+    response = Uffizzi::HttpClient.make_request(uri, :delete)
+
+    build_response(response)
+  end
+
   def set_compose_file(hostname, params, project_slug)
     uri = compose_file_uri(hostname, project_slug)
     response = Uffizzi::HttpClient.make_post_request(uri, params)
