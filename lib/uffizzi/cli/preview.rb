@@ -14,28 +14,28 @@ module Uffizzi
     require_relative 'preview/service'
     subcommand 'service', Uffizzi::CLI::Preview::Service
 
-    desc 'list', 'list'
+    desc 'uffizzi preview list', 'list'
     def list
       run('list')
     end
 
-    desc 'create', 'create'
+    desc 'create [COMPOSE_FILE]', 'create'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
     def create(file_path = nil)
       run('create', file_path: file_path)
     end
 
-    desc 'delete', 'delete'
+    desc 'uffizzi preview delete [DEPLOYMENT_ID]', 'delete'
     def delete(deployment_name)
       run('delete', deployment_name: deployment_name)
     end
 
-    desc 'describe', 'describe'
+    desc 'uffizzi preview describe [DEPLOYMENT_ID]', 'describe'
     def describe(deployment_name)
       run('describe', deployment_name: deployment_name)
     end
 
-    desc 'events', 'events'
+    desc 'uffizzi preview events [DEPLOYMENT_ID]', 'events'
     def events(deployment_name)
       run('events', deployment_name: deployment_name)
     end

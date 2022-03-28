@@ -10,17 +10,17 @@ module Uffizzi
   class CLI::Project::Compose < Thor
     include ApiClient
 
-    desc 'set', 'set'
+    desc 'uffizzi project compose set [OPTIONS]', 'set'
     def set
       run(options, 'set')
     end
 
-    desc 'unset', 'unset'
+    desc 'uffizzi project compose unset', 'unset'
     def unset
       run(options, 'unset')
     end
 
-    desc 'describe', 'describe'
+    desc 'uffizzi project compose describe', 'describe'
     def describe
       run(options, 'describe')
     end

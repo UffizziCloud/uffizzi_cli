@@ -9,17 +9,17 @@ module Uffizzi
   class CLI::Project::Secret < Thor
     include ApiClient
 
-    desc 'list', 'List Secrets'
+    desc 'uffizzi project secret list', 'List Secrets'
     def list
       run('list')
     end
 
-    desc 'create', 'Create secrets'
+    desc '$stdout | uffizzi project secret create [SECRET_ID]', 'Create secrets'
     def create(id)
       run('create', id)
     end
 
-    desc 'delete', 'Delete a secret'
+    desc 'uffizzi project secret delete [SECRET_ID]', 'Delete a secret'
     def delete(id)
       run('delete', id)
     end
