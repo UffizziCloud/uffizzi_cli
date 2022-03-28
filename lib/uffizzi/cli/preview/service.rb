@@ -5,7 +5,7 @@ require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
 require 'thor'
-require 'byebug'
+require 'uffizzi/services/preview_service'
 
 module Uffizzi
   class CLI::Preview::Service < Thor
@@ -18,7 +18,7 @@ module Uffizzi
 
       project_slug = ConfigFile.read_option(:project)
       hostname = ConfigFile.read_option(:hostname)
-      deployment_id = deployment_name.split('-').last
+      deployment_id = PreviewService.read_deployment_id(deployment_name)
       response = fetch_deployment_services(hostname, project_slug, deployment_id)
 
       if ResponseHelper.ok?(response)
@@ -35,7 +35,7 @@ module Uffizzi
       return Uffizzi.ui.say("There are no services associated with the preview #{deployment_name}") if services.empty?
 
       services.each do |service|
-        pp(service)
+        Uffizzi.ui.say(service)
       end
     end
   end
