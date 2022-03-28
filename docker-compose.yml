@@ -2,7 +2,9 @@ version: "3.9"
 
 services:
   gem:
-    build: .
+    build:
+      context: .
+      target: builder
     volumes:
       - ./:/gem:cached
       - ~/.ssh:/root/.ssh
