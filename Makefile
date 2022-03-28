@@ -18,11 +18,13 @@ release_major:
 
 release:
 	git checkout develop
+	git pull origin --rebase develop
 	@echo 'Set a new version'
 	docker-compose run --rm gem bash -c "bundle exec bump set ${VERSION}"
 	@echo 'Update remote origin'
 	git push origin develop
 	git checkout main
+	git pull origin --rebase main
 	git merge --no-ff --no-edit develop
 	git push origin main
 	@echo 'Create a new tag'
