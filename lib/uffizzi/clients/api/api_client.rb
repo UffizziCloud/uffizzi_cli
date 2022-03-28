@@ -104,6 +104,13 @@ module ApiClient
     build_response(response)
   end
 
+  def fetch_events(hostname, project_slug, deployment_id)
+    uri = events_uri(hostname, project_slug, deployment_id)
+    response = Uffizzi::HttpClient.make_get_request(uri)
+
+    build_response(response)
+  end
+
   def get_activity_items(hostname, project_slug, deployment_id)
     uri = activity_items_uri(hostname, project_slug, deployment_id)
     response = Uffizzi::HttpClient.make_get_request(uri)
