@@ -1,8 +1,9 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (0.3.6)
+    uffizzi-cli (0.3.7)
       thor
+      tty-spinner
 
 GEM
   remote: https://rubygems.org/
@@ -114,9 +115,8 @@ DEPENDENCIES
   rubocop
   rubocop-minitest
   rubocop-rake
-  tty-spinner
   uffizzi-cli!
   webmock
 
 BUNDLED WITH
-   2.2.22
+   2.2.32

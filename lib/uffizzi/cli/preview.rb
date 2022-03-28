@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'uffizzi'
-require 'tty-spinner'
 require 'uffizzi/auth_helper'
 require 'uffizzi/services/preview_service'
 
