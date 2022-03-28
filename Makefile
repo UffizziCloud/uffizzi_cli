@@ -24,6 +24,7 @@ release:
 	git push origin develop
 	git checkout main
 	git merge --no-ff --no-edit develop
+	git push origin main
 	@echo 'Create a new tag'
 	git tag v${VERSION}
 	git push origin v${VERSION}
