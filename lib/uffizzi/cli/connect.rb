@@ -24,10 +24,8 @@ module Uffizzi
     private
 
     def handle_docker_hub
-      IO::console.write('Username: ')
-      username = IO::console.gets.strip
-
-      password = IO::console.getpass('Password: ')
+      username = Uffizzi.ui.ask('Username: ')
+      password = Uffizzi.ui.ask('Password: ', echo: false)
 
       params = {
         username: username,
@@ -39,20 +37,16 @@ module Uffizzi
       response = create_credential(hostname, params)
 
       if ResponseHelper.created?(response)
-        Uffizzi.ui.say('Successfully connected to DockerHub')
+        print_success_message('DockerHub')
       else
         ResponseHelper.handle_failed_response(response)
       end
     end
 
     def handle_azure
-      IO::console.write('Registry Domain: ')
-      registry_url = prepare_registry_url(IO::console.gets.strip)
-
-      IO::console.write('Docker ID: ')
-      username = IO::console.gets.strip
-
-      password = IO::console.getpass('Password/Access Token: ')
+      registry_url = prepare_registry_url(Uffizzi.ui.ask('Registry Domain: '))
+      username = Uffizzi.ui.ask('Docker ID: ')
+      password = Uffizzi.ui.ask('Password/Access Token: ', echo: false)
 
       params = {
         username: username,
@@ -65,20 +59,16 @@ module Uffizzi
       response = create_credential(hostname, params)
 
       if ResponseHelper.created?(response)
-        Uffizzi.ui.say('Successfully connected to ACR')
+        print_success_message('ACR')
       else
         ResponseHelper.handle_failed_response(response)
       end
     end
 
     def handle_amazon
-      IO::console.write('Registry Domain: ')
-      registry_url = prepare_registry_url(IO::console.gets.strip)
-
-      IO::console.write('Access key ID: ')
-      username = IO::console.gets.strip
-
-      password = IO::console.getpass('Secret access key: ')
+      registry_url = prepare_registry_url(Uffizzi.ui.ask('Registry Domain: '))
+      username = Uffizzi.ui.ask('Access key ID: ')
+      password = Uffizzi.ui.ask('Secret access key: ', echo: false)
 
       params = {
         username: username,
@@ -91,7 +81,7 @@ module Uffizzi
       response = create_credential(hostname, params)
 
       if ResponseHelper.created?(response)
-        Uffizzi.ui.say('Successfully connected to ECR')
+        print_success_message('ECR')
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -115,7 +105,7 @@ module Uffizzi
       response = create_credential(hostname, params)
 
       if ResponseHelper.created?(response)
-        Uffizzi.ui.say('Successfully connected to GCR')
+        print_success_message('GCR')
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -125,6 +115,10 @@ module Uffizzi
       return registry_url if registry_url.match?(/^(?:http(s)?:\/\/)/)
 
       "https://#{registry_url}"
+    end
+
+    def print_success_message(connection_name)
+      Uffizzi.ui.say("Successfully connected to #{connection_name}")
     end
   end
 end
