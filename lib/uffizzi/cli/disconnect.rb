@@ -10,14 +10,14 @@ module Uffizzi
       return Uffizzi.ui.say('Unsupported credential type.') unless credential_type_supported?(credential_type)
 
       connection_type = case credential_type
-                             when 'docker-hub'
-                               Uffizzi.configuration.credential_types[:dockerhub]
-                             when 'acr'
-                               Uffizzi.configuration.credential_types[:azure]
-                             when 'ecr'
-                               Uffizzi.configuration.credential_types[:amazon]
-                             when 'gcr'
-                               Uffizzi.configuration.credential_types[:google]
+                        when 'docker-hub'
+                          Uffizzi.configuration.credential_types[:dockerhub]
+                        when 'acr'
+                          Uffizzi.configuration.credential_types[:azure]
+                        when 'ecr'
+                          Uffizzi.configuration.credential_types[:amazon]
+                        when 'gcr'
+                          Uffizzi.configuration.credential_types[:google]
       end
 
       response = delete_credential(ConfigFile.read_option(:hostname), connection_type)
