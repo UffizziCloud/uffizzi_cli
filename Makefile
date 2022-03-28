@@ -18,7 +18,6 @@ release_major:
 
 release:
 	git checkout develop
-	git pull origin --rebase develop
 	@echo 'Set a new version'
 	docker-compose run --rm gem bash -c "bundle exec bump set ${VERSION}"
 	@echo 'Update remote origin'
