@@ -13,6 +13,10 @@ module Uffizzi
         @shell.say(message)
       end
 
+      def ask(msg, *args)
+        @shell.ask(msg, *args)
+      end
+
       def print_in_columns(messages)
         @shell.print_in_columns(messages)
       end
