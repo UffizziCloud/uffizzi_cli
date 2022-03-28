@@ -5,6 +5,7 @@ on:
       - qa
       - develop
       - main
+      - feature/buildx-qemu
   pull_request:
     types: [opened,synchronize,reopened]
 
@@ -69,3 +70,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           repository: uffizzi/cli
+  test-qemu-build:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_name == 'feature/buildx-qemu' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
