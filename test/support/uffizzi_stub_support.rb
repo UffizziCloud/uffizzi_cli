@@ -82,7 +82,7 @@ module UffizziStubSupport
   def stub_uffizzi_delete_credential(credential_type)
     uri = delete_credential_uri(Uffizzi.configuration.hostname, credential_type)
 
-    stub_request(:delete, uri).to_return(status: 204, body: '')
+    stub_request(:delete, uri).to_return(status: 204)
   end
 
   def stub_uffizzi_delete_credential_fail(body, credential_type)
