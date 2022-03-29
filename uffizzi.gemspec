@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'lib/uffizzi/version'
+$LOAD_PATH.push File.expand_path('lib', __dir__)
+require 'uffizzi/version'
 
 Gem::Specification.new do |spec|
   spec.name = 'uffizzi-cli'
@@ -20,11 +21,7 @@ Gem::Specification.new do |spec|
   spec.bindir = 'exe'
   spec.executables = ['uffizzi']
 
-  spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files -z`.split("\x0").select do |file|
-      file.match(%r{^(lib/*|exe/uffizzi|README|LICENSE|CHANGELOG)})
-    end
-  end
+  spec.files = Dir['{lib}/**/*'] + ['README.md', 'LICENSE']
 
   spec.require_paths = ['lib']
   spec.required_ruby_version = '>= 2.5.0'
