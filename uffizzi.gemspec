@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'lib/uffizzi/version'
+$LOAD_PATH.push File.expand_path('lib', __dir__)
+require 'uffizzi/version'
 
 Gem::Specification.new do |spec|
   spec.name = 'uffizzi-cli'
@@ -12,20 +13,21 @@ Gem::Specification.new do |spec|
   spec.description = 'uffizzi-cli'
   spec.homepage = 'https://uffizzi.com'
   spec.license = 'Apache-2.0'
-  spec.required_ruby_version = '>= 2.5.0'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/UffizziCloud/uffizzi_cli'
   spec.metadata['changelog_uri'] = 'https://github.com/UffizziCloud/uffizzi_cli/blob/master/CHANGELOG.md'
 
-  spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files -z`.split("\x0").reject do |f|
-      (f == __FILE__) || f.match(%r{\A(?:(?:test|spec|features)/|\.(?:git|travis|circleci)|appveyor)})
-    end
-  end
   spec.bindir = 'exe'
-  spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
+  spec.executables = ['uffizzi']
+
+  spec.files = Dir['{lib}/**/*', '{config}/**/*'] + ['README.md', 'LICENSE']
+
   spec.require_paths = ['lib']
+  spec.required_ruby_version = '>= 2.5.0'
+
+  spec.add_dependency 'thor'
+  spec.add_dependency 'tty-spinner'
 
   spec.add_development_dependency 'bump'
   spec.add_development_dependency 'bundler', '~> 2.2'
@@ -44,7 +46,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-minitest'
   spec.add_development_dependency 'rubocop-rake'
   spec.add_development_dependency 'webmock'
-
-  spec.add_dependency 'thor'
-  spec.add_dependency 'tty-spinner'
 end
