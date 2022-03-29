@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.metadata['changelog_uri'] = 'https://github.com/UffizziCloud/uffizzi_cli/blob/master/CHANGELOG.md'
 
   spec.bindir = 'exe'
-  spec.executables = %w[uffizzi]
+  spec.executables = ['uffizzi']
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").select do |file|
