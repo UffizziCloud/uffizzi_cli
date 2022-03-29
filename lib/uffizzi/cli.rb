@@ -68,12 +68,21 @@ module Uffizzi
 
       def dispatch(meth, given_args, given_opts, config)
         args, opts = Thor::Options.split(given_args)
-        args_without_help = args.reject { |arg| arg == 'help' }
-        file_name = "uffizzi-#{args_without_help.join('-')}"
-        show_help = given_args.include?('help') || opts.include?('--help') || opts.include?('-h')
-        return Cli::Common.show_manual(file_name) if show_help
+        return Cli::Common.show_manual(filename(args)) if show_help?(args, opts)
 
         super
+      end
+
+      private
+
+      def filename(args)
+        args_without_help = args.reject { |arg| arg == 'help' }
+
+        "uffizzi-#{args_without_help.join('-')}"
+      end
+
+      def show_help?(args, opts)
+        args.include?('help') || opts.include?('--help') || opts.include?('-h')
       end
     end
   end
