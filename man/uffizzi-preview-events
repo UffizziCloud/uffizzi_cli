@@ -1,0 +1,32 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-PREVIEW\-EVENTS" "" "March 2022" ""
+.SH "NAME"
+\fBuffizzi\-preview\-events\fR
+.P
+NAME uffizzi preview events \- show the deployment event logs for a preview
+.P
+SYNOPSIS uffizzi preview events [PREVIEW_ID] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.P
+DESCRIPTION Shows the deployment event logs for a given preview\.
+.IP "" 4
+.nf
+This command can fail for the following reasons:
+    \- There is no preview with the given PREVIEW_ID
+
+For more information on event logs, see:
+https://docs\.uffizzi\.com/cli
+.fi
+.IP "" 0
+.P
+POSITIONAL ARGUMENTS [PREVIEW_ID] The ID of the preview that you want to see events for\.
+.P
+UFFIZZI WIDE FLAGS These flags are available to all commands: \-\-project\. Run $ uffizzi help for details\.
+.P
+EXAMPLES The following command shows deployment events for the preview with ID deployment\-67:
+.IP "" 4
+.nf
+    $ uffizzi preview events deployment\-67
+.fi
+.IP "" 0
+

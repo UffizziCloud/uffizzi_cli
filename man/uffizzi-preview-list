@@ -1,8 +1,8 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "LIST" "" "February 2022" ""
+.TH "LIST" "" "March 2022" ""
 .SH "NAME"
-\fBuffizzi preview list\fR \- list previews in a project
+\fBlist\fR \- list previews in a project
 .SH "SYNOPSIS"
 .nf
 uffizzi preview list [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]

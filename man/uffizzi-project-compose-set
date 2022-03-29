@@ -1,0 +1,71 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-PROJECT\-COMPOSE\-SET" "" "March 2022" ""
+.SH "NAME"
+\fBuffizzi\-project\-compose\-set\fR
+.SH "NAME"
+.nf
+uffizzi project compose set \- Sets the configuration of a project
+with a compose file
+.fi
+.SH "SYNOPSIS"
+.nf
+uffizzi project compose set [\-\-repository=REPOSITORY]
+     [\-\-branch=BRANCH] [\-\-path=PATH_TO_COMPOSE_FILE]
+     [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
+.SH "DESCRIPTION"
+.nf
+By default, sets the configuration of the default project with the
+specified compose file\. Use the \-\-project flag to set the compose
+file of a different project\. If already set, this command overrides
+the project\'s configuration with the new compose file\. The compose
+file must exist within a GitHub repository\.
+
+This command can fail for the following reasons:
+    \- The repository, branch, or path to the compose file as
+      specified does not exist\.
+    \- uffizzi is not authorized to access the repository\.
+      Run $ uffizzi connect \-\-help for details about connecting to
+      external services\.
+    \- The compose file is invalid\.
+
+For more information on the uffizzi project compose command, see:
+https://docs\.uffizzi\.com/cli/project
+
+For more information on the Uffizzi Compose specification, see:
+https://docs\.uffizzi\.com/references/compose\-spec
+.fi
+.SH "FLAGS"
+.nf
+\-\-repository=REPOSITORY
+    The repository that contains the compose file you want to set
+    for a project\.
+
+\-\-branch=BRANCH
+    The branch of the repository that contains the compose file you
+    want to set for a project\. If not specified, the default branch
+    as configured on GitHub is used\.
+
+\-\-path=PATH_TO_COMPOSE_FILE
+    The path to the compose file that you want to set for a project\.
+    This compose file is used as the default when creating previews\.
+    Run $ uffizzi preview \-\-help for details\.
+.fi
+.SH "UFFIZZI WIDE FLAGS"
+.nf
+These flags are available to all commands: \-\-project\. Run $ uffizzi
+help for details\.
+.fi
+.SH "EXAMPLES"
+.nf
+The following command sets a compose file for the default project\.
+The compose file (docker\-compose\.uffizzi\.yml) exists in the main
+branch of a GitHub repository called example\-app:
+
+    $ uffizzi project compose set \e
+      \-\-repository="github\.com/example/example\-app" \e
+      \-\-branch="main" \e
+      \-\-path="app/docker\-compose\.uffizzi\.yml"
+.fi
+

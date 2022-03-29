@@ -1,0 +1,51 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-PROJECT" "" "March 2022" ""
+.SH "NAME"
+\fBuffizzi\-project\fR
+.SH "NAME"
+.nf
+uffizzi project \- manage Uffizzi projects
+.fi
+.SH "SYNOPSIS"
+.nf
+uffizzi project COMMAND [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
+.SH "DESCRIPTION"
+.nf
+Manage Uffizzi projects
+
+For more information on Uffizzi projects, see:
+https://docs\.uffizzi\.com/cli/project
+.fi
+.SH "COMMANDS"
+.nf
+COMMAND is one of the following:
+
+ compose
+    Manage the compose file for a project\.
+
+ create
+    Create a new project\.
+
+ delete
+    Delete a project\.
+
+ describe
+    Display project meta data\.
+
+ list
+    List all projects in the account\.
+
+ secret
+    Manage secrets for a project\.
+
+ set\-as\-default
+    Set the default project in the uffizzi configuration\. Also see
+    $ uffizzi config help for details\.
+
+ update OPTIONS
+    Update a project\'s metadata\.
+.fi
+.P
+Run $ uffizzi project COMMAND \-\-help for more information on a command\.

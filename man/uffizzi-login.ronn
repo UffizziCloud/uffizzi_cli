@@ -1,0 +1,24 @@
+## NAME
+    uffizzi login - login to Uffizzi
+
+## SYNOPSIS
+    uffizzi login [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    The uffizzi login command lets you authenticate with Uffizzi. 
+
+    For more information on authentication and credential types, see:
+    https://docs.uffizzi.com/references/cli
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi 
+    help for details.
+
+## EXAMPLES
+    To login to the default host with the default user account, run:
+
+        $ uffizzi login
+
+    To login to an alternate host, run:
+
+        $ uffizzi login --hostname=uffizzi.example.com

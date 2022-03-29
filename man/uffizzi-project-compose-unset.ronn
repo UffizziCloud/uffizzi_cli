@@ -1,0 +1,27 @@
+## NAME
+    uffizzi project compose unset - unset the compose file for a project
+
+## SYNOPSIS
+    uffizzi project compose unset [UFFIZZI_WIDE_FLAG ...] 
+
+## DESCRIPTION
+    By default, unsets the compose file for the default project. Use the 
+    --project flag to unset the compose file of a different project.
+
+    This command can fail for the following reasons:
+        - A compose file is not set for the project.
+    
+    For more information on the uffizzi project compose command, see:
+    https://docs.uffizzi.com/cli/project
+
+    For more information on the Uffizzi Compose specification, see:
+    https://docs.uffizzi.com/references/compose-spec
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi 
+    help for details.
+
+## EXAMPLES
+    The following command unsets the default project’s compose file:
+
+        $ uffizzi project compose unset

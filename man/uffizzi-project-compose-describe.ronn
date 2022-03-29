@@ -1,0 +1,29 @@
+## NAME
+    uffizzi project compose describe - show metadata for a compose file
+
+## SYNOPSIS
+    uffizzi project compose describe [UFFIZZI_WIDE_FLAG ...] 
+
+## DESCRIPTION
+    By default, shows the contents of the default project’s compose 
+    file. Use the --project flag to describe the compose file of a
+    different project.
+
+    This command can fail for the following reasons:
+        - A compose file is not set for the project.
+    
+    For more information on the uffizzi project compose command, see:
+    https://docs.uffizzi.com/cli/project
+
+    For more information on the Uffizzi Compose specification, see:
+    https://docs.uffizzi.com/references/compose-spec
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi 
+    help for details.
+
+## EXAMPLES
+    The following command prints the contents of the default project’s 
+    compose file: 
+
+        $ uffizzi project compose describe

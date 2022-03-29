@@ -10,49 +10,33 @@ module Uffizzi
 
     @spinner
 
-    class << self
-      def help(_shell, _subcommand)
-        Cli::Common.show_manual(:preview)
-      end
-    end
-
     desc 'service', 'service'
     require_relative 'preview/service'
     subcommand 'service', Uffizzi::CLI::Preview::Service
 
     desc 'list', 'list'
     def list
-      return Cli::Common.show_manual(:list) if options[:help]
-
       run('list')
     end
 
     desc 'create', 'create'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
     def create(file_path = nil)
-      return Cli::Common.show_manual(:create) if options[:help]
-
       run('create', file_path: file_path)
     end
 
     desc 'delete', 'delete'
     def delete(deployment_name)
-      return Cli::Common.show_manual(:delete) if options[:help]
-
       run('delete', deployment_name: deployment_name)
     end
 
     desc 'describe', 'describe'
     def describe(deployment_name)
-      return Cli::Common.show_manual(:describe) if options[:help]
-
       run('describe', deployment_name: deployment_name)
     end
 
     desc 'events', 'events'
     def events(deployment_name)
-      return Cli::Common.show_manual(:events) if options[:help]
-
       run('events', deployment_name: deployment_name)
     end
 

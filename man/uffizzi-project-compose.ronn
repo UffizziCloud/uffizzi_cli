@@ -1,0 +1,34 @@
+## NAME
+    uffizzi project compose - manage the compose file for a project
+
+## SYNOPSIS
+    uffizzi project compose COMMAND [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    By default, manages the compose file for the default project. Use the 
+    --project flag to manage the compose file of a different project.
+
+    For more information on the uffizzi project compose command, see:
+    https://docs.uffizzi.com/cli/project
+
+    For more information on the Uffizzi Compose specification, see:
+    https://docs.uffizzi.com/references/compose-spec
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi 
+    help for details.
+
+## COMMANDS
+    COMMAND is one of the following:
+
+     set
+        Set the configuration of a project with a compose file.
+
+     describe
+        Display details of a compose file. 
+
+     unset
+        Unset the compose file for a project.
+
+Run ‘uffizzi project compose COMMAND --help’ for more information on a 
+command.

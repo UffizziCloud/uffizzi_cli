@@ -186,6 +186,10 @@ Deletes credential of specified type
 
 Supported credential types - `docker-hub`, `acr`, `ecr`, `gcr`
 
+## Generate manual
+
+In order to generate a manual, create a `.ronn` file having a name pattern like `uffizzi-{command-name}` (for example `uffizzi-project-compose`) in the `man` directory and run `bundle exec ronn man/{filename}.ronn` 
+
 ## Git workflow for the app:
 
 1. Clone the repository and checkout to `develop` branch
