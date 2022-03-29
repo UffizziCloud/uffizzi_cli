@@ -22,7 +22,6 @@ module Uffizzi
       Uffizzi.ui.say('Login to Uffizzi to your previews.')
       username = @options[:username] || Uffizzi.ui.ask('Username: ')
       password = ENV['UFFIZZI_PASSWORD'] || Uffizzi.ui.ask('Password: ', echo: false)
-      Uffizzi.ui.say("\n")
       params = prepare_request_params(username, password)
       response = create_session(hostname, params)
 

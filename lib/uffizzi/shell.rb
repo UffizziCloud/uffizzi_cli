@@ -21,6 +21,13 @@ module Uffizzi
         @shell.print_table(table_data)
       end
 
+      def ask(message, *args)
+        answer = @shell.ask(message, *args)
+        options = args.last.is_a?(Hash) ? args.pop : {}
+        say("\n") unless options.fetch(:echo, true)
+        answer
+      end
+
       def last_message
         @shell.send(:stdout).string.strip
       end
