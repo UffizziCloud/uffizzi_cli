@@ -5,6 +5,10 @@ require 'uffizzi'
 
 module Uffizzi
   class CLI < Thor
+    def self.exit_on_failure?
+      true
+    end
+
     require_relative 'cli/common'
     class_option :help, type: :boolean, aliases: ['-h', 'help']
 
