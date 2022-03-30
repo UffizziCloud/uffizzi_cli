@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'thor'
 require 'uffizzi'
 
 module Uffizzi
