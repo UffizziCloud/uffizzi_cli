@@ -54,5 +54,11 @@ module Uffizzi
       require_relative 'cli/connect'
       Connect.new.run(credential_type, credential_file_path)
     end
+
+    desc 'disconect CREDENTIAL_TYPE', 'Disonnect credentials from Uffizzi'
+    def disconnect(credential_type)
+      require_relative 'cli/disconnect'
+      Disconnect.new.run(credential_type)
+    end
   end
 end
