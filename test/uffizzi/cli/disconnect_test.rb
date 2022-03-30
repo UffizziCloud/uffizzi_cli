@@ -48,9 +48,11 @@ class DisconnectTest < Minitest::Test
   def test_unknown_credential_type
     credential_type = generate(:string)
 
-    @cli.disconnect(credential_type)
+    error = assert_raises(Uffizzi::Error) do
+      @cli.disconnect(credential_type)
+    end
 
-    assert_equal('Unsupported credential type.', Uffizzi.ui.last_message)
+    assert_equal('Unsupported credential type.', error.message)
   end
 
   def test_disconnect_credential_failed

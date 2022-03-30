@@ -7,8 +7,6 @@ module Uffizzi
     include ApiClient
 
     def run(credential_type)
-      return Uffizzi.ui.say('Unsupported credential type.') unless credential_type_supported?(credential_type)
-
       connection_type = case credential_type
                         when 'docker-hub'
                           Uffizzi.configuration.credential_types[:dockerhub]
@@ -18,6 +16,8 @@ module Uffizzi
                           Uffizzi.configuration.credential_types[:amazon]
                         when 'gcr'
                           Uffizzi.configuration.credential_types[:google]
+                        else
+                          raise Uffizzi::Error.new('Unsupported credential type.')
       end
 
       response = delete_credential(ConfigFile.read_option(:hostname), connection_type)
