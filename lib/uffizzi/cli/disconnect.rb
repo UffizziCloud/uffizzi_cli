@@ -31,10 +31,6 @@ module Uffizzi
 
     private
 
-    def credential_type_supported?(credential_type)
-      ['docker-hub', 'acr', 'ecr', 'gcr'].include?(credential_type)
-    end
-
     def connection_name(credential_type)
       {
         'docker-hub' => 'DockerHub',
