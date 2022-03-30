@@ -44,6 +44,8 @@ module ApiClient
   def delete_credential(hostname, credential_type)
     uri = delete_credential_uri(hostname, credential_type)
     response = Uffizzi::HttpClient.make_delete_request(uri)
+
+    build_response(response)
   end
 
   def fetch_deployment_service_logs(hostname, project_slug, deployment_id, container_name)
