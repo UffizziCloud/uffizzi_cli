@@ -53,7 +53,7 @@ module Uffizzi
       when 'container'
         fetch_deployment_service_logs(hostname, project_slug, deployment_id, container_name)
       else
-        raise Thor::Error.new('Unknown log type')
+        raise Uffizzi::Error.new('Unknown log type')
       end
     end
 
