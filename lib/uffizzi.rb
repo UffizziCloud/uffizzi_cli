@@ -3,6 +3,7 @@
 require 'io/console'
 require 'tty-spinner'
 
+require 'thor'
 require 'uffizzi/error'
 require 'uffizzi/shell'
 require 'uffizzi/version'
