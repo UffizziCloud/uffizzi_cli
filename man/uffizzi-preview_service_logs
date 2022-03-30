@@ -1,0 +1,62 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "PREVIEW" "" "March 2022" ""
+.SH "NAME"
+\fBpreview\fR \- manage previews
+.SH "NAME"
+.nf
+uffizzi preview service logs \- show the logs for a container service
+of a preview
+.fi
+.SH "SYNOPSIS"
+.nf
+uffizzi preview service logs LOG_TYPE [PREVIEW_ID] [SERVICE] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
+.SH "DESCRIPTION"
+.nf
+Shows the logs for a given container service of a given preview\.
+
+This command can fail for the following reasons:
+    \- There is no preview with the given PREVIEW_ID
+    \- There is no service with the name SERVICE
+
+For more information on service logs, see:
+https://docs\.uffizzi\.com/cli
+.fi
+.SH "LOG_TYPE"
+.nf
+LOG_TYPE is one of the following:
+
+build
+    The build logs of a service\.
+
+container
+    The container logs of a service\.
+.fi
+.SH "POSITIONAL ARGUMENTS"
+.nf
+[PREVIEW_ID]
+    The ID of the preview that includes the service you want to
+    show logs for\.
+
+[SERVICE]
+    The name of the service you want to show logs for\.
+.fi
+.SH "UFFIZZI WIDE FLAGS"
+.nf
+These flags are available to all commands: \-\-project\. Run $ uffizzi
+help for details\.
+.fi
+.SH "EXAMPLES"
+.nf
+The following command shows build logs for the service web\-app of the
+preview with ID deployment\-14:
+
+    $ uffizzi preview service logs build deployment\-14 web\-app
+
+The following command shows container logs for the service postgres\-db of
+the preview with ID deployment\-14:
+
+    $ uffizzi preview service logs container deployment\-14 postgres\-db
+.fi
+

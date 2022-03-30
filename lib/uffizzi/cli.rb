@@ -8,6 +8,10 @@ module Uffizzi
     require_relative 'cli/common'
     class_option :help, type: :boolean, aliases: ['-h', 'help']
 
+    def self.exit_on_failure?
+      true
+    end
+
     desc 'version', 'show version'
     def version
       require_relative 'version'
