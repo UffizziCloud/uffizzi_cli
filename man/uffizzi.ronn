@@ -1,0 +1,43 @@
+## NAME
+    uffizzi - manage Uffizzi resources
+
+## SYNOPSIS
+    uffizzi GROUP | COMMAND
+
+## DESCRIPTION
+    The uffizzi CLI manages authentication, configuration, and 
+    interaction with Uffizzi APIs. 
+
+    For more information on the uffizzi CLI, see:
+    https://docs.uffizzi.com/cli
+
+## GROUP
+    GROUP is one of the following:
+     
+     config
+         Configure the uffizzi CLI
+     
+     connect
+         Grant a Uffizzi user account access to external services
+
+     preview
+         Manage Uffizzi previews and view logs
+
+     project
+         Manage Uffizzi project resources including compose files for 
+         specifying preview configurations and secrets
+
+## COMMAND
+    COMMAND is one of the following:
+
+     help
+         Show uffizzi documentation 
+
+     login
+         Log in to a Uffizzi user account
+
+     logout
+         Log out of a Uffizzi user account
+
+     version
+         Print version information for uffizzi CLI

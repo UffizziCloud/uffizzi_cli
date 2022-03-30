@@ -77,12 +77,14 @@ module Uffizzi
 
       def filename(args)
         args_without_help = args.reject { |arg| arg == 'help' }
+        return 'uffizzi' if args_without_help.empty?
 
         "uffizzi-#{args_without_help.join('-')}"
       end
 
       def show_help?(args, opts)
-        args.include?('help') || opts.include?('--help') || opts.include?('-h')
+        help_options = ['--help', '-h']
+        args.empty? || args.include?('help') || opts.any? { |opt| help_options.include?(opt) }
       end
     end
   end
