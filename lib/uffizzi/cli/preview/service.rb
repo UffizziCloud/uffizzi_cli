@@ -8,7 +8,6 @@ require 'uffizzi/services/preview_service'
 module Uffizzi
   class CLI::Preview::Service < Thor
     include ApiClient
-    LOGS_REQUIRED_ARGUMENTS_NUMBER = 3
 
     desc 'uffizzi preview service logs [LOGS_TYPE] [DEPLOYMENT_ID] [CONTAINER_NAME]', 'logs'
     def logs(logs_type, deployment_name, container_name = args)
