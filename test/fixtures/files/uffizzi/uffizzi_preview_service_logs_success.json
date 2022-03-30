@@ -14,20 +14,6 @@
     "2022/03/22 00:33:42 [notice] 1#1: OS: Linux 5.4.144+",
     "2022/03/22 00:33:42 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576",
     "2022/03/22 00:33:42 [notice] 1#1: start worker processes",
-    "2022/03/22 00:33:42 [notice] 1#1: start worker process 33",
-    "10.20.3.2 - - [22/Mar/2022:00:35:32 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"Mozilla/5.0 (compatible; CensysInspect/1.1; +https://about.censys.io/)\" \"169.254.169.252\"",
-    "10.20.3.2 - - [22/Mar/2022:00:35:32 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"Mozilla/5.0 (compatible; CensysInspect/1.1; +https://about.censys.io/)\" \"10.128.0.114\"",
-    "10.20.3.2 - - [22/Mar/2022:00:35:42 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko\" \"10.128.0.22\"",
-    "10.20.3.2 - - [22/Mar/2022:00:35:43 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko\" \"169.254.169.252\"",
-    "10.20.3.2 - - [22/Mar/2022:00:35:48 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"Mozilla/5.0 (iPhone; CPU iPhone OS 15_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Mobile/15E148 Safari/604.1\" \"10.128.0.116\"",
-    "10.20.3.2 - - [22/Mar/2022:00:37:27 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1664.3 Safari/537.36\" \"10.128.0.2\"",
-    "10.20.3.2 - - [22/Mar/2022:00:38:19 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36\" \"10.128.0.114\"",
-    "10.20.3.2 - - [22/Mar/2022:00:40:32 +0000] \"GET / HTTP/1.1\" 200 615 \"-\" \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36\" \"10.128.0.114\"",
-    "2022/03/22 00:40:32 [error] 33#33: *7 open() \"/usr/share/nginx/html/favicon.ico\" failed (2: No such file or directory), client: 10.20.3.2, server: localhost, request: \"GET /favicon.ico HTTP/1.1\", host: \"deployment-1284.default-adam.app.qa-gke.uffizzi.com\", referrer: \"https://deployment-1284.default-adam.app.qa-gke.uffizzi.com/\"",
-    "10.20.3.2 - - [22/Mar/2022:00:40:32 +0000] \"GET /favicon.ico HTTP/1.1\" 404 555 \"https://deployment-1284.default-adam.app.qa-gke.uffizzi.com/\" \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36\" \"10.128.0.114\"",
-    "10.20.3.2 - - [22/Mar/2022:03:27:13 +0000] \"GET / HTTP/1.1\" 200 615 \"www.ecosia.org\" \"Mozilla/5.0 (X11; Linux x86_64; rv:83.0) Gecko/20100101 Firefox/83.0\" \"10.128.0.114\"",
-    "2022/03/22 03:27:14 [error] 33#33: *9 open() \"/usr/share/nginx/html/favicon.ico\" failed (2: No such file or directory), client: 10.20.3.2, server: localhost, request: \"GET /favicon.ico HTTP/1.1\", host: \"deployment-1284.default-adam.app.qa-gke.uffizzi.com\", referrer: \"www.ecosia.org\"",
-    "10.20.3.2 - - [22/Mar/2022:03:27:14 +0000] \"GET /favicon.ico HTTP/1.1\" 404 153 \"www.ecosia.org\" \"Mozilla/5.0 (X11; Linux x86_64; rv:83.0) Gecko/20100101 Firefox/83.0\" \"10.128.0.2\"",
-    ""
+    "2022/03/22 00:33:42 [notice] 1#1: start worker process 33"
   ]
 }
