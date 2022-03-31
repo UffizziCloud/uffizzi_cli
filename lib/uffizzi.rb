@@ -3,6 +3,8 @@
 require 'io/console'
 require 'tty-spinner'
 
+require 'thor'
+require 'uffizzi/error'
 require 'uffizzi/shell'
 require 'uffizzi/version'
 require 'uffizzi/clients/api/api_client'
@@ -11,8 +13,6 @@ require 'uffizzi/config_file'
 require_relative '../config/uffizzi'
 
 module Uffizzi
-  class Error < StandardError; end
-
   class << self
     def ui
       @ui ||= Uffizzi::UI::Shell.new

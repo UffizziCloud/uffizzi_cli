@@ -176,6 +176,16 @@ $ uffizzi config delete OPTION
 
 Deletes specified option.
 
+### disconnect ###
+
+```
+$ uffizzi disconnect CREDENTIAL_TYPE
+```
+
+Deletes credential of specified type
+
+Supported credential types - `docker-hub`, `acr`, `ecr`, `gcr`
+
 ## Git workflow for the app:
 
 1. Clone the repository and checkout to `develop` branch
