@@ -19,7 +19,7 @@ jobs:
           ruby-version: 3.0.2
           bundler-cache: true
       - name: Run rubocop
-        run: cat lib/uffizzi/cli.rb && bundle exec rubocop
+        run: bundle exec rubocop
   test:
     runs-on: ubuntu-latest
     steps:
