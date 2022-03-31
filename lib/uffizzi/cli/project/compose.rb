@@ -96,7 +96,7 @@ module Uffizzi
       begin
         compose_file_data = EnvVariablesService.substitute_env_variables(File.read(file_path))
       rescue Errno::ENOENT => e
-        return Uffizzi.ui.say(e)
+        raise Uffizzi::Error.new(e.message)
       end
 
       compose_file_dir = File.dirname(file_path)
