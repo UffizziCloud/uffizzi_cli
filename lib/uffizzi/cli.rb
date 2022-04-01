@@ -83,7 +83,7 @@ module Uffizzi
       end
 
       def show_help?(args, opts)
-        help_options = ['--help', '-h']
+        help_options = ['--help', '-h', '--help=true']
         args.empty? || args.include?('help') || opts.any? { |opt| help_options.include?(opt) }
       end
     end
