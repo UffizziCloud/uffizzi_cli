@@ -40,6 +40,8 @@ module Uffizzi
         output_format == 'json' ? output_in_json(outputed_object) : output_in_github_format(outputed_object)
       end
 
+      private
+
       def output_in_json(outputed_object)
         say(outputed_object.to_json)
       end
