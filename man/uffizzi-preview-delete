@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "DELETE" "" "March 2022" ""
+.TH "DELETE" "" "April 2022" ""
 .SH "NAME"
 \fBdelete\fR \- delete a preview
 .SH "SYNOPSIS"
