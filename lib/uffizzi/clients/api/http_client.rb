@@ -16,8 +16,8 @@ module Uffizzi
         make_request(:post, request_uri, cookies_required, params)
       end
 
-      def make_put_request(request_uri, cookies_required = true)
-        make_request(:put, request_uri, cookies_required)
+      def make_put_request(request_uri, params = {}, cookies_required = true)
+        make_request(:put, request_uri, cookies_required, params)
       end
 
       def make_delete_request(request_uri, cookies_required = true)
@@ -53,7 +53,7 @@ module Uffizzi
                   when :put
                     Net::HTTP::Put.new(uri.path, headers)
         end
-        if request.instance_of?(Net::HTTP::Post)
+        if request.instance_of?(Net::HTTP::Post) || request.instance_of?(Net::HTTP::Put)
           request.body = params.to_json
         end
         request['Cookie'] = ConfigFile.read_option(:cookie) if require_cookies

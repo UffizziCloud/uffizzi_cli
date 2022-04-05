@@ -133,6 +133,13 @@ module ApiClient
     build_response(response)
   end
 
+  def update_deployment(hostname, project_slug, deployment_id, params)
+    uri = deployment_uri(hostname, project_slug, deployment_id)
+    response = Uffizzi::HttpClient.make_put_request(uri, params)
+
+    build_response(response)
+  end
+
   def delete_deployment(server, project_slug, deployment_id)
     uri = deployment_uri(server, project_slug, deployment_id)
     response = Uffizzi::HttpClient.make_delete_request(uri)
