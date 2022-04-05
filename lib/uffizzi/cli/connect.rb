@@ -14,6 +14,8 @@ module Uffizzi
         handle_azure
       when 'ecr'
         handle_amazon
+      when 'ghcr'
+        handle_github_container_registry
       when 'gcr'
         handle_google(credential_file_path)
       else
@@ -106,6 +108,26 @@ module Uffizzi
 
       if ResponseHelper.created?(response)
         print_success_message('GCR')
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
+    end
+
+    def handle_github_container_registry
+      username = Uffizzi.ui.ask('Github Username: ')
+      password = Uffizzi.ui.ask('Personal Access Token: ', echo: false)
+
+      params = {
+        username: username,
+        password: password,
+        type: Uffizzi.configuration.credential_types[:github_container_registry],
+      }
+
+      hostname = ConfigFile.read_option(:hostname)
+      response = create_credential(hostname, params)
+
+      if ResponseHelper.created?(response)
+        print_success_message('GitHub Container Registry')
       else
         ResponseHelper.handle_failed_response(response)
       end
