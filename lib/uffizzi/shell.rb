@@ -35,20 +35,24 @@ module Uffizzi
         $stdout = StringIO.new
       end
 
-      def output(outputed_object)
+      def output(data)
         $stdout = IO.new(1, 'w')
-        output_format == 'json' ? output_in_json(outputed_object) : output_in_github_format(outputed_object)
+        json_format? ? output_in_json(data) : output_in_github_format(data)
       end
 
       private
 
-      def output_in_json(outputed_object)
-        say(outputed_object.to_json)
+      def json_format?
+        output_format == 'json'
       end
 
-      def output_in_github_format(outputed_object)
-        outputed_object.each_key do |key|
-          say("::set-output name=#{key}::#{outputed_object[key]}")
+      def output_in_json(data)
+        say(data.to_json)
+      end
+
+      def output_in_github_format(data)
+        data.each_key do |key|
+          say("::set-output name=#{key}::#{data[key]}")
         end
       end
     end

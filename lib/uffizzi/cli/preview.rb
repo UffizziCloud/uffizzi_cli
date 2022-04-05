@@ -168,12 +168,13 @@ module Uffizzi
 
       wait_containers_deploying(project_slug, deployment_id, containers_spinners)
 
-      Uffizzi.ui.say('Done')
-      preview_url = "https://#{deployment[:preview_url]}"
-      Uffizzi.ui.say(preview_url) if @spinner.success?
-      unless options[:output].nil?
-        prepared_output_data = preapre_create_output(deployment)
-        Uffizzi.ui.output(prepared_output_data)
+      if options[:output].nil?
+        Uffizzi.ui.say('Done')
+        preview_url = "https://#{deployment[:preview_url]}"
+        Uffizzi.ui.say(preview_url) if @spinner.success?
+      else
+        output_data = build_output_data(deployment)
+        Uffizzi.ui.output(output_data)
       end
     end
 
@@ -296,7 +297,7 @@ module Uffizzi
       }
     end
 
-    def preapre_create_output(output_data)
+    def build_output_data(output_data)
       {
         id: "deployment-#{output_data[:id]}",
         url: "https://#{output_data[:preview_url]}",
