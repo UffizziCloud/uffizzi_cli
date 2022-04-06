@@ -1,10 +1,10 @@
-NAME
-    uffizzi config - configure the Uffizzi command-line interface (CLI)
+uffizzi config - configure the Uffizzi command-line interface (CLI)
+================================================================
 
-SYNOPSIS
+## SYNOPSIS
     uffizzi config COMMAND [UFFIZZI_WIDE_FLAG ...]
 
-DESCRIPTION
+## DESCRIPTION
     The uffizzi config command lets you configure this command-line application.
     If COMMAND is not specified, uffizzi config launches an interactive set up
     guide.
@@ -12,11 +12,11 @@ DESCRIPTION
     For more information on configuration options, see:
     https://docs.uffizzi.com/references/cli
 
-UFFIZZI WIDE FLAGS
+## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
     help for details.
 
-COMMANDS
+## COMMANDS
     COMMAND is one of the following:
 
      get-value OPTION
@@ -31,7 +31,7 @@ COMMANDS
      unset OPTION
         Deletes the value of the specified option.    
 
-OPTIONS
+## OPTIONS
      OPTION is one of the following: 
      
      hostname
@@ -45,7 +45,7 @@ OPTIONS
         The current active project. This project is used as the default unless 
         --project is pass as an argument.
 
-EXAMPLES
+## EXAMPLES
     To list the uffizzi configuration options, run:
 
         $ uffizzi config list

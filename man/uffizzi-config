@@ -1,22 +1,30 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CONFIG" "" "March 2022" ""
+.TH "CONFIG" "" "April 2022" ""
 .SH "NAME"
-\fBuffizzi config \- configure the Uffizzi command\-line interface (CLI)\fR
+\fBconfig\fR \- configure the Uffizzi command\-line interface (CLI)
 .SH "SYNOPSIS"
+.nf
 uffizzi config COMMAND [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
 .SH "DESCRIPTION"
-The uffizzi config command lets you configure this command\-line application\. If COMMAND is not specified, uffizzi config launches an interactive set up guide\.
-.P
+.nf
+The uffizzi config command lets you configure this command\-line application\.
+If COMMAND is not specified, uffizzi config launches an interactive set up
+guide\.
+
 For more information on configuration options, see:
 https://docs\.uffizzi\.com/references/cli
 .fi
 .SH "UFFIZZI WIDE FLAGS"
-These flags are available to all commands: \-\-project\. Run $ uffizzi help for details\.
-.SH "COMMANDS"
-COMMAND is one of the following:
-.P
 .nf
+These flags are available to all commands: \-\-project\. Run $ uffizzi
+help for details\.
+.fi
+.SH "COMMANDS"
+.nf
+COMMAND is one of the following:
+
  get\-value OPTION
     Displays the value of the specified option\.
 
@@ -30,9 +38,9 @@ COMMAND is one of the following:
     Deletes the value of the specified option\.
 .fi
 .SH "OPTIONS"
-OPTION is one of the following:
-.P
 .nf
+ OPTION is one of the following:
+
  hostname
     The hostname of the Uffizzi API service you want to access\. Defaults to
     app\.uffizzi\.com\.
@@ -45,8 +53,9 @@ OPTION is one of the following:
     \-\-project is pass as an argument\.
 .fi
 .SH "EXAMPLES"
+.nf
 To list the uffizzi configuration options, run:
-.P
+
     $ uffizzi config list
 
 To set a new current active project for uffizzi, run:

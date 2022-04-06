@@ -9,7 +9,7 @@ module Uffizzi
 
     class << self
       def help(_shell, _subcommand)
-        Cli::Common.show_manual(:login)
+        Cli::Common.show_manual(:config)
       end
     end
 
