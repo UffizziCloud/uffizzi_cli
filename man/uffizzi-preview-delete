@@ -1,8 +1,8 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "DELETE" "" "April 2022" ""
+.TH "UFFIZZI\-PREVIEW\-DELETE" "" "April 2022" ""
 .SH "NAME"
-\fBdelete\fR \- delete a preview
+\fBuffizzi\-preview\-delete\fR \- delete a preview
 .SH "SYNOPSIS"
 .nf
 uffizzi preview delete [PREVIEW_ID] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]

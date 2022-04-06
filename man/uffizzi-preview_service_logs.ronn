@@ -1,4 +1,4 @@
-  uffizzi preview service logs - show the logs for a container service of a preview
+  uffizzi-preview-service-logs - show the logs for a container service of a preview
 ================================================================
 
 ## SYNOPSIS

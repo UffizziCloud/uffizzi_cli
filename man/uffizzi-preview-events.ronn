@@ -1,4 +1,4 @@
-uffizzi preview events - show the deployment event logs for a preview
+uffizzi-preview-events - show the deployment event logs for a preview
 ================================================================
 
 ## SYNOPSIS

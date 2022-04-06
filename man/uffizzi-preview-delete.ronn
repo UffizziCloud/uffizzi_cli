@@ -1,4 +1,4 @@
-uffizzi preview delete - delete a preview
+uffizzi-preview-delete - delete a preview
 ================================================================
 
 ## SYNOPSIS

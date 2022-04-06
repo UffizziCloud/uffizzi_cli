@@ -1,4 +1,4 @@
-  uffizzi project compose unset - unset the compose file for a project
+  uffizzi-project-compose-unset - unset the compose file for a project
 ================================================================
 
 ## SYNOPSIS

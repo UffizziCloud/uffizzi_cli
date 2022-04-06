@@ -1,8 +1,8 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "EVENTS" "" "April 2022" ""
+.TH "UFFIZZI\-PREVIEW\-EVENTS" "" "April 2022" ""
 .SH "NAME"
-\fBevents\fR \- show the deployment event logs for a preview
+\fBuffizzi\-preview\-events\fR \- show the deployment event logs for a preview
 .SH "SYNOPSIS"
 .nf
 uffizzi preview events [PREVIEW_ID] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]

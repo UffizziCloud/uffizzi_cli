@@ -1,4 +1,4 @@
-  uffizzi preview service list - list the container services of a given preview
+  uffizzi-preview-service-list - list the container services of a given preview
 ================================================================
 
 ## SYNOPSIS

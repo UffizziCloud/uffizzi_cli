@@ -1,4 +1,4 @@
-uffizzi preview describe - show metadata for a preview
+uffizzi-preview-describe - show metadata for a preview
 ================================================================
 
 ## SYNOPSIS

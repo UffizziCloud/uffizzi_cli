@@ -1,8 +1,8 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "DESCRIBE" "" "April 2022" ""
+.TH "UFFIZZI\-PROJECT\-COMPOSE\-DESCRIBE" "" "April 2022" ""
 .SH "NAME"
-\fBdescribe\fR \- show metadata for a compose file
+\fBuffizzi\-project\-compose\-describe\fR \- show metadata for a compose file
 .SH "SYNOPSIS"
 .nf
 uffizzi project compose describe [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]

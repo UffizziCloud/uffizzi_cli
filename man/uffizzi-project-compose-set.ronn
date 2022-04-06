@@ -1,4 +1,4 @@
-  uffizzi project compose set - sets the configuration of a project with a compose file
+  uffizzi-project-compose-set - sets the configuration of a project with a compose file
 ================================================================
 
 ## SYNOPSIS

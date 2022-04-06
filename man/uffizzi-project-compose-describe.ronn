@@ -1,4 +1,4 @@
-  uffizzi project compose describe - show metadata for a compose file
+  uffizzi-project-compose-describe - show metadata for a compose file
 ================================================================
 
 ## SYNOPSIS

@@ -1,4 +1,4 @@
-  uffizzi project compose - manage the compose file for a project
+  uffizzi-project-compose - manage the compose file for a project
 ================================================================
 
 ## SYNOPSIS

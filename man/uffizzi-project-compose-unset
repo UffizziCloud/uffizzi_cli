@@ -1,8 +1,8 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UNSET" "" "April 2022" ""
+.TH "UFFIZZI\-PROJECT\-COMPOSE\-UNSET" "" "April 2022" ""
 .SH "NAME"
-\fBunset\fR \- unset the compose file for a project
+\fBuffizzi\-project\-compose\-unset\fR \- unset the compose file for a project
 .SH "SYNOPSIS"
 .nf
 uffizzi project compose unset [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]

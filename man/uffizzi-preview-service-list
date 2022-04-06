@@ -1,8 +1,8 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "LIST" "" "April 2022" ""
+.TH "UFFIZZI\-PREVIEW\-SERVICE\-LIST" "" "April 2022" ""
 .SH "NAME"
-\fBlist\fR \- list the container services of a given preview
+\fBuffizzi\-preview\-service\-list\fR \- list the container services of a given preview
 .SH "SYNOPSIS"
 .nf
 uffizzi preview service list [PREVIEW_ID] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]

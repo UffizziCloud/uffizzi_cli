@@ -1,4 +1,4 @@
-uffizzi preview - manage previews
+uffizzi-preview - manage previews
 ================================================================
 
 ## SYNOPSIS

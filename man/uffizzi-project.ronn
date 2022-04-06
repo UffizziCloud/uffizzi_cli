@@ -1,4 +1,4 @@
-  uffizzi project - manage Uffizzi projects
+  uffizzi-project - manage Uffizzi projects
 ================================================================
 
 ## SYNOPSIS
