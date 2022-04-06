@@ -82,7 +82,9 @@ module Uffizzi
       response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
 
       if ResponseHelper.created?(response)
-        handle_succeed_create_response(project_slug, response)
+        deployment = response[:body][:deployment]
+        success_message = "Preview created with name deployment-#{deployment[:id]}"
+        start_containers_deploying(project_slug, deployment, success_message)
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -97,7 +99,9 @@ module Uffizzi
       response = update_deployment(ConfigFile.read_option(:hostname), project_slug, deployment_id, params)
 
       if ResponseHelper.ok?(response)
-        handle_succeed_update_response(project_slug, deployment_id)
+        deployment = response[:body][:deployment]
+        success_message = "Preview with ID deployment-#{deployment_id} was successfully updated."
+        start_containers_deploying(project_slug, deployment, success_message)
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -121,28 +125,14 @@ module Uffizzi
       Uffizzi.ui.pretty_say(response[:body][:events])
     end
 
-    def handle_succeed_create_response(project_slug, response)
-      deployment = response[:body][:deployment]
+    def start_containers_deploying(project_slug, deployment, success_message)
       deployment_id = deployment[:id]
       params = { id: deployment_id }
 
       response = deploy_containers(ConfigFile.read_option(:server), project_slug, deployment_id, params)
 
       if ResponseHelper.no_content?(response)
-        Uffizzi.ui.say("Preview created with name deployment-#{deployment_id}")
-        print_deployment_progress(deployment, project_slug)
-      else
-        ResponseHelper.handle_failed_response(response)
-      end
-    end
-
-    def handle_succeed_update_response(project_slug, deployment_id)
-      params = { id: deployment_id }
-
-      response = deploy_containers(ConfigFile.read_option(:hostname), project_slug, deployment_id, params)
-
-      if ResponseHelper.no_content?(response)
-        Uffizzi.ui.say("Preview with ID deployment-#{deployment_id} was successfully updated.")
+        Uffizzi.ui.say(success_message)
         print_deployment_progress(deployment, project_slug)
       else
         ResponseHelper.handle_failed_response(response)
