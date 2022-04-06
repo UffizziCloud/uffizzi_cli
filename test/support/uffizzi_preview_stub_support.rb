@@ -29,6 +29,12 @@ module UffizziPreviewStubSupport
     stub_request(:post, url).to_return(status: status, body: body.to_json)
   end
 
+  def stub_uffizzi_preview_update(status, body, project_slug, deployment_id)
+    url = deployment_uri(Uffizzi.configuration.hostname, project_slug, deployment_id)
+
+    stub_request(:put, url).to_return(status: status, body: body.to_json)
+  end
+
   def stub_uffizzi_preview_describe(status, body, project_slug, deployment_id)
     url = deployment_uri(Uffizzi.configuration.server, project_slug, deployment_id)
 
