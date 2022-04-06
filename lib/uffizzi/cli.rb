@@ -8,16 +8,13 @@ module Uffizzi
       true
     end
 
-    require_relative 'cli/common'
-    class_option :help, type: :boolean, aliases: ['-h', 'help']
-
     desc 'version', 'show version'
     def version
       require_relative 'version'
       Uffizzi.ui.say(Uffizzi::VERSION)
     end
 
-    desc 'uffizzi login [OPTIONS]', 'Login into Uffizzi'
+    desc 'login [OPTIONS]', 'Login into Uffizzi'
     method_option :user, required: true, aliases: '-u'
     method_option :hostname, required: true
     def login
@@ -31,21 +28,21 @@ module Uffizzi
       Logout.new(options).run
     end
 
-    desc 'uffizzi projects', 'projects'
+    desc 'projects', 'projects'
     def projects
       require_relative 'cli/projects'
       Projects.new.run
     end
 
-    desc 'uffizzi project', 'project'
+    desc 'project', 'project'
     require_relative 'cli/project'
     subcommand 'project', CLI::Project
 
-    desc 'uffizzi config', 'config'
+    desc 'config', 'config'
     require_relative 'cli/config'
     subcommand 'config', CLI::Config
 
-    desc 'uffizzi preview', 'preview'
+    desc 'preview', 'preview'
     method_option :project, required: false
     require_relative 'cli/preview'
     subcommand 'preview', CLI::Preview
