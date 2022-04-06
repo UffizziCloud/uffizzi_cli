@@ -1,5 +1,5 @@
-## NAME
-    uffizzi login - login to Uffizzi
+  uffizzi login - login to Uffizzi
+================================================================
 
 ## SYNOPSIS
     uffizzi login [UFFIZZI_WIDE_FLAG ...]

@@ -1,12 +1,8 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-LOGIN" "" "April 2022" ""
+.TH "LOGIN" "" "April 2022" ""
 .SH "NAME"
-\fBuffizzi\-login\fR
-.SH "NAME"
-.nf
-uffizzi login \- login to Uffizzi
-.fi
+\fBlogin\fR \- login to Uffizzi
 .SH "SYNOPSIS"
 .nf
 uffizzi login [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]

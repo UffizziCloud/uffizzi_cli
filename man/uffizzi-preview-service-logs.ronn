@@ -31,7 +31,6 @@
     [SERVICE]
         The name of the service you want to show logs for.
 
-
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
     help for details.
@@ -46,4 +45,3 @@
     the preview with ID deployment-14:
 
         $ uffizzi preview service logs container deployment-14 postgres-db
-

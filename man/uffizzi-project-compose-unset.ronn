@@ -1,5 +1,5 @@
-## NAME
-    uffizzi project compose unset - unset the compose file for a project
+  uffizzi project compose unset - unset the compose file for a project
+================================================================
 
 ## SYNOPSIS
     uffizzi project compose unset [UFFIZZI_WIDE_FLAG ...] 

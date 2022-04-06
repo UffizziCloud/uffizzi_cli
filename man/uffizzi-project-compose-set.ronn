@@ -1,6 +1,5 @@
-## NAME
-    uffizzi project compose set - Sets the configuration of a project 
-    with a compose file
+  uffizzi project compose set - sets the configuration of a project with a compose file
+================================================================
 
 ## SYNOPSIS
     uffizzi project compose set [--repository=REPOSITORY] 

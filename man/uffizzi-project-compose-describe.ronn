@@ -1,5 +1,5 @@
-## NAME
-    uffizzi project compose describe - show metadata for a compose file
+  uffizzi project compose describe - show metadata for a compose file
+================================================================
 
 ## SYNOPSIS
     uffizzi project compose describe [UFFIZZI_WIDE_FLAG ...] 

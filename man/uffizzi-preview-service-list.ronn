@@ -1,6 +1,5 @@
-## NAME
-    uffizzi preview service list - list the container services of a 
-    given preview
+  uffizzi preview service list - list the container services of a given preview
+================================================================
 
 ## SYNOPSIS
     uffizzi preview service list [PREVIEW_ID] [UFFIZZI_WIDE_FLAG ...] 

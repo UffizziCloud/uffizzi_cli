@@ -1,12 +1,8 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-PROJECT" "" "April 2022" ""
+.TH "PROJECT" "" "April 2022" ""
 .SH "NAME"
-\fBuffizzi\-project\fR
-.SH "NAME"
-.nf
-uffizzi project \- manage Uffizzi projects
-.fi
+\fBproject\fR \- manage Uffizzi projects
 .SH "SYNOPSIS"
 .nf
 uffizzi project COMMAND [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]

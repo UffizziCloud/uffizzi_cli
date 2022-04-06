@@ -2,11 +2,7 @@
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "UFFIZZI" "" "April 2022" ""
 .SH "NAME"
-\fBuffizzi\fR
-.SH "NAME"
-.nf
-uffizzi \- manage Uffizzi resources
-.fi
+\fBuffizzi\fR \- manage Uffizzi resources
 .SH "SYNOPSIS"
 .nf
 uffizzi GROUP | COMMAND

@@ -1,13 +1,8 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-PROJECT\-COMPOSE\-SET" "" "April 2022" ""
+.TH "SET" "" "April 2022" ""
 .SH "NAME"
-\fBuffizzi\-project\-compose\-set\fR
-.SH "NAME"
-.nf
-uffizzi project compose set \- Sets the configuration of a project
-with a compose file
-.fi
+\fBset\fR \- sets the configuration of a project with a compose file
 .SH "SYNOPSIS"
 .nf
 uffizzi project compose set [\-\-repository=REPOSITORY]

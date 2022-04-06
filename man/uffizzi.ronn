@@ -1,5 +1,5 @@
-## NAME
-    uffizzi - manage Uffizzi resources
+uffizzi - manage Uffizzi resources
+================================================================
 
 ## SYNOPSIS
     uffizzi GROUP | COMMAND

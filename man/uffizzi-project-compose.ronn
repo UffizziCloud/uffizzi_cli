@@ -1,5 +1,5 @@
-## NAME
-    uffizzi project compose - manage the compose file for a project
+  uffizzi project compose - manage the compose file for a project
+================================================================
 
 ## SYNOPSIS
     uffizzi project compose COMMAND [UFFIZZI_WIDE_FLAG ...]

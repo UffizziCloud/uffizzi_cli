@@ -1,5 +1,5 @@
-## NAME
-    uffizzi project - manage Uffizzi projects
+  uffizzi project - manage Uffizzi projects
+================================================================
 
 ## SYNOPSIS
     uffizzi project COMMAND [UFFIZZI_WIDE_FLAG ...]
