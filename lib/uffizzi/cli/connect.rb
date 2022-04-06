@@ -115,7 +115,7 @@ module Uffizzi
 
     def handle_github_container_registry
       username = Uffizzi.ui.ask('Github Username: ')
-      password = Uffizzi.ui.ask('Personal Access Token: ', echo: false)
+      password = Uffizzi.ui.ask('Access Token: ', echo: false)
 
       params = {
         username: username,
