@@ -24,6 +24,11 @@ module Uffizzi
       run('create', file_path: file_path)
     end
 
+    desc 'uffizzi preview update [DEPLOYMENT_ID] [COMPOSE_FILE]', 'create'
+    def update(deployment_name, file_path)
+      run('update', deployment_name: deployment_name, file_path: file_path)
+    end
+
     desc 'delete [DEPLOYMENT_ID]', 'Delete a preview'
     def delete(deployment_name)
       run('delete', deployment_name: deployment_name)
