@@ -178,12 +178,18 @@ module ApiClient
   private
 
   def http_client
-    if Uffizzi::ConfigFile.exists?
-      cookie = Uffizzi::ConfigFile.read_option(:cookie)
-      basic_auth_user = Uffizzi::ConfigFile.read_option(:basic_auth_user)
-      basic_auth_password = Uffizzi::ConfigFile.read_option(:basic_auth_password)
+    if @http_client.nil?
+      params = {}
+      if Uffizzi::ConfigFile.exists?
+        params[:cookie] = Uffizzi::ConfigFile.read_option(:cookie)
+        params[:basic_auth_user] = Uffizzi::ConfigFile.read_option(:basic_auth_user)
+        params[:basic_auth_password] = Uffizzi::ConfigFile.read_option(:basic_auth_password)
+      end
+
+      @http_client = Uffizzi::HttpClient.new(params[:cookie], params[:basic_auth_user], params[:basic_auth_password])
     end
-    @http_client ||= Uffizzi::HttpClient.new(cookie, basic_auth_user, basic_auth_password)
+
+    @http_client
   end
 
   def build_response(response)
