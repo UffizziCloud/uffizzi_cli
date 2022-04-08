@@ -19,23 +19,23 @@ module Uffizzi
       run('list')
     end
 
-    desc 'create', 'create'
+    desc 'create [COMPOSE_FILE]', 'create'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
     def create(file_path = nil)
       run('create', file_path: file_path)
     end
 
-    desc 'delete', 'delete'
+    desc 'delete [DEPLOYMENT_ID]', 'delete'
     def delete(deployment_name)
       run('delete', deployment_name: deployment_name)
     end
 
-    desc 'describe', 'describe'
+    desc 'describe [DEPLOYMENT_ID]', 'describe'
     def describe(deployment_name)
       run('describe', deployment_name: deployment_name)
     end
 
-    desc 'events', 'events'
+    desc 'events [DEPLOYMENT_ID]', 'events'
     def events(deployment_name)
       run('events', deployment_name: deployment_name)
     end

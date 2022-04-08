@@ -8,16 +8,13 @@ module Uffizzi
       true
     end
 
-    require_relative 'cli/common'
-    class_option :help, type: :boolean, aliases: ['-h', 'help']
-
     desc 'version', 'show version'
     def version
       require_relative 'version'
       Uffizzi.ui.say(Uffizzi::VERSION)
     end
 
-    desc 'login', 'Login into Uffizzi'
+    desc 'login [OPTIONS]', 'Login into Uffizzi'
     method_option :user, required: true, aliases: '-u'
     method_option :hostname, required: true
     def login

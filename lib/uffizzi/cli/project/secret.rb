@@ -14,12 +14,12 @@ module Uffizzi
       run('list')
     end
 
-    desc 'create', 'Create secrets'
+    desc 'create [SECRET_ID]', 'Create secrets from $stdout'
     def create(id)
       run('create', id)
     end
 
-    desc 'delete', 'Delete a secret'
+    desc 'delete [SECRET_ID]', 'Delete a secret'
     def delete(id)
       run('delete', id)
     end
