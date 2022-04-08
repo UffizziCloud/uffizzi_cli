@@ -94,7 +94,7 @@ Logging you into the app which you set in the server option or config file
 | Option       | Aliase | Description                         |
 | ------------ | ------ | ----------------------------------- |
 | `--username` | `-u`   | Your email for logging in(optional) |
-| `--server`   |        | Adress of your app(optional)        |
+| `--server`   | `-s`   | Adress of your app(optional)        |
 
 If server uses basic authentication you can specify options for it by setting `basic_auth_user` and `basic_auth_password` via `config set` command.
 

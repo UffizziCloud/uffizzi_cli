@@ -20,7 +20,7 @@ module Uffizzi
     end
 
     desc 'login [OPTIONS]', 'Login into Uffizzi'
-    method_option :server, required: false
+    method_option :server, required: false, aliases: '-s'
     method_option :username, required: false, aliases: '-u'
     def login
       require_relative 'cli/login'
