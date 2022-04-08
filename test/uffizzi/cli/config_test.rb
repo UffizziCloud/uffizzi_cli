@@ -65,4 +65,21 @@ class ConfigTest < Minitest::Test
     refute(Uffizzi::ConfigFile.option_has_value?(:cookie))
     assert_equal("Unset property [#{property}]", Uffizzi.ui.last_message)
   end
+
+  def test_setup
+    Uffizzi::ConfigFile.unset_option(:server)
+    Uffizzi::ConfigFile.unset_option(:username)
+    Uffizzi::ConfigFile.unset_option(:project)
+
+    refute(Uffizzi::ConfigFile.option_has_value?(:server))
+    refute(Uffizzi::ConfigFile.option_has_value?(:username))
+    refute(Uffizzi::ConfigFile.option_has_value?(:project))
+
+    @config.setup
+
+    assert(Uffizzi::ConfigFile.option_has_value?(:server))
+    assert(Uffizzi::ConfigFile.option_has_value?(:username))
+    assert(Uffizzi::ConfigFile.option_has_value?(:project))
+    assert_equal('To login, run: uffizzi login', Uffizzi.ui.last_message)
+  end
 end
