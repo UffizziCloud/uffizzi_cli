@@ -26,7 +26,8 @@ module Uffizzi
 
     private
 
-    def run(command, args = {})
+    def run(command, id = nil)
+      Cli::Common.show_manual(:project, :secret, command) if options[:help] || args.include?('help')
       return Uffizzi.ui.say('You are not logged in') unless AuthHelper.signed_in?
 
       project_slug = ConfigFile.read_option(:project)
@@ -36,13 +37,13 @@ module Uffizzi
       when 'list'
         handle_list_command(project_slug)
       when 'create'
-        handle_create_command(project_slug, args)
+        handle_create_command(project_slug, id)
       when 'delete'
-        handle_delete_command(project_slug, args)
+        handle_delete_command(project_slug, id)
       else
         error_message = "The subcommand #{command} does not exist, please run 'uffizzi project secret help' \
         to get the list of available subcommands"
-        Uffizzi.ui.say(error_message)
+        raise Thor::Error.new(error_message)
       end
     end
 

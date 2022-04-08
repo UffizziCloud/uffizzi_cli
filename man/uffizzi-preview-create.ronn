@@ -1,4 +1,4 @@
-uffizzi preview create - create a preview
+uffizzi-preview-create - create a preview
 ================================================================
 
 ## SYNOPSIS

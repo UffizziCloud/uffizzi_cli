@@ -1,0 +1,41 @@
+  uffizzi-project - manage Uffizzi projects
+================================================================
+
+## SYNOPSIS
+    uffizzi project COMMAND [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Manage Uffizzi projects
+
+    For more information on Uffizzi projects, see:
+    https://docs.uffizzi.com/cli/project
+
+## COMMANDS
+    COMMAND is one of the following:
+
+     compose
+        Manage the compose file for a project.
+
+     create
+        Create a new project.
+
+     delete
+        Delete a project.
+
+     describe
+        Display project meta data.
+
+     list
+        List all projects in the account.
+
+     secret
+        Manage secrets for a project.
+
+     set-as-default
+        Set the default project in the uffizzi configuration. Also see
+        $ uffizzi config help for details.
+
+     update OPTIONS
+        Update a project's metadata.
+
+Run $ uffizzi project COMMAND --help for more information on a command.

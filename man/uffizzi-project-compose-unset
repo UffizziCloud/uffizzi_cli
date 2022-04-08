@@ -1,0 +1,35 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-PROJECT\-COMPOSE\-UNSET" "" "April 2022" ""
+.SH "NAME"
+\fBuffizzi\-project\-compose\-unset\fR \- unset the compose file for a project
+.SH "SYNOPSIS"
+.nf
+uffizzi project compose unset [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
+.SH "DESCRIPTION"
+.nf
+By default, unsets the compose file for the default project\. Use the
+\-\-project flag to unset the compose file of a different project\.
+
+This command can fail for the following reasons:
+    \- A compose file is not set for the project\.
+
+For more information on the uffizzi project compose command, see:
+https://docs\.uffizzi\.com/cli/project
+
+For more information on the Uffizzi Compose specification, see:
+https://docs\.uffizzi\.com/references/compose\-spec
+.fi
+.SH "UFFIZZI WIDE FLAGS"
+.nf
+These flags are available to all commands: \-\-project\. Run $ uffizzi
+help for details\.
+.fi
+.SH "EXAMPLES"
+.nf
+The following command unsets the default project’s compose file:
+
+    $ uffizzi project compose unset
+.fi
+

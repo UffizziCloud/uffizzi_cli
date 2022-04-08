@@ -26,11 +26,9 @@ module Uffizzi
     end
 
     desc 'logout', 'Logout from Uffizzi'
-    def logout(help = nil)
-      return Cli::Common.show_manual(:logout) if help || options[:help]
-
+    def logout
       require_relative 'cli/logout'
-      Logout.new.run
+      Logout.new(options).run
     end
 
     desc 'projects', 'projects'
@@ -62,6 +60,31 @@ module Uffizzi
     def disconnect(credential_type)
       require_relative 'cli/disconnect'
       Disconnect.new.run(credential_type)
+    end
+
+    class << self
+      protected
+
+      def dispatch(meth, given_args, given_opts, config)
+        args, opts = Thor::Options.split(given_args)
+        return Cli::Common.show_manual(filename(args)) if show_help?(args, opts)
+
+        super
+      end
+
+      private
+
+      def filename(args)
+        args_without_help = args.reject { |arg| arg == 'help' }
+        return 'uffizzi' if args_without_help.empty?
+
+        "uffizzi-#{args_without_help.join('-')}"
+      end
+
+      def show_help?(args, opts)
+        help_options = ['--help', '-h', '--help=true']
+        args.empty? || args.include?('help') || opts.any? { |opt| help_options.include?(opt) }
+      end
     end
   end
 end

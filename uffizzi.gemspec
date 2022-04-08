@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.bindir = 'exe'
   spec.executables = ['uffizzi']
 
-  spec.files = Dir['{lib}/**/*', '{config}/**/*'] + ['README.md', 'LICENSE']
+  spec.files = Dir['{lib}/**/*', '{config}/**/*', '{man}/**/*'] + ['README.md', 'LICENSE']
 
   spec.require_paths = ['lib']
   spec.required_ruby_version = '>= 2.5.0'

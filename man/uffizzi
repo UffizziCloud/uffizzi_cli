@@ -1,0 +1,51 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI" "" "April 2022" ""
+.SH "NAME"
+\fBuffizzi\fR \- manage Uffizzi resources
+.SH "SYNOPSIS"
+.nf
+uffizzi GROUP | COMMAND
+.fi
+.SH "DESCRIPTION"
+.nf
+The uffizzi CLI manages authentication, configuration, and
+interaction with Uffizzi APIs\.
+
+For more information on the uffizzi CLI, see:
+https://docs\.uffizzi\.com/cli
+.fi
+.SH "GROUP"
+.nf
+GROUP is one of the following:
+
+ config
+     Configure the uffizzi CLI
+
+ connect
+     Grant a Uffizzi user account access to external services
+
+ preview
+     Manage Uffizzi previews and view logs
+
+ project
+     Manage Uffizzi project resources including compose files for
+     specifying preview configurations and secrets
+.fi
+.SH "COMMAND"
+.nf
+COMMAND is one of the following:
+
+ help
+     Show uffizzi documentation
+
+ login
+     Log in to a Uffizzi user account
+
+ logout
+     Log out of a Uffizzi user account
+
+ version
+     Print version information for uffizzi CLI
+.fi
+
