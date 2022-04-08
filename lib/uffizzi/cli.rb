@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
-require 'thor'
 require 'uffizzi'
 
 module Uffizzi
   class CLI < Thor
-    require_relative 'cli/common'
-    class_option :help, type: :boolean, aliases: ['-h', 'help']
-
     def self.exit_on_failure?
       true
     end
+
+    require_relative 'cli/common'
+    class_option :help, type: :boolean, aliases: ['-h', 'help']
 
     desc 'version', 'show version'
     def version

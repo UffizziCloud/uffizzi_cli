@@ -278,8 +278,7 @@ module Uffizzi
       begin
         compose_file_data = File.read(file_path)
       rescue Errno::ENOENT => e
-        Uffizzi.ui.say(e)
-        return
+        raise Uffizzi::Error.new(e.message)
       end
 
       compose_file_dir = File.dirname(file_path)
