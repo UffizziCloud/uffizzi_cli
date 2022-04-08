@@ -23,7 +23,7 @@ RUN gem install bundler -v 2.3.9
 
 COPY lib/uffizzi/version.rb ./lib/uffizzi/
 COPY uffizzi.gemspec .
-COPY Gemfile* .
+COPY Gemfile* ./
 RUN bundle install --jobs 4
 
 COPY . .
