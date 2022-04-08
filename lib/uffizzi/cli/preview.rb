@@ -102,7 +102,7 @@ module Uffizzi
     end
 
     def handle_succeed_events_response(response)
-      Uffizzi.ui.print_in_columns(response[:body][:events])
+      Uffizzi.ui.pretty_say(response[:body][:events])
     end
 
     def handle_succeed_create_response(project_slug, response)

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'awesome_print'
+
 module Uffizzi
   module UI
     class Shell
@@ -27,6 +29,10 @@ module Uffizzi
 
       def last_message
         @shell.send(:stdout).string.strip
+      end
+
+      def pretty_say(collection, index = true)
+        ap(collection, { index: index })
       end
 
       def disable_stdout
