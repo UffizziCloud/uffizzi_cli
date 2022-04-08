@@ -9,7 +9,7 @@ module Uffizzi
   class CLI::Preview::Service < Thor
     include ApiClient
 
-    desc 'uffizzi preview service logs [LOGS_TYPE] [DEPLOYMENT_ID] [CONTAINER_NAME]', 'logs'
+    desc 'logs [LOGS_TYPE] [DEPLOYMENT_ID] [CONTAINER_NAME]', 'logs'
     def logs(logs_type, deployment_name, container_name = args)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
       return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
@@ -25,7 +25,7 @@ module Uffizzi
       end
     end
 
-    desc 'uffizzi preview service logs [DEPLOYMENT_ID]', 'list'
+    desc 'logs [DEPLOYMENT_ID]', 'list'
     def list(deployment_name)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
       return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?

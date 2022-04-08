@@ -1,11 +1,10 @@
-NAME
-    uffizzi preview events - show the deployment event logs for a 
-    preview 
+uffizzi-preview-events - show the deployment event logs for a preview
+================================================================
 
-SYNOPSIS
+## SYNOPSIS
     uffizzi preview events [PREVIEW_ID] [UFFIZZI_WIDE_FLAG ...] 
 
-DESCRIPTION
+## DESCRIPTION
     Shows the deployment event logs for a given preview.
 
     This command can fail for the following reasons: 
@@ -14,15 +13,15 @@ DESCRIPTION
     For more information on event logs, see:
     https://docs.uffizzi.com/cli
 
-POSITIONAL ARGUMENTS
+## POSITIONAL ARGUMENTS
     [PREVIEW_ID]
         The ID of the preview that you want to see events for.
 
-UFFIZZI WIDE FLAGS
+## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
     help for details.
 
-EXAMPLES
+## EXAMPLES
     The following command shows deployment events for the preview with 
     ID deployment-67:
 

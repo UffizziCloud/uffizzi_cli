@@ -18,6 +18,7 @@ module Uffizzi
       azure: 'UffizziCore::Credential::Azure',
       google: 'UffizziCore::Credential::Google',
       amazon: 'UffizziCore::Credential::Amazon',
+      github_container_registry: 'UffizziCore::Credential::GithubContainerRegistry',
     }
   end
 end

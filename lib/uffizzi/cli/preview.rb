@@ -10,56 +10,45 @@ module Uffizzi
 
     @spinner
 
-    class << self
-      def help(_shell, _subcommand)
-        Cli::Common.show_manual(:preview)
-      end
-    end
-
     desc 'service', 'service'
     require_relative 'preview/service'
     subcommand 'service', Uffizzi::CLI::Preview::Service
 
     desc 'list', 'list'
     def list
-      return Cli::Common.show_manual(:list) if options[:help]
-
-      run(options, 'list')
+      run('list')
     end
 
-    desc 'create', 'create'
+    desc 'create [COMPOSE_FILE]', 'create'
+    method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
     def create(file_path = nil)
-      return Cli::Common.show_manual(:create) if options[:help]
-
-      run(options, 'create', file_path: file_path)
+      run('create', file_path: file_path)
     end
 
-    desc 'delete', 'delete'
+    desc 'delete [DEPLOYMENT_ID]', 'delete'
     def delete(deployment_name)
-      return Cli::Common.show_manual(:delete) if options[:help]
-
-      run(options, 'delete', deployment_name: deployment_name)
+      run('delete', deployment_name: deployment_name)
     end
 
-    desc 'describe', 'describe'
+    desc 'describe [DEPLOYMENT_ID]', 'describe'
     def describe(deployment_name)
-      return Cli::Common.show_manual(:describe) if options[:help]
-
-      run(options, 'describe', deployment_name: deployment_name)
+      run('describe', deployment_name: deployment_name)
     end
 
-    desc 'events', 'events'
+    desc 'events [DEPLOYMENT_ID]', 'events'
     def events(deployment_name)
-      return Cli::Common.show_manual(:events) if options[:help]
-
-      run(options, 'events', deployment_name: deployment_name)
+      run('events', deployment_name: deployment_name)
     end
 
     private
 
-    def run(options, command, file_path: nil, deployment_name: nil)
-      return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
+    def run(command, file_path: nil, deployment_name: nil)
+      unless options[:output].nil?
+        Uffizzi.ui.output_format = options[:output]
+        Uffizzi.ui.disable_stdout
+      end
+      raise Uffizzi::Error.new('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
+      raise Uffizzi::Error.new('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?
 
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
 
@@ -161,6 +150,19 @@ module Uffizzi
 
       containers_spinners = create_containers_spinners(activity_items)
 
+      wait_containers_deploying(project_slug, deployment_id, containers_spinners)
+
+      if options[:output].nil?
+        Uffizzi.ui.say('Done')
+        preview_url = "https://#{deployment[:preview_url]}"
+        Uffizzi.ui.say(preview_url) if @spinner.success?
+      else
+        output_data = build_output_data(deployment)
+        Uffizzi.ui.output(output_data)
+      end
+    end
+
+    def wait_containers_deploying(project_slug, deployment_id, containers_spinners)
       loop do
         response = get_activity_items(ConfigFile.read_option(:hostname), project_slug, deployment_id)
         handle_activity_items_response(response)
@@ -172,10 +174,6 @@ module Uffizzi
 
         sleep(5)
       end
-
-      Uffizzi.ui.say('Done')
-      preview_url = "http://#{deployment[:preview_url]}"
-      Uffizzi.ui.say(preview_url) if @spinner.success?
     end
 
     def create_containers_spinners(activity_items)
@@ -264,8 +262,7 @@ module Uffizzi
       begin
         compose_file_data = File.read(file_path)
       rescue Errno::ENOENT => e
-        Uffizzi.ui.say(e)
-        return
+        raise Uffizzi::Error.new(e.message)
       end
 
       compose_file_dir = File.dirname(file_path)
@@ -280,6 +277,13 @@ module Uffizzi
       {
         compose_file: compose_file_params,
         dependencies: dependencies,
+      }
+    end
+
+    def build_output_data(output_data)
+      {
+        id: "deployment-#{output_data[:id]}",
+        url: "https://#{output_data[:preview_url]}",
       }
     end
   end

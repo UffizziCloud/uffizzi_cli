@@ -1,4 +1,4 @@
-uffizzi preview list - list previews in a project
+uffizzi-preview-list - list previews in a project
 ================================================================
 
 ## SYNOPSIS

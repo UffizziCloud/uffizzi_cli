@@ -12,17 +12,17 @@ module Uffizzi
       run('list')
     end
 
-    desc 'get', 'get'
+    desc 'get [PROPERTY]', 'get'
     def get(property)
       run('get', property)
     end
 
-    desc 'set', 'set'
+    desc 'set [PROPERTY] [VALUE]', 'set'
     def set(property, value)
       run('set', property, value)
     end
 
-    desc 'delete', 'delete'
+    desc 'delete [PROPERTY]', 'delete'
     def delete(property)
       run('delete', property)
     end

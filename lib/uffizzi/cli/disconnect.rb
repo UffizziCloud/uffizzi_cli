@@ -16,6 +16,8 @@ module Uffizzi
                           Uffizzi.configuration.credential_types[:amazon]
                         when 'gcr'
                           Uffizzi.configuration.credential_types[:google]
+                        when 'ghcr'
+                          Uffizzi.configuration.credential_types[:github_container_registry]
                         else
                           raise Uffizzi::Error.new('Unsupported credential type.')
       end
@@ -37,6 +39,7 @@ module Uffizzi
         'acr' => 'ACR',
         'ecr' => 'ECR',
         'gcr' => 'GCR',
+        'ghcr' => 'GHCR',
       }[credential_type]
     end
   end
