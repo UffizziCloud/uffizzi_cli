@@ -55,7 +55,7 @@ If you specify the following environment variables, the Docker image's
 entrypoint script can log you into Uffizzi before executing your command.
 
 - `UFFIZZI_USER`
-- `UFFIZZI_HOSTNAME`
+- `UFFIZZI_SERVER`
 - `UFFIZZI_PASSWORD`
 - `UFFIZZI_PROJECT` (optional)
 
