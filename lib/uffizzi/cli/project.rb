@@ -8,16 +8,16 @@ module Uffizzi
   class CLI::Project < Thor
     include ApiClient
 
-    desc 'uffizzi project compose', 'compose'
+    desc 'compose', 'compose'
     method_option :file, required: false, aliases: '-f'
     require_relative 'project/compose'
     subcommand 'compose', Uffizzi::CLI::Project::Compose
 
-    desc 'uffizzi project secret', 'Secrets Actions'
+    desc 'secret', 'Secrets Actions'
     require_relative 'project/secret'
     subcommand 'secret', Uffizzi::CLI::Project::Secret
 
-    desc 'uffizzi project list', 'list'
+    desc 'list', 'list'
     def list
       run('list')
     end

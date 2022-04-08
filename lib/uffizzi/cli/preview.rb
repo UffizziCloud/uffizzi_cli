@@ -14,7 +14,7 @@ module Uffizzi
     require_relative 'preview/service'
     subcommand 'service', Uffizzi::CLI::Preview::Service
 
-    desc 'uffizzi preview list', 'list'
+    desc 'list', 'list'
     def list
       run('list')
     end
@@ -25,17 +25,17 @@ module Uffizzi
       run('create', file_path: file_path)
     end
 
-    desc 'uffizzi preview delete [DEPLOYMENT_ID]', 'delete'
+    desc 'delete [DEPLOYMENT_ID]', 'delete'
     def delete(deployment_name)
       run('delete', deployment_name: deployment_name)
     end
 
-    desc 'uffizzi preview describe [DEPLOYMENT_ID]', 'describe'
+    desc 'describe [DEPLOYMENT_ID]', 'describe'
     def describe(deployment_name)
       run('describe', deployment_name: deployment_name)
     end
 
-    desc 'uffizzi preview events [DEPLOYMENT_ID]', 'events'
+    desc 'events [DEPLOYMENT_ID]', 'events'
     def events(deployment_name)
       run('events', deployment_name: deployment_name)
     end

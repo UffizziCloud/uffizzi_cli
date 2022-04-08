@@ -7,22 +7,22 @@ module Uffizzi
   class CLI::Config < Thor
     include ApiClient
 
-    desc 'uffizzi config list', 'list'
+    desc 'list', 'list'
     def list
       run('list')
     end
 
-    desc 'uffizzi config get [PROPERTY]', 'get'
+    desc 'get [PROPERTY]', 'get'
     def get(property)
       run('get', property)
     end
 
-    desc 'uffizzi config set [PROPERTY] [VALUE]', 'set'
+    desc 'set [PROPERTY] [VALUE]', 'set'
     def set(property, value)
       run('set', property, value)
     end
 
-    desc 'uffizzi config delete [PROPERTY]', 'delete'
+    desc 'delete [PROPERTY]', 'delete'
     def delete(property)
       run('delete', property)
     end
