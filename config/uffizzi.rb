@@ -12,7 +12,7 @@ module Uffizzi
   end
 
   configure do |config|
-    config.hostname = 'http://web:7000'
+    config.server = 'http://web:7000'
     config.credential_types = {
       dockerhub: 'UffizziCore::Credential::DockerHub',
       azure: 'UffizziCore::Credential::Azure',
@@ -20,6 +20,6 @@ module Uffizzi
       amazon: 'UffizziCore::Credential::Amazon',
       github_container_registry: 'UffizziCore::Credential::GithubContainerRegistry',
     }
-    config.default_hostname = 'app.uffizzi.com'
+    config.default_server = 'app.uffizzi.com'
   end
 end

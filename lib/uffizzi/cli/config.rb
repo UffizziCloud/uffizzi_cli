@@ -62,10 +62,10 @@ module Uffizzi
     def handle_setup_command
       Uffizzi.ui.say("Configure the default properties that will be used to authenticate with your \
                       \nUffizzi API service and manage previews.\n")
-      hostname = Uffizzi.ui.ask('Hostname: ', default: Uffizzi.configuration.default_hostname.to_s)
+      server = Uffizzi.ui.ask('Server: ', default: Uffizzi.configuration.default_server.to_s)
       project = Uffizzi.ui.ask('Project: ')
       ConfigFile.delete
-      ConfigFile.write_option(:hostname, hostname)
+      ConfigFile.write_option(:server, server)
       ConfigFile.write_option(:project, project)
       Uffizzi.ui.say('To login, run: uffizzi login')
     end

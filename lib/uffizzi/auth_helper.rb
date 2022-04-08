@@ -7,7 +7,7 @@ module Uffizzi
         ConfigFile.exists? &&
           ConfigFile.option_has_value?(:account_id) &&
           ConfigFile.option_has_value?(:cookie) &&
-          ConfigFile.option_has_value?(:hostname)
+          ConfigFile.option_has_value?(:server)
       end
 
       def project_set?(options)

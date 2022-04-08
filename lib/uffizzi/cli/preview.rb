@@ -67,7 +67,7 @@ module Uffizzi
     end
 
     def handle_list_command(project_slug)
-      response = fetch_deployments(ConfigFile.read_option(:hostname), project_slug)
+      response = fetch_deployments(ConfigFile.read_option(:server), project_slug)
 
       if ResponseHelper.ok?(response)
         handle_succeed_list_response(response)
@@ -78,7 +78,7 @@ module Uffizzi
 
     def handle_create_command(file_path, project_slug)
       params = file_path.nil? ? {} : prepare_params(file_path)
-      response = create_deployment(ConfigFile.read_option(:hostname), project_slug, params)
+      response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
 
       if ResponseHelper.created?(response)
         handle_succeed_create_response(project_slug, response)
@@ -92,7 +92,7 @@ module Uffizzi
 
       return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
-      response = fetch_events(ConfigFile.read_option(:hostname), project_slug, deployment_id)
+      response = fetch_events(ConfigFile.read_option(:server), project_slug, deployment_id)
 
       if ResponseHelper.ok?(response)
         handle_succeed_events_response(response)
@@ -110,7 +110,7 @@ module Uffizzi
       deployment_id = deployment[:id]
       params = { id: deployment_id }
 
-      response = deploy_containers(ConfigFile.read_option(:hostname), project_slug, deployment_id, params)
+      response = deploy_containers(ConfigFile.read_option(:server), project_slug, deployment_id, params)
 
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say("Preview created with name deployment-#{deployment_id}")
@@ -129,7 +129,7 @@ module Uffizzi
       activity_items = []
 
       loop do
-        response = get_activity_items(ConfigFile.read_option(:hostname), project_slug, deployment_id)
+        response = get_activity_items(ConfigFile.read_option(:server), project_slug, deployment_id)
         handle_activity_items_response(response)
         return unless @spinner.spinning?
 
@@ -164,7 +164,7 @@ module Uffizzi
 
     def wait_containers_deploying(project_slug, deployment_id, containers_spinners)
       loop do
-        response = get_activity_items(ConfigFile.read_option(:hostname), project_slug, deployment_id)
+        response = get_activity_items(ConfigFile.read_option(:server), project_slug, deployment_id)
         handle_activity_items_response(response)
         return if @spinner.done?
 
@@ -208,7 +208,7 @@ module Uffizzi
 
       return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
-      response = delete_deployment(ConfigFile.read_option(:hostname), project_slug, deployment_id)
+      response = delete_deployment(ConfigFile.read_option(:server), project_slug, deployment_id)
 
       if ResponseHelper.no_content?(response)
         handle_succeed_delete_response(deployment_id)
@@ -222,7 +222,7 @@ module Uffizzi
 
       return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
-      response = describe_deployment(ConfigFile.read_option(:hostname), project_slug, deployment_id)
+      response = describe_deployment(ConfigFile.read_option(:server), project_slug, deployment_id)
 
       if ResponseHelper.ok?(response)
         handle_succeed_describe_response(response)

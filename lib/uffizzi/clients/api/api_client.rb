@@ -6,148 +6,148 @@ require_relative 'http_client'
 module ApiClient
   include ApiRoutes
 
-  def create_session(hostname, params = {})
-    uri = session_uri(hostname)
+  def create_session(server, params = {})
+    uri = session_uri(server)
     response = Uffizzi::HttpClient.make_post_request(uri, params, false)
 
     build_response(response)
   end
 
-  def destroy_session(hostname)
-    uri = session_uri(hostname)
+  def destroy_session(server)
+    uri = session_uri(server)
     response = Uffizzi::HttpClient.make_delete_request(uri)
 
     build_response(response)
   end
 
-  def fetch_projects(hostname)
-    uri = projects_uri(hostname)
+  def fetch_projects(server)
+    uri = projects_uri(server)
     response = Uffizzi::HttpClient.make_get_request(uri)
 
     build_response(response)
   end
 
-  def create_credential(hostname, params)
-    uri = credentials_uri(hostname)
+  def create_credential(server, params)
+    uri = credentials_uri(server)
     response = Uffizzi::HttpClient.make_post_request(uri, params)
 
     build_response(response)
   end
 
-  def fetch_deployment_services(hostname, project_slug, deployment_id)
-    uri = preview_services_uri(hostname, project_slug, deployment_id)
+  def fetch_deployment_services(server, project_slug, deployment_id)
+    uri = preview_services_uri(server, project_slug, deployment_id)
     response = Uffizzi::HttpClient.make_get_request(uri)
 
     build_response(response)
   end
 
-  def delete_credential(hostname, credential_type)
-    uri = delete_credential_uri(hostname, credential_type)
+  def delete_credential(server, credential_type)
+    uri = delete_credential_uri(server, credential_type)
     response = Uffizzi::HttpClient.make_delete_request(uri)
 
     build_response(response)
   end
 
-  def fetch_deployment_service_logs(hostname, project_slug, deployment_id, container_name)
-    uri = preview_service_logs_uri(hostname, project_slug, deployment_id, container_name)
+  def fetch_deployment_service_logs(server, project_slug, deployment_id, container_name)
+    uri = preview_service_logs_uri(server, project_slug, deployment_id, container_name)
     response = Uffizzi::HttpClient.make_get_request(uri)
 
     build_response(response)
   end
 
-  def set_compose_file(hostname, params, project_slug)
-    uri = compose_file_uri(hostname, project_slug)
+  def set_compose_file(server, params, project_slug)
+    uri = compose_file_uri(server, project_slug)
     response = Uffizzi::HttpClient.make_post_request(uri, params)
 
     build_response(response)
   end
 
-  def unset_compose_file(hostname, project_slug)
-    uri = compose_file_uri(hostname, project_slug)
+  def unset_compose_file(server, project_slug)
+    uri = compose_file_uri(server, project_slug)
     response = Uffizzi::HttpClient.make_delete_request(uri)
 
     build_response(response)
   end
 
-  def fetch_secrets(hostname, project_slug)
-    uri = secrets_uri(hostname, project_slug)
+  def fetch_secrets(server, project_slug)
+    uri = secrets_uri(server, project_slug)
     response = Uffizzi::HttpClient.make_get_request(uri)
 
     build_response(response)
   end
 
-  def bulk_create_secrets(hostname, project_slug, params)
-    uri = "#{secrets_uri(hostname, project_slug)}/bulk_create"
+  def bulk_create_secrets(server, project_slug, params)
+    uri = "#{secrets_uri(server, project_slug)}/bulk_create"
     response = Uffizzi::HttpClient.make_post_request(uri, params)
 
     build_response(response)
   end
 
-  def delete_secret(hostname, project_slug, id)
-    uri = secret_uri(hostname, project_slug, id)
+  def delete_secret(server, project_slug, id)
+    uri = secret_uri(server, project_slug, id)
     response = Uffizzi::HttpClient.make_delete_request(uri)
 
     build_response(response)
   end
 
-  def describe_compose_file(hostname, project_slug)
-    uri = compose_file_uri(hostname, project_slug)
+  def describe_compose_file(server, project_slug)
+    uri = compose_file_uri(server, project_slug)
     response = Uffizzi::HttpClient.make_get_request(uri)
 
     build_response(response)
   end
 
-  def validate_compose_file(hostname, project_slug)
-    uri = validate_compose_file_uri(hostname, project_slug)
+  def validate_compose_file(server, project_slug)
+    uri = validate_compose_file_uri(server, project_slug)
     response = Uffizzi::HttpClient.make_get_request(uri)
 
     build_response(response)
   end
 
-  def fetch_deployments(hostname, project_slug)
-    uri = deployments_uri(hostname, project_slug)
+  def fetch_deployments(server, project_slug)
+    uri = deployments_uri(server, project_slug)
     response = Uffizzi::HttpClient.make_get_request(uri)
 
     build_response(response)
   end
 
-  def create_deployment(hostname, project_slug, params)
-    uri = deployments_uri(hostname, project_slug)
+  def create_deployment(server, project_slug, params)
+    uri = deployments_uri(server, project_slug)
     response = Uffizzi::HttpClient.make_post_request(uri, params)
 
     build_response(response)
   end
 
-  def delete_deployment(hostname, project_slug, deployment_id)
-    uri = deployment_uri(hostname, project_slug, deployment_id)
+  def delete_deployment(server, project_slug, deployment_id)
+    uri = deployment_uri(server, project_slug, deployment_id)
     response = Uffizzi::HttpClient.make_delete_request(uri)
 
     build_response(response)
   end
 
-  def describe_deployment(hostname, project_slug, deployment_id)
-    uri = deployment_uri(hostname, project_slug, deployment_id)
+  def describe_deployment(server, project_slug, deployment_id)
+    uri = deployment_uri(server, project_slug, deployment_id)
     response = Uffizzi::HttpClient.make_get_request(uri)
 
     build_response(response)
   end
 
-  def fetch_events(hostname, project_slug, deployment_id)
-    uri = events_uri(hostname, project_slug, deployment_id)
+  def fetch_events(server, project_slug, deployment_id)
+    uri = events_uri(server, project_slug, deployment_id)
     response = Uffizzi::HttpClient.make_get_request(uri)
 
     build_response(response)
   end
 
-  def get_activity_items(hostname, project_slug, deployment_id)
-    uri = activity_items_uri(hostname, project_slug, deployment_id)
+  def get_activity_items(server, project_slug, deployment_id)
+    uri = activity_items_uri(server, project_slug, deployment_id)
     response = Uffizzi::HttpClient.make_get_request(uri)
 
     build_response(response)
   end
 
-  def deploy_containers(hostname, project_slug, deployment_id, params)
-    uri = deploy_containers_uri(hostname, project_slug, deployment_id)
+  def deploy_containers(server, project_slug, deployment_id, params)
+    uri = deploy_containers_uri(server, project_slug, deployment_id)
     response = Uffizzi::HttpClient.make_post_request(uri, params)
 
     build_response(response)

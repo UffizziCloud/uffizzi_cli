@@ -35,8 +35,8 @@ module Uffizzi
         type: Uffizzi.configuration.credential_types[:dockerhub],
       }
 
-      hostname = ConfigFile.read_option(:hostname)
-      response = create_credential(hostname, params)
+      server = ConfigFile.read_option(:server)
+      response = create_credential(server, params)
 
       if ResponseHelper.created?(response)
         print_success_message('DockerHub')
@@ -57,8 +57,8 @@ module Uffizzi
         type: Uffizzi.configuration.credential_types[:azure],
       }
 
-      hostname = ConfigFile.read_option(:hostname)
-      response = create_credential(hostname, params)
+      server = ConfigFile.read_option(:server)
+      response = create_credential(server, params)
 
       if ResponseHelper.created?(response)
         print_success_message('ACR')
@@ -79,8 +79,8 @@ module Uffizzi
         type: Uffizzi.configuration.credential_types[:amazon],
       }
 
-      hostname = ConfigFile.read_option(:hostname)
-      response = create_credential(hostname, params)
+      server = ConfigFile.read_option(:server)
+      response = create_credential(server, params)
 
       if ResponseHelper.created?(response)
         print_success_message('ECR')
@@ -103,8 +103,8 @@ module Uffizzi
         type: Uffizzi.configuration.credential_types[:google],
       }
 
-      hostname = ConfigFile.read_option(:hostname)
-      response = create_credential(hostname, params)
+      server = ConfigFile.read_option(:server)
+      response = create_credential(server, params)
 
       if ResponseHelper.created?(response)
         print_success_message('GCR')

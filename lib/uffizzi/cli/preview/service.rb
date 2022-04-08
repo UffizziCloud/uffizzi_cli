@@ -31,9 +31,9 @@ module Uffizzi
       return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?(options)
 
       project_slug = ConfigFile.read_option(:project)
-      hostname = ConfigFile.read_option(:hostname)
+      server = ConfigFile.read_option(:server)
       deployment_id = PreviewService.read_deployment_id(deployment_name)
-      response = fetch_deployment_services(hostname, project_slug, deployment_id)
+      response = fetch_deployment_services(server, project_slug, deployment_id)
 
       if ResponseHelper.ok?(response)
         handle_succeed_list_response(response, deployment_name)
@@ -46,11 +46,11 @@ module Uffizzi
 
     def service_logs_response(logs_type, deployment_id, container_name)
       project_slug = ConfigFile.read_option(:project)
-      hostname = ConfigFile.read_option(:hostname)
+      server = ConfigFile.read_option(:server)
 
       case logs_type
       when 'container'
-        fetch_deployment_service_logs(hostname, project_slug, deployment_id, container_name)
+        fetch_deployment_service_logs(server, project_slug, deployment_id, container_name)
       else
         raise Uffizzi::Error.new('Unknown log type')
       end

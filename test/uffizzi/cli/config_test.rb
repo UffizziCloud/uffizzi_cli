@@ -15,7 +15,7 @@ class ConfigTest < Minitest::Test
 
     assert_equal(result[:account_id], @account_id)
     assert_equal(result[:cookie], @cookie)
-    assert_equal(result[:hostname], Uffizzi.configuration.hostname)
+    assert_equal(result[:server], Uffizzi.configuration.server)
   end
 
   def test_get_with_property

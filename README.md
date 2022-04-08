@@ -84,19 +84,19 @@ Run single test
 ### login
 
 ```
-$ uffizzi login --user your@email.com --hostname localhost:8080
+$ uffizzi login --user your@email.com --server localhost:8080
 ```
 
-Logging you into the app which you set in the hostname option or config file
+Logging you into the app which you set in the server option or config file
 
 ### login options
 
 | Option       | Aliase | Description                         |
 | ------------ | ------ | ----------------------------------- |
 | `--username` | `-u`   | Your email for logging in(optional) |
-| `--hostname` |        | Adress of your app(optional)        |
+| `--server`   |        | Adress of your app(optional)        |
 
-If hostname uses basic authentication you can specify options for it by setting `basic_auth_user` and `basic_auth_password` via `config set` command.
+If server uses basic authentication you can specify options for it by setting `basic_auth_user` and `basic_auth_password` via `config set` command.
 
 ### project
 
@@ -156,7 +156,7 @@ Use this command to configure your cli app.
 $ uffizzi config
 ```
 
-Launching interactive setup guide that sets the values for `hostname` and `project`
+Launching interactive setup guide that sets the values for `server` and `project`
 
 ### config subcommands
 

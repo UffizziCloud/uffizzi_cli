@@ -8,8 +8,8 @@ module Uffizzi
     CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default.json"
 
     class << self
-      def create(account_id, cookie, hostname)
-        data = prepare_config_data(account_id, cookie, hostname)
+      def create(account_id, cookie, server)
+        data = prepare_config_data(account_id, cookie, server)
         data.each_pair { |key, value| write_option(key, value) }
       end
 
@@ -103,10 +103,10 @@ module Uffizzi
         end
       end
 
-      def prepare_config_data(account_id, cookie, hostname)
+      def prepare_config_data(account_id, cookie, server)
         {
           account_id: account_id,
-          hostname: hostname,
+          server: server,
           cookie: cookie,
         }
       end

@@ -34,8 +34,8 @@ uffizzi config - configure the Uffizzi command-line interface (CLI)
 ## OPTIONS
      OPTION is one of the following: 
      
-     hostname
-        The hostname of the Uffizzi API service you want to access. Defaults to 
+     server
+        The server of the Uffizzi API service you want to access. Defaults to 
         app.uffizzi.com.
 
      name

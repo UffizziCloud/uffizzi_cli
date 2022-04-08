@@ -13,20 +13,20 @@ module Uffizzi
     end
 
     def run
-      if @options[:hostname].nil? && !ConfigFile.option_has_value?(:hostname)
-        no_hostname_message = 'Uffizzi hostname is not set. To set hostname, run uffizzi config set hostname VALUE, ' \
-                              'or to login with an alternate hostname, run uffizzi login --hostname=HOSTNAME'
-        return Uffizzi.ui.say(no_hostname_message)
+      if @options[:server].nil? && !ConfigFile.option_has_value?(:server)
+        no_server_message = 'Uffizzi server is not set. To set server, run uffizzi config set server VALUE, ' \
+                              'or to login with an alternate server, run uffizzi login --server=SERVER'
+        return Uffizzi.ui.say(no_server_message)
       end
-      hostname = @options[:hostname] || ConfigFile.read_option(:hostname)
+      server = @options[:server] || ConfigFile.read_option(:server)
       Uffizzi.ui.say('Login to Uffizzi to your previews.')
       username = @options[:username] || Uffizzi.ui.ask('Username: ')
       password = ENV['UFFIZZI_PASSWORD'] || Uffizzi.ui.ask('Password: ', echo: false)
       params = prepare_request_params(username, password)
-      response = create_session(hostname, params)
+      response = create_session(server, params)
 
       if ResponseHelper.created?(response)
-        handle_succeed_response(response, hostname)
+        handle_succeed_response(response, server)
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -43,11 +43,11 @@ module Uffizzi
       }
     end
 
-    def handle_succeed_response(response, hostname)
+    def handle_succeed_response(response, server)
       account = response[:body][:user][:accounts].first
       return Uffizzi.ui.say('No account related to this email') unless account_valid?(account)
 
-      ConfigFile.write_option(:hostname, hostname)
+      ConfigFile.write_option(:server, server)
       ConfigFile.write_option(:cookie, response[:headers])
       ConfigFile.write_option(:account_id, account[:id])
     end

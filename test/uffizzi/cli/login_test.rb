@@ -9,10 +9,10 @@ class LoginTest < Minitest::Test
     @command_params = {
       user: generate(:email),
       password: generate(:string),
-      hostname: Uffizzi.configuration.hostname,
+      server: Uffizzi.configuration.server,
     }
 
-    @cli.options = { user: @command_params[:user], hostname: @command_params[:hostname] }
+    @cli.options = { user: @command_params[:user], server: @command_params[:server] }
   end
 
   def test_login_success
