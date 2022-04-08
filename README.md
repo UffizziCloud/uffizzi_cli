@@ -156,7 +156,7 @@ Use this command to configure your cli app.
 $ uffizzi config
 ```
 
-Launching interactive setup guide that sets the values for `server` and `project`
+Launching interactive setup guide that sets the values for `server`, `username` and `project`
 
 ### config subcommands
 
