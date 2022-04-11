@@ -2,4 +2,4 @@
 # frozen_string_literal: true
 
 require 'uffizzi/cli'
-Uffizzi::CLI.start
+Uffizzi::Cli.start

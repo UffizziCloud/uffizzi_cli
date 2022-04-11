@@ -4,7 +4,7 @@ require 'test_helper'
 
 class DisconnectTest < Minitest::Test
   def setup
-    @cli = Uffizzi::CLI.new
+    @cli = Uffizzi::Cli.new
 
     sign_in
   end

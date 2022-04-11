@@ -4,7 +4,7 @@ require 'test_helper'
 
 class PreviewTest < Minitest::Test
   def setup
-    @preview = Uffizzi::CLI::Preview.new
+    @preview = Uffizzi::Cli::Preview.new
 
     sign_in
     Uffizzi::ConfigFile.write_option(:project, 'dbp')

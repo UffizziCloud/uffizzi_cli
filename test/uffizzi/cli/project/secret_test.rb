@@ -4,7 +4,7 @@ require 'test_helper'
 
 class SecretTest < Minitest::Test
   def setup
-    @secret = Uffizzi::CLI::Project::Secret.new
+    @secret = Uffizzi::Cli::Project::Secret.new
     @project_slug = 'default'
     Uffizzi::ConfigFile.write_option(:project, @project_slug)
 

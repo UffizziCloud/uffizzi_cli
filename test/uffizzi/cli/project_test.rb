@@ -4,7 +4,7 @@ require 'test_helper'
 
 class ProjectsTest < Minitest::Test
   def setup
-    @project = Uffizzi::CLI::Project.new
+    @project = Uffizzi::Cli::Project.new
 
     sign_in
   end

@@ -6,7 +6,7 @@ require 'uffizzi/response_helper'
 require 'uffizzi/shell'
 
 module Uffizzi
-  class CLI::Project::Secret < Thor
+  class Cli::Project::Secret < Thor
     include ApiClient
 
     desc 'list', 'List Secrets'

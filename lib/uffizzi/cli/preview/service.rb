@@ -6,7 +6,7 @@ require 'uffizzi/response_helper'
 require 'uffizzi/services/preview_service'
 
 module Uffizzi
-  class CLI::Preview::Service < Thor
+  class Cli::Preview::Service < Thor
     include ApiClient
 
     desc 'logs [LOGS_TYPE] [DEPLOYMENT_ID] [CONTAINER_NAME]', 'logs'
@@ -25,7 +25,7 @@ module Uffizzi
       end
     end
 
-    desc 'logs [DEPLOYMENT_ID]', 'list'
+    desc 'list [DEPLOYMENT_ID]', 'list'
     def list(deployment_name)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
       return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?(options)

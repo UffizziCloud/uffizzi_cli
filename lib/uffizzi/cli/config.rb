@@ -4,7 +4,7 @@ require 'uffizzi'
 require 'uffizzi/clients/api/api_client'
 
 module Uffizzi
-  class CLI::Config < Thor
+  class Cli::Config < Thor
     include ApiClient
 
     class << self

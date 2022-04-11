@@ -7,7 +7,7 @@ require 'uffizzi/services/compose_file_service'
 require 'uffizzi/services/env_variables_service'
 
 module Uffizzi
-  class CLI::Project::Compose < Thor
+  class Cli::Project::Compose < Thor
     include ApiClient
 
     desc 'set [OPTIONS]', 'set'

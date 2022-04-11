@@ -4,14 +4,14 @@ require 'test_helper'
 
 class ConnectTest < Minitest::Test
   def setup
-    @cli = Uffizzi::CLI.new
-
+    @cli = Uffizzi::Cli.new
     sign_in
   end
 
   def test_connect_docker_hub_success
     body = json_fixture('files/uffizzi/uffizzi_dockerhub_credential.json')
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:dockerhub])
 
     credential_params = {
       username: generate(:string),
@@ -28,11 +28,13 @@ class ConnectTest < Minitest::Test
 
     assert_equal('Successfully connected to DockerHub', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
   end
 
   def test_connect_azure_success
     body = json_fixture('files/uffizzi/uffizzi_azure_credential.json')
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:azure])
 
     credential_params = {
       registry_url: generate(:url),
@@ -50,11 +52,13 @@ class ConnectTest < Minitest::Test
 
     assert_equal('Successfully connected to ACR', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
   end
 
   def test_connect_amazon_success
     body = json_fixture('files/uffizzi/uffizzi_amazon_credential.json')
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:amazon])
 
     credential_params = {
       registry_url: generate(:url),
@@ -72,6 +76,7 @@ class ConnectTest < Minitest::Test
 
     assert_equal('Successfully connected to ECR', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
   end
 
   def test_connect_google_success
@@ -79,11 +84,13 @@ class ConnectTest < Minitest::Test
     credential_path = "#{Dir.pwd}/test/fixtures/files/google/service-account.json"
 
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:google])
 
     @cli.connect('gcr', credential_path)
 
     assert_equal('Successfully connected to GCR', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
   end
 
   def test_unknown_credential_type
@@ -97,6 +104,7 @@ class ConnectTest < Minitest::Test
   def test_connect_credential_failed
     body = json_fixture('files/uffizzi/uffizzi_credential_failed.json')
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential_fail(body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:dockerhub])
 
     credential_params = {
       username: generate(:string),
@@ -110,8 +118,18 @@ class ConnectTest < Minitest::Test
     IO.stubs(:console).returns(console_mock)
 
     @cli.connect('docker-hub')
-
     assert_equal(body[:errors][:username].first, Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_connect_credential_duplicate
+    stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:dockerhub])
+
+    assert_raises(Uffizzi::Error) do
+      @cli.connect('docker-hub')
+    end
+
+    assert_requested(stubbed_check_credential)
   end
 end

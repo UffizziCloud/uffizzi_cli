@@ -33,24 +33,18 @@ module Uffizzi
       Logout.new(options).run
     end
 
-    desc 'projects', 'projects'
-    def projects
-      require_relative 'cli/projects'
-      Projects.new.run
-    end
-
     desc 'project', 'project'
     require_relative 'cli/project'
-    subcommand 'project', CLI::Project
+    subcommand 'project', Cli::Project
 
     desc 'config', 'config'
     require_relative 'cli/config'
-    subcommand 'config', CLI::Config
+    subcommand 'config', Cli::Config
 
     desc 'preview', 'preview'
     method_option :project, required: false
     require_relative 'cli/preview'
-    subcommand 'preview', CLI::Preview
+    subcommand 'preview', Cli::Preview
 
     desc 'connect CREDENTIAL_TYPE', 'Connect credentials into Uffizzi'
     def connect(credential_type, credential_file_path = nil)
@@ -67,9 +61,10 @@ module Uffizzi
     class << self
       protected
 
+      require_relative 'cli/common'
       def dispatch(meth, given_args, given_opts, config)
         args, opts = Thor::Options.split(given_args)
-        return Cli::Common.show_manual(filename(args)) if show_help?(args, opts)
+        return Common.show_manual(filename(args)) if show_help?(args, opts)
 
         super
       end

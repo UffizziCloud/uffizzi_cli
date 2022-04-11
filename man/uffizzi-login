@@ -2,7 +2,7 @@
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "UFFIZZI\-LOGIN" "" "April 2022" ""
 .SH "NAME"
-\fBuffizzi\-login\fR \- login to Uffizzi
+\fBuffizzi\-login\fR \- login to Uffizzi to view and manage your previews\.
 .SH "SYNOPSIS"
 .nf
 uffizzi login [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]

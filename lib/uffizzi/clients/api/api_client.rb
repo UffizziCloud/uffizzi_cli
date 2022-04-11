@@ -27,6 +27,13 @@ module ApiClient
     build_response(response)
   end
 
+  def check_credential(server, type)
+    uri = check_credential_uri(server, type)
+    response = Uffizzi::HttpClient.make_get_request(uri)
+
+    build_response(response)
+  end
+
   def create_credential(server, params)
     uri = credentials_uri(server)
     response = Uffizzi::HttpClient.make_post_request(uri, params)
@@ -164,7 +171,7 @@ module ApiClient
   end
 
   def response_body(response)
-    return nil if response.body.nil?
+    return nil if response.body.nil? || response.body.empty?
 
     JSON.parse(response.body, symbolize_names: true)
   rescue JSON::ParserError

@@ -5,14 +5,14 @@ require 'uffizzi/auth_helper'
 require 'uffizzi/services/preview_service'
 
 module Uffizzi
-  class CLI::Preview < Thor
+  class Cli::Preview < Thor
     include ApiClient
 
     @spinner
 
     desc 'service', 'service'
     require_relative 'preview/service'
-    subcommand 'service', Uffizzi::CLI::Preview::Service
+    subcommand 'service', Uffizzi::Cli::Preview::Service
 
     desc 'list', 'list'
     def list

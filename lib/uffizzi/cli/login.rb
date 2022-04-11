@@ -5,7 +5,7 @@ require 'uffizzi/response_helper'
 require 'uffizzi/clients/api/api_client'
 
 module Uffizzi
-  class CLI::Login
+  class Cli::Login
     include ApiClient
 
     def initialize(options)

@@ -5,17 +5,17 @@ require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
 
 module Uffizzi
-  class CLI::Project < Thor
+  class Cli::Project < Thor
     include ApiClient
 
     desc 'compose', 'compose'
     method_option :file, required: false, aliases: '-f'
     require_relative 'project/compose'
-    subcommand 'compose', Uffizzi::CLI::Project::Compose
+    subcommand 'compose', Uffizzi::Cli::Project::Compose
 
     desc 'secret', 'Secrets Actions'
     require_relative 'project/secret'
-    subcommand 'secret', Uffizzi::CLI::Project::Secret
+    subcommand 'secret', Uffizzi::Cli::Project::Secret
 
     desc 'list', 'list'
     def list

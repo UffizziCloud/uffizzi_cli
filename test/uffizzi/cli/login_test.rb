@@ -4,7 +4,7 @@ require 'test_helper'
 
 class LoginTest < Minitest::Test
   def setup
-    @cli = Uffizzi::CLI.new
+    @cli = Uffizzi::Cli.new
 
     @command_params = {
       username: generate(:email),
