@@ -48,9 +48,11 @@ class PreviewTest < Minitest::Test
     deployment_id = 1
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_success(204, @project_slug, deployment_id)
 
-    @preview.delete("deployment--#{deployment_id}")
+    error = assert_raises(Uffizzi::Error) do
+      @preview.describe("deployment--#{deployment_id}")
+    end
 
-    assert_equal("Preview should be specified in 'deployment-PREVIEW_ID' format", Uffizzi.ui.last_message)
+    assert_equal("Preview should be specified in 'deployment-PREVIEW_ID' format", error.message)
     refute_requested(stubbed_uffizzi_preview_delete)
   end
 
@@ -79,9 +81,11 @@ class PreviewTest < Minitest::Test
     deployment_id = 1
     stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(204, nil, @project_slug, deployment_id)
 
-    @preview.describe("deployment--#{deployment_id}")
+    error = assert_raises(Uffizzi::Error) do
+      @preview.describe("deployment--#{deployment_id}")
+    end
 
-    assert_equal("Preview should be specified in 'deployment-PREVIEW_ID' format", Uffizzi.ui.last_message)
+    assert_equal("Preview should be specified in 'deployment-PREVIEW_ID' format", error.message)
     refute_requested(stubbed_uffizzi_preview_describe)
   end
 

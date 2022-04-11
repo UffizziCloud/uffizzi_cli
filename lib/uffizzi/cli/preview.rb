@@ -115,7 +115,7 @@ module Uffizzi
     def handle_events_command(deployment_name, project_slug)
       deployment_id = PreviewService.read_deployment_id(deployment_name)
 
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
+      raise Uffizzi::Error.new("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
       response = fetch_events(ConfigFile.read_option(:server), project_slug, deployment_id)
 
@@ -230,7 +230,7 @@ module Uffizzi
     def handle_delete_command(deployment_name, project_slug)
       deployment_id = PreviewService.read_deployment_id(deployment_name)
 
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
+      raise Uffizzi::Error.new("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
       response = delete_deployment(ConfigFile.read_option(:server), project_slug, deployment_id)
 
@@ -244,7 +244,7 @@ module Uffizzi
     def handle_describe_command(deployment_name, project_slug)
       deployment_id = PreviewService.read_deployment_id(deployment_name)
 
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
+      raise Uffizzi::Error.new("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
       response = describe_deployment(ConfigFile.read_option(:server), project_slug, deployment_id)
 
@@ -264,7 +264,7 @@ module Uffizzi
 
     def handle_succeed_list_response(response)
       deployments = response[:body][:deployments] || []
-      return Uffizzi.ui.say('The project has no active deployments') if deployments.empty?
+      raise Uffizzi::Error.new('The project has no active deployments') if deployments.empty?
 
       deployments.each do |deployment|
         Uffizzi.ui.say("deployment-#{deployment[:id]}")
