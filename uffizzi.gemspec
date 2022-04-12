@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   spec.required_ruby_version = '>= 2.5.0'
 
+  spec.add_dependency 'awesome_print'
   spec.add_dependency 'thor'
   spec.add_dependency 'tty-spinner'
 

@@ -1,0 +1,17 @@
+services:
+  webhooks-test-app:
+    image: ghcr.io/moklidia/test:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+x-uffizzi-ingress:
+  service: webhooks-test-app
+  port: 80
+
+x-uffizzi-continuous-preview:
+  share_to_github: true
+  delete_preview_after: 99h
+  tag_pattern: uffizzi_request_*
+  delete_preview_when_image_tag_is_updated: true
+  deploy_preview_when_image_tag_is_created: true
