@@ -36,9 +36,7 @@ module Uffizzi
           http.request(request)
         end
 
-        if response.instance_of?(Net::HTTPUnauthorized)
-          raise StandardError.new('Not authorized')
-        end
+        raise Uffizzi::Error.new('Not authorized') if response.is_a?(Net::HTTPUnauthorized)
 
         response
       end

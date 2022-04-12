@@ -167,6 +167,8 @@ module ApiClient
     return nil if response.body.nil?
 
     JSON.parse(response.body, symbolize_names: true)
+  rescue JSON::ParserError
+    raise Uffizzi::Error.new(response.message)
   end
 
   def response_cookie(response)
