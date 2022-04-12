@@ -26,4 +26,8 @@ class MockShell
   def print_in_columns(columns_data)
     columns_data
   end
+
+  def pretty_say(collection, _index = true)
+    collection
+  end
 end
