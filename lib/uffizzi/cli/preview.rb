@@ -134,7 +134,7 @@ module Uffizzi
         return unless @spinner.spinning?
 
         activity_items = response[:body][:activity_items]
-        break unless activity_items.empty?
+        break if !activity_items.empty? && activity_items.count == deployment[:containers].count
 
         sleep(5)
       end
