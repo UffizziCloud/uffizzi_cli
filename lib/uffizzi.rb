@@ -17,5 +17,9 @@ module Uffizzi
     def ui
       @ui ||= Uffizzi::UI::Shell.new
     end
+
+    def root
+      @root ||= Pathname.new(File.expand_path('..', __dir__))
+    end
   end
 end
