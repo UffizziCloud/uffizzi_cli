@@ -1,0 +1,35 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-CONNECT\-ECR" "" "April 2022" ""
+.SH "NAME"
+\fBuffizzi\-connect\-ecr\fR \- grant a Uffizzi user account access to a private Amazon Elastic Container Registry (ECR)
+.SH "SYNOPSIS"
+.nf
+uffizzi connect ecr
+.fi
+.SH "DESCRIPTION"
+.nf
+Given valid credentials, grants a Uffizzi user account access
+to a private Amazon Elastic Container Registry
+
+This command can fail for the following reasons:
+    \- The active user does not have permission to connect
+      external services\.
+    \- The given credentials are invalid\.
+
+For more information on connecting to external services, see:
+https://docs\.uffizzi\.com/cli
+
+For detailed instructions on configuring webhooks to send push
+notifications to Uffizzi, see
+https://docs\.uffizzi\.com/guides/container\-registry\-integrations
+.fi
+.SH "EXAMPLES"
+.nf
+The following command will prompt the user to enter ACR
+credentials, including registry domain, access key ID and
+secret access key:
+
+    $ uffizzi connect ecr
+.fi
+

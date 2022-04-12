@@ -13,13 +13,13 @@ module Uffizzi
       true
     end
 
-    desc 'version', 'Show Version'
+    desc 'version', 'Print version information for uffizzi CLI'
     def version
       require_relative 'version'
       Uffizzi.ui.say(Uffizzi::VERSION)
     end
 
-    desc 'login [OPTIONS]', 'Login into Uffizzi'
+    desc 'login [OPTIONS]', 'Login to Uffizzi to view and manage your previews'
     method_option :server, required: false, aliases: '-s'
     method_option :username, required: false, aliases: '-u'
     def login
@@ -27,7 +27,7 @@ module Uffizzi
       Login.new(options).run
     end
 
-    desc 'logout', 'Logout from Uffizzi'
+    desc 'logout', 'Log out of a Uffizzi user account'
     def logout
       require_relative 'cli/logout'
       Logout.new(options).run
@@ -46,13 +46,11 @@ module Uffizzi
     require_relative 'cli/preview'
     subcommand 'preview', Cli::Preview
 
-    desc 'connect CREDENTIAL_TYPE', 'Connect credentials into Uffizzi'
-    def connect(credential_type, credential_file_path = nil)
-      require_relative 'cli/connect'
-      Connect.new.run(credential_type, credential_file_path)
-    end
+    desc 'connect', 'connect'
+    require_relative 'cli/connect'
+    subcommand 'connect', Cli::Connect
 
-    desc 'disconect CREDENTIAL_TYPE', 'Disonnect credentials from Uffizzi'
+    desc 'disconect CREDENTIAL_TYPE', 'Revoke a Uffizzi user account access to external services'
     def disconnect(credential_type)
       require_relative 'cli/disconnect'
       Disconnect.new.run(credential_type)

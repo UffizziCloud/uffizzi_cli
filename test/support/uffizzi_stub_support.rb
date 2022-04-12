@@ -85,6 +85,12 @@ module UffizziStubSupport
     stub_request(:get, uri).to_return(status: 422, body: '')
   end
 
+  def stub_uffizzi_list_credentials(body)
+    uri = credentials_uri(Uffizzi.configuration.hostname)
+
+    stub_request(:get, uri).to_return(status: 200, body: body.to_json)
+  end
+
   def stub_uffizzi_create_credential_fail(body)
     uri = credentials_uri(Uffizzi.configuration.server)
 

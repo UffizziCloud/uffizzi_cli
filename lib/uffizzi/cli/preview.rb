@@ -10,32 +10,32 @@ module Uffizzi
 
     @spinner
 
-    desc 'service', 'service'
+    desc 'service', 'Show the preview services info'
     require_relative 'preview/service'
     subcommand 'service', Uffizzi::Cli::Preview::Service
-
-    desc 'list', 'list'
+    desc 'list', 'List all previews
+    '
     def list
       run('list')
     end
 
-    desc 'create [COMPOSE_FILE]', 'create'
+    desc 'create [COMPOSE_FILE]', 'Create a preview'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
     def create(file_path = nil)
       run('create', file_path: file_path)
     end
 
-    desc 'delete [DEPLOYMENT_ID]', 'delete'
+    desc 'delete [DEPLOYMENT_ID]', 'Delete a preview'
     def delete(deployment_name)
       run('delete', deployment_name: deployment_name)
     end
 
-    desc 'describe [DEPLOYMENT_ID]', 'describe'
+    desc 'describe [DEPLOYMENT_ID]', 'Display details of a preview'
     def describe(deployment_name)
       run('describe', deployment_name: deployment_name)
     end
 
-    desc 'events [DEPLOYMENT_ID]', 'events'
+    desc 'events [DEPLOYMENT_ID]', 'Show the deployment event logs for a preview'
     def events(deployment_name)
       run('events', deployment_name: deployment_name)
     end
