@@ -92,7 +92,7 @@ module UffizziStubSupport
   end
 
   def stub_uffizzi_generate_token(body)
-    uri = generate_token_uri(Uffizzi.configuration.hostname)
+    uri = generate_token_uri(Uffizzi.configuration.server)
 
     stub_request(:post, uri).to_return(status: 201, body: body.to_json)
   end

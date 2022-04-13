@@ -8,7 +8,7 @@ module Uffizzi
   class CLI::Authtoken < Thor
     include ApiClient
 
-    desc 'create', 'create'
+    desc 'create', 'generate token for docker extension auth'
     def create
       run('create')
     end

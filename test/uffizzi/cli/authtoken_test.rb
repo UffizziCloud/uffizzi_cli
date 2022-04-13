@@ -6,7 +6,7 @@ class AuthtokenTest < Minitest::Test
   def setup
     @authtoken = Uffizzi::CLI::Authtoken.new
 
-    @authtoken.options = { server: Uffizzi.configuration.hostname }
+    @authtoken.options = { server: Uffizzi.configuration.server }
   end
 
   def test_authtoken_create_success
