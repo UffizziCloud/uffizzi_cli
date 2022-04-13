@@ -64,7 +64,11 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers/#{container_name}/logs"
   end
 
-  def generate_token_uri(server)
+  def authtokens_uri(server)
     "#{server}/api/cli/v1/docker_extension_auth_tokens"
+  end
+
+  def authtoken_uri(server, authtoken_code)
+    "#{server}/api/cli/v1/docker_extension_auth_tokens/#{authtoken_code}"
   end
 end

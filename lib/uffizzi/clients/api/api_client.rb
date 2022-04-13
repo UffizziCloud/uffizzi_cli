@@ -153,9 +153,16 @@ module ApiClient
     build_response(response)
   end
 
-  def generate_token(server)
-    uri = generate_token_uri(server)
+  def create_token(server)
+    uri = authtokens_uri(server)
     response = Uffizzi::HttpClient.make_post_request(uri, {}, false)
+
+    build_response(response)
+  end
+
+  def show_token(server, authtoken_code)
+    uri = authtoken_uri(server, authtoken_code)
+    response = Uffizzi::HttpClient.make_get_request(uri)
 
     build_response(response)
   end
