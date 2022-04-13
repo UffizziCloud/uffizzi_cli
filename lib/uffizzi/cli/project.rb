@@ -34,8 +34,8 @@ module Uffizzi
     end
 
     def handle_list_command
-      hostname = ConfigFile.read_option(:hostname)
-      response = fetch_projects(hostname)
+      server = ConfigFile.read_option(:server)
+      response = fetch_projects(server)
 
       if ResponseHelper.ok?(response)
         handle_succeed_response(response)

@@ -42,19 +42,19 @@ module UffizziPreviewStubSupport
   end
 
   def stub_uffizzi_preview_events_success(body, deployment_id, project_slug)
-    url = events_uri(Uffizzi.configuration.hostname, project_slug, deployment_id)
+    url = events_uri(Uffizzi.configuration.server, project_slug, deployment_id)
 
     stub_request(:get, url).to_return(status: 200, body: body.to_json)
   end
 
   def stub_uffizzi_preview_services_list(body, project_slug, deployment_id)
-    url = preview_services_uri(Uffizzi.configuration.hostname, project_slug, deployment_id)
+    url = preview_services_uri(Uffizzi.configuration.server, project_slug, deployment_id)
 
     stub_request(:get, url).to_return(status: 200, body: body.to_json, headers: {})
   end
 
   def stub_uffizzi_preview_service_logs(body, project_slug, deployment_id, container_name)
-    url = preview_service_logs_uri(Uffizzi.configuration.hostname, project_slug, deployment_id, container_name)
+    url = preview_service_logs_uri(Uffizzi.configuration.server, project_slug, deployment_id, container_name)
 
     stub_request(:get, url).to_return(status: 200, body: body.to_json, headers: {})
   end

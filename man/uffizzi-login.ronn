@@ -21,4 +21,4 @@
 
     To login to an alternate host, run:
 
-        $ uffizzi login --hostname=uffizzi.example.com
+        $ uffizzi login --server=uffizzi.example.com

@@ -40,7 +40,7 @@ If you specify the following environment variables, the Docker image's
 entrypoint script can log you into Uffizzi before executing your command.
 
 - `UFFIZZI_USER`
-- `UFFIZZI_HOSTNAME`
+- `UFFIZZI_SERVER`
 - `UFFIZZI_PASSWORD`
 - `UFFIZZI_PROJECT` (optional)
 
@@ -91,7 +91,17 @@ If server uses basic authentication you can specify options for it by setting `b
 
 ### config
 
-Use this command to configure your cli app. This command has 4 subcommands `list`, `get`, `set`, and `delete`.
+Use this command to configure your cli app.
+
+```
+$ uffizzi config
+```
+
+Launching interactive setup guide that sets the values for `server`, `username` and `project`
+
+### config subcommands
+
+This command has 4 subcommands `list`, `get`, `set`, and `delete`.
 
 ```
 uffizzi config list

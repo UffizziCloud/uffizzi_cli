@@ -57,7 +57,7 @@ module Uffizzi
           request.body = params.to_json
         end
         request['Cookie'] = ConfigFile.read_option(:cookie) if require_cookies
-        if ConfigFile.exists? && ConfigFile.option_exists?(:basic_auth_user) && ConfigFile.option_exists?(:basic_auth_password)
+        if ConfigFile.exists? && ConfigFile.option_has_value?(:basic_auth_user) && ConfigFile.option_has_value?(:basic_auth_password)
           request.basic_auth(ConfigFile.read_option(:basic_auth_user), ConfigFile.read_option(:basic_auth_password))
         end
 
