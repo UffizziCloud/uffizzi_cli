@@ -33,7 +33,7 @@ The Uffizzi CLI can be used interactively or as part of an automated workflow (e
 
 Run the CLI as a Docker container in interactive mode:  
 ```
-docker run --interactive --rm --tty --entrypoint=sh uffizzi/cli:qa
+docker run --interactive --rm --tty --entrypoint=sh uffizzi/cli
 ```
 
 If you specify the following environment variables, the Docker image's
