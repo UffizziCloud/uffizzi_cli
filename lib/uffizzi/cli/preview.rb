@@ -92,6 +92,9 @@ module Uffizzi
       else
         ResponseHelper.handle_failed_response(response)
       end
+    rescue SystemExit, Interrupt
+      deployment_id = response[:body][:deployment][:id]
+      handle_preview_interruption(deployment_id, hostname, project_slug)
     end
 
     def handle_update_command(deployment_name, file_path, project_slug)
@@ -197,6 +200,18 @@ module Uffizzi
         compose_file: compose_file_params,
         dependencies: dependencies,
       }
+    end
+
+    def handle_preview_interruption(deployment_id, hostname, project_slug)
+      deletion_response = delete_deployment(hostname, project_slug, deployment_id)
+      deployment_name = "deployment-#{deployment_id}"
+      preview_deletion_message = if ResponseHelper.no_content?(deletion_response)
+        "The preview #{deployment_name} has been disabled."
+      else
+        "Couldn't disable the deployment #{deployment_name} - please disable maually."
+      end
+
+      raise Uffizzi::Error.new("The preview creation was interrupted. #{preview_deletion_message}")
     end
   end
 end
