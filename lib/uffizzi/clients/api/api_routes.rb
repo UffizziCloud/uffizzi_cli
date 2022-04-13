@@ -63,4 +63,8 @@ module ApiRoutes
   def preview_service_logs_uri(server, project_slug, deployment_id, container_name)
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers/#{container_name}/logs"
   end
+
+  def generate_token_uri(server)
+    "#{server}/api/cli/v1/docker_extension_auth_tokens"
+  end
 end

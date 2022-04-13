@@ -64,6 +64,11 @@ module Uffizzi
       Disconnect.new.run(credential_type)
     end
 
+    desc 'authtoken', 'works with token for docker extension auth'
+    method_option :server, required: true
+    require_relative 'cli/authtoken'
+    subcommand 'authtoken', CLI::Authtoken
+
     class << self
       protected
 

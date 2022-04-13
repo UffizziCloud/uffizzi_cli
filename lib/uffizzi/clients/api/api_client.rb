@@ -153,6 +153,13 @@ module ApiClient
     build_response(response)
   end
 
+  def generate_token(server)
+    uri = generate_token_uri(server)
+    response = Uffizzi::HttpClient.make_post_request(uri, {}, false)
+
+    build_response(response)
+  end
+
   private
 
   def build_response(response)
