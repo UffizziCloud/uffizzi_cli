@@ -91,9 +91,15 @@ module UffizziStubSupport
     stub_request(:delete, uri).to_return(status: 422, body: body.to_json)
   end
 
-  def stub_uffizzi_generate_token(body)
-    uri = generate_token_uri(Uffizzi.configuration.server)
+  def stub_uffizzi_create_token(body)
+    uri = authtokens_uri(Uffizzi.configuration.server)
 
     stub_request(:post, uri).to_return(status: 201, body: body.to_json)
+  end
+
+  def stub_uffizzi_show_token(body, authtoken_code)
+    uri = authtoken_uri(Uffizzi.configuration.server, authtoken_code)
+
+    stub_request(:get, uri).to_return(status: 200, body: body.to_json)
   end
 end
