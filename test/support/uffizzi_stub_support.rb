@@ -90,4 +90,10 @@ module UffizziStubSupport
 
     stub_request(:delete, uri).to_return(status: 422, body: body.to_json)
   end
+
+  def stub_uffizzi_generate_token(body)
+    uri = generate_token_uri(Uffizzi.configuration.hostname)
+
+    stub_request(:post, uri).to_return(status: 201, body: body.to_json)
+  end
 end
