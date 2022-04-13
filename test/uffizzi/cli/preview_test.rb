@@ -13,7 +13,7 @@ class PreviewTest < Minitest::Test
 
   def test_list_preview
     body = json_fixture('files/uffizzi/uffizzi_preview_list.json')
-    stubbed_uffizzi_preview_list = stub_uffizzi_preview_list(Uffizzi.configuration.hostname, 200, body, {}, @project_slug)
+    stubbed_uffizzi_preview_list = stub_uffizzi_preview_list(Uffizzi.configuration.server, 200, body, {}, @project_slug)
 
     deployment = body[:deployments].first
 
@@ -25,7 +25,7 @@ class PreviewTest < Minitest::Test
 
   def test_delete_preview_success
     deployment_id = 1
-    stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete(Uffizzi.configuration.hostname, 204, nil, {}, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete(Uffizzi.configuration.server, 204, nil, {}, @project_slug, deployment_id)
 
     @preview.delete("deployment-#{deployment_id}")
 
@@ -36,7 +36,7 @@ class PreviewTest < Minitest::Test
   def test_delete_preview_with_unexisted_preview
     body = json_fixture('files/uffizzi/uffizzi_preview_resource_not_found.json')
     deployment_id = 1
-    stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete(Uffizzi.configuration.hostname, 404, body, {}, @project_slug,
+    stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete(Uffizzi.configuration.server, 404, body, {}, @project_slug,
                                                                  deployment_id)
 
     @preview.delete("deployment-#{deployment_id}")
@@ -47,7 +47,7 @@ class PreviewTest < Minitest::Test
 
   def test_delete_preview_with_incorrect_input
     deployment_id = 1
-    stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete(Uffizzi.configuration.hostname, 204, nil, {}, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete(Uffizzi.configuration.server, 204, nil, {}, @project_slug, deployment_id)
 
     @preview.delete("deployment--#{deployment_id}")
 
@@ -58,7 +58,7 @@ class PreviewTest < Minitest::Test
   def test_describe_preview_success
     body = json_fixture('files/uffizzi/uffizzi_preview_describe_success.json')
     deployment_id = 1
-    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(Uffizzi.configuration.hostname, 200, body, {}, @project_slug,
+    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(Uffizzi.configuration.server, 200, body, {}, @project_slug,
                                                                      deployment_id)
 
     @preview.describe("deployment-#{deployment_id}")
@@ -69,7 +69,7 @@ class PreviewTest < Minitest::Test
   def test_describe_preview_with_unexisted_preview
     body = json_fixture('files/uffizzi/uffizzi_preview_resource_not_found.json')
     deployment_id = 1
-    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(Uffizzi.configuration.hostname, 404, body, {}, @project_slug,
+    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(Uffizzi.configuration.server, 404, body, {}, @project_slug,
                                                                      deployment_id)
 
     @preview.describe("deployment-#{deployment_id}")
@@ -80,7 +80,7 @@ class PreviewTest < Minitest::Test
 
   def test_describe_preview_with_incorrect_input
     deployment_id = 1
-    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(Uffizzi.configuration.hostname, 204, nil, {}, @project_slug,
+    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(Uffizzi.configuration.server, 204, nil, {}, @project_slug,
                                                                      deployment_id)
 
     @preview.describe("deployment--#{deployment_id}")
@@ -93,10 +93,10 @@ class PreviewTest < Minitest::Test
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = create_body[:deployment][:id]
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(Uffizzi.configuration.hostname, 201, create_body, {}, @project_slug)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(Uffizzi.configuration.hostname, 204, nil, {},
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(Uffizzi.configuration.server, 201, create_body, {}, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(Uffizzi.configuration.server, 204, nil, {},
                                                                                        @project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(Uffizzi.configuration.hostname, 200, activity_items_body,
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(Uffizzi.configuration.server, 200, activity_items_body,
                                                                                  {}, @project_slug, deployment_id)
 
     @preview.create
@@ -110,10 +110,10 @@ class PreviewTest < Minitest::Test
     create_body = json_fixture('files/uffizzi/uffizzi_preview_resource_not_found.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = 1
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(Uffizzi.configuration.hostname, 404, create_body, {}, @project_slug)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(Uffizzi.configuration.hostname, 204, nil, {},
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(Uffizzi.configuration.server, 404, create_body, {}, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(Uffizzi.configuration.server, 204, nil, {},
                                                                                        @project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(Uffizzi.configuration.hostname, 200, activity_items_body,
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(Uffizzi.configuration.server, 200, activity_items_body,
                                                                                  {}, @project_slug, deployment_id)
 
     @preview.create
@@ -127,10 +127,10 @@ class PreviewTest < Minitest::Test
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = create_body[:deployment][:id]
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(Uffizzi.configuration.hostname, 201, create_body, {}, @project_slug)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(Uffizzi.configuration.hostname, 204, nil, {},
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(Uffizzi.configuration.server, 201, create_body, {}, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(Uffizzi.configuration.server, 204, nil, {},
                                                                                        @project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(Uffizzi.configuration.hostname, 200, activity_items_body,
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(Uffizzi.configuration.server, 200, activity_items_body,
                                                                                  {}, @project_slug, deployment_id)
 
     @preview.create('test/compose_files/test_compose_success.yml')
@@ -145,13 +145,13 @@ class PreviewTest < Minitest::Test
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_not_found_body = json_fixture('files/uffizzi/uffizzi_preview_resource_not_found.json')
     deployment_id = create_body[:deployment][:id]
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(Uffizzi.configuration.hostname, 201, create_body, {}, @project_slug)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(Uffizzi.configuration.hostname, 204, nil, {},
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(Uffizzi.configuration.server, 201, create_body, {}, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(Uffizzi.configuration.server, 204, nil, {},
                                                                                        @project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(Uffizzi.configuration.hostname, 200, activity_items_body,
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(Uffizzi.configuration.server, 200, activity_items_body,
                                                                                  {}, @project_slug, deployment_id)
 
-    stubbed_uffizzi_deleted_deployment = stub_uffizzi_preview_activity_items(Uffizzi.configuration.hostname, 404,
+    stubbed_uffizzi_deleted_deployment = stub_uffizzi_preview_activity_items(Uffizzi.configuration.server, 404,
                                                                              deployment_not_found_body, {}, @project_slug, deployment_id)
 
     @preview.create

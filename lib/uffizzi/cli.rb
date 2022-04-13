@@ -4,19 +4,24 @@ require 'uffizzi'
 
 module Uffizzi
   class CLI < Thor
+    require_relative 'cli/common'
+
+    class_option :help, type: :boolean, aliases: HELP_MAPPINGS
+    class_option :project, type: :string
+
     def self.exit_on_failure?
       true
     end
 
-    desc 'version', 'show version'
+    desc 'version', 'Show Version'
     def version
       require_relative 'version'
       Uffizzi.ui.say(Uffizzi::VERSION)
     end
 
     desc 'login [OPTIONS]', 'Login into Uffizzi'
-    method_option :user, required: true, aliases: '-u'
-    method_option :hostname, required: true
+    method_option :server, required: false, aliases: '-s'
+    method_option :username, required: false, aliases: '-u'
     def login
       require_relative 'cli/login'
       Login.new(options).run

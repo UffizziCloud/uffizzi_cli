@@ -9,6 +9,7 @@ services:
       - ./:/gem:cached
       - ~/.ssh:/root/.ssh
       - ~/.bash_history:/root/.bash_history
+      - ~/.config/uffizzi:/root/.config/uffizzi
       - bundle_cache:/bundle_cache
     environment:
       - BUNDLE_PATH=/bundle_cache

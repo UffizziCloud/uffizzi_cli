@@ -48,8 +48,8 @@ module Uffizzi
     end
 
     def handle_list_command(project_slug)
-      hostname = ConfigFile.read_option(:hostname)
-      response = fetch_secrets(hostname, project_slug)
+      server = ConfigFile.read_option(:server)
+      response = fetch_secrets(server, project_slug)
       secrets = response[:body][:secrets].map { |secret| [secret[:name]] }
       return Uffizzi.ui.say('There are no secrets for the project') if secrets.empty?
 
@@ -61,20 +61,20 @@ module Uffizzi
     end
 
     def handle_create_command(project_slug, id)
-      hostname = ConfigFile.read_option(:hostname)
+      server = ConfigFile.read_option(:server)
       secret_value = $stdin.read
       return Uffizzi.ui.say('Please provide the secret value') if secret_value.nil?
 
       params = { secrets: [{ name: id, value: secret_value }] }
-      response = bulk_create_secrets(hostname, project_slug, params)
+      response = bulk_create_secrets(server, project_slug, params)
       return Uffizzi.ui.say('The secret was successfully created') if ResponseHelper.created?(response)
 
       ResponseHelper.handle_failed_response(response)
     end
 
     def handle_delete_command(project_slug, id)
-      hostname = ConfigFile.read_option(:hostname)
-      response = delete_secret(hostname, project_slug, id)
+      server = ConfigFile.read_option(:server)
+      response = delete_secret(server, project_slug, id)
 
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say('The secret was successfully deleted')

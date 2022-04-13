@@ -14,8 +14,8 @@ module Uffizzi
     def run
       return Uffizzi.ui.say('You are not logged in') unless Uffizzi::AuthHelper.signed_in?
 
-      hostname = ConfigFile.read_option(:hostname)
-      destroy_session(hostname)
+      server = ConfigFile.read_option(:server)
+      destroy_session(server)
 
       ConfigFile.delete
       Uffizzi.ui.say('You have been successfully logged out')

@@ -55,7 +55,7 @@ If you specify the following environment variables, the Docker image's
 entrypoint script can log you into Uffizzi before executing your command.
 
 - `UFFIZZI_USER`
-- `UFFIZZI_HOSTNAME`
+- `UFFIZZI_SERVER`
 - `UFFIZZI_PASSWORD`
 - `UFFIZZI_PROJECT` (optional)
 
@@ -84,19 +84,19 @@ Run single test
 ### login
 
 ```
-$ uffizzi login --user your@email.com --hostname localhost:8080
+$ uffizzi login --user your@email.com --server localhost:8080
 ```
 
-Logging you into the app which you set in the hostname option.
+Logging you into the app which you set in the server option or config file
 
 ### login options
 
-| Option       | Aliase | Description               |
-| ------------ | ------ | ------------------------- |
-| `--user`     | `-u`   | Your email for logging in |
-| `--hostname` |        | Adress of your app        |
+| Option       | Aliase | Description                         |
+| ------------ | ------ | ----------------------------------- |
+| `--username` | `-u`   | Your email for logging in(optional) |
+| `--server`   | `-s`   | Adress of your app(optional)        |
 
-If hostname uses basic authentication you can specify options for it by setting `basic_auth_user` and `basic_auth_password` via `config set` command.
+If server uses basic authentication you can specify options for it by setting `basic_auth_user` and `basic_auth_password` via `config set` command.
 
 ### project
 
@@ -150,7 +150,17 @@ You need to set project before use any of these commands via `uffizzi config set
 
 ### config
 
-Use this command to configure your cli app. This command has 4 subcommands `list`, `get`, `set`, and `delete`.
+Use this command to configure your cli app.
+
+```
+$ uffizzi config
+```
+
+Launching interactive setup guide that sets the values for `server`, `username` and `project`
+
+### config subcommands
+
+This command has 4 subcommands `list`, `get`, `set`, and `delete`.
 
 ```
 $ uffizzi config list
@@ -159,7 +169,7 @@ $ uffizzi config list
 Shows all options and their values from the config file.
 
 ```
-$ uffizzi config get OPTION
+$ uffizzi config get-value OPTION
 ```
 
 Shows the value of the specified option.
@@ -171,10 +181,10 @@ $ uffizzi config set OPTION VALUE
 Sets specified value for specified option. If a specified option already exists and has value it will be overwritten.
 
 ```
-$ uffizzi config delete OPTION
+$ uffizzi config unset OPTION
 ```
 
-Deletes specified option.
+Deletes value of specified option.
 
 ### disconnect ###
 
