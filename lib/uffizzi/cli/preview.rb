@@ -101,7 +101,7 @@ module Uffizzi
       return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
       params = prepare_params(file_path)
-      response = update_deployment(ConfigFile.read_option(:hostname), project_slug, deployment_id, params)
+      response = update_deployment(ConfigFile.read_option(:server), project_slug, deployment_id, params)
 
       if ResponseHelper.ok?(response)
         deployment = response[:body][:deployment]
