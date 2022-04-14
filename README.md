@@ -1,16 +1,14 @@
 # Uffizzi CLI
 
-A command-line interace (CLI) for [Uffizzi App](https://github.com/UffizziCloud/uffizzi_app)
+A command-line interace (CLI) for the [Uffizzi App](https://github.com/UffizziCloud/uffizzi_app)
 
 ## Uffizzi Overview
 
-Uffizzi is the Full-stack Previews Engine that makes it easy for your team to preview code changes before merging—whether frontend, backend or microserivce. Define your full-stack apps with a familiar syntax based on Docker Compose, and Uffizzi will create on-demand test environments when you open pull requests or build new images. Preview URLs are updated when there’s a new commit, so your team can catch issues early, iterate quickly, and accelerate your release cycles.
+Uffizzi is the Full-stack Previews Engine that makes it easy for your team to preview code changes before merging — whether frontend, backend or microserivce. Define your full stacks of application and supporting containers with a familiar Docker Compose syntax, and Uffizzi will create on-demand test environments. Preview URLs can be updated when there’s a new commit, so your team can catch issues early, iterate quickly, and accelerate your release cycles.
 
 ## Getting started with Uffizzi
 
-The fastest and easiest way to get started with Uffizzi is via the fully hosted version available at https://uffizzi.com, which includes free plans for small teams and qualifying open-source projects.
-
-Alternatively, you can self-host Uffizzi via the open-source repositories available here on GitHub. The remainder of this README is intended for users interested in self-hosting Uffizzi or for those who are just curious about how Uffizzi works.
+Alternatively, you can self-host Uffizzi via the open-source repositories available here on GitHub. 
 
 ## Uffizzi Architecture
 
