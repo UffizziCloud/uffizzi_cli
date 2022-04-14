@@ -3,7 +3,7 @@
 require 'uffizzi'
 
 module Uffizzi
-  class CLI < Thor
+  class Cli < Thor
     require_relative 'cli/common'
 
     class_option :help, type: :boolean, aliases: HELP_MAPPINGS

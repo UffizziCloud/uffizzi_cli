@@ -8,8 +8,8 @@ module Uffizzi
 
     desc 'list-credentials', 'List existing credentials for an account'
     def list_credentials
-      hostname = ConfigFile.read_option(:hostname)
-      response = fetch_credentials(hostname)
+      server = ConfigFile.read_option(:server)
+      response = fetch_credentials(server)
       if ResponseHelper.ok?(response)
         handle_list_credentials_success(response)
       else
@@ -165,7 +165,7 @@ module Uffizzi
       response = check_credential(server, type)
       return if ResponseHelper.ok?(response)
 
-      message = "Credentials of type #{connection_name} already exist for this account.
+      message = "Credentials of type #{connection_name} already exist for this account. \
       To remove them, run $ uffizzi disconnect #{connection_name}"
       raise Uffizzi::Error.new(message)
     end

@@ -13,7 +13,7 @@ module Uffizzi
     end
 
     def run
-      Uffizzi.ui.say('Login to Uffizzi to your previews.')
+      Uffizzi.ui.say('Login to Uffizzi to view and manage your previews.')
       server = set_server
       username = set_username
       password = set_password
