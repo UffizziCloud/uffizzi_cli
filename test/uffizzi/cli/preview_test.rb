@@ -144,7 +144,9 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(200, activity_items_body, @project_slug, deployment_id)
     stubbed_uffizzi_deleted_deployment = stub_uffizzi_preview_activity_items(404, deployment_not_found_body, @project_slug, deployment_id)
 
-    @preview.create
+    assert_raises(Uffizzi::Error) do
+      @preview.create
+    end
 
     assert_requested(stubbed_uffizzi_deleted_deployment)
     assert_requested(stubbed_uffizzi_preview_activity_items)
