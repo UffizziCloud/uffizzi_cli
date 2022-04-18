@@ -165,8 +165,8 @@ module Uffizzi
       response = check_credential(server, type)
       return if ResponseHelper.ok?(response)
 
-      message = "Credentials of type #{connection_name} already exist for this account. \
-      To remove them, run $ uffizzi disconnect #{connection_name}"
+      message = "Credentials of type #{connection_name} already exist for this account. " \
+      "To remove them, run $ uffizzi disconnect #{connection_name}."
       raise Uffizzi::Error.new(message)
     end
 
