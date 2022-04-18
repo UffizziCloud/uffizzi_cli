@@ -111,7 +111,6 @@ class PreviewService
       unless Uffizzi::ResponseHelper.ok?(response)
         spinner.error
         Uffizzi::ResponseHelper.handle_failed_response(response)
-        raise Uffizzi::Error.new('')
       end
     end
 

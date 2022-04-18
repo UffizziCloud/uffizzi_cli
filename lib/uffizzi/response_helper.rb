@@ -44,7 +44,7 @@ module Uffizzi
           if error_messages.is_a?(Array)
             error_messages.each { |error_message| acc = "#{acc}#{error_message}\n" }
           else
-            acc = "#{acc}#{error_message}\n"
+            acc = "#{acc}#{error_messages}\n"
           end
 
           acc
