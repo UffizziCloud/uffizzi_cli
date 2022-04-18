@@ -89,9 +89,12 @@ class ComposeTest < Minitest::Test
     error_message = body[:errors][:path].last
 
     @compose.options = { file: 'test/compose_files/test_compose_without_images.yml' }
-    @compose.set
 
-    assert_equal(error_message, Uffizzi.ui.last_message)
+    error = assert_raises(Uffizzi::Error) do
+      @compose.set
+    end
+
+    assert_equal(error_message, error.message.strip)
     assert_requested(stubbed_uffizzi_create_compose)
   end
 
@@ -127,9 +130,12 @@ class ComposeTest < Minitest::Test
     error_message = body[:errors][:compose_file].last
 
     @compose.options = { file: 'test/compose_files/test_compose_success.yml' }
-    @compose.set
 
-    assert_equal(error_message, Uffizzi.ui.last_message)
+    error = assert_raises(Uffizzi::Error) do
+      @compose.set
+    end
+
+    assert_equal(error_message, error.message.strip)
     assert_requested(stubbed_uffizzi_create_compose)
   end
 
@@ -149,9 +155,11 @@ class ComposeTest < Minitest::Test
 
     error_message = body[:errors][:compose_file].last
 
-    @compose.unset
+    error = assert_raises(Uffizzi::Error) do
+      @compose.unset
+    end
 
-    assert_equal(error_message, Uffizzi.ui.last_message)
+    assert_equal(error_message, error.message.strip)
     assert_requested(stubbed_uffizzi_unset_compose)
   end
 
@@ -170,9 +178,11 @@ class ComposeTest < Minitest::Test
 
     error_message = body[:compose_file][:payload][:errors][:path].last
 
-    @compose.describe
+    error = assert_raises(Uffizzi::Error) do
+      @compose.describe
+    end
 
-    assert_equal(error_message, Uffizzi.ui.last_message)
+    assert_equal(error_message, error.message.strip)
     assert_requested(stubbed_uffizzi_unset_compose)
   end
 end

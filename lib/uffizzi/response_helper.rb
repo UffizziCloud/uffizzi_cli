@@ -28,22 +28,26 @@ module Uffizzi
       end
 
       def handle_failed_response(response)
-        print_errors(response[:body][:errors])
+        prepared_errors = prepare_errors(response[:body][:errors])
+        raise Uffizzi::Error.new(prepared_errors)
       end
 
       def handle_invalid_compose_response(response)
-        print_errors(response[:body][:compose_file][:payload][:errors])
+        prepared_errors = prepare_errors(response[:body][:compose_file][:payload][:errors])
+        raise Uffizzi::Error.new(prepared_errors)
       end
 
       private
 
-      def print_errors(errors)
-        errors.each_key do |key|
-          if errors[key].is_a?(Array)
-            errors[key].each { |error_message| Uffizzi.ui.say(error_message) }
+      def prepare_errors(errors)
+        errors.values.reduce('') do |acc, error_messages|
+          if error_messages.is_a?(Array)
+            error_messages.each { |error_message| acc = "#{acc}#{error_message}\n" }
           else
-            Uffizzi.ui.say(errors[key])
+            acc = "#{acc}#{error_message}\n"
           end
+
+          acc
         end
       end
     end
