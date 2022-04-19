@@ -3,7 +3,9 @@
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
+require 'uffizzi/date_helper'
 require 'uffizzi/shell'
+require 'time'
 
 module Uffizzi
   class CLI::Project::Secret < Thor
@@ -50,11 +52,20 @@ module Uffizzi
     def handle_list_command(project_slug)
       server = ConfigFile.read_option(:server)
       response = fetch_secrets(server, project_slug)
-      secrets = response[:body][:secrets].map { |secret| [secret[:name]] }
+      secrets = response[:body][:secrets]
+
       return Uffizzi.ui.say('There are no secrets for the project') if secrets.empty?
 
-      table_header = 'NAME'
-      table_data = [[table_header], *secrets]
+      current_date = Time.now
+      prepared_secrets = secrets.map do |secret|
+        [
+          secret[:name],
+          DateHelper.count_distanse(current_date, Time.parse(secret[:created_at])),
+          DateHelper.count_distanse(current_date, Time.parse(secret[:updated_at])),
+        ]
+      end
+      table_header = ['NAME', 'CREATED', 'UPDATED']
+      table_data = [table_header, *prepared_secrets]
       return Uffizzi.ui.print_table(table_data) if ResponseHelper.ok?(response)
 
       ResponseHelper.handle_failed_response(response)
