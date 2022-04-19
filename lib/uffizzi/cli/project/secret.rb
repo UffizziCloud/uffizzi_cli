@@ -56,7 +56,7 @@ module Uffizzi
 
       return Uffizzi.ui.say('There are no secrets for the project') if secrets.empty?
 
-      current_date = Time.now
+      current_date = Time.now.utc
       prepared_secrets = secrets.map do |secret|
         [
           secret[:name],
