@@ -92,7 +92,7 @@ module Uffizzi
       else
         ResponseHelper.handle_failed_response(response)
       end
-    rescue SystemExit, Interrupt
+    rescue SystemExit, Interrupt, SocketError
       deployment_id = response[:body][:deployment][:id]
       handle_preview_interruption(deployment_id, hostname, project_slug)
     end

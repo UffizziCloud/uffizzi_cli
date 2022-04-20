@@ -62,7 +62,7 @@ module Uffizzi
         return Common.show_manual(filename(args)) if show_help?(args, opts)
 
         super
-      rescue SystemExit, Interrupt
+      rescue SystemExit, Interrupt, SocketError
         raise Uffizzi::Error.new('The command was interrupted')
       end
 
