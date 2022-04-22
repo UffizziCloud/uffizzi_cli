@@ -13,8 +13,7 @@ module Uffizzi
     desc 'service', 'Show the preview services info'
     require_relative 'preview/service'
     subcommand 'service', Uffizzi::Cli::Preview::Service
-    desc 'list', 'List all previews
-    '
+    desc 'list', 'List all previews'
     def list
       run('list')
     end
