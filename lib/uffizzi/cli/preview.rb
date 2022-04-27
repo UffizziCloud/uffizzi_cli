@@ -253,8 +253,23 @@ module Uffizzi
 
     def handle_succeed_describe_response(response)
       deployment = response[:body][:deployment]
+      deployment[:containers] = deployment[:containers].map do |container|
+        unless container[:secret_variables].empty?
+          container[:secret_variables] = hide_secrets(container[:secret_variables])
+        end
+
+        container
+      end
       deployment.each_key do |key|
         Uffizzi.ui.say("#{key}: #{deployment[key]}")
+      end
+    end
+
+    def hide_secrets(secret_variables)
+      secret_variables.map do |secret_variable|
+        secret_variable[:value] = '******'
+
+        secret_variable
       end
     end
 
