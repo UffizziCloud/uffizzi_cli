@@ -254,7 +254,7 @@ module Uffizzi
     def handle_succeed_describe_response(response)
       deployment = response[:body][:deployment]
       deployment[:containers] = deployment[:containers].map do |container|
-        unless container[:secret_variables].empty?
+        unless container[:secret_variables].nil?
           container[:secret_variables] = hide_secrets(container[:secret_variables])
         end
 
