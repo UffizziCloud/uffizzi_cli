@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class MockShell
-  attr_accessor :messages
-  attr_accessor :output_format
+  attr_accessor :messages, :output_format
 
   def initialize
     @messages = []
