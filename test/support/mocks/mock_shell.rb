@@ -2,6 +2,7 @@
 
 class MockShell
   attr_accessor :messages
+  attr_accessor :output_format
 
   def initialize
     @messages = []
@@ -25,6 +26,10 @@ class MockShell
 
   def print_in_columns(columns_data)
     columns_data
+  end
+
+  def describe_project(project)
+    say(project)
   end
 
   def pretty_say(collection, _index = true)

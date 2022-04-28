@@ -41,4 +41,15 @@ class ProjectsTest < Minitest::Test
     assert_match(error.message, 'Not authorized')
     assert_requested(stubbed_uffizzi_projects)
   end
+
+  def test_project_describe_success
+    body = json_fixture('files/uffizzi/uffizzi_describe_project.json')
+    project_slug = body[:project][:slug]
+    stubbed_uffizzi_projects = stub_uffizzi_project_success(body, project_slug)
+
+    @project.describe("#{project_slug}")
+
+    assert_requested(stubbed_uffizzi_projects)
+    assert_equal(body[:project], Uffizzi.ui.last_message)
+  end
 end
