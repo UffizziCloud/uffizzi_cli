@@ -1,0 +1,34 @@
+  uffizzi project describe - show metadata for a project
+================================================================
+
+## SYNOPSIS
+    uffizzi project describe PROJECT_SLUG [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Shows metadata for a project given a valid project slug. 
+
+    This command can fail for the following reasons:
+      - There is no project with the given project slug
+
+    For more information on Uffizzi projects, see:
+    https://docs.uffizzi.com/cli
+
+## UFFIZZI WIDE FLAGS
+    --output FORMAT
+       Output format. FORMAT is one of the following: json, pretty 
+       Default is json.
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi 
+    help for details.
+
+## EXAMPLES
+    The following command prints metadata in json format for a project with the 
+    project slug my-app-xc8fw:
+
+        $ uffizzi project describe my-app-xc8fw
+
+    The following command pretty prints metadata for a project with the project
+    slug my-app-xc8fw:
+
+        $ uffizzi project describe my-app-xc8fw --output pretty 
