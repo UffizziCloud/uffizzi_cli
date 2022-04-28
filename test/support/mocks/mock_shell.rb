@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class MockShell
-  attr_accessor :messages
+  attr_accessor :messages, :output_format
 
   def initialize
     @messages = []
@@ -27,11 +27,11 @@ class MockShell
     columns_data
   end
 
-  def pretty_say(collection, _index = true)
-    collection
+  def describe_project(project)
+    say(project)
   end
 
-  def output_format
-    nil
+  def pretty_say(collection, _index = true)
+    collection
   end
 end
