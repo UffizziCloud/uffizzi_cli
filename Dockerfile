@@ -31,9 +31,12 @@ COPY . .
 RUN bundle exec rake install
 
 # M-M-M-M-MULTISTAGE!!!
-FROM ruby:3.0.3-alpine
+FROM ruby:3.0.3 AS shell
 
-RUN apk --update add --no-cache mandoc
+RUN apt-get update && apt-get install -y \
+    man-db \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /root/
 
