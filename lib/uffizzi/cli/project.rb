@@ -27,6 +27,12 @@ module Uffizzi
       run('set-default', project_slug: project_slug)
     end
 
+    desc 'describe [PROJECT_SLUG]', 'describe'
+    method_option :output, type: :string, aliases: '-o', enum: ['json', 'pretty'], default: 'json'
+    def describe(project_slug)
+      run('describe', project_slug: project_slug)
+    end
+
     map('set-default' => :set_default)
 
     private
@@ -39,7 +45,25 @@ module Uffizzi
         handle_list_command
       when 'set-default'
         handle_set_default_command(project_slug)
+      when 'describe'
+        handle_describe_command(project_slug)
       end
+    end
+
+    def handle_describe_command(project_slug)
+      response = describe_project(ConfigFile.read_option(:server), project_slug)
+
+      if ResponseHelper.ok?(response)
+        handle_succeed_describe_response(response)
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
+    end
+
+    def handle_succeed_describe_response(response)
+      project = response[:body][:project]
+      Uffizzi.ui.output_format = options[:output]
+      Uffizzi.ui.describe_project(project)
     end
 
     def handle_list_command
@@ -47,13 +71,13 @@ module Uffizzi
       response = fetch_projects(server)
 
       if ResponseHelper.ok?(response)
-        handle_succeed_response(response)
+        handle_succeed_list_response(response)
       else
         ResponseHelper.handle_failed_response(response)
       end
     end
 
-    def handle_succeed_response(response)
+    def handle_succeed_list_response(response)
       projects = response[:body][:projects]
       return Uffizzi.ui.say('No projects related to this email') if projects.empty?
 
