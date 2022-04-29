@@ -15,6 +15,10 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects"
   end
 
+  def project_uri(server, project_slug)
+    "#{server}/api/cli/v1/projects/#{project_slug}"
+  end
+
   def secret_uri(server, project_slug, id)
     path_id = CGI.escape(id)
     "#{server}/api/cli/v1/projects/#{project_slug}/secrets/#{path_id}"
