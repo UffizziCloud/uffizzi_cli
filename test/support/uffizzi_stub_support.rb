@@ -49,6 +49,18 @@ module UffizziStubSupport
     stub_request(:get, url).to_return(status: 401, body: body.to_json)
   end
 
+  def stub_uffizzi_project_create_success(body)
+    url = projects_uri(Uffizzi.configuration.server)
+
+    stub_request(:post, url).to_return(status: 201, body: body.to_json)
+  end
+
+  def stub_uffizzi_project_delete_success(body, project_slug)
+    url = project_uri(Uffizzi.configuration.server, project_slug)
+
+    stub_request(:delete, url).to_return(status: 204, body: body.to_json)
+  end
+
   def stub_uffizzi_create_compose(base_url, status, body, headers)
     url = compose_files_uri(base_url)
 
