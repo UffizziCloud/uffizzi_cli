@@ -1,0 +1,26 @@
+uffizzi-project-set-default - set the default project for the active account
+================================================================
+
+## SYNOPSIS
+    uffizzi project set-default PROJECT_SLUG [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Sets the default project given with the given project slug. When set, 
+    all commands use this project as the default context unless 
+    overridden by the --project flag.
+
+    This command can fail for the following reasons:
+      - There is no project with the given project slug
+
+    For more information on Uffizzi projects, see:
+    https://docs.uffizzi.com/cli
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi 
+    help for details.
+
+## EXAMPLES
+    The following sets the default project with project slug 
+    example-foo-9suw4 for the active account:
+
+        $ uffizzi project set-default example-foo-9suw4
