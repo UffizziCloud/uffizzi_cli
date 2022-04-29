@@ -141,7 +141,13 @@ uffizzi project list
 
 Shows all your projects' slugs
 
-If you have only one project it will be added to your config file automatically, if there's more than one project you need to set up your project manually with the command `uffizzi config set YOUR_PROJECT_SLUG`
+If you have only one project it will be added to your config file automatically, if there's more than one project you need to set up your project manually with the commands `uffizzi config set YOUR_PROJECT_SLUG` or `uffizzi project set-default YOUR_PROJECT_SLUG`
+
+```
+$ uffizzi project set-default PROJECT_SLUG
+```
+
+Sets the default project given with the given project slug. When set, all commands use this project as the default context unless overridden by the --project flag.
 
 ### preview
 
