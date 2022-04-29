@@ -27,6 +27,13 @@ module ApiClient
     build_response(response)
   end
 
+  def describe_project(server, project_slug)
+    uri = project_uri(server, project_slug)
+    response = Uffizzi::HttpClient.make_get_request(uri)
+
+    build_response(response)
+  end
+
   def create_credential(server, params)
     uri = credentials_uri(server)
     response = Uffizzi::HttpClient.make_post_request(uri, params)

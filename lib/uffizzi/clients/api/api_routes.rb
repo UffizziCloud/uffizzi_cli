@@ -7,6 +7,10 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/compose_file"
   end
 
+  def project_uri(server, project_slug)
+    "#{server}/api/cli/v1/projects/#{project_slug}"
+  end
+
   def projects_uri(server)
     "#{server}/api/cli/v1/projects"
   end
