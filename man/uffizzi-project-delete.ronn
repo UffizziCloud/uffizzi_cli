@@ -1,0 +1,24 @@
+uffizzi-project-delete - delete a project
+================================================================
+
+## SYNOPSIS
+    uffizzi project delete PROJECT_SLUG [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Deletes a project with the given project slug. 
+
+    This command can fail for the following reasons:
+      - There is no project with the given project slug
+      - The active account does not have permission to delete the project
+
+    For more information on Uffizzi projects, see:
+    https://docs.uffizzi.com/cli
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi 
+    help for details.
+
+## EXAMPLES
+    To delete a project with project slug my-app-xc8fw, run:
+
+        $ uffizzi project delete my-app-xc8fw
