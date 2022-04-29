@@ -31,6 +31,18 @@ module UffizziStubSupport
     stub_request(:get, url).to_return(status: 200, body: body.to_json)
   end
 
+  def stub_uffizzi_project_success(body, project_slug)
+    url = project_uri(Uffizzi.configuration.server, project_slug)
+
+    stub_request(:get, url).to_return(status: 200, body: body.to_json)
+  end
+
+  def stub_uffizzi_project_failed(body, project_slug)
+    url = project_uri(Uffizzi.configuration.server, project_slug)
+
+    stub_request(:get, url).to_return(status: 422, body: body.to_json)
+  end
+
   def stub_uffizzi_projects_failed(body)
     url = projects_uri(Uffizzi.configuration.server)
 
