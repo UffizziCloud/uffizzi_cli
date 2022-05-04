@@ -5,7 +5,7 @@ require 'fileutils'
 
 module Uffizzi
   class ConfigFile
-    CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default.json"
+    CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default"
 
     class << self
       def config_path
@@ -90,7 +90,10 @@ module Uffizzi
           acc.merge({ key.strip.to_sym => value.strip })
         end
       rescue Errno::ENOENT => e
-        Uffizzi.ui.say(e)
+        file_path = e.message.split(' ').last
+        message = "Configuration file not found: #{file_path}\n" \
+        'To configure the uffizzi CLI interactively, run $ uffizzi config'
+        Uffizzi.ui.say(message)
       end
 
       def write(data)
