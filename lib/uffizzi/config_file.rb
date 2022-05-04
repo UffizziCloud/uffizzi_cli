@@ -18,7 +18,7 @@ module Uffizzi
       end
 
       def delete
-        File.delete(config_path) if exists?
+        File.truncate(config_path, 0) if exists?
       end
 
       def exists?
