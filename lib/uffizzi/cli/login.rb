@@ -3,6 +3,7 @@
 require 'uffizzi'
 require 'uffizzi/response_helper'
 require 'uffizzi/clients/api/api_client'
+require "tty-prompt"
 
 module Uffizzi
   class Cli::Login
@@ -15,6 +16,7 @@ module Uffizzi
     def run
       Uffizzi.ui.say('Login to Uffizzi to view and manage your previews.')
       server = set_server
+
       username = set_username
       password = set_password
       params = prepare_request_params(username, password)
@@ -25,6 +27,9 @@ module Uffizzi
       else
         ResponseHelper.handle_failed_response(response)
       end
+
+      default_project = ConfigFile.read_option(:project)
+      check_default_project(default_project, server)
     end
 
     private
@@ -64,6 +69,25 @@ module Uffizzi
 
     def account_valid?(account)
       account[:state] == 'active'
+    end
+
+    def check_default_project(default_project, server)
+      check_project_response = fetch_projects(server)
+      return ResponseHelper.handle_failed_response(check_project_response) unless ResponseHelper.ok?(check_project_response)
+      
+      projects = check_project_response[:body][:projects]
+      slugs = projects.map{ |project| project[:slug] }
+      return if slugs.include?(default_project)
+
+      question = "Project '#{default_project}' does not exist. Select one of the following projects or create a new project:"
+      choices = projects.map do |project|
+        { name: project[:name], value: project[:slug] }
+      end
+      full_choices = choices << { name: 'Create a new project', value: nil }
+      answer = Uffizzi.prompt.select(question, choices)
+      return ConfigFile.write_option(:project, answer) if answer
+
+      
     end
   end
 end
