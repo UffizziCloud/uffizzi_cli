@@ -10,7 +10,7 @@ uffizzi config - configure the Uffizzi command-line interface (CLI)
     guide.
 
     For more information on configuration options, see:
-    https://docs.uffizzi.com/references/cli
+    https://github.com/UffizziCloud/uffizzi_cli
 
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
