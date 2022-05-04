@@ -24,6 +24,7 @@ module Uffizzi
     end
 
     desc 'uffizzi preview update [DEPLOYMENT_ID] [COMPOSE_FILE]', 'create'
+    method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
     def update(deployment_name, file_path)
       run('update', deployment_name: deployment_name, file_path: file_path)
     end
