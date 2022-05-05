@@ -27,9 +27,6 @@ module Uffizzi
       else
         ResponseHelper.handle_failed_response(response)
       end
-
-      default_project = ConfigFile.read_option(:project)
-      check_default_project(default_project, server)
     end
 
     private
@@ -65,6 +62,9 @@ module Uffizzi
       ConfigFile.write_option(:username, username)
       ConfigFile.write_option(:cookie, response[:headers])
       ConfigFile.write_option(:account_id, account[:id])
+
+      default_project = ConfigFile.read_option(:project)
+      check_default_project(default_project, server)
     end
 
     def account_valid?(account)
@@ -74,7 +74,7 @@ module Uffizzi
     def check_default_project(default_project, server)
       check_project_response = fetch_projects(server)
       return ResponseHelper.handle_failed_response(check_project_response) unless ResponseHelper.ok?(check_project_response)
-      
+
       projects = check_project_response[:body][:projects]
       slugs = projects.map{ |project| project[:slug] }
       return if slugs.include?(default_project)
@@ -87,7 +87,39 @@ module Uffizzi
       answer = Uffizzi.prompt.select(question, choices)
       return ConfigFile.write_option(:project, answer) if answer
 
-      
+      create_new_project(server)
+    end
+
+    def create_new_project(server)
+      project_name = Uffizzi.prompt.ask('Project name', required: true) do |name|
+        name.modify(:strip)
+      end
+
+      length_limit = 256
+      project_slug = Uffizzi.prompt.ask('Project slug', required: true)
+      raise Uffizzi::Error.new('Slug must not content spaces or special characters') unless project_slug.match?(/^[a-zA-Z0-9\-_]{3,256}+\Z/i)
+      raise Uffizzi::Error.new("Slug must be within #{length_limit}") if project_slug.length > length_limit
+
+      project_description = Uffizzi.prompt.ask('Project desciption')
+      raise Uffizzi::Error.new("Description must be within #{length_limit}") if project_description.length > length_limit
+
+      params = {
+          project: {
+          name: project_name,
+          slug: project_slug,
+          description: project_description
+        }
+      }
+
+      response = create_project(server, params)
+
+      if ResponseHelper.created?(response)
+        project_slug = response[:body][:project][:slug]
+        ConfigFile.write_option(:project, project_slug)
+        Uffizzi.ui.say("Project #{project_name} was successfully created")
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
     end
   end
 end
