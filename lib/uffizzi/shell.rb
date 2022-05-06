@@ -38,9 +38,6 @@ module Uffizzi
         ap(collection, { index: index })
       end
 
-      def select(collection)
-      end
-
       def disable_stdout
         $stdout = StringIO.new
       end

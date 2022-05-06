@@ -69,14 +69,14 @@ module Uffizzi
         data
       end
 
-      private
-
       def option_exists?(option)
         data = read
         return false unless data.is_a?(Hash)
 
         data.key?(option)
       end
+
+      private
 
       def read
         data = File.read(CONFIG_PATH)
