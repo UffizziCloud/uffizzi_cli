@@ -3,7 +3,7 @@
 require 'uffizzi'
 require 'uffizzi/response_helper'
 require 'uffizzi/clients/api/api_client'
-require "tty-prompt"
+require 'tty-prompt'
 
 module Uffizzi
   class Cli::Login
@@ -32,12 +32,12 @@ module Uffizzi
     private
 
     def set_server
-      config_server = ConfigFile.exists? && ConfigFile.option_has_value?(:server) ? ConfigFile.read_option(:server) : nil
+      config_server = ConfigFile.option_has_value?(:server) ? ConfigFile.read_option(:server) : nil
       @options[:server] || config_server || Uffizzi.ui.ask('Server: ')
     end
 
     def set_username
-      config_username = ConfigFile.exists? && ConfigFile.option_has_value?(:username) ? ConfigFile.read_option(:username) : nil
+      config_username = ConfigFile.option_has_value?(:username) ? ConfigFile.read_option(:username) : nil
       @options[:username] || config_username || Uffizzi.ui.ask('Username: ')
     end
 
@@ -64,6 +64,8 @@ module Uffizzi
       ConfigFile.write_option(:account_id, account[:id])
 
       default_project = ConfigFile.read_option(:project)
+      return unless default_project
+
       check_default_project(default_project, server)
     end
 
@@ -76,50 +78,50 @@ module Uffizzi
       return ResponseHelper.handle_failed_response(check_project_response) unless ResponseHelper.ok?(check_project_response)
 
       projects = check_project_response[:body][:projects]
-      slugs = projects.map{ |project| project[:slug] }
+      slugs = projects.map { |project| project[:slug] }
       return if slugs.include?(default_project)
 
       question = "Project '#{default_project}' does not exist. Select one of the following projects or create a new project:"
       choices = projects.map do |project|
         { name: project[:name], value: project[:slug] }
       end
-      full_choices = choices << { name: 'Create a new project', value: nil }
-      answer = Uffizzi.prompt.select(question, choices)
+      all_choices = choices + { name: 'Create a new project', value: nil }
+      answer = Uffizzi.prompt.select(question, all_choices)
       return ConfigFile.write_option(:project, answer) if answer
 
       create_new_project(server)
     end
 
     def create_new_project(server)
-      project_name = Uffizzi.prompt.ask('Project name', required: true) do |name|
-        name.modify(:strip)
-      end
+      project_name = Uffizzi.prompt.ask('Project name: ', required: true)
+      project_slug = Uffizzi.prompt.ask('Project slug: ', required: true)
+      raise Uffizzi::Error.new('Slug must not content spaces or special characters') unless project_slug.match?(/^[a-zA-Z0-9\-_]+\Z/i)
 
-      length_limit = 256
-      project_slug = Uffizzi.prompt.ask('Project slug', required: true)
-      raise Uffizzi::Error.new('Slug must not content spaces or special characters') unless project_slug.match?(/^[a-zA-Z0-9\-_]{3,256}+\Z/i)
-      raise Uffizzi::Error.new("Slug must be within #{length_limit}") if project_slug.length > length_limit
-
-      project_description = Uffizzi.prompt.ask('Project desciption')
-      raise Uffizzi::Error.new("Description must be within #{length_limit}") if project_description.length > length_limit
+      project_description = Uffizzi.prompt.ask('Project desciption: ')
 
       params = {
-          project: {
-          name: project_name,
+        project: {
+          name: project_name.strip,
           slug: project_slug,
-          description: project_description
-        }
+          description: project_description,
+        },
       }
 
       response = create_project(server, params)
 
       if ResponseHelper.created?(response)
-        project_slug = response[:body][:project][:slug]
-        ConfigFile.write_option(:project, project_slug)
-        Uffizzi.ui.say("Project #{project_name} was successfully created")
+        handle_create_project_succeess(response)
       else
         ResponseHelper.handle_failed_response(response)
       end
+    end
+
+    def handle_create_project_succeess(response)
+      project = response[:body][:project]
+
+      ConfigFile.write_option(:project, project[:slug])
+
+      Uffizzi.ui.say("Project #{project[:name]} was successfully created")
     end
   end
 end
