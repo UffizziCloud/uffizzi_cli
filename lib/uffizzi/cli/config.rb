@@ -58,7 +58,7 @@ module Uffizzi
                       \nUffizzi API service and manage previews.\n")
       server = Uffizzi.ui.ask('Server: ', default: Uffizzi.configuration.default_server.to_s)
       username = Uffizzi.ui.ask('Username: ')
-      project = Uffizzi.ui.ask('Project: ')
+      project = Uffizzi.ui.ask('Project: ', default: 'default')
       ConfigFile.delete
       ConfigFile.write_option(:server, server)
       ConfigFile.write_option(:username, username)
