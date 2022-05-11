@@ -2,6 +2,7 @@
 
 require 'uffizzi'
 require 'uffizzi/response_helper'
+require 'uffizzi/helpers/project_helper'
 require 'uffizzi/clients/api/api_client'
 require 'tty-prompt'
 
@@ -94,7 +95,8 @@ module Uffizzi
 
     def create_new_project(server)
       project_name = Uffizzi.prompt.ask('Project name: ', required: true)
-      project_slug = Uffizzi.prompt.ask('Project slug: ', required: true)
+      generated_slug = Uffizzi::ProjectHelper.generate_slug(project_name)
+      project_slug = Uffizzi.prompt.ask('Project slug: ', default: generated_slug)
       raise Uffizzi::Error.new('Slug must not content spaces or special characters') unless project_slug.match?(/^[a-zA-Z0-9\-_]+\Z/i)
 
       project_description = Uffizzi.prompt.ask('Project desciption: ')
