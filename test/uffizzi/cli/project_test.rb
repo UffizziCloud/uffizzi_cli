@@ -34,19 +34,6 @@ class ProjectsTest < Minitest::Test
     assert_requested(stubbed_uffizzi_project)
   end
 
-  def test_project_create_without_name_failure
-    @project.options = {
-      description: 'project description',
-      slug: 'project_slug_1',
-    }
-
-    error = assert_raises(Uffizzi::Error) do
-      @project.create
-    end
-
-    assert_equal('Name must be present', error.message)
-  end
-
   def test_project_create_invalid_slug_failure
     @project.options = {
       name: 'name',
