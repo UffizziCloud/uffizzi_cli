@@ -3,6 +3,7 @@
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
+require 'uffizzi/helpers/project_helper'
 
 module Uffizzi
   class Cli::Project < Thor
@@ -71,12 +72,15 @@ module Uffizzi
     end
 
     def handle_create_command
-      validate_options(options)
+      name = options[:name]
+      slug = options[:slug] || Uffizzi::ProjectHelper.generate_slug(name)
+      raise Uffizzi::Error.new('Slug must not content spaces or special characters') unless slug.match?(/^[a-zA-Z0-9\-_]+\Z/i)
+
       server = ConfigFile.read_option(:server)
       params = {
-        name: options[:name],
+        name: name,
         description: options[:description],
-        slug: options[:slug],
+        slug: slug,
       }
       response = create_project(server, params)
 
@@ -136,23 +140,6 @@ module Uffizzi
 
     def set_default_project(project)
       ConfigFile.write_option(:project, project[:slug])
-    end
-
-    def validate_options(options)
-      raise Uffizzi::Error.new('Name must be present') if options[:name].nil?
-      raise Uffizzi::Error.new('Slug must be present') if options[:slug].nil?
-
-      length_limit = 256
-      name_too_long = options[:name].length > length_limit
-      raise Uffizzi::Error.new("Name must be less than #{length_limit} characters long") if name_too_long
-
-      description_too_long = options[:description] && options[:description].length > length_limit
-      raise Uffizzi::Error.new("Description must be less than #{length_limit} characters long") if description_too_long
-
-      return unless options[:slug]
-
-      slug_valid = options[:slug].match?(/^[a-zA-Z0-9\-_]+\Z/i)
-      raise Uffizzi::Error.new('Slug must not content spaces or special characters') unless slug_valid
     end
   end
 end
