@@ -85,7 +85,7 @@ module Uffizzi
       choices = projects.map do |project|
         { name: project[:name], value: project[:slug] }
       end
-      all_choices = choices + { name: 'Create a new project', value: nil }
+      all_choices = choices + [{ name: 'Create a new project', value: nil }]
       answer = Uffizzi.prompt.select(question, all_choices)
       return ConfigFile.write_option(:project, answer) if answer
 
