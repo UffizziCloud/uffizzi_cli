@@ -30,14 +30,14 @@ module ApiClient
   def fetch_credentials(server)
     uri = credentials_uri(server)
 
-    response = Uffizzi::HttpClient.make_get_request(uri)
+    response = http_client.make_get_request(uri)
 
     build_response(response)
   end
 
   def check_credential(server, type)
     uri = check_credential_uri(server, type)
-    response = Uffizzi::HttpClient.make_get_request(uri)
+    response = http_client.make_get_request(uri)
 
     build_response(response)
   end
