@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-PROJECT\-DELETE" "" "April 2022" ""
+.TH "UFFIZZI\-PROJECT\-DELETE" "" "May 2022" ""
 .SH "NAME"
 \fBuffizzi\-project\-delete\fR \- delete a project
 .SH "SYNOPSIS"

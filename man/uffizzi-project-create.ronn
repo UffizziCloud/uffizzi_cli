@@ -25,9 +25,9 @@ uffizzi-project-create - create a new project
        Name for the project you want to create. 
 
     --slug=SLUG
-       A URL-compatible name. Do not include whitespaces or special 
-       characters. Project slugs must be globally unique across all 
-       Uffizzi projects. 
+       A URL-compatible name. Do not include whitespaces or special characters.
+       Project slugs must be globally unique across all Uffizzi projects.
+       If a slug is not provided, Uffizzi will automatically generate one.
 
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
