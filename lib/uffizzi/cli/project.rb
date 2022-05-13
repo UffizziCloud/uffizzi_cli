@@ -31,7 +31,7 @@ module Uffizzi
     map('set-default' => :set_default)
 
     method_option :name, required: true
-    method_option :slug, required: false
+    method_option :slug, default: ''
     method_option :description, required: false
     desc 'create', 'Create a project'
     def create
@@ -73,7 +73,7 @@ module Uffizzi
 
     def handle_create_command
       name = options[:name]
-      slug = options[:slug] || Uffizzi::ProjectHelper.generate_slug(name)
+      slug = options[:slug].empty? ? Uffizzi::ProjectHelper.generate_slug(name) : options[:slug]
       raise Uffizzi::Error.new('Slug must not content spaces or special characters') unless slug.match?(/^[a-zA-Z0-9\-_]+\Z/i)
 
       server = ConfigFile.read_option(:server)
