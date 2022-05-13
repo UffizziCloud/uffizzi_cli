@@ -4,31 +4,25 @@ require 'uffizzi'
 require 'uffizzi/clients/api/api_client'
 
 module Uffizzi
-  class CLI::Config < Thor
+  class Cli::Config < Thor
     include ApiClient
 
-    class << self
-      def help(_shell, _subcommand)
-        Cli::Common.show_manual(:config)
-      end
-    end
-
-    desc 'list', 'list'
+    desc 'list', 'Lists all options and their values from the config file'
     def list
       run('list')
     end
 
-    desc 'get [PROPERTY]', 'get'
+    desc 'get [PROPERTY]', 'Displays the value of the specified option'
     def get_value(property)
       run('get', property)
     end
 
-    desc 'set [PROPERTY] [VALUE]', 'set'
+    desc 'set [PROPERTY] [VALUE]', 'Sets the value of the specified option'
     def set(property, value)
       run('set', property, value)
     end
 
-    desc 'unset [PROPERTY]', 'unset'
+    desc 'unset [PROPERTY]', 'Deletes the value of the specified option'
     def unset(property)
       run('unset', property)
     end

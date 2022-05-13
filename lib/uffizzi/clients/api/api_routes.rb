@@ -48,6 +48,10 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/events"
   end
 
+  def check_credential_uri(server, type)
+    "#{server}/api/cli/v1/account/credentials/#{type}/check_credential"
+  end
+
   def credentials_uri(server)
     "#{server}/api/cli/v1/account/credentials"
   end

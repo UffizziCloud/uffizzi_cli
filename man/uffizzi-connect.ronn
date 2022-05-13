@@ -1,0 +1,31 @@
+uffizzi-connect - grant a Uffizzi user account access to external services
+================================================================
+
+## SYNOPSIS
+    uffizzi connect COMMAND
+
+## DESCRIPTION
+    Grants a Uffizzi user account access to external services
+
+    For more information on connecting to external services, see:
+    https://docs.uffizzi.com/cli
+
+## COMMANDS
+    COMMAND is one of the following:
+
+    acr
+        Connect to Azure Container Registry (azurecr.io).
+
+    docker-hub
+        Connect to Docker Hub (hub.docker.com).
+
+    ecr
+        Connect to Amazon Elastic Container Registry (amazonaws.com).
+
+    gcr
+        Connect to Google Container Registry (gcr.io).
+    
+    gchr
+        Connect to GitHub Container Registry (ghcr.io).
+
+Run 'uffizzi connect COMMAND --help' for more information on a command.

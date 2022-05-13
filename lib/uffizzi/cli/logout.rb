@@ -4,7 +4,7 @@ require 'uffizzi'
 require 'uffizzi/auth_helper'
 
 module Uffizzi
-  class CLI::Logout
+  class Cli::Logout
     include ApiClient
 
     def initialize(options)

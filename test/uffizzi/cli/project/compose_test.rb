@@ -4,7 +4,7 @@ require 'test_helper'
 
 class ComposeTest < Minitest::Test
   def setup
-    @compose = Uffizzi::CLI::Project::Compose.new
+    @compose = Uffizzi::Cli::Project::Compose.new
 
     sign_in
     Uffizzi::ConfigFile.write_option(:project, 'dbp')
@@ -100,7 +100,7 @@ class ComposeTest < Minitest::Test
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose_success(body, @project_slug)
     @compose.options = { file: 'test/compose_files/test_compose_with_invalid_env_path.yml' }
 
-    assert_raises(Errno::ENOENT) do
+    assert_raises(Uffizzi::Error) do
       @compose.set
     end
 

@@ -29,6 +29,9 @@ class ComposeFileService
           content: Base64.encode64(dependency_file_data),
         }
       end
+    rescue Errno::ENOENT => e
+      dependency_path = e.message.split('- ').last
+      raise Uffizzi::Error.new("The config file #{dependency_path} does not exist")
     end
 
     def fetch_configs(configs_data)

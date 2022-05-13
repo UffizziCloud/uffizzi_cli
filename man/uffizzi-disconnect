@@ -1,0 +1,37 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-DISCONNECT" "" "April 2022" ""
+.SH "NAME"
+\fBuffizzi\-disconnect\fR \- revoke a Uffizzi user account access to external services
+.SH "SYNOPSIS"
+.nf
+uffizzi disconnect COMMAND
+.fi
+.SH "DESCRIPTION"
+.nf
+Revokes a Uffizzi user account access to external services
+
+For more information on connecting to external services, see:
+https://docs\.uffizzi\.com/cli
+.fi
+.SH "COMMANDS"
+.nf
+COMMAND is one of the following:
+
+acr
+    Disonnect from Azure Container Registry (azurecr\.io)\.
+
+docker\-hub
+    Disonnect from Docker Hub (hub\.docker\.com)\.
+
+ecr
+    Disonnect from Amazon Elastic Container Registry (amazonaws\.com)\.
+
+gcr
+    Disonnect from Google Container Registry (gcr\.io)\.
+
+gchr
+    Disonnect from GitHub Container Registry (ghcr\.io)\.
+.fi
+.P
+Run \'uffizzi disconnect COMMAND \-\-help\' for more information on a command\.

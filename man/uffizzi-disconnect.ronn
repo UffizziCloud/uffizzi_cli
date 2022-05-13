@@ -1,0 +1,31 @@
+uffizzi-disconnect - revoke a Uffizzi user account access to external services
+================================================================
+
+## SYNOPSIS
+    uffizzi disconnect COMMAND
+
+## DESCRIPTION
+    Revokes a Uffizzi user account access to external services
+
+    For more information on connecting to external services, see:
+    https://docs.uffizzi.com/cli
+
+## COMMANDS
+    COMMAND is one of the following:
+
+    acr
+        Disonnect from Azure Container Registry (azurecr.io).
+
+    docker-hub
+        Disonnect from Docker Hub (hub.docker.com).
+
+    ecr
+        Disonnect from Amazon Elastic Container Registry (amazonaws.com).
+
+    gcr
+        Disonnect from Google Container Registry (gcr.io).
+    
+    gchr
+        Disonnect from GitHub Container Registry (ghcr.io).
+
+Run 'uffizzi disconnect COMMAND --help' for more information on a command.

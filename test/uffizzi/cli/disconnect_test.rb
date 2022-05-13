@@ -4,7 +4,7 @@ require 'test_helper'
 
 class DisconnectTest < Minitest::Test
   def setup
-    @cli = Uffizzi::CLI.new
+    @cli = Uffizzi::Cli.new
 
     sign_in
   end
@@ -65,7 +65,7 @@ class DisconnectTest < Minitest::Test
   end
 
   def test_disconnect_credential_failed
-    body = json_fixture('files/uffizzi/uffizzi_delete_credential_failed.json')
+    body = json_fixture('files/uffizzi/credentials/uffizzi_delete_credential_failed.json')
     stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential_fail(body, Uffizzi.configuration.credential_types[:dockerhub])
 
     @cli.disconnect('docker-hub')

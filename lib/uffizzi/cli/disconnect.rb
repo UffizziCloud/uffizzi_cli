@@ -3,7 +3,7 @@
 require 'uffizzi'
 
 module Uffizzi
-  class CLI::Disconnect
+  class Cli::Disconnect
     include ApiClient
 
     def run(credential_type)

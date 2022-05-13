@@ -1,0 +1,32 @@
+uffizzi-connect-gcr - grant a Uffizzi user account access to a private Google Container Registry (GCR)
+================================================================
+
+## SYNOPSIS
+    uffizzi connect gcr [KEY_FILE]
+
+## DESCRIPTION
+    Given valid credentials, grants a Uffizzi user account access 
+    to a private Google Container Registry
+
+    This command can fail for the following reasons:
+        - The active user does not have permission to connect 
+          external services.
+        - The given credentials are invalid.
+
+    For more information on connecting to external services, see:
+    https://docs.uffizzi.com/cli
+
+    For detailed instructions on configuring webhooks to send push
+    notifications to Uffizzi, see 
+    https://docs.uffizzi.com/guides/container-registry-integrations
+
+## POSITIONAL ARGUMENTS
+    KEY_FILE
+        A Google Cloud service account key file. The key file is a 
+        JSON file that grants Uffizzi access to a private GCR.
+
+## EXAMPLES
+    The following command uses a Google Cloud service account key 
+    file called sa-private-key.json to connect to a private GCR:
+          
+        $ uffizzi connect gcr sa-private-key.json

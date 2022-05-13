@@ -1,0 +1,27 @@
+uffizzi-connect-docker-hub - grant a Uffizzi user account access to a private Docker Hub registry.
+================================================================
+
+## SYNOPSIS
+    uffizzi connect docker-hub
+
+## DESCRIPTION
+    Given valid credentials, grants a Uffizzi user account access 
+    to a private Docker Hub registry
+
+    This command can fail for the following reasons:
+        - The active user does not have permission to connect 
+          external services.
+        - The given credentials are invalid.
+
+    For more information on connecting to external services, see:
+    https://docs.uffizzi.com/cli
+
+    For detailed instructions on configuring webhooks to send push
+    notifications to Uffizzi, see 
+    https://docs.uffizzi.com/guides/container-registry-integrations
+
+## EXAMPLES
+    The following command will prompt the user to enter Docker Hub
+    credentials, including Docker ID and password or access token:
+          
+        $ uffizzi connect docker-hub

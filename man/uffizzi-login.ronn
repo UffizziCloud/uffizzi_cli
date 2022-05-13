@@ -1,4 +1,4 @@
-  uffizzi-login - login to Uffizzi
+  uffizzi-login - login to Uffizzi to view and manage your previews.  
 ================================================================
 
 ## SYNOPSIS

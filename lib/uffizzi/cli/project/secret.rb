@@ -6,20 +6,20 @@ require 'uffizzi/response_helper'
 require 'uffizzi/shell'
 
 module Uffizzi
-  class CLI::Project::Secret < Thor
+  class Cli::Project::Secret < Thor
     include ApiClient
 
-    desc 'list', 'List Secrets'
+    desc 'list', 'Show metadata for all secrets of a project'
     def list
       run('list')
     end
 
-    desc 'create [SECRET_ID]', 'Create secrets from $stdout'
+    desc 'create [SECRET_ID]', 'Create a secret for a project'
     def create(id)
       run('create', id)
     end
 
-    desc 'delete [SECRET_ID]', 'Delete a secret'
+    desc 'delete [SECRET_ID]', 'Delete a secret for a project'
     def delete(id)
       run('delete', id)
     end

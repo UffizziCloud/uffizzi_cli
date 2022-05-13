@@ -4,7 +4,7 @@ require 'test_helper'
 
 class ServiceTest < Minitest::Test
   def setup
-    @service = Uffizzi::CLI::Preview::Service.new
+    @service = Uffizzi::Cli::Preview::Service.new
 
     sign_in
     Uffizzi::ConfigFile.write_option(:project, 'dbp')
