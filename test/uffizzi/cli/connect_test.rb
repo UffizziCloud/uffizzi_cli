@@ -119,7 +119,7 @@ class ConnectTest < Minitest::Test
     IO.stubs(:console).returns(console_mock)
 
     error = assert_raises(Uffizzi::Error) do
-      @cli.connect('docker-hub')
+      @cli.docker_hub
     end
 
     assert_equal(body[:errors][:username].first, error.message.strip)
