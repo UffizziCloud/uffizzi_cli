@@ -15,11 +15,8 @@ class SecretTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_project_secrets_success.json')
     stubbed_uffizzi_secrets = stub_uffizzi_project_secret_list(body, @project_slug)
 
-    result = @secret.list
-    _table_header, *secrets = result
-    expected_secrets_response = body[:secrets].map { |secret| secret[:name] }
+    @secret.list
 
-    assert_equal(expected_secrets_response, secrets.flatten)
     assert_requested(stubbed_uffizzi_secrets)
   end
 
