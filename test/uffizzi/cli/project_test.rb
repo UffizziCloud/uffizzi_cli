@@ -41,4 +41,29 @@ class ProjectsTest < Minitest::Test
     assert_match(error.message, 'Not authorized')
     assert_requested(stubbed_uffizzi_projects)
   end
+
+  def test_project_set_default_success
+    body = json_fixture('files/uffizzi/uffizzi_projects_set_default_success.json')
+    project_slug = body[:project][:slug]
+    stubbed_uffizzi_projects = stub_uffizzi_project_success(body, project_slug)
+
+    refute_equal(project_slug, Uffizzi::ConfigFile.read_option(:project))
+
+    @project.set_default(project_slug)
+
+    assert_equal(project_slug, Uffizzi::ConfigFile.read_option(:project))
+    assert_equal('Default project has been updated.', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_projects)
+  end
+
+  def test_project_set_default_failed
+    body = json_fixture('files/uffizzi/uffizzi_projects_set_default_with_unexisted_project.json')
+    project_slug = 'test'
+    stubbed_uffizzi_projects = stub_uffizzi_project_failed(body, project_slug)
+
+    @project.set_default(project_slug)
+
+    assert_equal('Resource Not Found', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_projects)
+  end
 end
