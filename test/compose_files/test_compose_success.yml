@@ -1,6 +1,6 @@
 services:
   hello-world:
-    image: redis
+    image: nginx
     env_file:
       - local.env
       - ./env_files/env_file.env

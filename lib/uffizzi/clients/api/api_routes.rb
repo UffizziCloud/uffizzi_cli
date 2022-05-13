@@ -7,6 +7,10 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/compose_file"
   end
 
+  def project_uri(server, project_slug)
+    "#{server}/api/cli/v1/projects/#{project_slug}"
+  end
+
   def projects_uri(server)
     "#{server}/api/cli/v1/projects"
   end
@@ -46,6 +50,10 @@ module ApiRoutes
 
   def events_uri(server, project_slug, deployment_id)
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/events"
+  end
+
+  def check_credential_uri(server, type)
+    "#{server}/api/cli/v1/account/credentials/#{type}/check_credential"
   end
 
   def credentials_uri(server)

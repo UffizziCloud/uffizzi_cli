@@ -5,7 +5,7 @@ require 'uffizzi'
 
 class ConfigTest < Minitest::Test
   def setup
-    @config = Uffizzi::CLI::Config.new
+    @config = Uffizzi::Cli::Config.new
 
     sign_in
   end

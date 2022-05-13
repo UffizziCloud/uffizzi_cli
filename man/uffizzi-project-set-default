@@ -1,0 +1,34 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-PROJECT\-SET\-DEFAULT" "" "April 2022" ""
+.SH "NAME"
+\fBuffizzi\-project\-set\-default\fR \- set the default project for the active account
+.SH "SYNOPSIS"
+.nf
+uffizzi project set\-default PROJECT_SLUG [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
+.SH "DESCRIPTION"
+.nf
+Sets the default project given with the given project slug\. When set,
+all commands use this project as the default context unless
+overridden by the \-\-project flag\.
+
+This command can fail for the following reasons:
+  \- There is no project with the given project slug
+
+For more information on Uffizzi projects, see:
+https://docs\.uffizzi\.com/cli
+.fi
+.SH "UFFIZZI WIDE FLAGS"
+.nf
+These flags are available to all commands: \-\-project\. Run $ uffizzi
+help for details\.
+.fi
+.SH "EXAMPLES"
+.nf
+The following sets the default project with project slug
+example\-foo\-9suw4 for the active account:
+
+    $ uffizzi project set\-default example\-foo\-9suw4
+.fi
+

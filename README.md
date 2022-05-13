@@ -4,14 +4,14 @@ A command-line interace (CLI) for [Uffizzi App](https://github.com/UffizziCloud/
 
 ## Uffizzi Overview
 
-Uffizzi is an open-source engine for creating lightweight, ephemeral test environments for APIs and full-stack applications. Uffizzi enables teams to preview new features before merging and to mitigate the risk of introducing regressions into a codebase. Each preview gets a shareable URL that's updated when you push new commits or image tags, so teams can provide continual feedback during the development/QA process. Previews can be configured to expire or be destroyed when a pull request is closed, so environments exist only as long as they are needed. Uffizzi also helps deconflict shared development environments since previews are deployed as isolated namespaces—there is no risk of clobbering another developer's preview. 
+Uffizzi is an open-source engine for creating lightweight, ephemeral test environments for APIs and full-stack applications. Uffizzi enables teams to preview new features before merging and to mitigate the risk of introducing regressions into a codebase. Each preview gets a shareable URL that's updated when you push new commits or image tags, so teams can provide continual feedback during the development/QA process. Previews can be configured to expire or be destroyed when a pull request is closed, so environments exist only as long as they are needed. Uffizzi also helps deconflict shared development environments since previews are deployed as isolated namespaces—there is no risk of clobbering another developer's preview.
 
 While Uffizzi depends on Kubernetes, it does not require end-users to interface with Kubernetes directly. Instead, Uffizzi leverages Docker Compose as its configuration file format, so developers do not need modify Kubernetes manifests or even know about Kubernetes.
 
 Uffizzi is designed to integrate with any CI/CD system.
 
 ## Uffizzi Architecture
-<img src="https://github.com/UffizziCloud/uffizzi_app/blob/main/docs/images/uffizzi-architecture.png" description="Uffizzi Architecture" width="320"/>  
+<img src="https://github.com/UffizziCloud/uffizzi_app/blob/main/docs/images/uffizzi-architecture.png" description="Uffizzi Architecture" width="320"/>
 
 Uffizzi consists of the following components:
 
@@ -31,7 +31,7 @@ The Uffizzi CLI can be used interactively or as part of an automated workflow (e
 
 ### Interactive mode
 
-Run the CLI as a Docker container in interactive mode:  
+Run the CLI as a Docker container in interactive mode:
 ```
 docker run --interactive --rm --tty --entrypoint=sh uffizzi/cli
 ```
@@ -44,9 +44,9 @@ entrypoint script can log you into Uffizzi before executing your command.
 - `UFFIZZI_PASSWORD`
 - `UFFIZZI_PROJECT` (optional)
 
-### Automated mode  
+### Automated mode
 
-If you want to use Uffizzi as part of an automated workflow, you can pass the Uffizzi commands to the Docker run command. For example:    
+If you want to use Uffizzi as part of an automated workflow, you can pass the Uffizzi commands to the Docker run command. For example:
 
 ```
 docker run -it --rm uffizzi/cli project list
@@ -141,7 +141,14 @@ uffizzi project list
 
 Shows all your projects' slugs
 
-If you have only one project it will be added to your config file automatically, if there's more than one project you need to set up your project manually with the command `uffizzi config set YOUR_PROJECT_SLUG`
+If you have only one project it will be added to your config file automatically, if there's more than one project you need to set up your project manually with the commands `uffizzi config set YOUR_PROJECT_SLUG` or `uffizzi project set-default YOUR_PROJECT_SLUG`
+
+```
+$ uffizzi project set-default PROJECT_SLUG
+```
+Create a preview from a compose file.
+
+Sets the default project given with the given project slug. When set, all commands use this project as the default context unless overridden by the --project flag.
 
 ### preview
 
@@ -169,4 +176,4 @@ Supported credential types - `docker-hub`, `acr`, `ecr`, `gcr`
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/UffizziCloud/uffizzi_cli.
+Bug reports and pull requests are welcome on GitHub at https://github.com/UffizziCloud/uffizzi_cli. See `CONTRIBUTING.md` in this repository.

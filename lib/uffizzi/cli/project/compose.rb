@@ -5,22 +5,23 @@ require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
 require 'uffizzi/services/compose_file_service'
 require 'uffizzi/services/env_variables_service'
+require 'uffizzi/services/command_service'
 
 module Uffizzi
-  class CLI::Project::Compose < Thor
+  class Cli::Project::Compose < Thor
     include ApiClient
 
-    desc 'set [OPTIONS]', 'set'
+    desc 'set [OPTIONS]', 'Set the configuration of a project with a compose file'
     def set
       run('set')
     end
 
-    desc 'unset', 'unset'
+    desc 'unset', 'Unset the compose file for a project'
     def unset
       run('unset')
     end
 
-    desc 'describe', 'describe'
+    desc 'describe', 'Display details of a compose file'
     def describe
       run('describe')
     end
@@ -29,26 +30,25 @@ module Uffizzi
 
     def run(command)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      return Uffizzi.ui.say('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?(options)
+      return Uffizzi.ui.say('This command needs project to be set in config file') unless CommandService.project_set?(options)
 
-      @project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
-      @server = ConfigFile.read_option(:server)
+      project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       file_path = options[:file]
       case command
       when 'set'
-        handle_set_command(file_path)
+        handle_set_command(project_slug, file_path)
       when 'unset'
-        handle_unset_command
+        handle_unset_command(project_slug)
       when 'describe'
-        handle_describe_command
+        handle_describe_command(project_slug)
       end
     end
 
-    def handle_set_command(file_path)
+    def handle_set_command(project_slug, file_path)
       return Uffizzi.ui.say('No file provided') if file_path.nil?
 
       params = prepare_params(file_path)
-      response = set_compose_file(@server, params, @project_slug)
+      response = set_compose_file(ConfigFile.read_option(:server), params, project_slug)
 
       if ResponseHelper.created?(response)
         Uffizzi.ui.say('compose file created')
@@ -57,9 +57,8 @@ module Uffizzi
       end
     end
 
-    def handle_unset_command
+    def handle_unset_command(project_slug)
       server = ConfigFile.read_option(:server)
-      project_slug = ConfigFile.read_option(:project)
       response = unset_compose_file(server, project_slug)
 
       if ResponseHelper.no_content?(response)
@@ -69,9 +68,8 @@ module Uffizzi
       end
     end
 
-    def handle_describe_command
+    def handle_describe_command(project_slug)
       server = ConfigFile.read_option(:server)
-      project_slug = ConfigFile.read_option(:project)
       response = describe_compose_file(server, project_slug)
       compose_file = response[:body][:compose_file]
 

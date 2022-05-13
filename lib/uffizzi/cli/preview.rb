@@ -3,39 +3,43 @@
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/services/preview_service'
+require 'uffizzi/services/command_service'
 
 module Uffizzi
-  class CLI::Preview < Thor
+  class Cli::Preview < Thor
     include ApiClient
 
-    @spinner
-
-    desc 'service', 'service'
+    desc 'service', 'Show the preview services info'
     require_relative 'preview/service'
-    subcommand 'service', Uffizzi::CLI::Preview::Service
-
-    desc 'list', 'list'
+    subcommand 'service', Uffizzi::Cli::Preview::Service
+    desc 'list', 'List all previews'
     def list
       run('list')
     end
 
-    desc 'create [COMPOSE_FILE]', 'create'
+    desc 'create [COMPOSE_FILE]', 'Create a preview'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
     def create(file_path = nil)
       run('create', file_path: file_path)
     end
 
-    desc 'delete [DEPLOYMENT_ID]', 'delete'
+    desc 'uffizzi preview update [DEPLOYMENT_ID] [COMPOSE_FILE]', 'create'
+    method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
+    def update(deployment_name, file_path)
+      run('update', deployment_name: deployment_name, file_path: file_path)
+    end
+
+    desc 'delete [DEPLOYMENT_ID]', 'Delete a preview'
     def delete(deployment_name)
       run('delete', deployment_name: deployment_name)
     end
 
-    desc 'describe [DEPLOYMENT_ID]', 'describe'
+    desc 'describe [DEPLOYMENT_ID]', 'Display details of a preview'
     def describe(deployment_name)
       run('describe', deployment_name: deployment_name)
     end
 
-    desc 'events [DEPLOYMENT_ID]', 'events'
+    desc 'events [DEPLOYMENT_ID]', 'Show the deployment event logs for a preview'
     def events(deployment_name)
       run('events', deployment_name: deployment_name)
     end
@@ -48,7 +52,7 @@ module Uffizzi
         Uffizzi.ui.disable_stdout
       end
       raise Uffizzi::Error.new('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      raise Uffizzi::Error.new('This command needs project to be set in config file') unless Uffizzi::AuthHelper.project_set?(options)
+      raise Uffizzi::Error.new('This command needs project to be set in config file') unless CommandService.project_set?(options)
 
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
 
@@ -57,6 +61,8 @@ module Uffizzi
         handle_list_command(project_slug)
       when 'create'
         handle_create_command(file_path, project_slug)
+      when 'update'
+        handle_update_command(deployment_name, file_path, project_slug)
       when 'delete'
         handle_delete_command(deployment_name, project_slug)
       when 'describe'
@@ -81,7 +87,29 @@ module Uffizzi
       response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
 
       if ResponseHelper.created?(response)
-        handle_succeed_create_response(project_slug, response)
+        deployment = response[:body][:deployment]
+        success_message = "Preview created with name deployment-#{deployment[:id]}"
+        PreviewService.start_deploy_containers(project_slug, deployment, success_message)
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
+    rescue SystemExit, Interrupt, SocketError
+      deployment_id = response[:body][:deployment][:id]
+      handle_preview_interruption(deployment_id, hostname, project_slug)
+    end
+
+    def handle_update_command(deployment_name, file_path, project_slug)
+      deployment_id = PreviewService.read_deployment_id(deployment_name)
+
+      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
+
+      params = prepare_params(file_path)
+      response = update_deployment(ConfigFile.read_option(:server), project_slug, deployment_id, params)
+
+      if ResponseHelper.ok?(response)
+        deployment = response[:body][:deployment]
+        success_message = "Preview with ID deployment-#{deployment_id} was successfully updated."
+        PreviewService.start_deploy_containers(project_slug, deployment, success_message)
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -90,7 +118,7 @@ module Uffizzi
     def handle_events_command(deployment_name, project_slug)
       deployment_id = PreviewService.read_deployment_id(deployment_name)
 
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
+      raise Uffizzi::Error.new("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
       response = fetch_events(ConfigFile.read_option(:server), project_slug, deployment_id)
 
@@ -105,108 +133,10 @@ module Uffizzi
       Uffizzi.ui.pretty_say(response[:body][:events])
     end
 
-    def handle_succeed_create_response(project_slug, response)
-      deployment = response[:body][:deployment]
-      deployment_id = deployment[:id]
-      params = { id: deployment_id }
-
-      response = deploy_containers(ConfigFile.read_option(:server), project_slug, deployment_id, params)
-
-      if ResponseHelper.no_content?(response)
-        Uffizzi.ui.say("Preview created with name deployment-#{deployment_id}")
-        print_deployment_progress(deployment, project_slug)
-      else
-        ResponseHelper.handle_failed_response(response)
-      end
-    end
-
-    def print_deployment_progress(deployment, project_slug)
-      deployment_id = deployment[:id]
-
-      @spinner = TTY::Spinner.new('[:spinner] Creating containers...', format: :dots)
-      @spinner.auto_spin
-
-      activity_items = []
-
-      loop do
-        response = get_activity_items(ConfigFile.read_option(:server), project_slug, deployment_id)
-        handle_activity_items_response(response)
-        return unless @spinner.spinning?
-
-        activity_items = response[:body][:activity_items]
-        break if !activity_items.empty? && activity_items.count == deployment[:containers].count
-
-        sleep(5)
-      end
-
-      @spinner.success
-
-      Uffizzi.ui.say('Done')
-
-      @spinner = TTY::Spinner::Multi.new('[:spinner] Deploying preview...', format: :dots, style: {
-                                           middle: '  ',
-                                           bottom: '  ',
-                                         })
-
-      containers_spinners = create_containers_spinners(activity_items)
-
-      wait_containers_deploying(project_slug, deployment_id, containers_spinners)
-
-      if options[:output].nil?
-        Uffizzi.ui.say('Done')
-        preview_url = "https://#{deployment[:preview_url]}"
-        Uffizzi.ui.say(preview_url) if @spinner.success?
-      else
-        output_data = build_output_data(deployment)
-        Uffizzi.ui.output(output_data)
-      end
-    end
-
-    def wait_containers_deploying(project_slug, deployment_id, containers_spinners)
-      loop do
-        response = get_activity_items(ConfigFile.read_option(:server), project_slug, deployment_id)
-        handle_activity_items_response(response)
-        return if @spinner.done?
-
-        activity_items = response[:body][:activity_items]
-        check_activity_items_state(activity_items, containers_spinners)
-        break if activity_items.all? { |activity_item| activity_item[:state] == 'deployed' || activity_item[:state] == 'failed' }
-
-        sleep(5)
-      end
-    end
-
-    def create_containers_spinners(activity_items)
-      activity_items.map do |activity_item|
-        container_spinner = @spinner.register("[:spinner] #{activity_item[:name]}")
-        container_spinner.auto_spin
-        {
-          name: activity_item[:name],
-          spinner: container_spinner,
-        }
-      end
-    end
-
-    def check_activity_items_state(activity_items, containers_spinners)
-      finished_activity_items = activity_items.filter do |activity_item|
-        activity_item[:state] == 'deployed' || activity_item[:state] == 'failed'
-      end
-      finished_activity_items.each do |activity_item|
-        container_spinner = containers_spinners.detect { |spinner| spinner[:name] == activity_item[:name] }
-        spinner = container_spinner[:spinner]
-        case activity_item[:state]
-        when 'deployed'
-          spinner.success
-        when 'failed'
-          spinner.error
-        end
-      end
-    end
-
     def handle_delete_command(deployment_name, project_slug)
       deployment_id = PreviewService.read_deployment_id(deployment_name)
 
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
+      raise Uffizzi::Error.new("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
       response = delete_deployment(ConfigFile.read_option(:server), project_slug, deployment_id)
 
@@ -220,7 +150,7 @@ module Uffizzi
     def handle_describe_command(deployment_name, project_slug)
       deployment_id = PreviewService.read_deployment_id(deployment_name)
 
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
+      raise Uffizzi::Error.new("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
       response = describe_deployment(ConfigFile.read_option(:server), project_slug, deployment_id)
 
@@ -231,16 +161,9 @@ module Uffizzi
       end
     end
 
-    def handle_activity_items_response(response)
-      unless ResponseHelper.ok?(response)
-        @spinner.error
-        ResponseHelper.handle_failed_response(response)
-      end
-    end
-
     def handle_succeed_list_response(response)
       deployments = response[:body][:deployments] || []
-      return Uffizzi.ui.say('The project has no active deployments') if deployments.empty?
+      raise Uffizzi::Error.new('The project has no active deployments') if deployments.empty?
 
       deployments.each do |deployment|
         Uffizzi.ui.say("deployment-#{deployment[:id]}")
@@ -253,8 +176,23 @@ module Uffizzi
 
     def handle_succeed_describe_response(response)
       deployment = response[:body][:deployment]
+      deployment[:containers] = deployment[:containers].map do |container|
+        unless container[:secret_variables].nil?
+          container[:secret_variables] = hide_secrets(container[:secret_variables])
+        end
+
+        container
+      end
       deployment.each_key do |key|
         Uffizzi.ui.say("#{key}: #{deployment[key]}")
+      end
+    end
+
+    def hide_secrets(secret_variables)
+      secret_variables.map do |secret_variable|
+        secret_variable[:value] = '******'
+
+        secret_variable
       end
     end
 
@@ -280,11 +218,16 @@ module Uffizzi
       }
     end
 
-    def build_output_data(output_data)
-      {
-        id: "deployment-#{output_data[:id]}",
-        url: "https://#{output_data[:preview_url]}",
-      }
+    def handle_preview_interruption(deployment_id, hostname, project_slug)
+      deletion_response = delete_deployment(hostname, project_slug, deployment_id)
+      deployment_name = "deployment-#{deployment_id}"
+      preview_deletion_message = if ResponseHelper.no_content?(deletion_response)
+        "The preview #{deployment_name} has been disabled."
+      else
+        "Couldn't disable the deployment #{deployment_name} - please disable maually."
+      end
+
+      raise Uffizzi::Error.new("The preview creation was interrupted. #{preview_deletion_message}")
     end
   end
 end

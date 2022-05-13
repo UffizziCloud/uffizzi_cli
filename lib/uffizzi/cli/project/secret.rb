@@ -3,23 +3,25 @@
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
+require 'uffizzi/date_helper'
 require 'uffizzi/shell'
+require 'time'
 
 module Uffizzi
-  class CLI::Project::Secret < Thor
+  class Cli::Project::Secret < Thor
     include ApiClient
 
-    desc 'list', 'List Secrets'
+    desc 'list', 'Show metadata for all secrets of a project'
     def list
       run('list')
     end
 
-    desc 'create [SECRET_ID]', 'Create secrets from $stdout'
+    desc 'create [SECRET_ID]', 'Create a secret for a project'
     def create(id)
       run('create', id)
     end
 
-    desc 'delete [SECRET_ID]', 'Delete a secret'
+    desc 'delete [SECRET_ID]', 'Delete a secret for a project'
     def delete(id)
       run('delete', id)
     end
@@ -30,7 +32,7 @@ module Uffizzi
       Cli::Common.show_manual(:project, :secret, command) if options[:help] || args.include?('help')
       return Uffizzi.ui.say('You are not logged in') unless AuthHelper.signed_in?
 
-      project_slug = ConfigFile.read_option(:project)
+      project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       return Uffizzi.ui.say('Please use the --project option to specify the project name') if project_slug.nil?
 
       case command
@@ -50,11 +52,20 @@ module Uffizzi
     def handle_list_command(project_slug)
       server = ConfigFile.read_option(:server)
       response = fetch_secrets(server, project_slug)
-      secrets = response[:body][:secrets].map { |secret| [secret[:name]] }
+      secrets = response[:body][:secrets]
+
       return Uffizzi.ui.say('There are no secrets for the project') if secrets.empty?
 
-      table_header = 'NAME'
-      table_data = [[table_header], *secrets]
+      current_date = Time.now.utc
+      prepared_secrets = secrets.map do |secret|
+        [
+          secret[:name],
+          DateHelper.count_distanse(current_date, Time.parse(secret[:created_at])),
+          DateHelper.count_distanse(current_date, Time.parse(secret[:updated_at])),
+        ]
+      end
+      table_header = ['NAME', 'CREATED', 'UPDATED']
+      table_data = [table_header, *prepared_secrets]
       return Uffizzi.ui.print_table(table_data) if ResponseHelper.ok?(response)
 
       ResponseHelper.handle_failed_response(response)

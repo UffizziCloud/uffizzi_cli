@@ -9,10 +9,6 @@ module Uffizzi
           ConfigFile.option_has_value?(:cookie) &&
           ConfigFile.option_has_value?(:server)
       end
-
-      def project_set?(options)
-        !options[:project].nil? || (ConfigFile.exists? && ConfigFile.option_has_value?(:project))
-      end
     end
   end
 end

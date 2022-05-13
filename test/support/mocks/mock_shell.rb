@@ -30,4 +30,8 @@ class MockShell
   def pretty_say(collection, _index = true)
     collection
   end
+
+  def output_format
+    nil
+  end
 end
