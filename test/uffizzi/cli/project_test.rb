@@ -61,9 +61,11 @@ class ProjectsTest < Minitest::Test
     project_slug = 'test'
     stubbed_uffizzi_projects = stub_uffizzi_project_failed(body, project_slug)
 
-    @project.set_default(project_slug)
+    error = assert_raises(Uffizzi::Error) do
+      @project.set_default(project_slug)
+    end
 
-    assert_equal('Resource Not Found', Uffizzi.ui.last_message)
+    assert_match(error.message, "Resource Not Found\n")
     assert_requested(stubbed_uffizzi_projects)
   end
 end
