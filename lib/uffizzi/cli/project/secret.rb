@@ -32,7 +32,7 @@ module Uffizzi
       Cli::Common.show_manual(:project, :secret, command) if options[:help] || args.include?('help')
       return Uffizzi.ui.say('You are not logged in') unless AuthHelper.signed_in?
 
-      project_slug = ConfigFile.read_option(:project)
+      project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       return Uffizzi.ui.say('Please use the --project option to specify the project name') if project_slug.nil?
 
       case command

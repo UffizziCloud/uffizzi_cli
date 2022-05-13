@@ -38,9 +38,11 @@ class PreviewTest < Minitest::Test
     deployment_id = 1
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_failed(404, body, @project_slug, deployment_id)
 
-    @preview.delete("deployment-#{deployment_id}")
+    error = assert_raises(Uffizzi::Error) do
+      @preview.delete("deployment-#{deployment_id}")
+    end
 
-    assert_equal('Resource Not Found', Uffizzi.ui.last_message)
+    assert_equal('Resource Not Found', error.message.strip)
     assert_requested(stubbed_uffizzi_preview_delete)
   end
 
@@ -48,9 +50,11 @@ class PreviewTest < Minitest::Test
     deployment_id = 1
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_success(204, @project_slug, deployment_id)
 
-    @preview.delete("deployment--#{deployment_id}")
+    error = assert_raises(Uffizzi::Error) do
+      @preview.describe("deployment--#{deployment_id}")
+    end
 
-    assert_equal("Preview should be specified in 'deployment-PREVIEW_ID' format", Uffizzi.ui.last_message)
+    assert_equal("Preview should be specified in 'deployment-PREVIEW_ID' format", error.message)
     refute_requested(stubbed_uffizzi_preview_delete)
   end
 
@@ -69,9 +73,11 @@ class PreviewTest < Minitest::Test
     deployment_id = 1
     stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(404, body, @project_slug, deployment_id)
 
-    @preview.describe("deployment-#{deployment_id}")
+    error = assert_raises(Uffizzi::Error) do
+      @preview.describe("deployment-#{deployment_id}")
+    end
 
-    assert_equal('Resource Not Found', Uffizzi.ui.last_message)
+    assert_equal('Resource Not Found', error.message.strip)
     assert_requested(stubbed_uffizzi_preview_describe)
   end
 
@@ -79,9 +85,11 @@ class PreviewTest < Minitest::Test
     deployment_id = 1
     stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(204, nil, @project_slug, deployment_id)
 
-    @preview.describe("deployment--#{deployment_id}")
+    error = assert_raises(Uffizzi::Error) do
+      @preview.describe("deployment--#{deployment_id}")
+    end
 
-    assert_equal("Preview should be specified in 'deployment-PREVIEW_ID' format", Uffizzi.ui.last_message)
+    assert_equal("Preview should be specified in 'deployment-PREVIEW_ID' format", error.message)
     refute_requested(stubbed_uffizzi_preview_describe)
   end
 
@@ -108,7 +116,9 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(204, @project_slug, deployment_id)
     stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(200, activity_items_body, @project_slug, deployment_id)
 
-    @preview.create
+    assert_raises(Uffizzi::Error) do
+      @preview.create
+    end
 
     refute_requested(stubbed_uffizzi_preview_activity_items)
     refute_requested(stubbed_uffizzi_preview_deploy_containers)
@@ -140,7 +150,9 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(200, activity_items_body, @project_slug, deployment_id)
     stubbed_uffizzi_deleted_deployment = stub_uffizzi_preview_activity_items(404, deployment_not_found_body, @project_slug, deployment_id)
 
-    @preview.create
+    assert_raises(Uffizzi::Error) do
+      @preview.create
+    end
 
     assert_requested(stubbed_uffizzi_deleted_deployment)
     assert_requested(stubbed_uffizzi_preview_activity_items)
@@ -168,9 +180,11 @@ class PreviewTest < Minitest::Test
     deployment_id = 1
     stubbed_uffizzi_preview_update = stub_uffizzi_preview_update(404, body, @project_slug, deployment_id)
 
-    @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
+    error = assert_raises(Uffizzi::Error) do
+      @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
+    end
 
-    assert_equal('Resource Not Found', Uffizzi.ui.last_message)
+    assert_equal('Resource Not Found', error.message.strip)
     assert_requested(stubbed_uffizzi_preview_update)
   end
 

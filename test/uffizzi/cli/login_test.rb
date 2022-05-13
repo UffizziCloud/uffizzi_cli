@@ -65,7 +65,9 @@ class LoginTest < Minitest::Test
 
     @cli.options = { username: @command_params[:username], server: @command_params[:server] }
 
-    @cli.login
+    assert_raises(Uffizzi::Error) do
+      @cli.login
+    end
 
     assert_requested(stubbed_uffizzi_login)
     refute(Uffizzi::ConfigFile.exists?)

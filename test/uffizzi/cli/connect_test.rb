@@ -118,8 +118,11 @@ class ConnectTest < Minitest::Test
     console_mock.stubs(:getpass).returns(credential_params[:password])
     IO.stubs(:console).returns(console_mock)
 
-    @cli.docker_hub
-    assert_equal(body[:errors][:username].first, Uffizzi.ui.last_message)
+    error = assert_raises(Uffizzi::Error) do
+      @cli.docker_hub
+    end
+
+    assert_equal(body[:errors][:username].first, error.message.strip)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end

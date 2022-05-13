@@ -4,9 +4,6 @@ require 'uffizzi'
 
 module Uffizzi
   class Cli < Thor
-    require_relative 'cli/common'
-
-    class_option :help, type: :boolean, aliases: HELP_MAPPINGS
     class_option :project, type: :string
 
     def self.exit_on_failure?
