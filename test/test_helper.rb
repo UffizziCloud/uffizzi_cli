@@ -55,4 +55,9 @@ class Minitest::Test
   def command_options(options)
     Thor::CoreExt::HashWithIndifferentAccess.new(options)
   end
+
+  def sign_out
+    Uffizzi::ConfigFile.unset_option(:cookie)
+    Uffizzi::ConfigFile.unset_option(:account_id)
+  end
 end
