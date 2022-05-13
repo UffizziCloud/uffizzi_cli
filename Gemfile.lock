@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (0.7.2)
+    uffizzi-cli (0.7.3)
       awesome_print
       thor
       tty-spinner
