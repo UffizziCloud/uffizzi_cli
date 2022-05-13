@@ -17,7 +17,7 @@ module Uffizzi
       server = ConfigFile.read_option(:server)
       destroy_session(server)
 
-      ConfigFile.delete
+      AuthHelper.sign_out
       Uffizzi.ui.say('You have been successfully logged out')
     end
   end
