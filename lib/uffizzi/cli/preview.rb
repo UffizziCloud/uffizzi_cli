@@ -24,6 +24,11 @@ module Uffizzi
       run('create', file_path: file_path)
     end
 
+    desc 'uffizzi preview update [DEPLOYMENT_ID] [COMPOSE_FILE]', 'create'
+    def update(deployment_name, file_path)
+      run('update', deployment_name: deployment_name, file_path: file_path)
+    end
+
     desc 'delete [DEPLOYMENT_ID]', 'Delete a preview'
     def delete(deployment_name)
       run('delete', deployment_name: deployment_name)
@@ -56,6 +61,8 @@ module Uffizzi
         handle_list_command(project_slug)
       when 'create'
         handle_create_command(file_path, project_slug)
+      when 'update'
+        handle_update_command(deployment_name, file_path, project_slug)
       when 'delete'
         handle_delete_command(deployment_name, project_slug)
       when 'describe'
@@ -80,7 +87,26 @@ module Uffizzi
       response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
 
       if ResponseHelper.created?(response)
-        handle_succeed_create_response(project_slug, response)
+        deployment = response[:body][:deployment]
+        success_message = "Preview created with name deployment-#{deployment[:id]}"
+        start_containers_deploying(project_slug, deployment, success_message)
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
+    end
+
+    def handle_update_command(deployment_name, file_path, project_slug)
+      deployment_id = PreviewService.read_deployment_id(deployment_name)
+
+      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
+
+      params = prepare_params(file_path)
+      response = update_deployment(ConfigFile.read_option(:server), project_slug, deployment_id, params)
+
+      if ResponseHelper.ok?(response)
+        deployment = response[:body][:deployment]
+        success_message = "Preview with ID deployment-#{deployment_id} was successfully updated."
+        start_containers_deploying(project_slug, deployment, success_message)
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -104,15 +130,14 @@ module Uffizzi
       Uffizzi.ui.pretty_say(response[:body][:events])
     end
 
-    def handle_succeed_create_response(project_slug, response)
-      deployment = response[:body][:deployment]
+    def start_containers_deploying(project_slug, deployment, success_message)
       deployment_id = deployment[:id]
       params = { id: deployment_id }
 
       response = deploy_containers(ConfigFile.read_option(:server), project_slug, deployment_id, params)
 
       if ResponseHelper.no_content?(response)
-        Uffizzi.ui.say("Preview created with name deployment-#{deployment_id}")
+        Uffizzi.ui.say(success_message)
         print_deployment_progress(deployment, project_slug)
       else
         ResponseHelper.handle_failed_response(response)
