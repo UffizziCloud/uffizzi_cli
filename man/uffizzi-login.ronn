@@ -8,7 +8,7 @@
     The uffizzi login command lets you authenticate with Uffizzi. 
 
     For more information on authentication and credential types, see:
-    https://docs.uffizzi.com/references/cli
+    https://github.com/UffizziCloud/uffizzi_cli
 
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 

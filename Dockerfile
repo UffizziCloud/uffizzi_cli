@@ -11,7 +11,8 @@ RUN apk --update add --no-cache \
   groff \
   mandoc \
   man-pages \
-  bash
+  bash \
+  vim
 
 RUN mkdir -p /gem
 WORKDIR /gem

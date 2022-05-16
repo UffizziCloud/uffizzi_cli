@@ -14,7 +14,7 @@ uffizzi-preview-create - create a preview
         - The alternate compose file is invalid.  
 
     For more information on Uffizzi previews, see:
-    https://docs.uffizzi.com/cli/preview
+    https://github.com/UffizziCloud/uffizzi_cli/preview
 
 ## POSITIONAL ARGUMENTS
     [COMPOSE_FILE]

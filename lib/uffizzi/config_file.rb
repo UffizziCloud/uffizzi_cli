@@ -5,7 +5,7 @@ require 'fileutils'
 
 module Uffizzi
   class ConfigFile
-    CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default.json"
+    CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default"
 
     class << self
       def create(account_id, cookie, server)
@@ -14,7 +14,7 @@ module Uffizzi
       end
 
       def delete
-        File.delete(CONFIG_PATH) if exists?
+        File.truncate(CONFIG_PATH, 0) if exists?
       end
 
       def exists?
@@ -69,14 +69,14 @@ module Uffizzi
         data
       end
 
-      private
-
       def option_exists?(option)
         data = read
         return false unless data.is_a?(Hash)
 
         data.key?(option)
       end
+
+      private
 
       def read
         data = File.read(CONFIG_PATH)
@@ -86,7 +86,10 @@ module Uffizzi
           acc.merge({ key.strip.to_sym => value.strip })
         end
       rescue Errno::ENOENT => e
-        Uffizzi.ui.say(e)
+        file_path = e.message.split(' ').last
+        message = "Configuration file not found: #{file_path}\n" \
+        'To configure the uffizzi CLI interactively, run $ uffizzi config'
+        Uffizzi.ui.say(message)
       end
 
       def write(data)

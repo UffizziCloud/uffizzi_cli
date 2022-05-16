@@ -44,4 +44,9 @@ class Minitest::Test
     @account_id = login_body[:user][:accounts].first[:id].to_s
     Uffizzi::ConfigFile.create(@account_id, @cookie, Uffizzi.configuration.server)
   end
+
+  def sign_out
+    Uffizzi::ConfigFile.unset_option(:cookie)
+    Uffizzi::ConfigFile.unset_option(:account_id)
+  end
 end

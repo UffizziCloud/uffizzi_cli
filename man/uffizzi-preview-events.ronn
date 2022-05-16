@@ -11,7 +11,7 @@ uffizzi-preview-events - show the deployment event logs for a preview
         - There is no preview with the given PREVIEW_ID
 
     For more information on event logs, see:
-    https://docs.uffizzi.com/cli
+    https://github.com/UffizziCloud/uffizzi_cli
 
 ## POSITIONAL ARGUMENTS
     [PREVIEW_ID]
