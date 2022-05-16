@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'uffizzi'
+require 'byebug'
 
 module Uffizzi
   class Cli < Thor

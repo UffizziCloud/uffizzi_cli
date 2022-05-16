@@ -51,7 +51,14 @@ module ApiClient
 
   def create_project(server, params)
     uri = projects_uri(server)
-    response = Uffizzi::HttpClient.make_post_request(uri, params)
+    response = http_client.make_post_request(uri, params)
+
+    build_response(response)
+  end
+
+  def delete_project(server, project_slug)
+    uri = project_uri(server, project_slug)
+    response = http_client.make_delete_request(uri)
 
     build_response(response)
   end
