@@ -95,7 +95,7 @@ module Uffizzi
       end
     rescue SystemExit, Interrupt, SocketError
       deployment_id = response[:body][:deployment][:id]
-      handle_preview_interruption(deployment_id, hostname, project_slug)
+      handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
     end
 
     def handle_update_command(deployment_name, file_path, project_slug)
@@ -218,8 +218,8 @@ module Uffizzi
       }
     end
 
-    def handle_preview_interruption(deployment_id, hostname, project_slug)
-      deletion_response = delete_deployment(hostname, project_slug, deployment_id)
+    def handle_preview_interruption(deployment_id, server, project_slug)
+      deletion_response = delete_deployment(server, project_slug, deployment_id)
       deployment_name = "deployment-#{deployment_id}"
       preview_deletion_message = if ResponseHelper.no_content?(deletion_response)
         "The preview #{deployment_name} has been disabled."

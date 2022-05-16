@@ -36,6 +36,7 @@ FROM ruby:3.0.3 AS shell
 RUN apt-get update && apt-get install -y \
     man-db \
     vim \
+    bash \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /root/
