@@ -40,7 +40,7 @@ module Uffizzi
 
     desc 'delete [PROJECT_SLUG]', 'Delete a project'
     def delete(project_slug)
-      run('delete', project_slug)
+      run('delete', project_slug: project_slug)
     end
 
     private
