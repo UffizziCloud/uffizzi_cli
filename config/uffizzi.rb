@@ -20,6 +20,6 @@ module Uffizzi
       amazon: 'UffizziCore::Credential::Amazon',
       github_container_registry: 'UffizziCore::Credential::GithubContainerRegistry',
     }
-    config.default_server = 'app.uffizzi.com'
+    config.default_server = 'https://app.uffizzi.com/'
   end
 end
