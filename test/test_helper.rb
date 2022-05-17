@@ -34,6 +34,11 @@ class Minitest::Test
 
     @mock_shell = MockShell.new
     Uffizzi::UI::Shell.stubs(:new).returns(@mock_shell)
+    Uffizzi::ConfigFile.stubs(:config_path).returns('tmp/config_default.json')
+  end
+
+  def before_teardown
+    super
 
     Uffizzi::ConfigFile.delete
   end
