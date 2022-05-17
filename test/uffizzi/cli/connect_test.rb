@@ -224,4 +224,81 @@ class ConnectTest < Minitest::Test
     assert_equal('Credentials of type ghcr already exist for this account.', Uffizzi.ui.last_message)
     assert_requested(stubbed_check_credential)
   end
+
+  def test_connect_docker_hub_with_env_variables
+    ENV['DOCKERHUB_USERNAME'] = generate(:string)
+    ENV['DOCKERHUB_PASSWORD'] = generate(:string)
+
+    body = json_fixture('files/uffizzi/credentials/dockerhub_credential.json')
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:dockerhub])
+
+    @cli.docker_hub
+
+    assert_equal('Successfully connected to DockerHub', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_connect_azure_with_env_variables
+    ENV['ACR_USERNAME'] = generate(:string)
+    ENV['ACR_PASSWORD'] = generate(:string)
+    ENV['ACR_REGISTRY_URL'] = generate(:url)
+
+    body = json_fixture('files/uffizzi/credentials/azure_credential.json')
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:azure])
+
+    @cli.acr
+
+    assert_equal('Successfully connected to ACR', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_connect_amazon_with_env_variables
+    ENV['AWS_ACCESS_KEY_ID'] = generate(:string)
+    ENV['AWS_SECRET_ACCESS_KEY'] = generate(:string)
+    ENV['AWS_REGISTRY_URL'] = generate(:url)
+
+    body = json_fixture('files/uffizzi/credentials/amazon_credential.json')
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:amazon])
+
+    @cli.ecr
+
+    assert_equal('Successfully connected to ECR', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_connect_google_with_env_variables
+    ENV['GCLOUD_SERVICE_KEY'] = generate(:string)
+
+    body = json_fixture('files/uffizzi/credentials/google_credential.json')
+
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:google])
+
+    @cli.gcr
+
+    assert_equal('Successfully connected to GCR', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_connect_github_registry_with_env_variables
+    ENV['GITHUB_USERNAME'] = generate(:string)
+    ENV['GITHUB_ACCESS_TOKEN'] = generate(:string)
+
+    body = json_fixture('files/uffizzi/credentials/github_registry_credential.json')
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:github_registry])
+
+    @cli.ghcr
+
+    assert_equal('Successfully connected to GHCR', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
 end
