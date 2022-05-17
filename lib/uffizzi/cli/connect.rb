@@ -106,13 +106,7 @@ module Uffizzi
       type = Uffizzi.configuration.credential_types[:google]
       check_credential_existance(type, 'gcr')
 
-      return Uffizzi.ui.say('Path to google service account key file wasn\'t specified.') if credential_file_path.nil?
-
-      begin
-        credential_content = File.read(credential_file_path)
-      rescue Errno::ENOENT => e
-        return Uffizzi.ui.say(e)
-      end
+      credential_content = google_service_account_content(credential_file_path)
 
       params = {
         password: credential_content,
@@ -136,8 +130,8 @@ module Uffizzi
       type = Uffizzi.configuration.credential_types[:github_registry]
       check_credential_existance(type, 'ghcr')
 
-      username = Uffizzi.ui.ask('Github Username: ')
-      password = Uffizzi.ui.ask('Access Token: ', echo: false)
+      username = ENV['GITHUB_USERNAME'] || Uffizzi.ui.ask('Github Username: ')
+      password = ENV['GITHUB_ACCESS_TOKEN'] || Uffizzi.ui.ask('Access Token: ', echo: false)
 
       params = {
         username: username,
@@ -203,6 +197,20 @@ module Uffizzi
       }
 
       map[credential]
+    end
+
+    def google_service_account_content(credential_file_path = nil)
+      return ENV['GCLOUD_SERVICE_KEY'] if ENV['GCLOUD_SERVICE_KEY']
+
+      return Uffizzi.ui.say('Path to google service account key file wasn\'t specified.') if credential_file_path.nil?
+
+      begin
+        credential_content = File.read(credential_file_path)
+      rescue Errno::ENOENT => e
+        raise Uffizzi::Error.new(e.message)
+      end
+
+      credential_content
     end
   end
 end
