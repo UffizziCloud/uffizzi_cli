@@ -8,7 +8,6 @@ module Uffizzi
     CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default.json"
 
     class << self
-
       def config_path
         CONFIG_PATH
       end
