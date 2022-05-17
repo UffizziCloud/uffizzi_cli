@@ -9,7 +9,7 @@ class ConnectTest < Minitest::Test
   end
 
   def test_list_credentials
-    body = json_fixture('files/uffizzi/credentials/uffizzi_credentials_list.json')
+    body = json_fixture('files/uffizzi/credentials/credentials_list.json')
     stubbed_credentials_list = stub_uffizzi_list_credentials(body)
 
     @cli.list_credentials
@@ -18,7 +18,7 @@ class ConnectTest < Minitest::Test
   end
 
   def test_connect_docker_hub_success
-    body = json_fixture('files/uffizzi/credentials/uffizzi_dockerhub_credential.json')
+    body = json_fixture('files/uffizzi/credentials/dockerhub_credential.json')
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
     stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:dockerhub])
 
@@ -41,7 +41,7 @@ class ConnectTest < Minitest::Test
   end
 
   def test_connect_azure_success
-    body = json_fixture('files/uffizzi/credentials/uffizzi_azure_credential.json')
+    body = json_fixture('files/uffizzi/credentials/azure_credential.json')
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
     stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:azure])
 
@@ -65,7 +65,7 @@ class ConnectTest < Minitest::Test
   end
 
   def test_connect_amazon_success
-    body = json_fixture('files/uffizzi/credentials/uffizzi_amazon_credential.json')
+    body = json_fixture('files/uffizzi/credentials/amazon_credential.json')
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
     stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:amazon])
 
@@ -89,7 +89,7 @@ class ConnectTest < Minitest::Test
   end
 
   def test_connect_google_success
-    body = json_fixture('files/uffizzi/credentials/uffizzi_google_credential.json')
+    body = json_fixture('files/uffizzi/credentials/google_credential.json')
     credential_path = "#{Dir.pwd}/test/fixtures/files/google/service-account.json"
 
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
@@ -102,8 +102,31 @@ class ConnectTest < Minitest::Test
     assert_requested(stubbed_check_credential)
   end
 
+  def test_connect_github_registry_success
+    body = json_fixture('files/uffizzi/credentials/github_registry_credential.json')
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:github_registry])
+
+    credential_params = {
+      username: generate(:string),
+      password: generate(:string),
+    }
+
+    console_mock = mock('console_mock')
+    console_mock.stubs(:write)
+    console_mock.stubs(:gets).returns(credential_params[:username])
+    console_mock.stubs(:getpass).returns(credential_params[:password])
+    IO.stubs(:console).returns(console_mock)
+
+    @cli.ghcr
+
+    assert_equal('Successfully connected to GHCR', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
   def test_connect_credential_failed
-    body = json_fixture('files/uffizzi/credentials/uffizzi_credential_failed.json')
+    body = json_fixture('files/uffizzi/credentials/credential_failed.json')
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential_fail(body)
     stubbed_check_credential = stub_uffizzi_check_credential_success(Uffizzi.configuration.credential_types[:dockerhub])
 
@@ -134,6 +157,71 @@ class ConnectTest < Minitest::Test
       @cli.docker_hub
     end
 
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_connect_docker_hub_with_skip_raise_existance_error_option
+    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existance_error: true)
+
+    stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:dockerhub])
+
+    assert_raises(SystemExit) do
+      @cli.docker_hub
+    end
+
+    assert_equal('Credentials of type docker-hub already exist for this account.', Uffizzi.ui.last_message)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_connect_azure_with_skip_raise_existance_error_option
+    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existance_error: true)
+
+    stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:azure])
+
+    assert_raises(SystemExit) do
+      @cli.acr
+    end
+
+    assert_equal('Credentials of type acr already exist for this account.', Uffizzi.ui.last_message)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_connect_amazon_with_skip_raise_existance_error_option
+    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existance_error: true)
+
+    stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:amazon])
+
+    assert_raises(SystemExit) do
+      @cli.ecr
+    end
+
+    assert_equal('Credentials of type ecr already exist for this account.', Uffizzi.ui.last_message)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_connect_google_with_skip_raise_existance_error_option
+    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existance_error: true)
+
+    stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:google])
+
+    assert_raises(SystemExit) do
+      @cli.gcr
+    end
+
+    assert_equal('Credentials of type gcr already exist for this account.', Uffizzi.ui.last_message)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_connect_github_with_skip_raise_existance_error_option
+    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existance_error: true)
+
+    stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:github_registry])
+
+    assert_raises(SystemExit) do
+      @cli.ghcr
+    end
+
+    assert_equal('Credentials of type ghcr already exist for this account.', Uffizzi.ui.last_message)
     assert_requested(stubbed_check_credential)
   end
 end
