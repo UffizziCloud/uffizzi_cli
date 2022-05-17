@@ -18,8 +18,8 @@ class DisconnectTest < Minitest::Test
     assert_requested(stubbed_uffizzi_delete_credential)
   end
 
-  def test_disconnect_github_container_registry_success
-    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(Uffizzi.configuration.credential_types[:github_container_registry])
+  def test_disconnect_github_registry_success
+    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(Uffizzi.configuration.credential_types[:github_registry])
 
     @cli.disconnect('ghcr')
 
@@ -65,7 +65,7 @@ class DisconnectTest < Minitest::Test
   end
 
   def test_disconnect_credential_failed
-    body = json_fixture('files/uffizzi/credentials/uffizzi_delete_credential_failed.json')
+    body = json_fixture('files/uffizzi/credentials/delete_credential_failed.json')
     stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential_fail(body, Uffizzi.configuration.credential_types[:dockerhub])
 
     error = assert_raises(Uffizzi::Error) do
