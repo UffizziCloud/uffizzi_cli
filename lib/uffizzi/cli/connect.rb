@@ -18,12 +18,14 @@ module Uffizzi
     end
 
     desc 'docker-hub', 'Connect to Docker Hub (hub.docker.com)'
+    method_option :skip_raise_existence_error, type: :boolean, default: false,
+                                               desc: 'Skip raising an error within check the credential'
     def docker_hub
       type = Uffizzi.configuration.credential_types[:dockerhub]
-      check_credential_existance(type, 'docker-hub')
+      check_credential_existence(type, 'docker-hub')
 
-      username = Uffizzi.ui.ask('Username: ')
-      password = Uffizzi.ui.ask('Password: ', echo: false)
+      username = ENV['DOCKERHUB_USERNAME'] || Uffizzi.ui.ask('Username: ')
+      password = ENV['DOCKERHUB_PASSWORD'] || Uffizzi.ui.ask('Password: ', echo: false)
 
       params = {
         username: username,
@@ -42,18 +44,20 @@ module Uffizzi
     end
 
     desc 'acr', 'Connect to Azure Container Registry (azurecr.io)'
+    method_option :skip_raise_existence_error, type: :boolean, default: false,
+                                               desc: 'Skip raising an error within check the credential'
     def acr
       type = Uffizzi.configuration.credential_types[:azure]
-      check_credential_existance(type, 'acr')
+      check_credential_existence(type, 'acr')
 
-      registry_url = prepare_registry_url(Uffizzi.ui.ask('Registry Domain: '))
-      username = Uffizzi.ui.ask('Docker ID: ')
-      password = Uffizzi.ui.ask('Password/Access Token: ', echo: false)
+      registry_url = ENV['ACR_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain: ')
+      username = ENV['ACR_USERNAME'] || Uffizzi.ui.ask('Docker ID: ')
+      password = ENV['ACR_PASSWORD'] || Uffizzi.ui.ask('Password/Access Token: ', echo: false)
 
       params = {
         username: username,
         password: password,
-        registry_url: registry_url,
+        registry_url: prepare_registry_url(registry_url),
         type: type,
       }
 
@@ -68,18 +72,20 @@ module Uffizzi
     end
 
     desc 'ecr', 'Connect to Amazon Elastic Container Registry'
+    method_option :skip_raise_existence_error, type: :boolean, default: false,
+                                               desc: 'Skip raising an error within check the credential'
     def ecr
       type = Uffizzi.configuration.credential_types[:amazon]
-      check_credential_existance(type, 'ecr')
+      check_credential_existence(type, 'ecr')
 
-      registry_url = prepare_registry_url(Uffizzi.ui.ask('Registry Domain: '))
-      username = Uffizzi.ui.ask('Access key ID: ')
-      password = Uffizzi.ui.ask('Secret access key: ', echo: false)
+      registry_url = ENV['AWS_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain: ')
+      access_key = ENV['AWS_ACCESS_KEY_ID'] || Uffizzi.ui.ask('Access key ID: ')
+      secret_access_key = ENV['AWS_SECRET_ACCESS_KEY'] || Uffizzi.ui.ask('Secret access key: ', echo: false)
 
       params = {
-        username: username,
-        password: password,
-        registry_url: registry_url,
+        username: access_key,
+        password: secret_access_key,
+        registry_url: prepare_registry_url(registry_url),
         type: type,
       }
 
@@ -94,17 +100,13 @@ module Uffizzi
     end
 
     desc 'gcr', 'Connect to Google Container Registry (gcr.io)'
+    method_option :skip_raise_existence_error, type: :boolean, default: false,
+                                               desc: 'Skip raising an error within check the credential'
     def gcr(credential_file_path = nil)
       type = Uffizzi.configuration.credential_types[:google]
-      check_credential_existance(type, 'gcr')
+      check_credential_existence(type, 'gcr')
 
-      return Uffizzi.ui.say('Path to google service account key file wasn\'t specified.') if credential_file_path.nil?
-
-      begin
-        credential_content = File.read(credential_file_path)
-      rescue Errno::ENOENT => e
-        return Uffizzi.ui.say(e)
-      end
+      credential_content = google_service_account_content(credential_file_path)
 
       params = {
         password: credential_content,
@@ -122,12 +124,14 @@ module Uffizzi
     end
 
     desc 'ghcr', 'Connect to GitHub Container Registry (ghcr.io)'
+    method_option :skip_raise_existence_error, type: :boolean, default: false,
+                                               desc: 'Skip raising an error within check the credential'
     def ghcr
-      type = Uffizzi.configuration.credential_types[:github_container_registry]
-      check_credential_existance(type, 'gchr')
+      type = Uffizzi.configuration.credential_types[:github_registry]
+      check_credential_existence(type, 'ghcr')
 
-      username = Uffizzi.ui.ask('Github Username: ')
-      password = Uffizzi.ui.ask('Access Token: ', echo: false)
+      username = ENV['GITHUB_USERNAME'] || Uffizzi.ui.ask('Github Username: ')
+      password = ENV['GITHUB_ACCESS_TOKEN'] || Uffizzi.ui.ask('Access Token: ', echo: false)
 
       params = {
         username: username,
@@ -160,14 +164,19 @@ module Uffizzi
       Uffizzi.ui.say("Successfully connected to #{connection_name}")
     end
 
-    def check_credential_existance(type, connection_name)
+    def check_credential_existence(type, connection_name)
       server = ConfigFile.read_option(:server)
       response = check_credential(server, type)
       return if ResponseHelper.ok?(response)
 
-      message = "Credentials of type #{connection_name} already exist for this account. " \
-      "To remove them, run $ uffizzi disconnect #{connection_name}."
-      raise Uffizzi::Error.new(message)
+      if options.skip_raise_existence_error?
+        Uffizzi.ui.say("Credentials of type #{connection_name} already exist for this account.")
+        exit(true)
+      else
+        message = "Credentials of type #{connection_name} already exist for this account. " \
+        "To remove them, run $ uffizzi disconnect #{connection_name}."
+        raise Uffizzi::Error.new(message)
+      end
     end
 
     def handle_list_credentials_success(response)
@@ -188,6 +197,20 @@ module Uffizzi
       }
 
       map[credential]
+    end
+
+    def google_service_account_content(credential_file_path = nil)
+      return ENV['GCLOUD_SERVICE_KEY'] if ENV['GCLOUD_SERVICE_KEY']
+
+      return Uffizzi.ui.say('Path to google service account key file wasn\'t specified.') if credential_file_path.nil?
+
+      begin
+        credential_content = File.read(credential_file_path)
+      rescue Errno::ENOENT => e
+        raise Uffizzi::Error.new(e.message)
+      end
+
+      credential_content
     end
   end
 end

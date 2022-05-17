@@ -18,7 +18,7 @@ module Uffizzi
       azure: 'UffizziCore::Credential::Azure',
       google: 'UffizziCore::Credential::Google',
       amazon: 'UffizziCore::Credential::Amazon',
-      github_container_registry: 'UffizziCore::Credential::GithubContainerRegistry',
+      github_registry: 'UffizziCore::Credential::GithubContainerRegistry',
     }
     config.default_server = 'app.uffizzi.com'
   end

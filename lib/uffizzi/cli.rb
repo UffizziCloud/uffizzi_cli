@@ -62,8 +62,10 @@ module Uffizzi
         return Common.show_manual(filename(args)) if show_help?(args, opts)
 
         super
-      rescue SystemExit, Interrupt, SocketError
+      rescue Interrupt
         raise Uffizzi::Error.new('The command was interrupted')
+      rescue SocketError
+        raise Uffizzi::Error.new('A request was not sent to Uffizzi app')
       end
 
       private

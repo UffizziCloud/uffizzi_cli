@@ -17,7 +17,7 @@ module Uffizzi
                         when 'gcr'
                           Uffizzi.configuration.credential_types[:google]
                         when 'ghcr'
-                          Uffizzi.configuration.credential_types[:github_container_registry]
+                          Uffizzi.configuration.credential_types[:github_registry]
                         else
                           raise Uffizzi::Error.new('Unsupported credential type.')
       end
