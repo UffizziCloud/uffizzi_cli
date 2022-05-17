@@ -21,7 +21,7 @@ if
 	[ $DOCKERHUB_USERNAME ] &&
 	[ $DOCKERHUB_PASSWORD ] &&
 then
-	uffizzi connect docker-hub --skip-raise-existance-error
+	uffizzi connect docker-hub --skip-raise-existence-error
 fi
 
 if
@@ -29,7 +29,7 @@ if
 	[ $ACR_PASSWORD ] &&
 	[ $ACR_REGISTRY_URL ]
 then
-	uffizzi connect acr --skip-raise-existance-error
+	uffizzi connect acr --skip-raise-existence-error
 fi
 
 if
@@ -37,20 +37,20 @@ if
 	[ $AWS_SECRET_ACCESS_KEY ] &&
 	[ $AWS_REGISTRY_URL ]
 then
-	uffizzi connect ecr --skip-raise-existance-error
+	uffizzi connect ecr --skip-raise-existence-error
 fi
 
 if
 	[ $GCLOUD_SERVICE_KEY ]
 then
-	uffizzi connect gcr --skip-raise-existance-error
+	uffizzi connect gcr --skip-raise-existence-error
 fi
 
 if
 	[ $GITHUB_USERNAME ] &&
 	[ $GITHUB_ACCESS_TOKEN ]
 then
-	uffizzi connect gchr --skip-raise-existance-error
+	uffizzi connect gchr --skip-raise-existence-error
 fi
 
 exec uffizzi "$@"

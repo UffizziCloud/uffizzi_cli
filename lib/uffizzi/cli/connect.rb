@@ -18,11 +18,11 @@ module Uffizzi
     end
 
     desc 'docker-hub', 'Connect to Docker Hub (hub.docker.com)'
-    method_option :skip_raise_existance_error, type: :boolean, default: false,
+    method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
     def docker_hub
       type = Uffizzi.configuration.credential_types[:dockerhub]
-      check_credential_existance(type, 'docker-hub')
+      check_credential_existence(type, 'docker-hub')
 
       username = ENV['DOCKERHUB_USERNAME'] || Uffizzi.ui.ask('Username: ')
       password = ENV['DOCKERHUB_PASSWORD'] || Uffizzi.ui.ask('Password: ', echo: false)
@@ -44,11 +44,11 @@ module Uffizzi
     end
 
     desc 'acr', 'Connect to Azure Container Registry (azurecr.io)'
-    method_option :skip_raise_existance_error, type: :boolean, default: false,
+    method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
     def acr
       type = Uffizzi.configuration.credential_types[:azure]
-      check_credential_existance(type, 'acr')
+      check_credential_existence(type, 'acr')
 
       registry_url = ENV['ACR_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain: ')
       username = ENV['ACR_USERNAME'] || Uffizzi.ui.ask('Docker ID: ')
@@ -72,11 +72,11 @@ module Uffizzi
     end
 
     desc 'ecr', 'Connect to Amazon Elastic Container Registry'
-    method_option :skip_raise_existance_error, type: :boolean, default: false,
+    method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
     def ecr
       type = Uffizzi.configuration.credential_types[:amazon]
-      check_credential_existance(type, 'ecr')
+      check_credential_existence(type, 'ecr')
 
       registry_url = ENV['AWS_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain: ')
       access_key = ENV['AWS_ACCESS_KEY_ID'] || Uffizzi.ui.ask('Access key ID: ')
@@ -100,11 +100,11 @@ module Uffizzi
     end
 
     desc 'gcr', 'Connect to Google Container Registry (gcr.io)'
-    method_option :skip_raise_existance_error, type: :boolean, default: false,
+    method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
     def gcr(credential_file_path = nil)
       type = Uffizzi.configuration.credential_types[:google]
-      check_credential_existance(type, 'gcr')
+      check_credential_existence(type, 'gcr')
 
       credential_content = google_service_account_content(credential_file_path)
 
@@ -124,11 +124,11 @@ module Uffizzi
     end
 
     desc 'ghcr', 'Connect to GitHub Container Registry (ghcr.io)'
-    method_option :skip_raise_existance_error, type: :boolean, default: false,
+    method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
     def ghcr
       type = Uffizzi.configuration.credential_types[:github_registry]
-      check_credential_existance(type, 'ghcr')
+      check_credential_existence(type, 'ghcr')
 
       username = ENV['GITHUB_USERNAME'] || Uffizzi.ui.ask('Github Username: ')
       password = ENV['GITHUB_ACCESS_TOKEN'] || Uffizzi.ui.ask('Access Token: ', echo: false)
@@ -164,12 +164,12 @@ module Uffizzi
       Uffizzi.ui.say("Successfully connected to #{connection_name}")
     end
 
-    def check_credential_existance(type, connection_name)
+    def check_credential_existence(type, connection_name)
       server = ConfigFile.read_option(:server)
       response = check_credential(server, type)
       return if ResponseHelper.ok?(response)
 
-      if options.skip_raise_existance_error?
+      if options.skip_raise_existence_error?
         Uffizzi.ui.say("Credentials of type #{connection_name} already exist for this account.")
         exit(true)
       else
