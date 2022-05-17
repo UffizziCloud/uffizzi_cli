@@ -160,8 +160,8 @@ class ConnectTest < Minitest::Test
     assert_requested(stubbed_check_credential)
   end
 
-  def test_connect_docker_hub_with_skip_raise_existance_error_option
-    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existance_error: true)
+  def test_connect_docker_hub_with_skip_raise_existence_error_option
+    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existence_error: true)
 
     stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:dockerhub])
 
@@ -173,8 +173,8 @@ class ConnectTest < Minitest::Test
     assert_requested(stubbed_check_credential)
   end
 
-  def test_connect_azure_with_skip_raise_existance_error_option
-    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existance_error: true)
+  def test_connect_azure_with_skip_raise_existence_error_option
+    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existence_error: true)
 
     stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:azure])
 
@@ -186,8 +186,8 @@ class ConnectTest < Minitest::Test
     assert_requested(stubbed_check_credential)
   end
 
-  def test_connect_amazon_with_skip_raise_existance_error_option
-    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existance_error: true)
+  def test_connect_amazon_with_skip_raise_existence_error_option
+    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existence_error: true)
 
     stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:amazon])
 
@@ -199,8 +199,8 @@ class ConnectTest < Minitest::Test
     assert_requested(stubbed_check_credential)
   end
 
-  def test_connect_google_with_skip_raise_existance_error_option
-    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existance_error: true)
+  def test_connect_google_with_skip_raise_existence_error_option
+    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existence_error: true)
 
     stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:google])
 
@@ -212,8 +212,8 @@ class ConnectTest < Minitest::Test
     assert_requested(stubbed_check_credential)
   end
 
-  def test_connect_github_with_skip_raise_existance_error_option
-    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existance_error: true)
+  def test_connect_github_with_skip_raise_existence_error_option
+    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existence_error: true)
 
     stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:github_registry])
 
