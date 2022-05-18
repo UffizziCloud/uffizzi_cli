@@ -75,7 +75,7 @@ module Uffizzi
         say("Default compose: #{project[:default_compose][:source]}")
         say('Previews:')
         project[:deployments].each do |deployment|
-          say("  - deployment-#{deployment[:id]} (#{deployment[:subdomain]})")
+          say("  - deployment-#{deployment[:id]} (https://#{deployment[:preview_url]})")
         end
         say('Secrets:')
         project[:secrets].each do |secret|
