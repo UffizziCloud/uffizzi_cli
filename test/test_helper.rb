@@ -29,18 +29,20 @@ include FactoryBot::Syntax::Methods
 FactoryBot.find_definitions
 
 class Minitest::Test
+  TEST_CONFIG_PATH = 'tmp/config_default.json'
+
   def before_setup
     super
 
     @mock_shell = MockShell.new
     Uffizzi::UI::Shell.stubs(:new).returns(@mock_shell)
-    Uffizzi::ConfigFile.stubs(:config_path).returns('tmp/config_default.json')
+    Uffizzi::ConfigFile.stubs(:config_path).returns(TEST_CONFIG_PATH)
   end
 
   def before_teardown
     super
 
-    Uffizzi::ConfigFile.delete
+    File.delete(TEST_CONFIG_PATH) if File.exist?(TEST_CONFIG_PATH)
   end
 
   def sign_in
@@ -55,3 +57,5 @@ class Minitest::Test
     Uffizzi::ConfigFile.unset_option(:account_id)
   end
 end
+
+Minitest.after_run { File.delete(Minitest::Test::TEST_CONFIG_PATH) if File.exist?(Minitest::Test::TEST_CONFIG_PATH) }
