@@ -80,8 +80,13 @@ module Uffizzi
 
     def handle_succeed_describe_response(response)
       project = response[:body][:project]
+      project[:deployments] = select_active_deployments(project[:deployments])
       Uffizzi.ui.output_format = options[:output]
       Uffizzi.ui.describe_project(project)
+    end
+
+    def select_active_deployments(deployments)
+      deployments.select { |deployment| deployment[:state] == 'active' }
     end
 
     def handle_list_command
