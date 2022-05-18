@@ -42,7 +42,7 @@ class Minitest::Test
   def before_teardown
     super
 
-    File.delete(TEST_CONFIG_PATH) if File.exist?(TEST_CONFIG_PATH)
+    Uffizzi::ConfigFile.delete
   end
 
   def sign_in
@@ -52,5 +52,3 @@ class Minitest::Test
     Uffizzi::ConfigFile.create(@account_id, @cookie, Uffizzi.configuration.server)
   end
 end
-
-Minitest.after_run { File.delete(Minitest::Test::TEST_CONFIG_PATH) if File.exist?(Minitest::Test::TEST_CONFIG_PATH) }
