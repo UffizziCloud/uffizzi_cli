@@ -176,3 +176,9 @@ Supported credential types - `docker-hub`, `acr`, `ecr`, `gcr`
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/UffizziCloud/uffizzi_cli. See `CONTRIBUTING.md` in this repository.
+
+## License
+
+This project is licensed under the terms of the Apache-2.0 license.
+
+See this license at [`LICENSE`](LICENSE).
