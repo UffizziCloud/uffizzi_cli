@@ -28,6 +28,12 @@ module Uffizzi
       run('set-default', project_slug: project_slug)
     end
 
+    desc 'describe [PROJECT_SLUG]', 'describe'
+    method_option :output, type: :string, aliases: '-o', enum: ['json', 'pretty'], default: 'json'
+    def describe(project_slug)
+      run('describe', project_slug: project_slug)
+    end
+
     map('set-default' => :set_default)
 
     method_option :name, required: true
