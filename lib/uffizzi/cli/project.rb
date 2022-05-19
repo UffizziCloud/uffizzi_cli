@@ -49,12 +49,6 @@ module Uffizzi
       run('delete', project_slug: project_slug)
     end
 
-    desc 'describe [PROJECT_SLUG]', 'describe'
-    method_option :output, type: :string, aliases: '-o', enum: ['json', 'pretty'], default: 'json'
-    def describe(project_slug)
-      run('describe', project_slug: project_slug)
-    end
-
     private
 
     def run(command, project_slug: nil)
