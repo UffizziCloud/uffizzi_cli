@@ -170,7 +170,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_success(@project_slug, deployment_id)
 
-    PreviewService.stubs(:start_deploy_containers).raises(Interrupt)
+    PreviewService.stubs(:run_containers_deploy).raises(Interrupt)
 
     assert_raises(Uffizzi::Error) do
       @preview.create
@@ -186,7 +186,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_success(@project_slug, deployment_id)
 
-    PreviewService.stubs(:start_deploy_containers).raises(SystemExit)
+    PreviewService.stubs(:run_containers_deploy).raises(SystemExit)
 
     assert_raises(Uffizzi::Error) do
       @preview.create
@@ -202,7 +202,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_success(@project_slug, deployment_id)
 
-    PreviewService.stubs(:start_deploy_containers).raises(SocketError)
+    PreviewService.stubs(:run_containers_deploy).raises(SocketError)
 
     assert_raises(Uffizzi::Error) do
       @preview.create
