@@ -72,7 +72,8 @@ module Uffizzi
         say("Project slug: #{project[:slug]}")
         say("Description: #{project[:description]}".strip)
         say("Created: #{project[:created_at]}")
-        say("Default compose: #{project[:default_compose][:source]}")
+        default_compose = project[:default_compose].nil? ? nil : project[:default_compose][:source]
+        say("Default compose: #{default_compose}".strip)
         say('Previews:')
         project[:deployments].each do |deployment|
           say("  - deployment-#{deployment[:id]} (https://#{deployment[:preview_url]})")
