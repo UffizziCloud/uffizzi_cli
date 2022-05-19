@@ -19,7 +19,7 @@ fi
 
 if
 	[ $DOCKERHUB_USERNAME ] &&
-	[ $DOCKERHUB_PASSWORD ] &&
+	[ $DOCKERHUB_PASSWORD ]
 then
 	uffizzi connect docker-hub --skip-raise-existence-error
 fi
