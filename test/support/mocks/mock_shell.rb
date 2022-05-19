@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class MockShell
-  attr_accessor :messages
+  attr_accessor :messages, :output_format
 
   def initialize
     @messages = []
@@ -31,7 +31,18 @@ class MockShell
     collection
   end
 
-  def output_format
-    nil
+  def disable_stdout
+    true
+  end
+
+  def output(data)
+    case output_format
+    when 'json'
+      say(data.to_json)
+    when 'github-action'
+      data.each_key do |key|
+        say("::set-output name=#{key}::#{data[key]}")
+      end
+    end
   end
 end
