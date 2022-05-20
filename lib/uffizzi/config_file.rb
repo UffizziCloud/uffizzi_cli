@@ -8,11 +8,6 @@ module Uffizzi
     CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default"
 
     class << self
-      def create(account_id, cookie, server)
-        data = prepare_config_data(account_id, cookie, server)
-        data.each_pair { |key, value| write_option(key, value) }
-      end
-
       def delete
         File.truncate(CONFIG_PATH, 0) if exists?
       end
@@ -104,14 +99,6 @@ module Uffizzi
           key, value = option
           "#{acc}#{key} = #{value}\n"
         end
-      end
-
-      def prepare_config_data(account_id, cookie, server)
-        {
-          account_id: account_id,
-          server: server,
-          cookie: cookie,
-        }
       end
 
       def create_file
