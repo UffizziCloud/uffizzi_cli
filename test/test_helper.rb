@@ -49,7 +49,16 @@ class Minitest::Test
     @cookie = '_uffizzi=test'
     login_body = json_fixture('files/uffizzi/uffizzi_login_success.json')
     @account_id = login_body[:user][:accounts].first[:id].to_s
-    Uffizzi::ConfigFile.create(@account_id, @cookie, Uffizzi.configuration.server)
+    data = prepare_config_data
+    data.each_pair { |key, value| Uffizzi::ConfigFile.write_option(key, value) }
+  end
+
+  def prepare_config_data
+    {
+      account_id: @account_id,
+      server: Uffizzi.configuration.server,
+      cookie: @cookie,
+    }
   end
 
   def command_options(options)
