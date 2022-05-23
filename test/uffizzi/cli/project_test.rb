@@ -112,9 +112,11 @@ class ProjectsTest < Minitest::Test
     project_slug = body[:project][:slug]
     stubbed_uffizzi_projects = stub_uffizzi_project_success(body, project_slug)
 
+    @project.options = { output: 'json' }
+
     @project.describe(project_slug.to_s)
 
     assert_requested(stubbed_uffizzi_projects)
-    assert_equal(body[:project], Uffizzi.ui.last_message)
+    assert_equal(body[:project].to_json, Uffizzi.ui.last_message)
   end
 end

@@ -4,6 +4,7 @@ require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
 require 'uffizzi/helpers/project_helper'
+require 'uffizzi/services/project_service'
 
 module Uffizzi
   class Cli::Project < Thor
@@ -80,13 +81,8 @@ module Uffizzi
 
     def handle_succeed_describe_response(response)
       project = response[:body][:project]
-      project[:deployments] = select_active_deployments(project[:deployments])
-      Uffizzi.ui.output_format = options[:output]
-      Uffizzi.ui.describe_project(project)
-    end
-
-    def select_active_deployments(deployments)
-      deployments.select { |deployment| deployment[:state] == 'active' }
+      project[:deployments] = ProjectService.select_active_deployments(project)
+      ProjectService.describe_project(project, options[:output])
     end
 
     def handle_list_command
