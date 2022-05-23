@@ -47,10 +47,6 @@ module Uffizzi
         json_format? ? output_in_json(data) : output_in_github_format(data)
       end
 
-      def describe_project(project)
-        json_format? ? output_in_json(project) : output_in_pretty_format(project)
-      end
-
       private
 
       def json_format?
@@ -64,23 +60,6 @@ module Uffizzi
       def output_in_github_format(data)
         data.each_key do |key|
           say("::set-output name=#{key}::#{data[key]}")
-        end
-      end
-
-      def output_in_pretty_format(project)
-        say("Project name: #{project[:name]}")
-        say("Project slug: #{project[:slug]}")
-        say("Description: #{project[:description]}".strip)
-        say("Created: #{project[:created_at]}")
-        default_compose = project[:default_compose].nil? ? nil : project[:default_compose][:source]
-        say("Default compose: #{default_compose}".strip)
-        say('Previews:')
-        project[:deployments].each do |deployment|
-          say("  - deployment-#{deployment[:id]} (https://#{deployment[:preview_url]})")
-        end
-        say('Secrets:')
-        project[:secrets].each do |secret|
-          say("  - #{secret}")
         end
       end
     end
