@@ -69,8 +69,4 @@ class Minitest::Test
   def command_options(options)
     Thor::CoreExt::HashWithIndifferentAccess.new(options)
   end
-
-  def command_options(options)
-    Thor::CoreExt::HashWithIndifferentAccess.new(options)
-  end
 end
