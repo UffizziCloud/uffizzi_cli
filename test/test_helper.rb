@@ -65,4 +65,8 @@ class Minitest::Test
     Uffizzi::ConfigFile.unset_option(:cookie)
     Uffizzi::ConfigFile.unset_option(:account_id)
   end
+
+  def command_options(options)
+    Thor::CoreExt::HashWithIndifferentAccess.new(options)
+  end
 end

@@ -34,4 +34,19 @@ class MockShell
   def pretty_say(collection, _index = true)
     collection
   end
+
+  def disable_stdout
+    true
+  end
+
+  def output(data)
+    case output_format
+    when 'json'
+      say(data.to_json)
+    when 'github-action'
+      data.each_key do |key|
+        say("::set-output name=#{key}::#{data[key]}")
+      end
+    end
+  end
 end

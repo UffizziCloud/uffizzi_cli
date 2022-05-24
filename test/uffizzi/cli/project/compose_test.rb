@@ -18,7 +18,7 @@ class ComposeTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose_success(body, @project_slug)
 
-    @compose.options = { file: 'test/compose_files/test_compose_success.yml' }
+    @compose.options = command_options(file: 'test/compose_files/test_compose_success.yml')
     @compose.set
 
     assert_equal('compose file created', Uffizzi.ui.last_message)
@@ -32,7 +32,7 @@ class ComposeTest < Minitest::Test
     ENV['CONFIG_SOURCE'] = 'vote.conf'
     ENV['PORT'] = '80'
 
-    @compose.options = { file: 'test/compose_files/test_compose_with_env_vars.yml' }
+    @compose.options = command_options(file: 'test/compose_files/test_compose_with_env_vars.yml')
     @compose.set
 
     assert_equal('compose file created', Uffizzi.ui.last_message)
@@ -45,7 +45,7 @@ class ComposeTest < Minitest::Test
     ENV['IMAGE'] = 'nginx'
     ENV['CONFIG_SOURCE'] = 'vote.conf'
 
-    @compose.options = { file: 'test/compose_files/test_compose_with_env_vars.yml' }
+    @compose.options = command_options(file: 'test/compose_files/test_compose_with_env_vars.yml')
     error = assert_raises(StandardError) do
       @compose.set
     end
@@ -60,7 +60,7 @@ class ComposeTest < Minitest::Test
     ENV['CONFIG_SOURCE'] = 'vote.conf'
     ENV['PORT'] = '80'
 
-    @compose.options = { file: 'test/compose_files/test_compose_with_env_vars.yml' }
+    @compose.options = command_options(file: 'test/compose_files/test_compose_with_env_vars.yml')
     @compose.set
 
     assert_equal('compose file created', Uffizzi.ui.last_message)
@@ -73,7 +73,7 @@ class ComposeTest < Minitest::Test
     ENV['IMAGE'] = 'nginx'
     ENV['PORT'] = '80'
 
-    @compose.options = { file: 'test/compose_files/test_compose_with_env_vars.yml' }
+    @compose.options = command_options(file: 'test/compose_files/test_compose_with_env_vars.yml')
     error = assert_raises(StandardError) do
       @compose.set
     end
@@ -88,7 +88,7 @@ class ComposeTest < Minitest::Test
 
     error_message = body[:errors][:path].last
 
-    @compose.options = { file: 'test/compose_files/test_compose_without_images.yml' }
+    @compose.options = command_options(file: 'test/compose_files/test_compose_without_images.yml')
 
     error = assert_raises(Uffizzi::Error) do
       @compose.set
@@ -101,7 +101,7 @@ class ComposeTest < Minitest::Test
   def test_compose_set_with_invalid_path_to_dependency_file
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose_success(body, @project_slug)
-    @compose.options = { file: 'test/compose_files/test_compose_with_invalid_env_path.yml' }
+    @compose.options = command_options(file: 'test/compose_files/test_compose_with_invalid_env_path.yml')
 
     assert_raises(Uffizzi::Error) do
       @compose.set
@@ -113,7 +113,7 @@ class ComposeTest < Minitest::Test
   def test_compose_set_with_empty_path_to_dependency_file
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose_success(body, @project_slug)
-    @compose.options = { file: 'test/compose_files/test_compose_with_empty_env_path.yml' }
+    @compose.options = command_options(file: 'test/compose_files/test_compose_with_empty_env_path.yml')
 
     assert_raises(TypeError) do
       @compose.set
@@ -129,7 +129,7 @@ class ComposeTest < Minitest::Test
 
     error_message = body[:errors][:compose_file].last
 
-    @compose.options = { file: 'test/compose_files/test_compose_success.yml' }
+    @compose.options = command_options(file: 'test/compose_files/test_compose_success.yml')
 
     error = assert_raises(Uffizzi::Error) do
       @compose.set

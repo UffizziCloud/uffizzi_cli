@@ -20,7 +20,7 @@ class LoginTest < Minitest::Test
     refute(Uffizzi::ConfigFile.option_exists?(:server))
     refute(Uffizzi::ConfigFile.option_exists?(:username))
 
-    @cli.options = { username: @command_params[:username], server: @command_params[:server] }
+    @cli.options = command_options(username: @command_params[:username], server: @command_params[:server])
 
     @cli.login
 
@@ -57,7 +57,7 @@ class LoginTest < Minitest::Test
     refute(Uffizzi::ConfigFile.option_exists?(:server))
     refute(Uffizzi::ConfigFile.option_exists?(:username))
 
-    @cli.options = { server: @command_params[:server] }
+    @cli.options = command_options(server: @command_params[:server])
 
     @cli.login
 
@@ -71,7 +71,7 @@ class LoginTest < Minitest::Test
     projects_body = json_fixture('files/uffizzi/uffizzi_projects_success_two_projects.json')
     stubbed_uffizzi_projects = stub_uffizzi_projects_success(projects_body)
 
-    @cli.options = { username: @command_params[:username], server: @command_params[:server] }
+    @cli.options = command_options(username: @command_params[:username], server: @command_params[:server])
 
     assert_raises(Uffizzi::Error) do
       @cli.login
