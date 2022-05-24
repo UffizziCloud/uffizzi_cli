@@ -20,7 +20,7 @@ class LoginTest < Minitest::Test
 
     refute(Uffizzi::ConfigFile.exists?)
 
-    @cli.options = { username: @command_params[:username], server: @command_params[:server] }
+    @cli.options = command_options(username: @command_params[:username], server: @command_params[:server])
 
     @cli.login
 
@@ -50,7 +50,7 @@ class LoginTest < Minitest::Test
 
     refute(Uffizzi::ConfigFile.exists?)
 
-    @cli.options = { server: @command_params[:server] }
+    @cli.options = command_options(server: @command_params[:server])
 
     @cli.login
 
@@ -63,7 +63,7 @@ class LoginTest < Minitest::Test
 
     refute(Uffizzi::ConfigFile.exists?)
 
-    @cli.options = { username: @command_params[:username], server: @command_params[:server] }
+    @cli.options = command_options(username: @command_params[:username], server: @command_params[:server])
 
     assert_raises(Uffizzi::Error) do
       @cli.login
