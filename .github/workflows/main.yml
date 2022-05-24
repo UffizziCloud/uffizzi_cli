@@ -40,10 +40,13 @@ jobs:
         with:
           ruby-version: 3.0.2
           bundler-cache: true
-      - name: Install uffizzi-cli
-        run: bundle exec rake install && gem install ./pkg/uffizzi-cli*
+      - name: Build Image
+        uses: docker/build-push-action@v2
+        with:
+          tags: uffizzi/cli:test-install
+          platforms: linux/amd64
       - name: Display uffizzi-cli version
-        run: uffizzi version
+        run: docker run --rm uffizzi/cli:test-install version
   build-and-push-some-branches:
     runs-on: ubuntu-latest
     needs:
