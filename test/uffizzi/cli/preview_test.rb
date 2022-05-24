@@ -220,9 +220,9 @@ class PreviewTest < Minitest::Test
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = create_body[:deployment][:id]
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(@project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(activity_items_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
     ENV['CONFIG_SOURCE'] = 'vote.conf'
     ENV['PORT'] = '80'
 
@@ -236,7 +236,7 @@ class PreviewTest < Minitest::Test
 
   def test_preview_create_with_env_vars_failed
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
     ENV['IMAGE'] = 'nginx'
     ENV['CONFIG_SOURCE'] = 'vote.conf'
 
@@ -250,7 +250,7 @@ class PreviewTest < Minitest::Test
 
   def test_preview_create_with_error_env_var_failed
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
 
     ENV['IMAGE'] = 'nginx'
     ENV['PORT'] = '80'
@@ -282,9 +282,9 @@ class PreviewTest < Minitest::Test
     update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = update_body[:deployment][:id]
-    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update(update_body, @project_slug, deployment_id)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(@project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(activity_items_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
     @preview.options = command_options(output: 'github-action')
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
@@ -312,9 +312,9 @@ class PreviewTest < Minitest::Test
     update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = update_body[:deployment][:id]
-    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update(update_body, @project_slug, deployment_id)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(@project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(activity_items_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
     ENV['CONFIG_SOURCE'] = 'vote.conf'
     ENV['PORT'] = '80'
 
@@ -329,7 +329,7 @@ class PreviewTest < Minitest::Test
   def test_preview_update_with_env_vars_failed
     update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     deployment_id = update_body[:deployment][:id]
-    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update(update_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
     ENV['IMAGE'] = 'nginx'
     ENV['CONFIG_SOURCE'] = 'vote.conf'
 
@@ -344,7 +344,7 @@ class PreviewTest < Minitest::Test
   def test_preview_update_with_error_env_var_failed
     update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     deployment_id = update_body[:deployment][:id]
-    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update(update_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
 
     ENV['IMAGE'] = 'nginx'
     ENV['PORT'] = '80'
