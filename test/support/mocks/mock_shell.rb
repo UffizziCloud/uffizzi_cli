@@ -27,10 +27,6 @@ class MockShell
     columns_data
   end
 
-  def describe_project(project)
-    say(project)
-  end
-
   def pretty_say(collection, _index = true)
     collection
   end
