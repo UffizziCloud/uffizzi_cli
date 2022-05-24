@@ -61,7 +61,7 @@ class PreviewTest < Minitest::Test
   def test_describe_preview_success
     body = json_fixture('files/uffizzi/uffizzi_preview_describe_success.json')
     deployment_id = 1
-    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(200, body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe_success(body, @project_slug, deployment_id)
 
     @preview.describe("deployment-#{deployment_id}")
 
@@ -71,7 +71,7 @@ class PreviewTest < Minitest::Test
   def test_describe_preview_with_unexisted_preview
     body = json_fixture('files/uffizzi/uffizzi_preview_resource_not_found.json')
     deployment_id = 1
-    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(404, body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe_not_found(body, @project_slug, deployment_id)
 
     error = assert_raises(Uffizzi::Error) do
       @preview.describe("deployment-#{deployment_id}")
@@ -83,7 +83,7 @@ class PreviewTest < Minitest::Test
 
   def test_describe_preview_with_incorrect_input
     deployment_id = 1
-    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(204, nil, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe_no_content(nil, @project_slug, deployment_id)
 
     error = assert_raises(Uffizzi::Error) do
       @preview.describe("deployment--#{deployment_id}")

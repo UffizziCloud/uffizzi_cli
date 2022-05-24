@@ -47,10 +47,22 @@ module UffizziPreviewStubSupport
     stub_request(:put, url).to_return(status: 404, body: body.to_json)
   end
 
-  def stub_uffizzi_preview_describe(status, body, project_slug, deployment_id)
+  def stub_uffizzi_preview_describe_success(body, project_slug, deployment_id)
     url = deployment_uri(Uffizzi.configuration.server, project_slug, deployment_id)
 
-    stub_request(:get, url).to_return(status: status, body: body.to_json)
+    stub_request(:get, url).to_return(status: 200, body: body.to_json)
+  end
+
+  def stub_uffizzi_preview_describe_not_found(body, project_slug, deployment_id)
+    url = deployment_uri(Uffizzi.configuration.server, project_slug, deployment_id)
+
+    stub_request(:get, url).to_return(status: 404, body: body.to_json)
+  end
+
+  def stub_uffizzi_preview_describe_no_content(body, project_slug, deployment_id)
+    url = deployment_uri(Uffizzi.configuration.server, project_slug, deployment_id)
+
+    stub_request(:get, url).to_return(status: 204, body: body.to_json)
   end
 
   def stub_uffizzi_preview_deploy_containers_success(project_slug, deployment_id)
