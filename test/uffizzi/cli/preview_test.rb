@@ -17,7 +17,7 @@ class PreviewTest < Minitest::Test
 
   def test_list_preview
     body = json_fixture('files/uffizzi/uffizzi_preview_list.json')
-    stubbed_uffizzi_preview_list = stub_uffizzi_preview_list(body, @project_slug)
+    stubbed_uffizzi_preview_list = stub_uffizzi_preview_list_success(body, @project_slug)
 
     deployment = body[:deployments].first
 
@@ -65,7 +65,7 @@ class PreviewTest < Minitest::Test
   def test_describe_preview_success
     body = json_fixture('files/uffizzi/uffizzi_preview_describe_success.json')
     deployment_id = 1
-    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(200, body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe_success(body, @project_slug, deployment_id)
 
     @preview.describe("deployment-#{deployment_id}")
 
@@ -75,7 +75,7 @@ class PreviewTest < Minitest::Test
   def test_describe_preview_with_unexisted_preview
     body = json_fixture('files/uffizzi/uffizzi_preview_resource_not_found.json')
     deployment_id = 1
-    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(404, body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe_not_found(body, @project_slug, deployment_id)
 
     error = assert_raises(Uffizzi::Error) do
       @preview.describe("deployment-#{deployment_id}")
@@ -87,7 +87,7 @@ class PreviewTest < Minitest::Test
 
   def test_describe_preview_with_incorrect_input
     deployment_id = 1
-    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe(204, nil, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe_no_content(nil, @project_slug, deployment_id)
 
     error = assert_raises(Uffizzi::Error) do
       @preview.describe("deployment--#{deployment_id}")
@@ -101,9 +101,9 @@ class PreviewTest < Minitest::Test
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = create_body[:deployment][:id]
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(@project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(activity_items_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
     @preview.create
 
@@ -117,8 +117,8 @@ class PreviewTest < Minitest::Test
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = 1
     stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_not_found(create_body, @project_slug)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(@project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(activity_items_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
     assert_raises(Uffizzi::Error) do
       @preview.create
@@ -133,9 +133,9 @@ class PreviewTest < Minitest::Test
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = create_body[:deployment][:id]
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(@project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(activity_items_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
     @preview.create('test/compose_files/test_compose_success.yml')
 
@@ -149,9 +149,9 @@ class PreviewTest < Minitest::Test
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_not_found_body = json_fixture('files/uffizzi/uffizzi_preview_resource_not_found.json')
     deployment_id = create_body[:deployment][:id]
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(@project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(activity_items_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
     stubbed_uffizzi_deleted_deployment = stub_uffizzi_preview_activity_items_not_found(
       deployment_not_found_body,
       @project_slug,
@@ -171,7 +171,7 @@ class PreviewTest < Minitest::Test
   def test_deploy_interruption
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     deployment_id = create_body[:deployment][:id]
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_success(@project_slug, deployment_id)
 
     PreviewService.stubs(:run_containers_deploy).raises(Interrupt)
@@ -187,7 +187,7 @@ class PreviewTest < Minitest::Test
   def test_deploy_if_system_exit_error_raises
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     deployment_id = create_body[:deployment][:id]
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_success(@project_slug, deployment_id)
 
     PreviewService.stubs(:run_containers_deploy).raises(SystemExit)
@@ -203,7 +203,7 @@ class PreviewTest < Minitest::Test
   def test_deploy_if_socket_error_raises
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     deployment_id = create_body[:deployment][:id]
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_success(@project_slug, deployment_id)
 
     PreviewService.stubs(:run_containers_deploy).raises(SocketError)
@@ -267,9 +267,9 @@ class PreviewTest < Minitest::Test
     update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = update_body[:deployment][:id]
-    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update(update_body, @project_slug, deployment_id)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(@project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(activity_items_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
 

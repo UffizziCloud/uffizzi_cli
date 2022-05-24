@@ -14,7 +14,7 @@ class ServiceTest < Minitest::Test
   def test_list_preview_services
     body = json_fixture('files/uffizzi/uffizzi_preview_services_list.json')
     deployment_id = 318
-    stubbed_uffizzi_preview_services_list = stub_uffizzi_preview_services_list(body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_services_list = stub_uffizzi_preview_services_list_success(body, @project_slug, deployment_id)
 
     @service.list("deployment-#{deployment_id}")
 
@@ -25,7 +25,7 @@ class ServiceTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_preview_service_logs_success.json')
     container_name = 'redis'
     deployment_id = 318
-    stubbed_uffizzi_preview_service_logs = stub_uffizzi_preview_service_logs(body, @project_slug, deployment_id, container_name)
+    stubbed_uffizzi_preview_service_logs = stub_uffizzi_preview_service_logs_success(body, @project_slug, deployment_id, container_name)
 
     @service.logs('container', "deployment-#{deployment_id}", container_name)
 
