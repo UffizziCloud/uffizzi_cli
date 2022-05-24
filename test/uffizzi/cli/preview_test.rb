@@ -170,7 +170,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_success(@project_slug, deployment_id)
 
-    PreviewService.stubs(:start_deploy_containers).raises(Interrupt)
+    PreviewService.stubs(:run_containers_deploy).raises(Interrupt)
 
     assert_raises(Uffizzi::Error) do
       @preview.create
@@ -186,7 +186,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_success(@project_slug, deployment_id)
 
-    PreviewService.stubs(:start_deploy_containers).raises(SystemExit)
+    PreviewService.stubs(:run_containers_deploy).raises(SystemExit)
 
     assert_raises(Uffizzi::Error) do
       @preview.create
@@ -202,7 +202,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_create = stub_uffizzi_preview_create(create_body, @project_slug)
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_success(@project_slug, deployment_id)
 
-    PreviewService.stubs(:start_deploy_containers).raises(SocketError)
+    PreviewService.stubs(:run_containers_deploy).raises(SocketError)
 
     assert_raises(Uffizzi::Error) do
       @preview.create
@@ -231,9 +231,9 @@ class PreviewTest < Minitest::Test
     update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = update_body[:deployment][:id]
-    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update(200, update_body, @project_slug, deployment_id)
-    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(204, @project_slug, deployment_id)
-    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(200, activity_items_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update(update_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(activity_items_body, @project_slug, deployment_id)
 
     @preview.options = command_options(output: 'github-action')
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
