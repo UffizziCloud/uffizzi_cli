@@ -119,6 +119,9 @@ module Uffizzi
       success = PreviewService.run_containers_deploy(project_slug, deployment)
 
       display_deployment_data(deployment, success)
+    rescue SystemExit, Interrupt, SocketError
+      deployment_id = response[:body][:deployment][:id]
+      handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
     end
 
     def handle_events_command(deployment_name, project_slug)
@@ -204,7 +207,7 @@ module Uffizzi
 
     def prepare_params(file_path)
       begin
-        compose_file_data = File.read(file_path)
+        compose_file_data = EnvVariablesService.substitute_env_variables(File.read(file_path))
       rescue Errno::ENOENT => e
         raise Uffizzi::Error.new(e.message)
       end
