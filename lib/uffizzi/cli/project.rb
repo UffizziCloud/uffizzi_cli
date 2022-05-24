@@ -3,7 +3,6 @@
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
-require 'byebug'
 
 module Uffizzi
   class Cli::Project < Thor
