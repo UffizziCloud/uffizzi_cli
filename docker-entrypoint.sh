@@ -5,7 +5,7 @@ set -e # Exit immediately if anything below exits with non-zero status.
 if
 	[ $UFFIZZI_USER ] &&
 	[ $UFFIZZI_SERVER ] &&
-	[ $UFFIZZI_PASSWORD ]
+	[ $UFFIZZI_PASSWORD ] &&
 then
 	uffizzi login --username "${UFFIZZI_USER}" --server "${UFFIZZI_SERVER}"
 	if [ $UFFIZZI_PROJECT ]
