@@ -95,7 +95,7 @@ module Uffizzi
       end
     rescue SystemExit, Interrupt, SocketError
       deployment_id = response[:body][:deployment][:id]
-      handle_preview_interruption(deployment_id, hostname, project_slug)
+      handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
     end
 
     def handle_update_command(deployment_name, file_path, project_slug)
@@ -113,6 +113,9 @@ module Uffizzi
       else
         ResponseHelper.handle_failed_response(response)
       end
+    rescue SystemExit, Interrupt, SocketError
+      deployment_id = response[:body][:deployment][:id]
+      handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
     end
 
     def handle_events_command(deployment_name, project_slug)
@@ -198,7 +201,7 @@ module Uffizzi
 
     def prepare_params(file_path)
       begin
-        compose_file_data = File.read(file_path)
+        compose_file_data = EnvVariablesService.substitute_env_variables(File.read(file_path))
       rescue Errno::ENOENT => e
         raise Uffizzi::Error.new(e.message)
       end
