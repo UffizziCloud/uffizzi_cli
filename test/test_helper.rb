@@ -44,4 +44,8 @@ class Minitest::Test
     @account_id = login_body[:user][:accounts].first[:id].to_s
     Uffizzi::ConfigFile.create(@account_id, @cookie, Uffizzi.configuration.server)
   end
+
+  def command_options(options)
+    Thor::CoreExt::HashWithIndifferentAccess.new(options)
+  end
 end

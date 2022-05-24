@@ -235,7 +235,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers(204, @project_slug, deployment_id)
     stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items(200, activity_items_body, @project_slug, deployment_id)
 
-    @preview.options = Thor::CoreExt::HashWithIndifferentAccess.new(output: 'github-action')
+    @preview.options = command_options(output: 'github-action')
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
 
     assert_match('name=url', Uffizzi.ui.last_message)
