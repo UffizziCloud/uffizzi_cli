@@ -12,7 +12,7 @@ uffizzi-project-delete - delete a project
       - The active account does not have permission to delete the project
 
     For more information on Uffizzi projects, see:
-    https://docs.uffizzi.com/cli
+    https:/github.com/UffizziCloud/uffizzi_cli
 
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
