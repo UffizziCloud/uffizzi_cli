@@ -29,11 +29,18 @@ include FactoryBot::Syntax::Methods
 FactoryBot.find_definitions
 
 class Minitest::Test
+  TEST_CONFIG_PATH = 'tmp/config_default.json'
+
   def before_setup
     super
 
     @mock_shell = MockShell.new
     Uffizzi::UI::Shell.stubs(:new).returns(@mock_shell)
+    Uffizzi::ConfigFile.stubs(:config_path).returns(TEST_CONFIG_PATH)
+  end
+
+  def before_teardown
+    super
 
     Uffizzi::ConfigFile.delete
   end
