@@ -12,7 +12,7 @@ uffizzi-preview-delete - delete a preview
         - The preview specified belongs to a different project.
     
     For more information on Uffizzi previews, see:
-    https://github.com/UffizziCloud/uffizzi_cli/preview
+    https://github.com/UffizziCloud/uffizzi_cli
 
 ## POSITIONAL ARGUMENTS
     [PREVIEW_ID]

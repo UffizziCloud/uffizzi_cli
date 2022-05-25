@@ -8,7 +8,7 @@ uffizzi-preview - manage previews
     Manage Uffizzi previews
 
     For more information on Uffizzi previews, see:
-    https://github.com/UffizziCloud/uffizzi_cli/preview
+    https://github.com/UffizziCloud/uffizzi_cli
 
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
