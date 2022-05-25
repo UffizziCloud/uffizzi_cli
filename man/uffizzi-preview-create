@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-PREVIEW\-CREATE" "" "April 2022" ""
+.TH "UFFIZZI\-PREVIEW\-CREATE" "" "May 2022" ""
 .SH "NAME"
 \fBuffizzi\-preview\-create\fR \- create a preview
 .SH "SYNOPSIS"
@@ -18,7 +18,7 @@ This command can fail for the following reasons:
     \- The alternate compose file is invalid\.
 
 For more information on Uffizzi previews, see:
-https://docs\.uffizzi\.com/cli/preview
+https://github\.com/UffizziCloud/uffizzi_cli
 .fi
 .SH "POSITIONAL ARGUMENTS"
 .nf

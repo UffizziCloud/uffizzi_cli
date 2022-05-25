@@ -13,7 +13,7 @@ DESCRIPTION
         - The COMPOSE_FILE specified is invalid
 
     For more information on Uffizzi previews, see:
-    https://docs.uffizzi.com/cli/preview
+    https://github.com/UffizziCloud/uffizzi_cli
 
 POSITIONAL ARGUMENTS
     [PREVIEW_ID]

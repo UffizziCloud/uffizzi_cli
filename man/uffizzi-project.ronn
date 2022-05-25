@@ -8,7 +8,7 @@
     Manage Uffizzi projects
 
     For more information on Uffizzi projects, see:
-    https://github.com/UffizziCloud/uffizzi_cli/project
+    https://github.com/UffizziCloud/uffizzi_cli
 
 ## COMMANDS
     COMMAND is one of the following:
