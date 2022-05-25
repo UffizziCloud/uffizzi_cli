@@ -13,6 +13,7 @@ module Uffizzi
       def sign_out
         Uffizzi::ConfigFile.unset_option(:cookie)
         Uffizzi::ConfigFile.unset_option(:account_id)
+        require 'byebug'
       end
     end
   end
