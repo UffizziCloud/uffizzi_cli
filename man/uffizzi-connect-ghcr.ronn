@@ -14,7 +14,7 @@ uffizzi-connect-ecr - grant a Uffizzi user account access to a private GitHub Co
         - The given credentials are invalid.
 
     For more information on connecting to external services, see:
-    https://docs.uffizzi.com/cli
+    https://github.com/UffizziCloud/uffizzi_cli
 
     For detailed instructions on configuring webhooks to send push
     notifications to Uffizzi, see 

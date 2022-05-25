@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-PREVIEW\-SERVICE\-LOGS" "" "April 2022" ""
+.TH "UFFIZZI\-PREVIEW\-SERVICE\-LOGS" "" "May 2022" ""
 .SH "NAME"
 \fBuffizzi\-preview\-service\-logs\fR \- show the logs for a container service of a preview
 .SH "SYNOPSIS"
@@ -16,7 +16,7 @@ This command can fail for the following reasons:
     \- There is no service with the name SERVICE
 
 For more information on service logs, see:
-https://docs\.uffizzi\.com/cli
+https://github\.com/UffizziCloud/uffizzi_cli
 .fi
 .SH "LOG_TYPE"
 .nf
