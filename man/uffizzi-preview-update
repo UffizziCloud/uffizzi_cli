@@ -2,13 +2,16 @@
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "UPDATE" "" "May 2022" ""
 .SH "NAME"
-\fBupdate\fR \- update a preview
-.P
-SYNOPSIS uffizzi preview update [PREVIEW_ID] [COMPOSE_FILE] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
-.P
-DESCRIPTION Given a preview ID and new compose file, update a preview\. Updating a preview does not change its preview URL\.
-.IP "" 4
+\fBuffizzi preview update\fR \- update a preview
+.SH "SYNOPSIS"
 .nf
+uffizzi preview update [PREVIEW_ID] [COMPOSE_FILE] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
+.SH "DESCRIPTION"
+.nf
+Given a preview ID and new compose file, update a preview\. Updating a
+preview does not change its preview URL\.
+
 This command can fail for the following reasons:
     \- There is no preview with the given PREVIEW_ID
     \- The COMPOSE_FILE specified is invalid
@@ -16,22 +19,24 @@ This command can fail for the following reasons:
 For more information on Uffizzi previews, see:
 https://github\.com/UffizziCloud/uffizzi_cli
 .fi
-.IP "" 0
-.P
-POSITIONAL ARGUMENTS [PREVIEW_ID] The ID of the preview that you want to update\.
-.IP "" 4
+.SH "POSITIONAL ARGUMENTS"
 .nf
+[PREVIEW_ID]
+    The ID of the preview that you want to update\.
+
 [COMPOSE_FILE]
     The new compose file you want to preview\.
 .fi
-.IP "" 0
-.P
-UFFIZZI WIDE FLAGS These flags are available to all commands: \-\-project\. Run $ uffizzi help for details\.
-.P
-EXAMPLES The following command updates a preview with ID deployment\-67 using compose file docker\-compose\.alt\.yml:
-.IP "" 4
+.SH "UFFIZZI WIDE FLAGS"
 .nf
+These flags are available to all commands: \-\-project\. Run $ uffizzi
+help for details\.
+.fi
+.SH "EXAMPLES"
+.nf
+The following command updates a preview with ID deployment\-67 using
+compose file docker\-compose\.alt\.yml:
+
     $ uffizzi preview update deployment\-67 docker\-compose\.alt\.yml
 .fi
-.IP "" 0
 

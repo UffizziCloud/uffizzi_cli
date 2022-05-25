@@ -1,10 +1,10 @@
 uffizzi preview update - update a preview
 ================================================================
 
-SYNOPSIS
+## SYNOPSIS
     uffizzi preview update [PREVIEW_ID] [COMPOSE_FILE] [UFFIZZI_WIDE_FLAG ...]
 
-DESCRIPTION
+## DESCRIPTION
     Given a preview ID and new compose file, update a preview. Updating a 
     preview does not change its preview URL. 
 
@@ -15,18 +15,18 @@ DESCRIPTION
     For more information on Uffizzi previews, see:
     https://github.com/UffizziCloud/uffizzi_cli
 
-POSITIONAL ARGUMENTS
+## POSITIONAL ARGUMENTS
     [PREVIEW_ID]
         The ID of the preview that you want to update.
 
     [COMPOSE_FILE]
         The new compose file you want to preview.
 
-UFFIZZI WIDE FLAGS
+## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
     help for details.
 
-EXAMPLES
+## EXAMPLES
     The following command updates a preview with ID deployment-67 using
     compose file docker-compose.alt.yml:
 
