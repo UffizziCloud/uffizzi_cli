@@ -3,7 +3,6 @@ module Uffizzi
   module AuthHelper
     class << self
       def signed_in?
-        require 'byebug'
         ConfigFile.exists? &&
           ConfigFile.option_has_value?(:account_id) &&
           ConfigFile.option_has_value?(:cookie) &&
