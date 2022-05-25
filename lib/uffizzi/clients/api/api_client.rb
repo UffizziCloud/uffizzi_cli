@@ -51,7 +51,7 @@ module ApiClient
 
   def create_project(server, params)
     uri = projects_uri(server)
-    response = Uffizzi::HttpClient.make_post_request(uri, params)
+    response = http_client.make_post_request(uri, params)
 
     build_response(response)
   end
