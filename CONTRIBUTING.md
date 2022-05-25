@@ -47,13 +47,13 @@ git pull --rebase develop
 
 3. Start new branch from `develop`
 ```
-git checkout -b feature/short_issue_description (e.g. feature/add_domain_settings)
+git checkout -b feature/ISSUE_NUMBER_short_issue_description (e.g. feature/99_add_domain_settings)
 ```
 
 4. Make changes you need for the feature, commit them to the repo
 ```
 git add .
-git commit -m 'short commit description' (e.g. git commit -m 'added domain settings')
+git commit -m '[#ISSUE_NUMBER] short commit description' (e.g. git commit -m '[#99] added domain settings')
 git push origin BRANCH_NAME
 ```
 
