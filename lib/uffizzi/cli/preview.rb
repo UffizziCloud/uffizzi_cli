@@ -23,7 +23,7 @@ module Uffizzi
       run('create', file_path: file_path)
     end
 
-    desc 'uffizzi preview update [DEPLOYMENT_ID] [COMPOSE_FILE]', 'create'
+    desc 'uffizzi preview update [DEPLOYMENT_ID] [COMPOSE_FILE]', 'Update a preview'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
     def update(deployment_name, file_path)
       run('update', deployment_name: deployment_name, file_path: file_path)
@@ -86,33 +86,39 @@ module Uffizzi
       params = file_path.nil? ? {} : prepare_params(file_path)
       response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
 
-      if ResponseHelper.created?(response)
-        deployment = response[:body][:deployment]
-        success_message = "Preview created with name deployment-#{deployment[:id]}"
-        PreviewService.start_deploy_containers(project_slug, deployment, success_message)
-      else
+      if !ResponseHelper.created?(response)
         ResponseHelper.handle_failed_response(response)
       end
+
+      deployment = response[:body][:deployment]
+      Uffizzi.ui.say("Preview created with name deployment-#{deployment[:id]}")
+
+      success = PreviewService.run_containers_deploy(project_slug, deployment)
+
+      display_deployment_data(deployment, success)
     rescue SystemExit, Interrupt, SocketError
       deployment_id = response[:body][:deployment][:id]
-      handle_preview_interruption(deployment_id, hostname, project_slug)
+      handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
     end
 
     def handle_update_command(deployment_name, file_path, project_slug)
       deployment_id = PreviewService.read_deployment_id(deployment_name)
 
-      return Uffizzi.ui.say("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
+      raise Uffizzi::Error.new("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
       params = prepare_params(file_path)
       response = update_deployment(ConfigFile.read_option(:server), project_slug, deployment_id, params)
 
-      if ResponseHelper.ok?(response)
-        deployment = response[:body][:deployment]
-        success_message = "Preview with ID deployment-#{deployment_id} was successfully updated."
-        PreviewService.start_deploy_containers(project_slug, deployment, success_message)
-      else
+      if !ResponseHelper.ok?(response)
         ResponseHelper.handle_failed_response(response)
       end
+
+      deployment = response[:body][:deployment]
+      Uffizzi.ui.say("Preview with ID deployment-#{deployment_id} was successfully updated.")
+
+      success = PreviewService.run_containers_deploy(project_slug, deployment)
+
+      display_deployment_data(deployment, success)
     end
 
     def handle_events_command(deployment_name, project_slug)
@@ -218,8 +224,8 @@ module Uffizzi
       }
     end
 
-    def handle_preview_interruption(deployment_id, hostname, project_slug)
-      deletion_response = delete_deployment(hostname, project_slug, deployment_id)
+    def handle_preview_interruption(deployment_id, server, project_slug)
+      deletion_response = delete_deployment(server, project_slug, deployment_id)
       deployment_name = "deployment-#{deployment_id}"
       preview_deletion_message = if ResponseHelper.no_content?(deletion_response)
         "The preview #{deployment_name} has been disabled."
@@ -228,6 +234,24 @@ module Uffizzi
       end
 
       raise Uffizzi::Error.new("The preview creation was interrupted. #{preview_deletion_message}")
+    end
+
+    def display_deployment_data(deployment, success)
+      if Uffizzi.ui.output_format.nil?
+        Uffizzi.ui.say('Done')
+        preview_url = "https://#{deployment[:preview_url]}"
+        Uffizzi.ui.say(preview_url) if success
+      else
+        deployment_data = build_deployment_data(deployment)
+        Uffizzi.ui.output(deployment_data)
+      end
+    end
+
+    def build_deployment_data(deployment)
+      {
+        id: "deployment-#{deployment[:id]}",
+        url: "https://#{deployment[:preview_url]}",
+      }
     end
   end
 end

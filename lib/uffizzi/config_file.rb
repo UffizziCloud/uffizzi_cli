@@ -8,17 +8,21 @@ module Uffizzi
     CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default.json"
 
     class << self
+      def config_path
+        CONFIG_PATH
+      end
+
       def create(account_id, cookie, server)
         data = prepare_config_data(account_id, cookie, server)
         data.each_pair { |key, value| write_option(key, value) }
       end
 
       def delete
-        File.delete(CONFIG_PATH) if exists?
+        File.delete(config_path) if exists?
       end
 
       def exists?
-        File.exist?(CONFIG_PATH)
+        File.exist?(config_path)
       end
 
       def read_option(option)
@@ -79,7 +83,7 @@ module Uffizzi
       end
 
       def read
-        data = File.read(CONFIG_PATH)
+        data = File.read(config_path)
         options = data.split("\n")
         options.reduce({}) do |acc, option|
           key, value = option.split('=', 2)
@@ -112,11 +116,11 @@ module Uffizzi
       end
 
       def create_file
-        dir = File.dirname(CONFIG_PATH)
+        dir = File.dirname(config_path)
 
         FileUtils.mkdir_p(dir) unless File.directory?(dir)
 
-        File.new(CONFIG_PATH, 'w')
+        File.new(config_path, 'w')
       end
     end
   end
