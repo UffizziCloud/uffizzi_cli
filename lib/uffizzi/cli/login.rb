@@ -114,14 +114,18 @@ module Uffizzi
       if ResponseHelper.created?(response)
         handle_create_project_succeess(response)
       else
-        name_error = response[:body][:errors][:name]
-        name_already_exists = name_error && name_error.first == 'Name already exists'
-        message = "Project with name #{project_name} already exists. " \
-        'Please run $ uffizzi config to set it as a default project'
-        return Uffizzi.ui.say(message) if name_already_exists
-
-        ResponseHelper.handle_failed_response(response)
+        handle_create_project_failed(response)
       end
+    end
+
+    def handle_create_project_failed(response)
+      name_error = response[:body][:errors][:name].first
+      name_already_exists = name_error && name_error.first == 'Name already exists'
+      message = "Project with name #{project_name} already exists. " \
+      'Please run $ uffizzi config to set it as a default project'
+      raise Uffizzi::Error.new(message) if name_already_exists
+
+      ResponseHelper.handle_failed_response(response)
     end
 
     def handle_create_project_succeess(response)
