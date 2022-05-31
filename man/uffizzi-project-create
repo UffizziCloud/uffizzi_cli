@@ -1,0 +1,50 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-PROJECT\-CREATE" "" "May 2022" ""
+.SH "NAME"
+\fBuffizzi\-project\-create\fR \- create a new project
+.SH "SYNOPSIS"
+.nf
+uffizzi project create [\-\-name=NAME] [\-\-slug=SLUG]
+     [\-\-description=DESCRIPTION] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
+.SH "DESCRIPTION"
+.nf
+Create new project\.
+
+This command can fail for the following reasons:
+    \- The project \-\-description is too long\.
+    \- The project \-\-name flag is not specified\.
+    \- The project \-\-slug is malformed or used by another project\.
+
+For more information on the uffizzi project command, see:
+https:/github\.com/UffizziCloud/uffizzi_cli
+.fi
+.SH "FLAGS"
+.nf
+\-\-description=DESCRIPTION
+   Description for the project you want to create\. Max of 256
+   characters\.
+
+\-\-name=NAME
+   Name for the project you want to create\.
+
+\-\-slug=SLUG
+   A URL\-compatible name\. Do not include whitespaces or special characters\.
+   Project slugs must be globally unique across all Uffizzi projects\.
+   If a slug is not provided, Uffizzi will automatically generate one\.
+.fi
+.SH "UFFIZZI WIDE FLAGS"
+.nf
+These flags are available to all commands: \-\-project\. Run $ uffizzi
+help for details\.
+.fi
+.SH "EXAMPLES"
+.nf
+To create a new project with name My App, project slug my\-app, and
+description "My first project", run:
+
+    $ uffizzi project create \-\-name="My App" \-\-slug="my\-app" \e
+      \-\-description="My first project"
+.fi
+
