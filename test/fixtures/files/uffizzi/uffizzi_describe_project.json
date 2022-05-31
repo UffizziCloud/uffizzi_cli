@@ -1,0 +1,13 @@
+{
+  "project":{
+    "name":"default",
+    "slug":"default",
+    "description":null,
+    "created_at":"2022-04-26T15:09:20.283Z",
+    "deployments":[],
+    "secrets":[],
+    "default_compose":{
+      "source":"/gem/test/compose_files/test_compose_success.yml"
+    }
+  }
+}
