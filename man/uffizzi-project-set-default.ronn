@@ -13,7 +13,7 @@ uffizzi-project-set-default - set the default project for the active account
       - There is no project with the given project slug
 
     For more information on Uffizzi projects, see:
-    https://docs.uffizzi.com/cli
+    https://github.com/UffizziCloud/uffizzi_cli
 
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 

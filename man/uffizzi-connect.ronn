@@ -8,7 +8,7 @@ uffizzi-connect - grant a Uffizzi user account access to external services
     Grants a Uffizzi user account access to external services
 
     For more information on connecting to external services, see:
-    https://docs.uffizzi.com/cli
+    https://github.com/UffizziCloud/uffizzi_cli
 
 ## COMMANDS
     COMMAND is one of the following:

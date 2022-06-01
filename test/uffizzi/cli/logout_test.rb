@@ -9,24 +9,26 @@ class LogoutTest < Minitest::Test
   end
 
   def test_logout_success
+    assert(Uffizzi::ConfigFile.option_has_value?(:cookie))
+    assert(Uffizzi::ConfigFile.option_has_value?(:account_id))
+
     stubbed_uffizzi_logout = stub_uffizzi_logout
-    assert(Uffizzi::ConfigFile.exists?)
 
     @cli.logout
 
     assert_requested(stubbed_uffizzi_logout)
-    refute(Uffizzi::ConfigFile.exists?)
+
+    refute(Uffizzi::ConfigFile.option_has_value?(:cookie))
+    refute(Uffizzi::ConfigFile.option_has_value?(:account_id))
   end
 
   def test_logout_when_not_logged_in
-    Uffizzi::ConfigFile.delete
-    refute(Uffizzi::ConfigFile.exists?)
+    sign_out
 
     stubbed_uffizzi_logout = stub_uffizzi_logout
 
     @cli.logout
 
     assert_not_requested(stubbed_uffizzi_logout)
-    refute(Uffizzi::ConfigFile.exists?)
   end
 end

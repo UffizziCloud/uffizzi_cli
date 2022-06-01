@@ -9,7 +9,7 @@ uffizzi-preview-list - list previews in a project
     deploying and failed previews. 
     
     For more information on Uffizzi previews, see:
-    https://docs.uffizzi.com/cli/preview
+    https://github.com/UffizziCloud/uffizzi_cli
 
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 

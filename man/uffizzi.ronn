@@ -9,7 +9,7 @@ uffizzi - manage Uffizzi resources
     interaction with Uffizzi APIs. 
 
     For more information on the uffizzi CLI, see:
-    https://docs.uffizzi.com/cli
+    https://github.com/UffizziCloud/uffizzi_cli
 
 ## GROUP
     GROUP is one of the following:
