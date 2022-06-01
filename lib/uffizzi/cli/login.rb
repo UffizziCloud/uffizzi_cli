@@ -33,17 +33,21 @@ module Uffizzi
     private
 
     def set_server
-      config_server = ConfigFile.option_has_value?(:server) ? ConfigFile.read_option(:server) : nil
+      config_server = ConfigFile.exists? ? read_option_from_config(:server) : nil
       @options[:server] || config_server || Uffizzi.ui.ask('Server: ')
     end
 
     def set_username
-      config_username = ConfigFile.option_has_value?(:username) ? ConfigFile.read_option(:username) : nil
+      config_username = ConfigFile.exists? ? read_option_from_config(:username) : nil
       @options[:username] || config_username || Uffizzi.ui.ask('Username: ')
     end
 
     def set_password
       ENV['UFFIZZI_PASSWORD'] || Uffizzi.ui.ask('Password: ', echo: false)
+    end
+
+    def read_option_from_config(option)
+      ConfigFile.option_has_value?(option) ? ConfigFile.read_option(option) : nil
     end
 
     def prepare_request_params(username, password)
