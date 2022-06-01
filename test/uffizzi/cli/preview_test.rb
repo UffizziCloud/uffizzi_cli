@@ -9,6 +9,10 @@ class PreviewTest < Minitest::Test
     sign_in
     Uffizzi::ConfigFile.write_option(:project, 'dbp')
     @project_slug = Uffizzi::ConfigFile.read_option(:project)
+    ENV.delete('IMAGE')
+    ENV.delete('CONFIG_SOURCE')
+    ENV.delete('PORT')
+    Uffizzi.ui.output_format = nil
   end
 
   def test_list_preview
@@ -212,6 +216,53 @@ class PreviewTest < Minitest::Test
     assert_requested(stubbed_uffizzi_preview_create)
   end
 
+  def test_preview_create_with_default_env_var_success
+    create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
+    activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
+    deployment_id = create_body[:deployment][:id]
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
+    ENV['CONFIG_SOURCE'] = 'vote.conf'
+    ENV['PORT'] = '80'
+
+    @preview.create('test/compose_files/test_compose_with_env_vars.yml')
+
+    assert_equal("https://#{create_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
+    assert_requested(stubbed_uffizzi_preview_deploy_containers)
+    assert_requested(stubbed_uffizzi_preview_create)
+  end
+
+  def test_preview_create_with_env_vars_failed
+    create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+    ENV['IMAGE'] = 'nginx'
+    ENV['CONFIG_SOURCE'] = 'vote.conf'
+
+    error = assert_raises(StandardError) do
+      @preview.create('test/compose_files/test_compose_with_env_vars.yml')
+    end
+
+    assert_equal("Environment variable PORT doesn't exist", error.message)
+    refute_requested(stubbed_uffizzi_preview_create)
+  end
+
+  def test_preview_create_with_error_env_var_failed
+    create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+
+    ENV['IMAGE'] = 'nginx'
+    ENV['PORT'] = '80'
+
+    error = assert_raises(StandardError) do
+      @preview.create('test/compose_files/test_compose_with_env_vars.yml')
+    end
+
+    assert_equal('No_config_source', error.message)
+    refute_requested(stubbed_uffizzi_preview_create)
+  end
+
   def test_update_preview_success
     update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
@@ -255,6 +306,55 @@ class PreviewTest < Minitest::Test
 
     assert_equal('Resource Not Found', error.message.strip)
     assert_requested(stubbed_uffizzi_preview_update)
+  end
+
+  def test_preview_update_with_default_env_var_success
+    update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
+    activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
+    deployment_id = update_body[:deployment][:id]
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
+    ENV['CONFIG_SOURCE'] = 'vote.conf'
+    ENV['PORT'] = '80'
+
+    @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_with_env_vars.yml')
+
+    assert_equal("https://#{update_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
+    assert_requested(stubbed_uffizzi_preview_deploy_containers)
+    assert_requested(stubbed_uffizzi_preview_update)
+  end
+
+  def test_preview_update_with_env_vars_failed
+    update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
+    deployment_id = update_body[:deployment][:id]
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
+    ENV['IMAGE'] = 'nginx'
+    ENV['CONFIG_SOURCE'] = 'vote.conf'
+
+    error = assert_raises(StandardError) do
+      @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_with_env_vars.yml')
+    end
+
+    assert_equal("Environment variable PORT doesn't exist", error.message)
+    refute_requested(stubbed_uffizzi_preview_update)
+  end
+
+  def test_preview_update_with_error_env_var_failed
+    update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
+    deployment_id = update_body[:deployment][:id]
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
+
+    ENV['IMAGE'] = 'nginx'
+    ENV['PORT'] = '80'
+
+    error = assert_raises(StandardError) do
+      @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_with_env_vars.yml')
+    end
+
+    assert_equal('No_config_source', error.message)
+    refute_requested(stubbed_uffizzi_preview_update)
   end
 
   def test_events_preview_success
