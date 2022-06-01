@@ -9,7 +9,7 @@
     --project flag to manage the compose file of a different project.
 
     For more information on the uffizzi project compose command, see:
-    https://docs.uffizzi.com/cli/project
+    https://github.com/UffizziCloud/uffizzi_cli
 
     For more information on the Uffizzi Compose specification, see:
     https://docs.uffizzi.com/references/compose-spec

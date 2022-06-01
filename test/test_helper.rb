@@ -18,6 +18,7 @@ require 'uffizzi/cli'
 require 'uffizzi/config_file'
 require 'uffizzi/shell'
 
+include AuthSupport
 include FixtureSupport
 include UffizziStubSupport
 include UffizziComposeStubSupport
@@ -43,13 +44,6 @@ class Minitest::Test
     super
 
     Uffizzi::ConfigFile.delete
-  end
-
-  def sign_in
-    @cookie = '_uffizzi=test'
-    login_body = json_fixture('files/uffizzi/uffizzi_login_success.json')
-    @account_id = login_body[:user][:accounts].first[:id].to_s
-    Uffizzi::ConfigFile.create(@account_id, @cookie, Uffizzi.configuration.server)
   end
 
   def command_options(options)

@@ -235,7 +235,7 @@ module ApiClient
 
     cookie_content = cookies.first
     cookie = cookie_content.split(';').first
-    Uffizzi::ConfigFile.rewrite_cookie(cookie) if Uffizzi::ConfigFile.exists?
+    Uffizzi::ConfigFile.rewrite_cookie(cookie) if Uffizzi::ConfigFile.exists? && Uffizzi::ConfigFile.option_has_value?(:cookie)
     http_client.auth_cookie = cookie
 
     cookie

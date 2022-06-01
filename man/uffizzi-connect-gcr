@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CONNECT\-GCR" "" "April 2022" ""
+.TH "UFFIZZI\-CONNECT\-GCR" "" "May 2022" ""
 .SH "NAME"
 \fBuffizzi\-connect\-gcr\fR \- grant a Uffizzi user account access to a private Google Container Registry (GCR)
 .SH "SYNOPSIS"
@@ -18,7 +18,7 @@ This command can fail for the following reasons:
     \- The given credentials are invalid\.
 
 For more information on connecting to external services, see:
-https://docs\.uffizzi\.com/cli
+https://github\.com/UffizziCloud/uffizzi_cli
 
 For detailed instructions on configuring webhooks to send push
 notifications to Uffizzi, see

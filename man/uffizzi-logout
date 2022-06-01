@@ -10,7 +10,7 @@
 The uffizzi logout command logs out of a Uffizzi user account\.
 
 For more information on logout, see:
-https://docs\.uffizzi\.com/references/cli
+https://github\.com/UffizziCloud/uffizzi_cli
 .fi
 .SH "UFFIZZI WIDE FLAGS"
 .nf

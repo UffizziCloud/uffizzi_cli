@@ -9,6 +9,11 @@ module Uffizzi
           ConfigFile.option_has_value?(:cookie) &&
           ConfigFile.option_has_value?(:server)
       end
+
+      def sign_out
+        Uffizzi::ConfigFile.unset_option(:cookie)
+        Uffizzi::ConfigFile.unset_option(:account_id)
+      end
     end
   end
 end
