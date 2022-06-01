@@ -8,6 +8,10 @@ module Uffizzi
     CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default"
 
     class << self
+      def config_path
+        CONFIG_PATH
+      end
+
       def delete
         File.truncate(config_path, 0) if exists?
       end

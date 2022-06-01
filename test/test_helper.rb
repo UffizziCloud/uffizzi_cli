@@ -45,4 +45,8 @@ class Minitest::Test
 
     Uffizzi::ConfigFile.delete
   end
+
+  def command_options(options)
+    Thor::CoreExt::HashWithIndifferentAccess.new(options)
+  end
 end
