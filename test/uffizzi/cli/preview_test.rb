@@ -12,6 +12,7 @@ class PreviewTest < Minitest::Test
     ENV.delete('IMAGE')
     ENV.delete('CONFIG_SOURCE')
     ENV.delete('PORT')
+    Uffizzi.ui.output_format = nil
   end
 
   def test_list_preview
