@@ -15,7 +15,7 @@ module Uffizzi
     end
 
     def run
-      Uffizzi.ui.say('Login to Uffizzi to view and manage your previews.')
+      Uffizzi.ui.say('Login to Uffizzi server.')
       server = set_server
 
       username = set_username
@@ -68,6 +68,8 @@ module Uffizzi
       ConfigFile.write_option(:cookie, response[:headers])
       ConfigFile.write_option(:account_id, account[:id])
 
+      Uffizzi.ui.say('Login successfull')
+
       default_project = ConfigFile.read_option(:project)
       return unless default_project
 
@@ -118,14 +120,18 @@ module Uffizzi
       if ResponseHelper.created?(response)
         handle_create_project_succeess(response)
       else
-        name_error = response[:body][:errors][:name]
-        name_already_exists = name_error && name_error.first == 'Name already exists'
-        message = "Project with name #{project_name} already exists. " \
-        'Please run $ uffizzi config to set it as a default project'
-        return Uffizzi.ui.say(message) if name_already_exists
-
-        ResponseHelper.handle_failed_response(response)
+        handle_create_project_failed(response)
       end
+    end
+
+    def handle_create_project_failed(response)
+      name_error = response[:body][:errors][:name].first
+      name_already_exists = name_error && name_error.first == 'Name already exists'
+      message = "Project with name #{project_name} already exists. " \
+      'Please run $ uffizzi config to set it as a default project'
+      raise Uffizzi::Error.new(message) if name_already_exists
+
+      ResponseHelper.handle_failed_response(response)
     end
 
     def handle_create_project_succeess(response)

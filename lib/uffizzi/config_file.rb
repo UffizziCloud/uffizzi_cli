@@ -88,7 +88,7 @@ module Uffizzi
         file_path = e.message.split(' ').last
         message = "Configuration file not found: #{file_path}\n" \
         'To configure the uffizzi CLI interactively, run $ uffizzi config'
-        Uffizzi.ui.say(message)
+        raise Uffizzi::Error.new(message)
       end
 
       def write(data)

@@ -13,8 +13,8 @@ class ConfigTest < Minitest::Test
   def test_list
     result = @config.list
 
-    assert_equal(result[:account_id], @account_id)
-    assert_equal(result[:cookie], @cookie)
+    assert_equal(result[:account_id], Uffizzi::ConfigFile.read_option(:account_id))
+    assert_equal(result[:cookie], Uffizzi::ConfigFile.read_option(:cookie))
     assert_equal(result[:server], Uffizzi.configuration.server)
   end
 

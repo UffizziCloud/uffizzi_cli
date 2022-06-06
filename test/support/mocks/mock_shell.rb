@@ -27,8 +27,8 @@ class MockShell
     columns_data
   end
 
-  def pretty_say(collection, _index = true)
-    collection
+  def describe_project(project)
+    say(project)
   end
 
   def disable_stdout
@@ -44,5 +44,9 @@ class MockShell
         say("::set-output name=#{key}::#{data[key]}")
       end
     end
+  end
+
+  def pretty_say(collection, _index = true)
+    collection
   end
 end
