@@ -15,7 +15,7 @@ module Uffizzi
     end
 
     def run
-      Uffizzi.ui.say('Login to Uffizzi to view and manage your previews.')
+      Uffizzi.ui.say('Login to Uffizzi server.')
       server = set_server
 
       username = set_username
@@ -67,6 +67,8 @@ module Uffizzi
       ConfigFile.write_option(:username, username)
       ConfigFile.write_option(:cookie, response[:headers])
       ConfigFile.write_option(:account_id, account[:id])
+
+      Uffizzi.ui.say('Login successfull')
 
       default_project = ConfigFile.read_option(:project)
       return unless default_project

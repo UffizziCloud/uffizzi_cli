@@ -68,7 +68,7 @@ module Uffizzi
 
     def handle_succeed_logs_response(response, container_name)
       logs = response[:body][:logs] || []
-      return Uffizzi.ui.say("The service #{container_name} has no logs") if logs.empty?
+      return Uffizzi.ui.say("The service '#{container_name}' has no logs") if logs.empty?
 
       logs.each do |log|
         Uffizzi.ui.say(log)
