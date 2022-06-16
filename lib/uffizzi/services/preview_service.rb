@@ -20,7 +20,7 @@ class PreviewService
       deployment_id = deployment[:id]
       params = { id: deployment_id }
 
-      response = deploy_containers(Uffizzi::ConfigFile.read_option(:server), project_slug, deployment_id, params)
+      response = deploy_containers(server_url, project_slug, deployment_id, params)
 
       if !Uffizzi::ResponseHelper.no_content?(response)
         Uffizzi::ResponseHelper.handle_failed_response(response)
@@ -32,13 +32,17 @@ class PreviewService
 
     private
 
+    def server_url
+      @server_url ||= Uffizzi::ConfigFile.read_option(:server)
+    end
+
     def wait_containers_creation(deployment, project_slug)
       spinner = TTY::Spinner.new('[:spinner] Creating containers...', format: :dots)
       spinner.auto_spin
 
       activity_items = []
       loop do
-        response = get_activity_items(Uffizzi::ConfigFile.read_option(:server), project_slug, deployment[:id])
+        response = get_activity_items(server_url, project_slug, deployment[:id])
         handle_activity_items_response(response, spinner)
         activity_items = response[:body][:activity_items]
         break if activity_items.count == deployment[:containers].count
@@ -62,7 +66,7 @@ class PreviewService
       containers_spinners = create_containers_spinners(activity_items, spinner)
 
       loop do
-        response = get_activity_items(Uffizzi::ConfigFile.read_option(:server), project_slug, deployment[:id])
+        response = get_activity_items(server_url, project_slug, deployment[:id])
         handle_activity_items_response(response, spinner)
         activity_items = response[:body][:activity_items]
         update_containers_spinners!(activity_items, containers_spinners)
