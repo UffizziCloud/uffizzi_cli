@@ -92,10 +92,9 @@ module Uffizzi
       end
 
       def write(data)
-        file = create_file
         prepared_data = prepare_data(data)
-        file.write(prepared_data)
-        file.close
+
+        lock(config_path) { atomic_write(config_path, "#{config_path}.tmp", prepared_data) }
       end
 
       def prepare_data(data)
@@ -105,12 +104,18 @@ module Uffizzi
         end
       end
 
-      def create_file
-        dir = File.dirname(config_path)
+      def atomic_write(path, temp_path, content)
+        File.open(temp_path, 'w') { |f| f.write(content) }
+        FileUtils.mv(temp_path, path)
+      end
 
+      def lock(path)
+        dir = File.dirname(path)
         FileUtils.mkdir_p(dir) unless File.directory?(dir)
 
-        File.new(config_path, 'w')
+        File.open(path).flock(File::LOCK_EX) if File.exist?(path)
+        yield
+        File.open(path).flock(File::LOCK_UN)
       end
     end
   end
