@@ -66,10 +66,8 @@ module Uffizzi
         raise Uffizzi::Error.new('The command was interrupted')
       rescue SocketError
         raise Uffizzi::Error.new('The request was not sent to the Uffizzi app')
-      rescue Errno::EADDRNOTAVAIL
-        raise Uffizzi::Error.new('The server is not available')
-      rescue Net::OpenTimeout
-        raise Uffizzi::Error.new('The request has timed out')
+      rescue Errno::ECONNREFUSED, Errno::EADDRNOTAVAIL, Net::OpenTimeout => e
+        raise Uffizzi::Error.new(e.message)
       end
 
       private
