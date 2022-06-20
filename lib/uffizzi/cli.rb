@@ -65,7 +65,9 @@ module Uffizzi
       rescue Interrupt
         raise Uffizzi::Error.new('The command was interrupted')
       rescue SocketError
-        raise Uffizzi::Error.new('A request was not sent to Uffizzi app')
+        raise Uffizzi::Error.new('The request was not sent to the Uffizzi app')
+      rescue Errno::ECONNREFUSED, Errno::EADDRNOTAVAIL, Net::OpenTimeout => e
+        raise Uffizzi::Error.new(e.message)
       end
 
       private
