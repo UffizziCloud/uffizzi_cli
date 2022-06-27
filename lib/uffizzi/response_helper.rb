@@ -42,13 +42,17 @@ module Uffizzi
       def prepare_errors(errors)
         errors.values.reduce('') do |acc, error_messages|
           if error_messages.is_a?(Array)
-            error_messages.each { |error_message| acc = "#{acc}#{error_message}\n" }
+            error_messages.each { |error_message| acc = "#{acc}#{prepare_error_message(error_message)}\n" }
           else
-            acc = "#{acc}#{error_messages}\n"
+            acc = "#{acc}#{prepare_error_message(error_message)}\n"
           end
 
           acc
         end
+      end
+
+      def prepare_error_message(error_message)
+        error_message.split('::').last
       end
     end
   end
