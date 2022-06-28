@@ -34,7 +34,8 @@ module Uffizzi
 
     def set_server
       config_server = ConfigFile.exists? ? read_option_from_config(:server) : nil
-      @options[:server] || config_server || Uffizzi.ui.ask('Server: ')
+      server_address = @options[:server] || config_server || Uffizzi.ui.ask('Server: ')
+      server_address.start_with?('http:', 'https:') ? server_address : "https://#{server_address}"
     end
 
     def set_username
