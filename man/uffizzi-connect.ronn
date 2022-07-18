@@ -19,13 +19,16 @@ uffizzi-connect - grant a Uffizzi user account access to external services
     docker-hub
         Connect to Docker Hub (hub.docker.com).
 
+    docker-registry
+        Connect to any registry implementing the Docker Registry HTTP API protocol
+
     ecr
         Connect to Amazon Elastic Container Registry (amazonaws.com).
 
     gcr
         Connect to Google Container Registry (gcr.io).
-    
-    gchr
+
+    ghcr
         Connect to GitHub Container Registry (ghcr.io).
 
 Run 'uffizzi connect COMMAND --help' for more information on a command.
