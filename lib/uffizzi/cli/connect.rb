@@ -45,6 +45,34 @@ module Uffizzi
       end
     end
 
+    desc 'docker-registry', 'Connect to any registry implementing the Docker Registry HTTP API protocol'
+    method_option :skip_raise_existence_error, type: :boolean, default: false,
+                                               desc: 'Skip raising an error within check the credential'
+    def docker_registry
+      type = Uffizzi.configuration.credential_types[:docker_registry]
+      check_credential_existence(type, 'docker-registry')
+
+      registry_url = ENV['DOCKER_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain: ')
+      username = ENV['DOCKER_REGISTRY_USERNAME'] || Uffizzi.ui.ask('Username: ')
+      password = ENV['DOCKER_REGISTRY_PASSWORD'] || Uffizzi.ui.ask('Password: ', echo: false)
+
+      params = {
+        registry_url: prepare_registry_url(registry_url),
+        username: username,
+        password: password,
+        type: type,
+      }
+
+      server = ConfigFile.read_option(:server)
+      response = create_credential(server, params)
+
+      if ResponseHelper.created?(response)
+        print_success_message('Docker Registry')
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
+    end
+
     desc 'acr', 'Connect to Azure Container Registry (azurecr.io)'
     method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
@@ -163,6 +191,7 @@ module Uffizzi
 
     map 'list-credentials' => 'list_credentials'
     map 'docker-hub' => 'docker_hub'
+    map 'docker-registry' => 'docker_registry'
 
     private
 

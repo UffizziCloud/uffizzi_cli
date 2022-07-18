@@ -19,6 +19,7 @@ module Uffizzi
       google: 'UffizziCore::Credential::Google',
       amazon: 'UffizziCore::Credential::Amazon',
       github_registry: 'UffizziCore::Credential::GithubContainerRegistry',
+      docker_registry: 'UffizziCore::Credential::DockerRegistry',
     }
     config.default_server = 'app.uffizzi.com'
   end
