@@ -25,6 +25,14 @@ then
 fi
 
 if
+	[ $DOCKER_REGISTRY_USERNAME ] &&
+	[ $DOCKER_REGISTRY_PASSWORD ] &&
+	[ $DOCKER_REGISTRY_URL ]
+then
+	uffizzi connect docker-registry --skip-raise-existence-error
+fi
+
+if
 	[ $ACR_USERNAME ] &&
 	[ $ACR_PASSWORD ] &&
 	[ $ACR_REGISTRY_URL ]
@@ -50,7 +58,7 @@ if
 	[ $GITHUB_USERNAME ] &&
 	[ $GITHUB_ACCESS_TOKEN ]
 then
-	uffizzi connect gchr --skip-raise-existence-error
+	uffizzi connect ghcr --skip-raise-existence-error
 fi
 
 exec uffizzi "$@"
