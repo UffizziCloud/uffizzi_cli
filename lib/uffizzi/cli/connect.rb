@@ -52,9 +52,9 @@ module Uffizzi
       type = Uffizzi.configuration.credential_types[:docker_registry]
       check_credential_existence(type, 'docker-registry')
 
-      registry_url = ENV['DOCKER_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain: ')
-      username = ENV['DOCKER_REGISTRY_USERNAME'] || Uffizzi.ui.ask('Username: ')
-      password = ENV['DOCKER_REGISTRY_PASSWORD'] || Uffizzi.ui.ask('Password: ', echo: false)
+      registry_url = ENV['DOCKER_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain:')
+      username = ENV['DOCKER_REGISTRY_USERNAME'] || Uffizzi.ui.ask('Username:')
+      password = ENV['DOCKER_REGISTRY_PASSWORD'] || Uffizzi.ui.ask('Password:', echo: false)
 
       params = {
         registry_url: prepare_registry_url(registry_url),

@@ -18,6 +18,15 @@ class DisconnectTest < Minitest::Test
     assert_requested(stubbed_uffizzi_delete_credential)
   end
 
+  def test_disconnect_docker_registry_success
+    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(Uffizzi.configuration.credential_types[:docker_registry])
+
+    @cli.disconnect('docker-registry')
+
+    assert_equal('Successfully disconnected Docker Registry connection', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_delete_credential)
+  end
+
   def test_disconnect_github_registry_success
     stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(Uffizzi.configuration.credential_types[:github_registry])
 
