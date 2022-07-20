@@ -126,12 +126,14 @@ module Uffizzi
     desc 'ghcr', 'Connect to GitHub Container Registry (ghcr.io)'
     method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
+    method_option :username, type: :string, aliases: :u
+    method_option :token, type: :string, aliases: :t
     def ghcr
       type = Uffizzi.configuration.credential_types[:github_registry]
       check_credential_existence(type, 'ghcr')
 
-      username = ENV['GITHUB_USERNAME'] || Uffizzi.ui.ask('Github Username: ')
-      password = ENV['GITHUB_ACCESS_TOKEN'] || Uffizzi.ui.ask('Access Token: ', echo: false)
+      username = options[:username] || ENV['GITHUB_USERNAME'] || Uffizzi.ui.ask('Github Username:')
+      password = options[:token] || ENV['GITHUB_ACCESS_TOKEN'] || Uffizzi.ui.ask('Access Token:', echo: false)
 
       params = {
         username: username,
