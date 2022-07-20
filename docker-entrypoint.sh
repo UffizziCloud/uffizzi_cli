@@ -50,7 +50,7 @@ if
 	[ $GITHUB_USERNAME ] &&
 	[ $GITHUB_ACCESS_TOKEN ]
 then
-	uffizzi connect gchr --skip-raise-existence-error
+	uffizzi connect ghcr --skip-raise-existence-error
 fi
 
 exec uffizzi "$@"
