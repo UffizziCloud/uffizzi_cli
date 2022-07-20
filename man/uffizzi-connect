@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CONNECT" "" "May 2022" ""
+.TH "UFFIZZI\-CONNECT" "" "July 2022" ""
 .SH "NAME"
 \fBuffizzi\-connect\fR \- grant a Uffizzi user account access to external services
 .SH "SYNOPSIS"
@@ -30,7 +30,7 @@ ecr
 gcr
     Connect to Google Container Registry (gcr\.io)\.
 
-gchr
+ghcr
     Connect to GitHub Container Registry (ghcr\.io)\.
 .fi
 .P
