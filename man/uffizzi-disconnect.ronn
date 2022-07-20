@@ -24,8 +24,8 @@ uffizzi-disconnect - revoke a Uffizzi user account access to external services
 
     gcr
         Disonnect from Google Container Registry (gcr.io).
-    
-    gchr
+
+    ghcr
         Disonnect from GitHub Container Registry (ghcr.io).
 
 Run 'uffizzi disconnect COMMAND --help' for more information on a command.

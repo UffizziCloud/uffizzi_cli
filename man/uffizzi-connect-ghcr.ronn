@@ -1,15 +1,19 @@
-uffizzi-connect-ecr - grant a Uffizzi user account access to a private GitHub Container Registry (GHCR)
+uffizzi-connect-ghcr - grant a Uffizzi user account access to a private GitHub Container Registry (GHCR)
 ================================================================
 
 ## SYNOPSIS
-    uffizzi connect ecr
+    uffizzi connect ghcr [OPTION]...
 
 ## DESCRIPTION
-    Given valid credentials, grants a Uffizzi user account access 
-    to a private GitHub Container Registry
+    Given valid credentials, grants a Uffizzi user account access
+    to a private GitHub Container Registry.
+
+    Credentials can be provided interactively or non-interactively
+    via command options or environment variables:
+    GITHUB_USERNAME, GITHUB_ACCESS_TOKEN
 
     This command can fail for the following reasons:
-        - The active user does not have permission to connect 
+        - The active user does not have permission to connect
           external services.
         - The given credentials are invalid.
 
@@ -17,12 +21,16 @@ uffizzi-connect-ecr - grant a Uffizzi user account access to a private GitHub Co
     https://github.com/UffizziCloud/uffizzi_cli
 
     For detailed instructions on configuring webhooks to send push
-    notifications to Uffizzi, see 
+    notifications to Uffizzi, see
     https://docs.uffizzi.com/guides/container-registry-integrations
 
+## OPTIONS
+    -u, --username        GitHub username
+    -t, --token           Personal access token from GitHub
+
 ## EXAMPLES
-    The following command will prompt the user to enter GHCR 
-    credentials, including GitHub account name and 
-    personal access key (PAT):
-          
-        $ uffizzi connect ecr
+    The following command will prompt the user to enter GHCR
+    credentials, including GitHub account name and
+    personal access token (PAT):
+
+    uffizzi connect ghcr

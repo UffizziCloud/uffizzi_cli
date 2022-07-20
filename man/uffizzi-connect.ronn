@@ -24,8 +24,8 @@ uffizzi-connect - grant a Uffizzi user account access to external services
 
     gcr
         Connect to Google Container Registry (gcr.io).
-    
-    gchr
+
+    ghcr
         Connect to GitHub Container Registry (ghcr.io).
 
 Run 'uffizzi connect COMMAND --help' for more information on a command.
