@@ -25,6 +25,14 @@ then
 fi
 
 if
+	[ $DOCKER_REGISTRY_USERNAME ] &&
+	[ $DOCKER_REGISTRY_PASSWORD ] &&
+	[ $DOCKER_REGISTRY_URL ]
+then
+	uffizzi connect docker-registry --skip-raise-existence-error
+fi
+
+if
 	[ $ACR_USERNAME ] &&
 	[ $ACR_PASSWORD ] &&
 	[ $ACR_REGISTRY_URL ]

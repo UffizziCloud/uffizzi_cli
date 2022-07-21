@@ -10,6 +10,8 @@ module Uffizzi
       connection_type = case credential_type
                         when 'docker-hub'
                           Uffizzi.configuration.credential_types[:dockerhub]
+                        when 'docker-registry'
+                          Uffizzi.configuration.credential_types[:docker_registry]
                         when 'acr'
                           Uffizzi.configuration.credential_types[:azure]
                         when 'ecr'
@@ -36,6 +38,7 @@ module Uffizzi
     def connection_name(credential_type)
       {
         'docker-hub' => 'DockerHub',
+        'docker-registry' => 'Docker Registry',
         'acr' => 'ACR',
         'ecr' => 'ECR',
         'gcr' => 'GCR',

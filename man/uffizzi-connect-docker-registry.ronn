@@ -1,0 +1,27 @@
+uffizzi-connect-docker-registry - grant a Uffizzi user account access to a Docker Registry.
+================================================================
+
+## SYNOPSIS
+    uffizzi connect docker-registry
+
+## DESCRIPTION
+    Given valid credentials, grants a Uffizzi user account access
+    to a Docker Registry
+
+    This command can fail for the following reasons:
+        - The active user does not have permission to connect
+          external services.
+        - The given credentials are invalid.
+
+    For more information on connecting to external services, see:
+    https://github.com/UffizziCloud/uffizzi_cli
+
+    For detailed instructions on configuring webhooks to send push
+    notifications to Uffizzi, see
+    https://docs.uffizzi.com/guides/container-registry-integrations
+
+## EXAMPLES
+    The following command will prompt the user to enter Docker Registry
+    credentials, including username and password:
+
+        $ uffizzi connect docker-registry
