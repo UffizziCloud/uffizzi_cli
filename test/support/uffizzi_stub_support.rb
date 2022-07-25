@@ -122,13 +122,13 @@ module UffizziStubSupport
   end
 
   def stub_uffizzi_delete_credential(credential_type)
-    uri = delete_credential_uri(Uffizzi.configuration.server, credential_type)
+    uri = single_credentials_group_uri(Uffizzi.configuration.server, credential_type)
 
     stub_request(:delete, uri).to_return(status: 204)
   end
 
   def stub_uffizzi_delete_credential_fail(body, credential_type)
-    uri = delete_credential_uri(Uffizzi.configuration.server, credential_type)
+    uri = single_credentials_group_uri(Uffizzi.configuration.server, credential_type)
 
     stub_request(:delete, uri).to_return(status: 422, body: body.to_json)
   end
