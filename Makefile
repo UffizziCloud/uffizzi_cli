@@ -29,3 +29,11 @@ release:
 	@echo 'Create a new tag'
 	git tag v${VERSION}
 	git push origin v${VERSION}
+
+shell:
+	docker-compose run --rm gem bash
+
+test:
+	docker-compose run --rm gem bash -c "bundle exec rake test"
+
+.PHONY: test

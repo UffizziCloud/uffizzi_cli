@@ -366,4 +366,22 @@ class PreviewTest < Minitest::Test
 
     assert_requested(stubbed_uffizzi_preview_events_success)
   end
+
+  def test_create_preview_with_yaml_alias
+    create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
+    activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
+    deployment_id = create_body[:deployment][:id]
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
+    ENV['CONFIG_SOURCE'] = 'vote.conf'
+    ENV['PORT'] = '80'
+
+    @preview.create('test/compose_files/test_compose_with_alias.yml')
+
+    assert_equal("https://#{create_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
+    assert_requested(stubbed_uffizzi_preview_deploy_containers)
+    assert_requested(stubbed_uffizzi_preview_create)
+  end
 end
