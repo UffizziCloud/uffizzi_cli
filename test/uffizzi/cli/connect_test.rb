@@ -35,7 +35,7 @@ class ConnectTest < Minitest::Test
 
     @cli.docker_hub
 
-    assert_equal('Successfully connected to DockerHub', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to Docker Hub', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -161,7 +161,7 @@ class ConnectTest < Minitest::Test
   end
 
   def test_connect_docker_hub_with_skip_raise_existence_error_option
-    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existence_error: true)
+    @cli.options = command_options(skip_raise_existence_error: true)
 
     stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:dockerhub])
 
@@ -174,7 +174,7 @@ class ConnectTest < Minitest::Test
   end
 
   def test_connect_azure_with_skip_raise_existence_error_option
-    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existence_error: true)
+    @cli.options = command_options(skip_raise_existence_error: true)
 
     stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:azure])
 
@@ -187,7 +187,7 @@ class ConnectTest < Minitest::Test
   end
 
   def test_connect_amazon_with_skip_raise_existence_error_option
-    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existence_error: true)
+    @cli.options = command_options(skip_raise_existence_error: true)
 
     stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:amazon])
 
@@ -200,7 +200,7 @@ class ConnectTest < Minitest::Test
   end
 
   def test_connect_google_with_skip_raise_existence_error_option
-    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existence_error: true)
+    @cli.options = command_options(skip_raise_existence_error: true)
 
     stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:google])
 
@@ -213,7 +213,7 @@ class ConnectTest < Minitest::Test
   end
 
   def test_connect_github_with_skip_raise_existence_error_option
-    @cli.options = Thor::CoreExt::HashWithIndifferentAccess.new(skip_raise_existence_error: true)
+    @cli.options = command_options(skip_raise_existence_error: true)
 
     stubbed_check_credential = stub_uffizzi_check_credential_fail(Uffizzi.configuration.credential_types[:github_registry])
 
@@ -235,7 +235,7 @@ class ConnectTest < Minitest::Test
 
     @cli.docker_hub
 
-    assert_equal('Successfully connected to DockerHub', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to Docker Hub', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -300,5 +300,21 @@ class ConnectTest < Minitest::Test
     assert_equal('Successfully connected to GHCR', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
+  end
+
+  def test_connect_docker_hub_with_update_with_env_variables
+    body = json_fixture('files/uffizzi/credentials/dockerhub_credential.json')
+    stubbed_uffizzi_update_credentials = stub_uffizzi_update_credentials(body)
+    stubbed_check_credential_fail = stub_uffizzi_check_credential_fail(body[:type])
+
+    ENV['DOCKERHUB_USERNAME'] = generate(:string)
+    ENV['DOCKERHUB_PASSWORD'] = generate(:string)
+
+    @cli.options = command_options(update_credentials_if_exist: true)
+    @cli.docker_hub
+
+    assert_equal('Successfully connected to Docker Hub', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_update_credentials)
+    assert_requested(stubbed_check_credential_fail)
   end
 end
