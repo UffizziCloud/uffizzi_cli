@@ -25,8 +25,8 @@ module Uffizzi
       type = Uffizzi.configuration.credential_types[:dockerhub]
       exist = check_credential_existence(type, 'docker-hub')
 
-      username = ENV['DOCKERHUB_USERNAME'] || Uffizzi.ui.ask('Username: ')
-      password = ENV['DOCKERHUB_PASSWORD'] || Uffizzi.ui.ask('Password: ', echo: false)
+      username = ENV['DOCKERHUB_USERNAME'] || Uffizzi.ui.ask('Username:')
+      password = ENV['DOCKERHUB_PASSWORD'] || Uffizzi.ui.ask('Password:', echo: false)
 
       params = {
         username: username,
@@ -52,9 +52,9 @@ module Uffizzi
       type = Uffizzi.configuration.credential_types[:azure]
       exist = check_credential_existence(type, 'acr')
 
-      registry_url = ENV['ACR_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain: ')
-      username = ENV['ACR_USERNAME'] || Uffizzi.ui.ask('Docker ID: ')
-      password = ENV['ACR_PASSWORD'] || Uffizzi.ui.ask('Password/Access Token: ', echo: false)
+      registry_url = ENV['ACR_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain:')
+      username = ENV['ACR_USERNAME'] || Uffizzi.ui.ask('Docker ID:')
+      password = ENV['ACR_PASSWORD'] || Uffizzi.ui.ask('Password/Access Token:', echo: false)
 
       params = {
         username: username,
@@ -81,9 +81,9 @@ module Uffizzi
       type = Uffizzi.configuration.credential_types[:amazon]
       exist = check_credential_existence(type, 'ecr')
 
-      registry_url = ENV['AWS_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain: ')
-      access_key = ENV['AWS_ACCESS_KEY_ID'] || Uffizzi.ui.ask('Access key ID: ')
-      secret_access_key = ENV['AWS_SECRET_ACCESS_KEY'] || Uffizzi.ui.ask('Secret access key: ', echo: false)
+      registry_url = ENV['AWS_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain:')
+      access_key = ENV['AWS_ACCESS_KEY_ID'] || Uffizzi.ui.ask('Access key ID:')
+      secret_access_key = ENV['AWS_SECRET_ACCESS_KEY'] || Uffizzi.ui.ask('Secret access key:', echo: false)
 
       params = {
         username: access_key,
@@ -172,7 +172,7 @@ module Uffizzi
     end
 
     def print_success_message(connection_name)
-      Uffizzi.ui.say("Successfully connected to #{connection_name}")
+      Uffizzi.ui.say("Successfully connected to #{connection_name}.")
     end
 
     def check_credential_existence(type, connection_name)
@@ -181,7 +181,7 @@ module Uffizzi
       return false if ResponseHelper.ok?(response)
 
       if options.update_credentials_if_exist?
-        Uffizzi.ui.say('Updating existing credentials')
+        Uffizzi.ui.say('Updating existing credentials.')
         true
       elsif options.skip_raise_existence_error?
         Uffizzi.ui.say("Credentials of type #{connection_name} already exist for this account.")
