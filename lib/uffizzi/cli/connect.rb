@@ -181,7 +181,7 @@ module Uffizzi
       return false if ResponseHelper.ok?(response)
 
       if options.update_credentials_if_exist?
-        Uffizzi.ui.say("Updating existing credentials")
+        Uffizzi.ui.say('Updating existing credentials')
         true
       elsif options.skip_raise_existence_error?
         Uffizzi.ui.say("Credentials of type #{connection_name} already exist for this account.")
