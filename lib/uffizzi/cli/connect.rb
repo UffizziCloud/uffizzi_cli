@@ -220,7 +220,10 @@ module Uffizzi
     def google_service_account_content(credential_file_path = nil)
       return ENV['GCLOUD_SERVICE_KEY'] if ENV['GCLOUD_SERVICE_KEY']
 
-      return Uffizzi.ui.say('Path to google service account key file wasn\'t specified.') if credential_file_path.nil?
+      if credential_file_path.nil?
+        Uffizzi.ui.say("Path to google service account key file wasn't specified.")
+        exit(1)
+      end
 
       begin
         credential_content = File.read(credential_file_path)
