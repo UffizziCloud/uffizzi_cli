@@ -37,8 +37,8 @@ module Uffizzi
       server = ConfigFile.read_option(:server)
       response = create_or_update_credentials(server, params, create: !exist)
 
-      if ResponseHelper.created?(response) || ResponseHelper.ok?(response)
-        print_success_message('DockerHub')
+      if successful?(response)
+        print_success_message('Docker Hub')
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -66,7 +66,7 @@ module Uffizzi
       server = ConfigFile.read_option(:server)
       response = create_or_update_credentials(server, params, create: !exist)
 
-      if ResponseHelper.created?(response) || ResponseHelper.ok?(response)
+      if successful?(response)
         print_success_message('ACR')
       else
         ResponseHelper.handle_failed_response(response)
@@ -95,7 +95,7 @@ module Uffizzi
       server = ConfigFile.read_option(:server)
       response = create_or_update_credentials(server, params, create: !exist)
 
-      if ResponseHelper.created?(response) || ResponseHelper.ok?(response)
+      if successful?(response)
         print_success_message('ECR')
       else
         ResponseHelper.handle_failed_response(response)
@@ -120,7 +120,7 @@ module Uffizzi
       server = ConfigFile.read_option(:server)
       response = create_or_update_credentials(server, params, create: !exist)
 
-      if ResponseHelper.created?(response) || ResponseHelper.ok?(response)
+      if successful?(response)
         print_success_message('GCR')
       else
         ResponseHelper.handle_failed_response(response)
@@ -149,7 +149,7 @@ module Uffizzi
       server = ConfigFile.read_option(:server)
       response = create_or_update_credentials(server, params, create: !exist)
 
-      if ResponseHelper.created?(response) || ResponseHelper.ok?(response)
+      if successful?(response)
         print_success_message('GHCR')
       else
         ResponseHelper.handle_failed_response(response)
@@ -160,6 +160,10 @@ module Uffizzi
     map 'docker-hub' => 'docker_hub'
 
     private
+
+    def successful?(response)
+      ResponseHelper.created?(response) || ResponseHelper.ok?(response)
+    end
 
     def prepare_registry_url(registry_url)
       return registry_url if registry_url.match?(/^(?:http(s)?:\/\/)/)
