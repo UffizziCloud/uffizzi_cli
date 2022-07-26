@@ -35,7 +35,7 @@ class ConnectTest < Minitest::Test
 
     @cli.docker_hub
 
-    assert_equal('Successfully connected to Docker Hub', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to Docker Hub.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -59,7 +59,7 @@ class ConnectTest < Minitest::Test
 
     @cli.acr
 
-    assert_equal('Successfully connected to ACR', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to ACR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -83,7 +83,7 @@ class ConnectTest < Minitest::Test
 
     @cli.ecr
 
-    assert_equal('Successfully connected to ECR', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to ECR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -97,7 +97,7 @@ class ConnectTest < Minitest::Test
 
     @cli.gcr(credential_path)
 
-    assert_equal('Successfully connected to GCR', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to GCR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -120,7 +120,7 @@ class ConnectTest < Minitest::Test
 
     @cli.ghcr
 
-    assert_equal('Successfully connected to GHCR', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to GHCR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -235,7 +235,7 @@ class ConnectTest < Minitest::Test
 
     @cli.docker_hub
 
-    assert_equal('Successfully connected to Docker Hub', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to Docker Hub.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -251,7 +251,7 @@ class ConnectTest < Minitest::Test
 
     @cli.acr
 
-    assert_equal('Successfully connected to ACR', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to ACR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -267,7 +267,7 @@ class ConnectTest < Minitest::Test
 
     @cli.ecr
 
-    assert_equal('Successfully connected to ECR', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to ECR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -282,7 +282,7 @@ class ConnectTest < Minitest::Test
 
     @cli.gcr
 
-    assert_equal('Successfully connected to GCR', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to GCR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -297,7 +297,7 @@ class ConnectTest < Minitest::Test
 
     @cli.ghcr
 
-    assert_equal('Successfully connected to GHCR', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to GHCR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -313,7 +313,7 @@ class ConnectTest < Minitest::Test
     @cli.options = command_options(update_credentials_if_exist: true)
     @cli.docker_hub
 
-    assert_equal('Successfully connected to Docker Hub', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to Docker Hub.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_update_credentials)
     assert_requested(stubbed_check_credential_fail)
   end
