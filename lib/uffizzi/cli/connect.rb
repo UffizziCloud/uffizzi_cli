@@ -23,7 +23,8 @@ module Uffizzi
     method_option :update_credentials_if_exist, type: :boolean, default: false
     def docker_hub
       type = Uffizzi.configuration.credential_types[:dockerhub]
-      exist = check_credential_existence(type, 'docker-hub')
+      credentials_exist = credentials_exist?(type)
+      handle_existing_credentials_options('docker-hub') if credentials_exist
 
       username = ENV['DOCKERHUB_USERNAME'] || Uffizzi.ui.ask('Username:')
       password = ENV['DOCKERHUB_PASSWORD'] || Uffizzi.ui.ask('Password:', echo: false)
@@ -35,7 +36,7 @@ module Uffizzi
       }
 
       server = ConfigFile.read_option(:server)
-      response = create_or_update_credentials(server, params, create: !exist)
+      response = create_or_update_credentials(server, params, create: !credentials_exist)
 
       if successful?(response)
         print_success_message('Docker Hub')
@@ -50,7 +51,8 @@ module Uffizzi
     method_option :update_credentials_if_exist, type: :boolean, default: false
     def acr
       type = Uffizzi.configuration.credential_types[:azure]
-      exist = check_credential_existence(type, 'acr')
+      credentials_exist = credentials_exist?(type)
+      handle_existing_credentials_options('acr') if credentials_exist
 
       registry_url = ENV['ACR_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain:')
       username = ENV['ACR_USERNAME'] || Uffizzi.ui.ask('Docker ID:')
@@ -64,7 +66,7 @@ module Uffizzi
       }
 
       server = ConfigFile.read_option(:server)
-      response = create_or_update_credentials(server, params, create: !exist)
+      response = create_or_update_credentials(server, params, create: !credentials_exist)
 
       if successful?(response)
         print_success_message('ACR')
@@ -79,7 +81,8 @@ module Uffizzi
     method_option :update_credentials_if_exist, type: :boolean, default: false
     def ecr
       type = Uffizzi.configuration.credential_types[:amazon]
-      exist = check_credential_existence(type, 'ecr')
+      credentials_exist = credentials_exist?(type)
+      handle_existing_credentials_options('ecr') if credentials_exist
 
       registry_url = ENV['AWS_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain:')
       access_key = ENV['AWS_ACCESS_KEY_ID'] || Uffizzi.ui.ask('Access key ID:')
@@ -93,7 +96,7 @@ module Uffizzi
       }
 
       server = ConfigFile.read_option(:server)
-      response = create_or_update_credentials(server, params, create: !exist)
+      response = create_or_update_credentials(server, params, create: !credentials_exist)
 
       if successful?(response)
         print_success_message('ECR')
@@ -108,7 +111,8 @@ module Uffizzi
     method_option :update_credentials_if_exist, type: :boolean, default: false
     def gcr(credential_file_path = nil)
       type = Uffizzi.configuration.credential_types[:google]
-      exist = check_credential_existence(type, 'gcr')
+      credentials_exist = credentials_exist?(type)
+      handle_existing_credentials_options('gcr') if credentials_exist
 
       credential_content = google_service_account_content(credential_file_path)
 
@@ -118,7 +122,7 @@ module Uffizzi
       }
 
       server = ConfigFile.read_option(:server)
-      response = create_or_update_credentials(server, params, create: !exist)
+      response = create_or_update_credentials(server, params, create: !credentials_exist)
 
       if successful?(response)
         print_success_message('GCR')
@@ -135,7 +139,8 @@ module Uffizzi
     method_option :token, type: :string, aliases: :t
     def ghcr
       type = Uffizzi.configuration.credential_types[:github_registry]
-      exist = check_credential_existence(type, 'ghcr')
+      credentials_exist = credentials_exist?(type)
+      handle_existing_credentials_options('ghcr') if credentials_exist
 
       username = options[:username] || ENV['GITHUB_USERNAME'] || Uffizzi.ui.ask('Github Username:')
       password = options[:token] || ENV['GITHUB_ACCESS_TOKEN'] || Uffizzi.ui.ask('Access Token:', echo: false)
@@ -147,7 +152,7 @@ module Uffizzi
       }
 
       server = ConfigFile.read_option(:server)
-      response = create_or_update_credentials(server, params, create: !exist)
+      response = create_or_update_credentials(server, params, create: !credentials_exist)
 
       if successful?(response)
         print_success_message('GHCR')
@@ -171,30 +176,34 @@ module Uffizzi
       "https://#{registry_url}"
     end
 
-    def print_success_message(connection_name)
-      Uffizzi.ui.say("Successfully connected to #{connection_name}.")
+    def print_success_message(credentials_type_slug)
+      Uffizzi.ui.say("Successfully connected to #{credentials_type_slug}.")
     end
 
-    def check_credential_existence(type, connection_name)
+    def credentials_exist?(type)
       server = ConfigFile.read_option(:server)
       response = check_credential(server, type)
-      return false if ResponseHelper.ok?(response)
+      !ResponseHelper.ok?(response)
+    end
 
+    def handle_existing_credentials_options(credentials_type_slug)
       if options.update_credentials_if_exist?
         Uffizzi.ui.say('Updating existing credentials.')
-        true
-      elsif options.skip_raise_existence_error?
-        Uffizzi.ui.say("Credentials of type #{connection_name} already exist for this account.")
+        return
+      end
+
+      if options.skip_raise_existence_error?
+        Uffizzi.ui.say("Credentials of type #{credentials_type_slug} already exist for this account.")
         exit(true)
       else
-        message = "Credentials of type #{connection_name} already exist for this account.\n" \
-        "To remove them, run uffizzi disconnect #{connection_name}."
+        message = "Credentials of type #{credentials_type_slug} already exist for this account.\n" \
+        "To remove them, run uffizzi disconnect #{credentials_type_slug}."
         raise Uffizzi::Error.new(message)
       end
     end
 
     def create_or_update_credentials(server, params, create: true)
-      create ? create_credential(server, params) : update_credentials(server, params)
+      create ? create_credential(server, params) : update_credentials(server, params, params[:type])
     end
 
     def handle_list_credentials_success(response)
@@ -220,10 +229,7 @@ module Uffizzi
     def google_service_account_content(credential_file_path = nil)
       return ENV['GCLOUD_SERVICE_KEY'] if ENV['GCLOUD_SERVICE_KEY']
 
-      if credential_file_path.nil?
-        Uffizzi.ui.say("Path to google service account key file wasn't specified.")
-        exit(1)
-      end
+      raise Uffizzi::Error.new("Path to a google service account key file wasn't specified.") if credential_file_path.nil?
 
       begin
         credential_content = File.read(credential_file_path)

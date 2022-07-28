@@ -97,8 +97,8 @@ module UffizziStubSupport
     stub_request(:post, uri).to_return(status: 201, body: body.to_json)
   end
 
-  def stub_uffizzi_update_credentials(body)
-    uri = single_credentials_group_uri(Uffizzi.configuration.server, body[:type])
+  def stub_uffizzi_update_credentials(body, type)
+    uri = single_credentials_group_uri(Uffizzi.configuration.server, type)
 
     stub_request(:put, uri).to_return(status: 200, body: body.to_json)
   end
