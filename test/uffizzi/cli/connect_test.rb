@@ -304,7 +304,7 @@ class ConnectTest < Minitest::Test
 
   def test_connect_docker_hub_with_update_with_env_variables
     body = json_fixture('files/uffizzi/credentials/dockerhub_credential.json')
-    stubbed_uffizzi_update_credentials = stub_uffizzi_update_credentials(body)
+    stubbed_uffizzi_update_credentials = stub_uffizzi_update_credentials(body, body[:type])
     stubbed_check_credential_fail = stub_uffizzi_check_credential_fail(body[:type])
 
     ENV['DOCKERHUB_USERNAME'] = generate(:string)

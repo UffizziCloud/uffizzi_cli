@@ -70,8 +70,8 @@ module ApiClient
     build_response(response)
   end
 
-  def update_credentials(server, params)
-    uri = single_credentials_group_uri(server, params[:type])
+  def update_credentials(server, params, type)
+    uri = single_credentials_group_uri(server, type)
     response = http_client.make_put_request(uri, params)
 
     build_response(response)
