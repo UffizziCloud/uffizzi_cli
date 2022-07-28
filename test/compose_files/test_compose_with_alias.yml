@@ -1,0 +1,13 @@
+services:
+  hello-world:
+    image: nginx
+    env: &base
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+  redis:
+    image: redis
+    env: *base
+
+x-uffizzi-ingress:
+  service: hello-world
+  port: $PORT
