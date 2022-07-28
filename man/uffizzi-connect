@@ -35,9 +35,9 @@ ghcr
 .fi
 .SH "FLAGS"
 .nf
-\-\-skip\-raise\-existence\-error        If credentials exist, do not raise an exception, just print a message
+\-\-skip\-raise\-existence\-error        If credential exist, do not raise an exception, just print a message
 
-\-\-update\-credentials\-if\-exist       Update credentials if they exist
+\-\-update\-credential\-if\-exists       Update credential if it exists
 .fi
 .P
 Run \'uffizzi connect COMMAND \-\-help\' for more information on a command\.
