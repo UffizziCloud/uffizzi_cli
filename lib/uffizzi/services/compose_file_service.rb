@@ -92,7 +92,7 @@ class ComposeFileService
 
     def parse_compose_content_to_object(compose_content)
       begin
-        compose_data = Psych.safe_load(compose_content)
+        compose_data = Psych.safe_load(compose_content, aliases: true)
       rescue Psych::SyntaxError
         Uffizzi.ui.say('Invalid compose file')
       end
