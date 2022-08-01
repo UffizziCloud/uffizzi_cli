@@ -97,6 +97,12 @@ module UffizziStubSupport
     stub_request(:post, uri).to_return(status: 201, body: body.to_json)
   end
 
+  def stub_uffizzi_update_credential(body, type)
+    uri = credential_uri(Uffizzi.configuration.server, type)
+
+    stub_request(:put, uri).to_return(status: 200, body: body.to_json)
+  end
+
   def stub_uffizzi_check_credential_success(type)
     uri = check_credential_uri(Uffizzi.configuration.server, type)
 
@@ -122,13 +128,13 @@ module UffizziStubSupport
   end
 
   def stub_uffizzi_delete_credential(credential_type)
-    uri = delete_credential_uri(Uffizzi.configuration.server, credential_type)
+    uri = credential_uri(Uffizzi.configuration.server, credential_type)
 
     stub_request(:delete, uri).to_return(status: 204)
   end
 
   def stub_uffizzi_delete_credential_fail(body, credential_type)
-    uri = delete_credential_uri(Uffizzi.configuration.server, credential_type)
+    uri = credential_uri(Uffizzi.configuration.server, credential_type)
 
     stub_request(:delete, uri).to_return(status: 422, body: body.to_json)
   end

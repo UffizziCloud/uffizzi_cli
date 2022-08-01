@@ -70,6 +70,13 @@ module ApiClient
     build_response(response)
   end
 
+  def update_credential(server, params, type)
+    uri = credential_uri(server, type)
+    response = http_client.make_put_request(uri, params)
+
+    build_response(response)
+  end
+
   def fetch_deployment_services(server, project_slug, deployment_id)
     uri = preview_services_uri(server, project_slug, deployment_id)
     response = http_client.make_get_request(uri)
@@ -78,7 +85,7 @@ module ApiClient
   end
 
   def delete_credential(server, credential_type)
-    uri = delete_credential_uri(server, credential_type)
+    uri = credential_uri(server, credential_type)
     response = http_client.make_delete_request(uri)
 
     build_response(response)

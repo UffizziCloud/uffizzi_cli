@@ -64,7 +64,7 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers"
   end
 
-  def delete_credential_uri(server, credential_type)
+  def credential_uri(server, credential_type)
     "#{server}/api/cli/v1/account/credentials/#{credential_type}"
   end
 

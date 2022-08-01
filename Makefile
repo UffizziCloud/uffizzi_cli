@@ -20,6 +20,7 @@ release:
 	git checkout develop
 	@echo 'Set a new version'
 	docker-compose run --rm gem bash -c "bundle exec bump set ${VERSION}"
+	git commit -am "Change version to ${VERSION}"
 	@echo 'Update remote origin'
 	git push origin develop
 	git checkout main
