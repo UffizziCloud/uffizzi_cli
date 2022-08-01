@@ -207,8 +207,8 @@ module Uffizzi
       "https://#{registry_url}"
     end
 
-    def print_success_message(credential_type_slug)
-      Uffizzi.ui.say("Successfully connected to #{credential_type_slug}.")
+    def print_success_message(credential_type)
+      Uffizzi.ui.say("Successfully connected to #{credential_type}.")
     end
 
     def credential_exists?(type)
