@@ -13,6 +13,13 @@ module ApiClient
     build_response(response)
   end
 
+  def create_ci_session(server, params = {})
+    uri = ci_session_uri(server)
+    response = http_client.make_post_request(uri, params)
+
+    build_response(response)
+  end
+
   def destroy_session(server)
     uri = session_uri(server)
     response = http_client.make_delete_request(uri)

@@ -28,6 +28,10 @@ module ApiRoutes
     "#{server}/api/cli/v1/session"
   end
 
+  def ci_session_uri(server)
+    "#{server}/api/cli/v1/ci/session"
+  end
+
   def validate_compose_file_uri(server, project_slug)
     "#{compose_files_uri(server, project_slug)}/validate"
   end

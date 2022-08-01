@@ -24,6 +24,14 @@ module Uffizzi
       Login.new(options).run
     end
 
+    desc 'login_by_identity_token [OPTIONS]', 'Login or register to Uffizzi to view and manage your previews'
+    method_option :server, required: false, aliases: '-s'
+    method_option :username, required: false, aliases: '-u'
+    def login_by_identity_token
+      require_relative 'cli/login_by_identity_token'
+      LoginByIdentityToken.new(options).run
+    end
+
     desc 'logout', 'Log out of a Uffizzi user account'
     def logout
       require_relative 'cli/logout'

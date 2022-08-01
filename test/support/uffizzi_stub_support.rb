@@ -12,8 +12,21 @@ module UffizziStubSupport
     stub_request(:post, url).to_return(status: 201, body: body.to_json, headers: headers)
   end
 
+  def stub_uffizzi_login_by_jwt_success(body)
+    url = ci_session_uri(Uffizzi.configuration.server)
+    headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
+
+    stub_request(:post, url).to_return(status: 201, body: body.to_json, headers: headers)
+  end
+
   def stub_uffizzi_login_failed(body)
     url = session_uri(Uffizzi.configuration.server)
+
+    stub_request(:post, url).to_return(status: 422, body: body.to_json)
+  end
+
+  def stub_uffizzi_login_by_jwt_failure(body)
+    url = ci_session_uri(Uffizzi.configuration.server)
 
     stub_request(:post, url).to_return(status: 422, body: body.to_json)
   end

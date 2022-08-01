@@ -341,8 +341,8 @@ class ConnectTest < Minitest::Test
   end
 
   def test_connect_github_registry_with_env_variables
-    ENV['GITHUB_USERNAME'] = generate(:string)
-    ENV['GITHUB_ACCESS_TOKEN'] = generate(:string)
+    ENV['GHCR_USERNAME'] = generate(:string)
+    ENV['GHCR_ACCESS_TOKEN'] = generate(:string)
 
     body = json_fixture('files/uffizzi/credentials/github_registry_credential.json')
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(body)
