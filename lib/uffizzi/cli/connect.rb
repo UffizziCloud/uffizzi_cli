@@ -48,9 +48,11 @@ module Uffizzi
     desc 'docker-registry', 'Connect to any registry implementing the Docker Registry HTTP API protocol'
     method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
+    method_option :update_credential_if_exists, type: :boolean, default: false
     def docker_registry
       type = Uffizzi.configuration.credential_types[:docker_registry]
-      check_credential_existence(type, 'docker-registry')
+      credential_exists = credential_exists?(type)
+      handle_existing_credential_options('docker-registry') if credential_exists
 
       registry_url = ENV['DOCKER_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain:')
       username = ENV['DOCKER_REGISTRY_USERNAME'] || Uffizzi.ui.ask('Username:')
@@ -64,9 +66,9 @@ module Uffizzi
       }
 
       server = ConfigFile.read_option(:server)
-      response = create_credential(server, params)
+      response = create_or_update_credential(server, params, create: !credential_exists)
 
-      if ResponseHelper.created?(response)
+      if successful?(response)
         print_success_message('Docker Registry')
       else
         ResponseHelper.handle_failed_response(response)

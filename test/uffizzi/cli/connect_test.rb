@@ -59,7 +59,7 @@ class ConnectTest < Minitest::Test
 
     @cli.docker_registry
 
-    assert_equal('Successfully connected to Docker Registry', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to Docker Registry.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -206,7 +206,7 @@ class ConnectTest < Minitest::Test
       @cli.docker_registry
     end
 
-    assert_equal('Credentials of type docker-registry already exist for this account.', Uffizzi.ui.last_message)
+    assert_equal('Credential of type docker-registry already exists for this account.', Uffizzi.ui.last_message)
     assert_requested(stubbed_check_credential)
   end
 
@@ -288,7 +288,7 @@ class ConnectTest < Minitest::Test
 
     @cli.docker_registry
 
-    assert_equal('Successfully connected to Docker Registry', Uffizzi.ui.last_message)
+    assert_equal('Successfully connected to Docker Registry.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
