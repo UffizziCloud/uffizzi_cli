@@ -13,8 +13,16 @@ then
 		uffizzi config set project "${UFFIZZI_PROJECT}"
 	fi
 else
-	echo "Specify environment variables to login before executing Uffizzi CLI."
-	echo "UFFIZZI_USER, UFFIZZI_SERVER, UFFIZZI_PASSWORD, and optionally UFFIZZI_PROJECT"
+	if [ $GITHUB_ACTOR ] &&
+		[ $GITHUB_GITHUB_TOKEN ]
+	then
+		echo "New params. GITHUB_ACTOR = ${GITHUB_ACTOR}. GITHUB_GITHUB_TOKEN = ${GITHUB_GITHUB_TOKEN}"
+		uffizzi login_by_github --username "${GITHUB_ACTOR}" --server "${UFFIZZI_SERVER}"
+		uffizzi config set project github
+	else
+		echo "Specify environment variables to login before executing Uffizzi CLI."
+		echo "UFFIZZI_USER, UFFIZZI_SERVER, UFFIZZI_PASSWORD, and optionally UFFIZZI_PROJECT"
+	fi
 fi
 
 if
