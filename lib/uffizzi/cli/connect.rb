@@ -34,15 +34,15 @@ module Uffizzi
         password: password,
         type: type,
       }
-
       server = ConfigFile.read_option(:server)
-      response = create_or_update_credential(server, params, create: !credential_exists)
 
-      if successful?(response)
-        print_success_message('Docker Hub')
+      response = if credential_exists
+        update_credential(server, params, type)
       else
-        ResponseHelper.handle_failed_response(response)
+        create_credential(server, params)
       end
+
+      handle_result_for('Docker Hub', response)
     end
 
     desc 'docker-registry', 'Connect to any registry implementing the Docker Registry HTTP API protocol'
@@ -64,15 +64,15 @@ module Uffizzi
         password: password,
         type: type,
       }
-
       server = ConfigFile.read_option(:server)
-      response = create_or_update_credential(server, params, create: !credential_exists)
 
-      if successful?(response)
-        print_success_message('Docker Registry')
+      response = if credential_exists
+        update_credential(server, params, type)
       else
-        ResponseHelper.handle_failed_response(response)
+        create_credential(server, params)
       end
+
+      handle_result_for('Docker Registry', response)
     end
 
     desc 'acr', 'Connect to Azure Container Registry (azurecr.io)'
@@ -94,15 +94,15 @@ module Uffizzi
         registry_url: prepare_registry_url(registry_url),
         type: type,
       }
-
       server = ConfigFile.read_option(:server)
-      response = create_or_update_credential(server, params, create: !credential_exists)
 
-      if successful?(response)
-        print_success_message('ACR')
+      response = if credential_exists
+        update_credential(server, params, type)
       else
-        ResponseHelper.handle_failed_response(response)
+        create_credential(server, params)
       end
+
+      handle_result_for('ACR', response)
     end
 
     desc 'ecr', 'Connect to Amazon Elastic Container Registry'
@@ -124,15 +124,15 @@ module Uffizzi
         registry_url: prepare_registry_url(registry_url),
         type: type,
       }
-
       server = ConfigFile.read_option(:server)
-      response = create_or_update_credential(server, params, create: !credential_exists)
 
-      if successful?(response)
-        print_success_message('ECR')
+      response = if credential_exists
+        update_credential(server, params, type)
       else
-        ResponseHelper.handle_failed_response(response)
+        create_credential(server, params)
       end
+
+      handle_result_for('ECR', response)
     end
 
     desc 'gcr', 'Connect to Google Container Registry (gcr.io)'
@@ -150,15 +150,15 @@ module Uffizzi
         password: credential_content,
         type: type,
       }
-
       server = ConfigFile.read_option(:server)
-      response = create_or_update_credential(server, params, create: !credential_exists)
 
-      if successful?(response)
-        print_success_message('GCR')
+      response = if credential_exists
+        update_credential(server, params, type)
       else
-        ResponseHelper.handle_failed_response(response)
+        create_credential(server, params)
       end
+
+      handle_result_for('GCR', response)
     end
 
     desc 'ghcr', 'Connect to GitHub Container Registry (ghcr.io)'
@@ -180,15 +180,15 @@ module Uffizzi
         password: password,
         type: type,
       }
-
       server = ConfigFile.read_option(:server)
-      response = create_or_update_credential(server, params, create: !credential_exists)
 
-      if successful?(response)
-        print_success_message('GHCR')
+      response = if credential_exists
+        update_credential(server, params, type)
       else
-        ResponseHelper.handle_failed_response(response)
+        create_credential(server, params)
       end
+
+      handle_result_for('GHCR', response)
     end
 
     map 'list-credentials' => 'list_credentials'
@@ -197,8 +197,12 @@ module Uffizzi
 
     private
 
-    def successful?(response)
-      ResponseHelper.created?(response) || ResponseHelper.ok?(response)
+    def handle_result_for(credential_type, response)
+      if ResponseHelper.created?(response) || ResponseHelper.ok?(response)
+        print_success_message(credential_type)
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
     end
 
     def prepare_registry_url(registry_url)
@@ -231,10 +235,6 @@ module Uffizzi
         "To remove them, run uffizzi disconnect #{credential_type_slug}."
         raise Uffizzi::Error.new(message)
       end
-    end
-
-    def create_or_update_credential(server, params, create: true)
-      create ? create_credential(server, params) : update_credential(server, params, params[:type])
     end
 
     def handle_list_credentials_success(response)
