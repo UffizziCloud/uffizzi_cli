@@ -195,10 +195,6 @@ Metrics/CyclomaticComplexity:
                  of test cases needed to validate a method.
   Enabled: false
 
-Metrics/PerceivedComplexity:
-  Exclude:
-    - '**/cli/connect.rb'
-
 Metrics/MethodLength:
   Description: 'Avoid methods longer than 10 lines of code.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#short-methods'
