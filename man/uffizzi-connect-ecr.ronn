@@ -1,28 +1,42 @@
-uffizzi-connect-ecr - grant a Uffizzi user account access to a private Amazon Elastic Container Registry (ECR)
-================================================================
+# uffizzi-connect-ecr - grant a Uffizzi user account access to a private Amazon Elastic Container Registry (ECR)
 
 ## SYNOPSIS
-    uffizzi connect ecr
+
+`uffizzi connect ecr` [--registry=REGISTRY] [--id=ID] [--secret=SECRET]
 
 ## DESCRIPTION
-    Given valid credentials, grants a Uffizzi user account access 
-    to a private Amazon Elastic Container Registry
 
-    This command can fail for the following reasons:
-        - The active user does not have permission to connect 
-          external services.
-        - The given credentials are invalid.
+Given valid credentials, grants a Uffizzi user account access 
+to a private Amazon Elastic Container Registry
 
-    For more information on connecting to external services, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+Credentials can be provided interactively or non-interactively
+via command options or environment variables:  
+`AWS_REGISTRY_URL`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
 
-    For detailed instructions on configuring webhooks to send push
-    notifications to Uffizzi, see 
-    https://docs.uffizzi.com/guides/container-registry-integrations
+This command can fail for the following reasons:
+- The active user does not have permission to connect external services.
+- The given credentials are invalid.
+
+For more information on connecting to external services, see:  
+https://github.com/UffizziCloud/uffizzi_cli
+
+For detailed instructions on configuring webhooks to send push
+notifications to Uffizzi, see:  
+https://docs.uffizzi.com/guides/container-registry-integrations
+
+## OPTIONS
+
+* `-r`, `--registry=<registry>`:
+  URL of the service.
+* `--id=<id>`:
+  Access key id for the service.
+* `-s`, `--secret=<secret>`:
+  Secret access key for the service.
 
 ## EXAMPLES
-    The following command will prompt the user to enter ACR 
-    credentials, including registry domain, access key ID and 
-    secret access key:
-          
-        $ uffizzi connect ecr
+
+The following command will prompt the user to enter ACR 
+credentials, including registry domain, access key ID and 
+secret access key:
+
+`uffizzi connect ecr`

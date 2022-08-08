@@ -1,34 +1,37 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CONNECT\-DOCKER\-REGISTRY" "" "July 2022" ""
+.TH "UFFIZZI\-CONNECT\-DOCKER\-REGISTRY" "" "August 2022" ""
 .SH "NAME"
-\fBuffizzi\-connect\-docker\-registry\fR \- grant a Uffizzi user account access to a Docker Registry\.
+\fBuffizzi\-connect\-docker\-registry\fR \- grant a Uffizzi user account access to a Docker Container Registry\.
 .SH "SYNOPSIS"
-.nf
-uffizzi connect docker\-registry
-.fi
+\fBuffizzi connect docker\-registry\fR [\-\-registry=REGISTRY] [\-\-username=USERNAME] [\-\-password=PASSWORD]
 .SH "DESCRIPTION"
-.nf
-Given valid credentials, grants a Uffizzi user account access
-to a Docker Registry
-
-This command can fail for the following reasons:
-    \- The active user does not have permission to connect
-      external services\.
-    \- The given credentials are invalid\.
-
+Given valid credentials, grants a Uffizzi user account access to a Docker Container Registry
+.P
+Credentials can be provided interactively or non\-interactively via command options or environment variables:
+.br
+\fBDOCKER_REGISTRY_URL\fR, \fBDOCKER_REGISTRY_USERNAME\fR, \fBDOCKER_REGISTRY_PASSWORD\fR
+.P
+This command can fail for the following reasons: \- The active user does not have permission to connect external services\. \- The given credentials are invalid\.
+.P
 For more information on connecting to external services, see:
+.br
 https://github\.com/UffizziCloud/uffizzi_cli
-
-For detailed instructions on configuring webhooks to send push
-notifications to Uffizzi, see
+.P
+For detailed instructions on configuring webhooks to send push notifications to Uffizzi, see:
+.br
 https://docs\.uffizzi\.com/guides/container\-registry\-integrations
-.fi
+.SH "OPTIONS"
+.TP
+\fB\-r\fR, \fB\-\-registry=<registry>\fR
+URL of the service\.
+.TP
+\fB\-u\fR, \fB\-\-username=<username>\fR
+Username for the service\.
+.TP
+\fB\-p\fR, \fB\-\-password=<password>\fR
+Password for the service\.
 .SH "EXAMPLES"
-.nf
-The following command will prompt the user to enter Docker Registry
-credentials, including username and password:
-
-    $ uffizzi connect docker\-registry
-.fi
-
+The following command will prompt the user to enter Docker Container Registry credentials, including username and password:
+.P
+\fBuffizzi connect docker\-registry\fR

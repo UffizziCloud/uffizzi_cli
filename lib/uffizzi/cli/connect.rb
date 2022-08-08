@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'uffizzi'
+require 'uffizzi/helpers/connect_helper'
 
 module Uffizzi
   class Cli::Connect < Thor
@@ -21,13 +22,14 @@ module Uffizzi
     method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
     method_option :update_credential_if_exists, type: :boolean, default: false
+    method_option :username, type: :string, aliases: :u
+    method_option :password, type: :string, aliases: :p
     def docker_hub
       type = Uffizzi.configuration.credential_types[:dockerhub]
       credential_exists = credential_exists?(type)
       handle_existing_credential_options('docker-hub') if credential_exists
 
-      username = ENV['DOCKERHUB_USERNAME'] || Uffizzi.ui.ask('Username:')
-      password = ENV['DOCKERHUB_PASSWORD'] || Uffizzi.ui.ask('Password:', echo: false)
+      username, password = Uffizzi::ConnectHelper.get_docker_hub_data(options)
 
       params = {
         username: username,
@@ -49,14 +51,15 @@ module Uffizzi
     method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
     method_option :update_credential_if_exists, type: :boolean, default: false
+    method_option :registry, type: :string, aliases: :r
+    method_option :username, type: :string, aliases: :u
+    method_option :password, type: :string, aliases: :p
     def docker_registry
       type = Uffizzi.configuration.credential_types[:docker_registry]
       credential_exists = credential_exists?(type)
       handle_existing_credential_options('docker-registry') if credential_exists
 
-      registry_url = ENV['DOCKER_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain:')
-      username = ENV['DOCKER_REGISTRY_USERNAME'] || Uffizzi.ui.ask('Username:')
-      password = ENV['DOCKER_REGISTRY_PASSWORD'] || Uffizzi.ui.ask('Password:', echo: false)
+      registry_url, username, password = Uffizzi::ConnectHelper.get_docker_registry_data(options)
 
       params = {
         registry_url: prepare_registry_url(registry_url),
@@ -79,14 +82,15 @@ module Uffizzi
     method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
     method_option :update_credential_if_exists, type: :boolean, default: false
+    method_option :registry, type: :string, aliases: :r
+    method_option :username, type: :string, aliases: :u
+    method_option :password, type: :string, aliases: :p
     def acr
       type = Uffizzi.configuration.credential_types[:azure]
       credential_exists = credential_exists?(type)
       handle_existing_credential_options('acr') if credential_exists
 
-      registry_url = ENV['ACR_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain:')
-      username = ENV['ACR_USERNAME'] || Uffizzi.ui.ask('Docker ID:')
-      password = ENV['ACR_PASSWORD'] || Uffizzi.ui.ask('Password/Access Token:', echo: false)
+      registry_url, username, password = Uffizzi::ConnectHelper.get_acr_data(options)
 
       params = {
         username: username,
@@ -109,17 +113,18 @@ module Uffizzi
     method_option :skip_raise_existence_error, type: :boolean, default: false,
                                                desc: 'Skip raising an error within check the credential'
     method_option :update_credential_if_exists, type: :boolean, default: false
+    method_option :registry, type: :string, aliases: :r
+    method_option :id, type: :string
+    method_option :secret, type: :string, aliases: :s
     def ecr
       type = Uffizzi.configuration.credential_types[:amazon]
       credential_exists = credential_exists?(type)
       handle_existing_credential_options('ecr') if credential_exists
 
-      registry_url = ENV['AWS_REGISTRY_URL'] || Uffizzi.ui.ask('Registry Domain:')
-      access_key = ENV['AWS_ACCESS_KEY_ID'] || Uffizzi.ui.ask('Access key ID:')
-      secret_access_key = ENV['AWS_SECRET_ACCESS_KEY'] || Uffizzi.ui.ask('Secret access key:', echo: false)
+      registry_url, access_key_id, secret_access_key = Uffizzi::ConnectHelper.get_ecr_data(options)
 
       params = {
-        username: access_key,
+        username: access_key_id,
         password: secret_access_key,
         registry_url: prepare_registry_url(registry_url),
         type: type,
@@ -172,8 +177,7 @@ module Uffizzi
       credential_exists = credential_exists?(type)
       handle_existing_credential_options('ghcr') if credential_exists
 
-      username = options[:username] || ENV['GITHUB_USERNAME'] || Uffizzi.ui.ask('Github Username:')
-      password = options[:token] || ENV['GITHUB_ACCESS_TOKEN'] || Uffizzi.ui.ask('Access Token:', echo: false)
+      username, password = Uffizzi::ConnectHelper.get_ghcr_data(options)
 
       params = {
         username: username,

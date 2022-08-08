@@ -1,40 +1,45 @@
-uffizzi-connect - grant a Uffizzi user account access to external services
-================================================================
+# uffizzi-connect - grant a Uffizzi user account access to external services
 
 ## SYNOPSIS
-    uffizzi connect COMMAND
+
+`uffizzi connect` COMMAND [--skip-raise-existence-error] [--update-credential-if-exists]
 
 ## DESCRIPTION
-    Grants a Uffizzi user account access to external services
 
-    For more information on connecting to external services, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+Grants a Uffizzi user account access to external services.
+
+For more information on connecting to external services, see:  
+https://github.com/UffizziCloud/uffizzi_cli
 
 ## COMMANDS
-    COMMAND is one of the following:
 
-    acr
-        Connect to Azure Container Registry (azurecr.io).
+COMMAND is one of the following:
 
-    docker-hub
-        Connect to Docker Hub (hub.docker.com).
+* `acr`:
+  Connect to Azure Container Registry (azurecr.io).
 
-    docker-registry
-        Connect to any registry implementing the Docker Registry HTTP API protocol
+* `docker-hub`:
+  Connect to Docker Hub (hub.docker.com).
 
-    ecr
-        Connect to Amazon Elastic Container Registry (amazonaws.com).
+* `docker-registry`:
+  Connect to any registry implementing the Docker Registry HTTP API protocol
 
-    gcr
-        Connect to Google Container Registry (gcr.io).
+* `ecr`:
+  Connect to Amazon Elastic Container Registry (amazonaws.com).
 
-    ghcr
-        Connect to GitHub Container Registry (ghcr.io).
+* `gcr`:
+  Connect to Google Container Registry (gcr.io).
+
+* `ghcr`:
+  Connect to GitHub Container Registry (ghcr.io).
 
 
 ## FLAGS
-    --skip-raise-existence-error        If credential exist, do not raise an exception, just print a message
 
-    --update-credential-if-exists       Update credential if it exists
+* `--skip-raise-existence-error`:
+  If credential exists, do not raise an exception, just print a message.
 
-Run 'uffizzi connect COMMAND --help' for more information on a command.
+* `--update-credential-if-exists`:
+  Update credential if it exists.
+
+Run `uffizzi connect COMMAND --help` for more information on a command.

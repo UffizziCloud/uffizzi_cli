@@ -1,27 +1,39 @@
-uffizzi-connect-docker-hub - grant a Uffizzi user account access to a private Docker Hub registry.
-================================================================
+# uffizzi-connect-docker-hub - grant a Uffizzi user account access to a private Docker Hub registry.
 
 ## SYNOPSIS
-    uffizzi connect docker-hub
+
+`uffizzi connect docker-hub` [--username=USERNAME] [--password=PASSWORD]
 
 ## DESCRIPTION
-    Given valid credentials, grants a Uffizzi user account access 
-    to a private Docker Hub registry
 
-    This command can fail for the following reasons:
-        - The active user does not have permission to connect 
-          external services.
-        - The given credentials are invalid.
+Given valid credentials, grants a Uffizzi user account access 
+to a private Docker Hub registry
 
-    For more information on connecting to external services, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+Credentials can be provided interactively or non-interactively
+via command options or environment variables:  
+`DOCKERHUB_USERNAME`, `DOCKERHUB_PASSWORD`
 
-    For detailed instructions on configuring webhooks to send push
-    notifications to Uffizzi, see 
-    https://docs.uffizzi.com/guides/container-registry-integrations
+This command can fail for the following reasons:
+- The active user does not have permission to connect external services.
+- The given credentials are invalid.
+
+For more information on connecting to external services, see:  
+https://github.com/UffizziCloud/uffizzi_cli
+
+For detailed instructions on configuring webhooks to send push
+notifications to Uffizzi, see:  
+https://docs.uffizzi.com/guides/container-registry-integrations
+
+## OPTIONS
+
+* `-u`, `--username=<username>`:
+  Username for the service.
+* `-p`, `--password=<password>`:
+  Password for the service.
 
 ## EXAMPLES
-    The following command will prompt the user to enter Docker Hub
-    credentials, including Docker ID and password or access token:
-          
-        $ uffizzi connect docker-hub
+
+The following command will prompt the user to enter Docker Hub
+credentials, including Docker ID and password or access token:
+
+`uffizzi connect docker-hub`
