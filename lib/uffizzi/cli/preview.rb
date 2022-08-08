@@ -245,9 +245,12 @@ module Uffizzi
     end
 
     def build_deployment_data(deployment)
+      url_server = ConfigFile.read_option(:server).strip.gsub(/\/*$/, '')
+
       {
         id: "deployment-#{deployment[:id]}",
         url: "https://#{deployment[:preview_url]}",
+        containers_uri: "#{url_server}/projects/#{deployment[:project_id]}/deployments/#{deployment[:id]}/containers",
       }
     end
 

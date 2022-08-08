@@ -391,7 +391,12 @@ class PreviewTest < Minitest::Test
     @preview.options = command_options(output: 'github-action')
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
 
-    assert_match('name=url', Uffizzi.ui.last_message)
+    expected_message_keys = ['name=id', 'name=url', 'containers_uri']
+    actual_messages = Uffizzi.ui.messages.last(3)
+
+    expected_message_keys.zip(actual_messages).each do |(expected_msg_key, actual_msg)|
+      assert_match(expected_msg_key, actual_msg)
+    end
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
     assert_requested(stubbed_uffizzi_preview_deploy_containers)
     assert_requested(stubbed_uffizzi_preview_update)
