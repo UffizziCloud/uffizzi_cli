@@ -10,6 +10,8 @@ module Uffizzi
       connection_type = case credential_type
                         when 'docker-hub'
                           Uffizzi.configuration.credential_types[:dockerhub]
+                        when 'docker-registry'
+                          Uffizzi.configuration.credential_types[:docker_registry]
                         when 'acr'
                           Uffizzi.configuration.credential_types[:azure]
                         when 'ecr'
@@ -25,7 +27,7 @@ module Uffizzi
       response = delete_credential(ConfigFile.read_option(:server), connection_type)
 
       if ResponseHelper.no_content?(response)
-        Uffizzi.ui.say("Successfully disconnected #{connection_name(credential_type)} connection")
+        Uffizzi.ui.say("Successfully disconnected from #{connection_name(credential_type)}.")
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -36,6 +38,7 @@ module Uffizzi
     def connection_name(credential_type)
       {
         'docker-hub' => 'DockerHub',
+        'docker-registry' => 'Docker Registry',
         'acr' => 'ACR',
         'ecr' => 'ECR',
         'gcr' => 'GCR',

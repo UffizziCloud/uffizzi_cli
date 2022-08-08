@@ -24,6 +24,9 @@ acr
 docker\-hub
     Connect to Docker Hub (hub\.docker\.com)\.
 
+docker\-registry
+    Connect to any registry implementing the Docker Registry HTTP API protocol
+
 ecr
     Connect to Amazon Elastic Container Registry (amazonaws\.com)\.
 
