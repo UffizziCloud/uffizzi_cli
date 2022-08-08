@@ -1,28 +1,42 @@
-uffizzi-connect-acr - grant a Uffizzi user account access to a private Azure Container Registry (ACR)
-================================================================
+# uffizzi-connect-acr - grant a Uffizzi user account access to a private Azure Container Registry (ACR)
 
 ## SYNOPSIS
-    uffizzi connect acr
+
+`uffizzi connect acr` [--registry=REGISTRY] [--username=USERNAME] [--password=PASSWORD]
 
 ## DESCRIPTION
-    Given valid credentials, grants a Uffizzi user account access 
-    to a private Azure Container Registry
 
-    This command can fail for the following reasons:
-        - The active user does not have permission to connect 
-          external services.
-        - The given credentials are invalid.
+Given valid credentials, grants a Uffizzi user account access 
+to a private Azure Container Registry
 
-    For more information on connecting to external services, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+Credentials can be provided interactively or non-interactively
+via command options or environment variables:  
+`ACR_REGISTRY_URL`, `ACR_REGISTRY_USERNAME`, `ACR_REGISTRY_PASSWORD`
 
-    For detailed instructions on configuring webhooks to send push
-    notifications to Uffizzi, see 
-    https://docs.uffizzi.com/guides/container-registry-integrations
+This command can fail for the following reasons:
+- The active user does not have permission to connect external services.
+- The given credentials are invalid.
+
+For more information on connecting to external services, see:  
+https://github.com/UffizziCloud/uffizzi_cli
+
+For detailed instructions on configuring webhooks to send push
+notifications to Uffizzi, see:  
+https://docs.uffizzi.com/guides/container-registry-integrations
+
+## OPTIONS
+
+* `-r`, `--registry=<registry>`:
+  URL of the service.
+* `-u`, `--username=<username>`:
+  Username for the service.
+* `-p`, `--password=<password>`:
+  Password for the service.
 
 ## EXAMPLES
-    The following command will prompt the user to enter ACR 
-    credentials, including registry domain, Docker ID and 
-    password or access token:
-          
-        $ uffizzi connect acr
+
+The following command will prompt the user to enter ACR 
+credentials, including registry domain, Docker ID and 
+password or access token:
+
+`uffizzi connect acr`

@@ -14,7 +14,16 @@ class DisconnectTest < Minitest::Test
 
     @cli.disconnect('docker-hub')
 
-    assert_equal('Successfully disconnected DockerHub connection', Uffizzi.ui.last_message)
+    assert_equal('Successfully disconnected from DockerHub.', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_delete_credential)
+  end
+
+  def test_disconnect_docker_registry_success
+    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(Uffizzi.configuration.credential_types[:docker_registry])
+
+    @cli.disconnect('docker-registry')
+
+    assert_equal('Successfully disconnected from Docker Registry.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_delete_credential)
   end
 
@@ -23,7 +32,7 @@ class DisconnectTest < Minitest::Test
 
     @cli.disconnect('ghcr')
 
-    assert_equal('Successfully disconnected GHCR connection', Uffizzi.ui.last_message)
+    assert_equal('Successfully disconnected from GHCR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_delete_credential)
   end
 
@@ -32,7 +41,7 @@ class DisconnectTest < Minitest::Test
 
     @cli.disconnect('acr')
 
-    assert_equal('Successfully disconnected ACR connection', Uffizzi.ui.last_message)
+    assert_equal('Successfully disconnected from ACR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_delete_credential)
   end
 
@@ -41,7 +50,7 @@ class DisconnectTest < Minitest::Test
 
     @cli.disconnect('ecr')
 
-    assert_equal('Successfully disconnected ECR connection', Uffizzi.ui.last_message)
+    assert_equal('Successfully disconnected from ECR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_delete_credential)
   end
 
@@ -50,7 +59,7 @@ class DisconnectTest < Minitest::Test
 
     @cli.disconnect('gcr')
 
-    assert_equal('Successfully disconnected GCR connection', Uffizzi.ui.last_message)
+    assert_equal('Successfully disconnected from GCR.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_delete_credential)
   end
 

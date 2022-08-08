@@ -1,17 +1,17 @@
-# uffizzi-connect-ecr - grant a Uffizzi user account access to a private Amazon Elastic Container Registry (ECR)
+# uffizzi-connect-docker-registry - grant a Uffizzi user account access to a Docker Container Registry.
 
 ## SYNOPSIS
 
-`uffizzi connect ecr` [--registry=REGISTRY] [--id=ID] [--secret=SECRET]
+`uffizzi connect docker-registry` [--registry=REGISTRY] [--username=USERNAME] [--password=PASSWORD]
 
 ## DESCRIPTION
 
-Given valid credentials, grants a Uffizzi user account access 
-to a private Amazon Elastic Container Registry
+Given valid credentials, grants a Uffizzi user account access
+to a Docker Container Registry
 
 Credentials can be provided interactively or non-interactively
 via command options or environment variables:  
-`AWS_REGISTRY_URL`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+`DOCKER_REGISTRY_URL`, `DOCKER_REGISTRY_USERNAME`, `DOCKER_REGISTRY_PASSWORD`
 
 This command can fail for the following reasons:
 - The active user does not have permission to connect external services.
@@ -28,15 +28,14 @@ https://docs.uffizzi.com/guides/container-registry-integrations
 
 * `-r`, `--registry=<registry>`:
   URL of the service.
-* `--id=<id>`:
-  Access key id for the service.
-* `-s`, `--secret=<secret>`:
-  Secret access key for the service.
+* `-u`, `--username=<username>`:
+  Username for the service.
+* `-p`, `--password=<password>`:
+  Password for the service.
 
 ## EXAMPLES
 
-The following command will prompt the user to enter ACR 
-credentials, including registry domain, access key ID and 
-secret access key:
+The following command will prompt the user to enter Docker Container Registry
+credentials, including username and password:
 
-`uffizzi connect ecr`
+`uffizzi connect docker-registry`

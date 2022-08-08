@@ -1,43 +1,42 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CONNECT" "" "July 2022" ""
+.TH "UFFIZZI\-CONNECT" "" "August 2022" ""
 .SH "NAME"
 \fBuffizzi\-connect\fR \- grant a Uffizzi user account access to external services
 .SH "SYNOPSIS"
-.nf
-uffizzi connect COMMAND
-.fi
+\fBuffizzi connect\fR COMMAND [\-\-skip\-raise\-existence\-error] [\-\-update\-credential\-if\-exists]
 .SH "DESCRIPTION"
-.nf
-Grants a Uffizzi user account access to external services
-
-For more information on connecting to external services, see:
-https://github\.com/UffizziCloud/uffizzi_cli
-.fi
-.SH "COMMANDS"
-.nf
-COMMAND is one of the following:
-
-acr
-    Connect to Azure Container Registry (azurecr\.io)\.
-
-docker\-hub
-    Connect to Docker Hub (hub\.docker\.com)\.
-
-ecr
-    Connect to Amazon Elastic Container Registry (amazonaws\.com)\.
-
-gcr
-    Connect to Google Container Registry (gcr\.io)\.
-
-ghcr
-    Connect to GitHub Container Registry (ghcr\.io)\.
-.fi
-.SH "FLAGS"
-.nf
-\-\-skip\-raise\-existence\-error        If credential exist, do not raise an exception, just print a message
-
-\-\-update\-credential\-if\-exists       Update credential if it exists
-.fi
+Grants a Uffizzi user account access to external services\.
 .P
-Run \'uffizzi connect COMMAND \-\-help\' for more information on a command\.
+For more information on connecting to external services, see:
+.br
+https://github\.com/UffizziCloud/uffizzi_cli
+.SH "COMMANDS"
+COMMAND is one of the following:
+.TP
+\fBacr\fR
+Connect to Azure Container Registry (azurecr\.io)\.
+.TP
+\fBdocker\-hub\fR
+Connect to Docker Hub (hub\.docker\.com)\.
+.TP
+\fBdocker\-registry\fR
+Connect to any registry implementing the Docker Registry HTTP API protocol
+.TP
+\fBecr\fR
+Connect to Amazon Elastic Container Registry (amazonaws\.com)\.
+.TP
+\fBgcr\fR
+Connect to Google Container Registry (gcr\.io)\.
+.TP
+\fBghcr\fR
+Connect to GitHub Container Registry (ghcr\.io)\.
+.SH "FLAGS"
+.TP
+\fB\-\-skip\-raise\-existence\-error\fR
+If credential exists, do not raise an exception, just print a message\.
+.TP
+\fB\-\-update\-credential\-if\-exists\fR
+Update credential if it exists\.
+.P
+Run \fBuffizzi connect COMMAND \-\-help\fR for more information on a command\.
