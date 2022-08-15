@@ -55,11 +55,11 @@ To create a preview with an alternate compose file, run:
 
 To create a preview with single label, run:
 
-    $ uffizzi preview create \-\-set\-label github\.repo=my_repo
+    $ uffizzi preview create \-\-set\-labels github\.repo=my_repo
 
 To create a preview with multiple labels, run:
 
     $ uffizzi preview create \e
-    \-\-set\-label="github\.repo=my_repo github\.pull_request\.number=23"
+    \-\-set\-labels="github\.repo=my_repo github\.pull_request\.number=23"
 .fi
 

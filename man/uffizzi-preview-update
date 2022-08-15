@@ -49,12 +49,12 @@ To update a preview with single label, run:
 
     $ uffizzi preview update \e
     deployment\-67 docker\-compose\.alt\.yml \e
-    \-\-set\-label github\.repo=my_repo
+    \-\-set\-labels github\.repo=my_repo
 
 To update a preview with multiple labels, run:
 
     $ uffizzi preview update \e
     deployment\-67 docker\-compose\.alt\.yml \e
-    \-\-set\-label="github\.repo=my_repo github\.pull_request\.number=23"
+    \-\-set\-labels="github\.repo=my_repo github\.pull_request\.number=23"
 .fi
 
