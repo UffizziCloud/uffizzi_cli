@@ -11,6 +11,14 @@ uffizzi-preview-list - list previews in a project
     For more information on Uffizzi previews, see:
     https://github.com/UffizziCloud/uffizzi_cli
 
+## FLAGS
+    --filter=METADATA
+        Metadata to filtering list of deployments.
+
+    --output=json
+        Use this option for a more detailed description of listed
+        deployments.
+
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
     help for details.
@@ -23,3 +31,18 @@ uffizzi-preview-list - list previews in a project
     To list all previews in a project with name my_project, run:
 
         $ uffizzi preview list --project="my_project"
+
+    To list all previews in json format, run:
+
+        $ uffizzi preview list --output="json"
+
+    To list all previews filtered by theirs metadata using
+    single label, run:
+
+        $ uffizzi preview list --filter github.repo=my_repo
+
+    To list all previews filtered by theirs metadata using
+    multiple labels, run:
+
+        $ uffizzi preview list \
+        --filter="github.repo=my_repo github.pull_request.number=23"

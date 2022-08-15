@@ -27,6 +27,11 @@ uffizzi-preview-create - create a preview
         the previews they create: when the preview is deleted, the 
         alternate compose is deleted by the Uffizzi API. 
 
+## FLAGS
+    --set-labels=METADATA
+        Metadata of deployment that contains any information which can
+        be usefull for filtering deployments.
+
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
     help for details.
@@ -39,3 +44,12 @@ uffizzi-preview-create - create a preview
     To create a preview with an alternate compose file, run:
 
         $ uffizzi preview create docker-compose.uffizzi.alt.yml
+
+    To create a preview with single label, run:
+
+        $ uffizzi preview create --set-label github.repo=my_repo
+
+    To create a preview with multiple labels, run:
+
+        $ uffizzi preview create \
+        --set-label="github.repo=my_repo github.pull_request.number=23"
