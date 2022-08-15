@@ -1,8 +1,8 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UPDATE" "" "May 2022" ""
+.TH "UPDATE" "" "August 2022" ""
 .SH "NAME"
-\fBuffizzi preview update\fR \- update a preview
+\fBupdate\fR \- update a preview
 .SH "SYNOPSIS"
 .nf
 uffizzi preview update [PREVIEW_ID] [COMPOSE_FILE] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
@@ -27,6 +27,12 @@ https://github\.com/UffizziCloud/uffizzi_cli
 [COMPOSE_FILE]
     The new compose file you want to preview\.
 .fi
+.SH "FLAGS"
+.nf
+\-\-set\-labels=METADATA
+    Metadata of deployment that contains any information which can
+    be usefull for filtering deployments\.
+.fi
 .SH "UFFIZZI WIDE FLAGS"
 .nf
 These flags are available to all commands: \-\-project\. Run $ uffizzi
@@ -38,5 +44,17 @@ The following command updates a preview with ID deployment\-67 using
 compose file docker\-compose\.alt\.yml:
 
     $ uffizzi preview update deployment\-67 docker\-compose\.alt\.yml
+
+To update a preview with single label, run:
+
+    $ uffizzi preview update \e
+    deployment\-67 docker\-compose\.alt\.yml \e
+    \-\-set\-label github\.repo=my_repo
+
+To update a preview with multiple labels, run:
+
+    $ uffizzi preview update \e
+    deployment\-67 docker\-compose\.alt\.yml \e
+    \-\-set\-label="github\.repo=my_repo github\.pull_request\.number=23"
 .fi
 

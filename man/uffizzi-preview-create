@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-PREVIEW\-CREATE" "" "May 2022" ""
+.TH "UFFIZZI\-PREVIEW\-CREATE" "" "August 2022" ""
 .SH "NAME"
 \fBuffizzi\-preview\-create\fR \- create a preview
 .SH "SYNOPSIS"
@@ -32,6 +32,12 @@ https://github\.com/UffizziCloud/uffizzi_cli
     the previews they create: when the preview is deleted, the
     alternate compose is deleted by the Uffizzi API\.
 .fi
+.SH "FLAGS"
+.nf
+\-\-set\-labels=METADATA
+    Metadata of deployment that contains any information which can
+    be usefull for filtering deployments\.
+.fi
 .SH "UFFIZZI WIDE FLAGS"
 .nf
 These flags are available to all commands: \-\-project\. Run $ uffizzi
@@ -46,5 +52,14 @@ To create a preview with the project\'s default compose file, run:
 To create a preview with an alternate compose file, run:
 
     $ uffizzi preview create docker\-compose\.uffizzi\.alt\.yml
+
+To create a preview with single label, run:
+
+    $ uffizzi preview create \-\-set\-label github\.repo=my_repo
+
+To create a preview with multiple labels, run:
+
+    $ uffizzi preview create \e
+    \-\-set\-label="github\.repo=my_repo github\.pull_request\.number=23"
 .fi
 
