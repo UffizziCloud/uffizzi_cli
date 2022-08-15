@@ -17,7 +17,8 @@ class PreviewTest < Minitest::Test
 
   def test_list_preview
     body = json_fixture('files/uffizzi/uffizzi_preview_list.json')
-    stubbed_uffizzi_preview_list = stub_uffizzi_preview_list_success(body, @project_slug)
+    filter = {}
+    stubbed_uffizzi_preview_list = stub_uffizzi_preview_list_success(body, @project_slug, filter)
 
     deployment = body[:deployments].first
 
@@ -25,6 +26,52 @@ class PreviewTest < Minitest::Test
 
     assert_equal("deployment-#{deployment[:id]}", Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_preview_list)
+  end
+
+  def test_list_preview_with_filter_success
+    body = json_fixture('files/uffizzi/uffizzi_preview_list.json')
+    filter = {
+      'labels' => {
+        'github' => {
+          'repository' => 'UffizziCloud/example-voting-app',
+          'pull_request' => {
+            'number' => '23'
+          }
+        }
+      }
+    }
+    stubbed_uffizzi_preview_list = stub_uffizzi_preview_list_success(body, @project_slug, filter)
+
+    deployment = body[:deployments].first
+
+    @preview.options = command_options(:filter => "github.repository=UffizziCloud/example-voting-app github.pull_request.number=23")
+    @preview.list
+
+    assert_equal("deployment-#{deployment[:id]}", Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_preview_list)
+  end
+
+  def test_list_preview_with_filter_without_key
+    body = json_fixture('files/uffizzi/uffizzi_preview_list.json')
+    filter = {
+      'labels' => {
+        'github' => {
+          'repository' => 'UffizziCloud/example-voting-app',
+          'pull_request' => {
+            'number' => '23'
+          }
+        }
+      }
+    }
+    stubbed_uffizzi_preview_list = stub_uffizzi_preview_list_success(body, @project_slug, filter)
+
+    @preview.options = command_options(:filter => 'github.repository=UffizziCloud/example-voting-app =23')
+    error = assert_raises(Uffizzi::Error) do
+      @preview.list
+    end
+
+    assert_equal(error.message, 'Filtering parameters were set in incorrect format.')
+    refute_requested(stubbed_uffizzi_preview_list)
   end
 
   def test_delete_preview_success
@@ -110,6 +157,61 @@ class PreviewTest < Minitest::Test
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
     assert_requested(stubbed_uffizzi_preview_deploy_containers)
     assert_requested(stubbed_uffizzi_preview_create)
+  end
+
+  def test_create_preview_with_labels_success
+    create_body = json_fixture('files/uffizzi/uffizzi_preview_create_with_labels_success.json')
+    activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
+    deployment_id = create_body[:deployment][:id]
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
+
+    @preview.options = command_options(:"set-labels" => "github.repository=UffizziCloud/example-voting-app github.pull_request.number=23")
+    @preview.create
+
+    assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
+    assert_requested(stubbed_uffizzi_preview_deploy_containers)
+    assert_requested(stubbed_uffizzi_preview_create)
+  end
+
+  def test_create_preview_with_label_without_key
+    create_body = json_fixture('files/uffizzi/uffizzi_preview_create_with_labels_success.json')
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+
+    @preview.options = command_options(:"set-labels" => 'github.repository=UffizziCloud/example-voting-app =23')
+    error = assert_raises(Uffizzi::Error) do
+      @preview.create
+    end
+
+    assert_equal(error.message, 'Labels were set in incorrect format.')
+    refute_requested(stubbed_uffizzi_preview_create)
+  end
+
+  def test_create_preview_with_label_with_incorrect_key
+    create_body = json_fixture('files/uffizzi/uffizzi_preview_create_with_labels_success.json')
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+
+    @preview.options = command_options(:"set-labels" => 'github.repository=UffizziCloud/example-voting-app github.pull_request..number=23')
+    error = assert_raises(Uffizzi::Error) do
+      @preview.create
+    end
+
+    assert_equal(error.message, 'Labels were set in incorrect format.')
+    refute_requested(stubbed_uffizzi_preview_create)
+  end
+
+  def test_create_preview_with_label_without_value
+    create_body = json_fixture('files/uffizzi/uffizzi_preview_create_with_labels_success.json')
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+
+    @preview.options = command_options(:"set-labels" => 'github.repository=UffizziCloud/example-voting-app github.pull_request.number=')
+    error = assert_raises(Uffizzi::Error) do
+      @preview.create
+    end
+
+    assert_equal(error.message, 'Labels were set in incorrect format.')
+    refute_requested(stubbed_uffizzi_preview_create)
   end
 
   def test_create_preview_without_file_and_unexisted_compose
@@ -354,6 +456,36 @@ class PreviewTest < Minitest::Test
     end
 
     assert_equal('No_config_source', error.message)
+    refute_requested(stubbed_uffizzi_preview_update)
+  end
+
+  def test_update_preview_with_labels_success
+    update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
+    activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
+    deployment_id = update_body[:deployment][:id]
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
+
+    @preview.options = command_options(:"set-labels" => "github.repository=UffizziCloud/example-voting-app github.pull_request.number=23")
+    @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
+
+    assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
+    assert_requested(stubbed_uffizzi_preview_deploy_containers)
+    assert_requested(stubbed_uffizzi_preview_update)
+  end
+
+  def test_update_preview_with_label_without_key
+    update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
+    deployment_id = update_body[:deployment][:id]
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
+
+    @preview.options = command_options(:"set-labels" => 'github.repository=UffizziCloud/example-voting-app =23')
+    error = assert_raises(Uffizzi::Error) do
+      @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
+    end
+
+    assert_equal(error.message, 'Labels were set in incorrect format.')
     refute_requested(stubbed_uffizzi_preview_update)
   end
 
