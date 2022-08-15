@@ -35,16 +35,16 @@ class PreviewTest < Minitest::Test
         'github' => {
           'repository' => 'UffizziCloud/example-voting-app',
           'pull_request' => {
-            'number' => '23'
-          }
-        }
-      }
+            'number' => '23',
+          },
+        },
+      },
     }
     stubbed_uffizzi_preview_list = stub_uffizzi_preview_list_success(body, @project_slug, filter)
 
     deployment = body[:deployments].first
 
-    @preview.options = command_options(:filter => "github.repository=UffizziCloud/example-voting-app github.pull_request.number=23")
+    @preview.options = command_options(filter: 'github.repository=UffizziCloud/example-voting-app github.pull_request.number=23')
     @preview.list
 
     assert_equal("deployment-#{deployment[:id]}", Uffizzi.ui.last_message)
@@ -58,14 +58,14 @@ class PreviewTest < Minitest::Test
         'github' => {
           'repository' => 'UffizziCloud/example-voting-app',
           'pull_request' => {
-            'number' => '23'
-          }
-        }
-      }
+            'number' => '23',
+          },
+        },
+      },
     }
     stubbed_uffizzi_preview_list = stub_uffizzi_preview_list_success(body, @project_slug, filter)
 
-    @preview.options = command_options(:filter => 'github.repository=UffizziCloud/example-voting-app =23')
+    @preview.options = command_options(filter: 'github.repository=UffizziCloud/example-voting-app =23')
     error = assert_raises(Uffizzi::Error) do
       @preview.list
     end
@@ -167,7 +167,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
     stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
-    @preview.options = command_options(:"set-labels" => "github.repository=UffizziCloud/example-voting-app github.pull_request.number=23")
+    @preview.options = command_options("set-labels": 'github.repository=UffizziCloud/example-voting-app github.pull_request.number=23')
     @preview.create
 
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
@@ -179,7 +179,7 @@ class PreviewTest < Minitest::Test
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_with_labels_success.json')
     stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
 
-    @preview.options = command_options(:"set-labels" => 'github.repository=UffizziCloud/example-voting-app =23')
+    @preview.options = command_options("set-labels": 'github.repository=UffizziCloud/example-voting-app =23')
     error = assert_raises(Uffizzi::Error) do
       @preview.create
     end
@@ -192,7 +192,7 @@ class PreviewTest < Minitest::Test
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_with_labels_success.json')
     stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
 
-    @preview.options = command_options(:"set-labels" => 'github.repository=UffizziCloud/example-voting-app github.pull_request..number=23')
+    @preview.options = command_options("set-labels": 'github.repository=UffizziCloud/example-voting-app github.pull_request..number=23')
     error = assert_raises(Uffizzi::Error) do
       @preview.create
     end
@@ -205,7 +205,7 @@ class PreviewTest < Minitest::Test
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_with_labels_success.json')
     stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
 
-    @preview.options = command_options(:"set-labels" => 'github.repository=UffizziCloud/example-voting-app github.pull_request.number=')
+    @preview.options = command_options("set-labels": 'github.repository=UffizziCloud/example-voting-app github.pull_request.number=')
     error = assert_raises(Uffizzi::Error) do
       @preview.create
     end
@@ -467,7 +467,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
     stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
-    @preview.options = command_options(:"set-labels" => "github.repository=UffizziCloud/example-voting-app github.pull_request.number=23")
+    @preview.options = command_options("set-labels": 'github.repository=UffizziCloud/example-voting-app github.pull_request.number=23')
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
 
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
@@ -480,7 +480,7 @@ class PreviewTest < Minitest::Test
     deployment_id = update_body[:deployment][:id]
     stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
 
-    @preview.options = command_options(:"set-labels" => 'github.repository=UffizziCloud/example-voting-app =23')
+    @preview.options = command_options("set-labels": 'github.repository=UffizziCloud/example-voting-app =23')
     error = assert_raises(Uffizzi::Error) do
       @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
     end

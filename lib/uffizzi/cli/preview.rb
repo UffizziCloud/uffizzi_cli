@@ -278,28 +278,35 @@ module Uffizzi
     def build_metadata_params(labels)
       {
         metadata: {
-          'labels' => parse_params(labels, 'Labels')
-        }
+          'labels' => parse_params(labels, 'Labels'),
+        },
       }
     end
 
     def build_filter_params(filter_params)
       {
-        'labels' => parse_params(filter_params, 'Filtering parameters')
+        'labels' => parse_params(filter_params, 'Filtering parameters'),
       }
     end
 
     def parse_params(params, params_type)
+      validate_params(params, params_type)
       params.split(' ').reduce({}) do |acc, param|
+        stringified_keys, value = param.split('=', 2)
+        keys = stringified_keys.split('.', -1)
+        inner_pair = { keys.pop => value }
+        prepared_param = keys.reverse.reduce(inner_pair) { |res, key| { key => res } }
+        merge_params(acc, prepared_param)
+      end
+    end
+
+    def validate_params(params, params_type)
+      params.split(' ').each do |param|
         stringified_keys, value = param.split('=', 2)
         raise Uffizzi::Error.new("#{params_type} were set in incorrect format.") if value.nil? || stringified_keys.nil? || value.empty?
 
         keys = stringified_keys.split('.', -1)
         raise Uffizzi::Error.new("#{params_type} were set in incorrect format.") if keys.empty? || keys.any?(&:empty?)
-
-        inner_pair = { keys.pop => value }
-        prepared_param = keys.reverse.reduce(inner_pair) { |res, key| { key => res } }
-        merge_params(acc, prepared_param)
       end
     end
 
