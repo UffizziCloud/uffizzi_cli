@@ -32,8 +32,10 @@ module ApiRoutes
     "#{compose_files_uri(server, project_slug)}/validate"
   end
 
-  def deployments_uri(server, project_slug)
-    "#{server}/api/cli/v1/projects/#{project_slug}/deployments"
+  def deployments_uri(server, project_slug, filter = nil)
+    return "#{server}/api/cli/v1/projects/#{project_slug}/deployments" if filter.nil?
+
+    "#{server}/api/cli/v1/projects/#{project_slug}/deployments?q=#{filter.to_json}"
   end
 
   def deployment_uri(server, project_slug, deployment_id)

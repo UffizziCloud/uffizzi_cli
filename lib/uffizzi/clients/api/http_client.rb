@@ -50,13 +50,13 @@ module Uffizzi
       headers = { 'Content-Type' => 'application/json' }
       request = case method
                 when :get
-                  Net::HTTP::Get.new(uri.path, headers)
+                  Net::HTTP::Get.new(uri.request_uri, headers)
                 when :post
-                  Net::HTTP::Post.new(uri.path, headers)
+                  Net::HTTP::Post.new(uri.request_uri, headers)
                 when :delete
-                  Net::HTTP::Delete.new(uri.path, headers)
+                  Net::HTTP::Delete.new(uri.request_uri, headers)
                 when :put
-                  Net::HTTP::Put.new(uri.path, headers)
+                  Net::HTTP::Put.new(uri.request_uri, headers)
       end
       if request.instance_of?(Net::HTTP::Post) || request.instance_of?(Net::HTTP::Put)
         request.body = params.to_json
