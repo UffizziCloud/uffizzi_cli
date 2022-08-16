@@ -184,9 +184,7 @@ module Uffizzi
         if Uffizzi.ui.output_format.nil?
           Uffizzi.ui.say("deployment-#{deployment[:id]}")
         else
-          deployed_by_email = { deployed_by: deployment[:deployed_by].slice(:email) }
-          filtered_deployment = deployment.slice(:created_at, :updated_at, :state, :preview_url, :metadata).merge(deployed_by_email)
-          Uffizzi.ui.pretty_say(filtered_deployment)
+          Uffizzi.ui.pretty_say(deployment)
         end
       end
     end
