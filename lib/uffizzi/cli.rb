@@ -25,8 +25,8 @@ module Uffizzi
     end
 
     desc 'login_by_identity_token [OPTIONS]', 'Login or register to Uffizzi to view and manage your previews'
-    method_option :server, required: false, aliases: '-s'
-    method_option :username, required: false, aliases: '-u'
+    method_option :server, required: true, aliases: '-s'
+    method_option :token, required: true, aliases: '-t'
     def login_by_identity_token
       require_relative 'cli/login_by_identity_token'
       LoginByIdentityToken.new(options).run
