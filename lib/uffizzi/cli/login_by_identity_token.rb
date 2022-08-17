@@ -13,9 +13,9 @@ module Uffizzi
     end
 
     def run
-      token = ENV['OIDC_TOKEN']
+      token = @options[:token]
+      server = @options[:server]
       params = prepare_request_params(token)
-      server = ENV['UFFIZZI_SERVER']
       response = create_ci_session(server, params)
 
       if ResponseHelper.created?(response)
@@ -40,6 +40,8 @@ module Uffizzi
       ConfigFile.write_option(:cookie, response[:headers])
       ConfigFile.write_option(:account_id, response[:body][:account_id])
       ConfigFile.write_option(:project, response[:body][:project_slug])
+
+      Uffizzi.ui.say('Successful Login by Identity Token')
     end
   end
 end
