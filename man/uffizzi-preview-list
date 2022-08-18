@@ -43,13 +43,13 @@ To list all previews in json format, run:
 
     $ uffizzi preview list \-\-output="json"
 
-To list all previews filtered by theirs metadata using
-single label, run:
+To list all previews filtered by metadata using single
+label, run:
 
     $ uffizzi preview list \-\-filter github\.repo=my_repo
 
-To list all previews filtered by theirs metadata using
-multiple labels, run:
+To list all previews filtered by metadata using multiple
+labels, run:
 
     $ uffizzi preview list \e
     \-\-filter="github\.repo=my_repo github\.pull_request\.number=23"
