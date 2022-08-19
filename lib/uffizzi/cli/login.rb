@@ -34,17 +34,17 @@ module Uffizzi
 
     def set_server
       config_server = ConfigFile.exists? ? read_option_from_config(:server) : nil
-      server_address = @options[:server] || config_server || Uffizzi.ui.ask('Server: ')
+      server_address = (@options[:server] || config_server || Uffizzi.ui.ask('Server:')).sub(/\/+$/, '')
       server_address.start_with?('http:', 'https:') ? server_address : "https://#{server_address}"
     end
 
     def set_username
       config_username = ConfigFile.exists? ? read_option_from_config(:username) : nil
-      @options[:username] || config_username || Uffizzi.ui.ask('Username: ')
+      @options[:username] || config_username || Uffizzi.ui.ask('Username:')
     end
 
     def set_password
-      ENV['UFFIZZI_PASSWORD'] || Uffizzi.ui.ask('Password: ', echo: false)
+      ENV['UFFIZZI_PASSWORD'] || Uffizzi.ui.ask('Password:', echo: false)
     end
 
     def read_option_from_config(option)
