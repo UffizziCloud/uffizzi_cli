@@ -245,7 +245,7 @@ module Uffizzi
     end
 
     def build_deployment_data(deployment)
-      url_server = ConfigFile.read_option(:server).strip.gsub(/\/*$/, '')
+      url_server = ConfigFile.read_option(:server)
 
       {
         id: "deployment-#{deployment[:id]}",
