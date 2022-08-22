@@ -1,0 +1,29 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-LOGIN\-BY\-IDENTITY\-TOKEN" "" "August 2022" ""
+.SH "NAME"
+\fBuffizzi\-login\-by\-identity\-token\fR \- login to Uffizzi using a OIDC token provided by a CI/CD pipeline
+.SH "SYNOPSIS"
+.nf
+uffizzi uffizzi\-login\-by\-identity\-token [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
+.SH "DESCRIPTION"
+.nf
+The uffizzi login command lets you authenticate with Uffizzi from a CI/CD pipeline\.
+If a user/account do not exist, Uffizzi will create them based on token payload\.
+
+For more information on authentication and credential types, see:
+https://github\.com/UffizziCloud/uffizzi_cli
+.fi
+.SH "UFFIZZI WIDE FLAGS"
+.nf
+These flags are available to all commands: \-\-project\. Run $ uffizzi
+help for details\.
+.fi
+.SH "EXAMPLES"
+.nf
+To login from the CI/CD pipeline, run:
+
+    $ uffizzi uffizzi\-login\-by\-identity\-token \-\-server=uffizzi\.example\.com \-\-token=[$CI_JOB_TOKEN]
+.fi
+
