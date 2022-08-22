@@ -5,13 +5,12 @@ require 'test_helper'
 class LoginByIdentityTokenTest < Minitest::Test
   def setup
     @cli = Uffizzi::Cli.new
+    @cli.options = command_options(token: 'token', server: Uffizzi.configuration.server)
   end
 
   def test_login_success_with_oidc
-    ENV['OIDC_TOKEN'] = 'token'
-    ENV['UFFIZZI_SERVER'] = Uffizzi.configuration.server
     body = json_fixture('files/uffizzi/uffizzi_login_by_jwt_success.json')
-    stubbed_uffizzi_login = stub_uffizzi_login_by_jwt_success(body)
+    stubbed_uffizzi_login = stub_uffizzi_login_by_identity_token_success(body)
 
     refute(Uffizzi::ConfigFile.option_exists?(:server))
     refute(Uffizzi::ConfigFile.option_exists?(:username))
@@ -24,10 +23,8 @@ class LoginByIdentityTokenTest < Minitest::Test
   end
 
   def test_login_failed
-    ENV['OIDC_TOKEN'] = 'token'
-    ENV['UFFIZZI_SERVER'] = Uffizzi.configuration.server
     body = json_fixture('files/uffizzi/uffizzi_login_by_jwt_failure.json')
-    stubbed_uffizzi_login = stub_uffizzi_login_by_jwt_failure(body)
+    stubbed_uffizzi_login = stub_uffizzi_login_by_identity_token_failure(body)
 
     assert_raises(Uffizzi::Error) do
       @cli.login_by_identity_token

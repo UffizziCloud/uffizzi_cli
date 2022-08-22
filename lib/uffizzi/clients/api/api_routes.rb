@@ -58,20 +58,20 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/events"
   end
 
-  def check_credential_uri(server, type)
-    "#{server}/api/cli/v1/account/credentials/#{type}/check_credential"
+  def check_credential_uri(server, account_id, type)
+    "#{server}/api/cli/v1/accounts/#{account_id}/credentials/#{type}/check_credential"
   end
 
-  def credentials_uri(server)
-    "#{server}/api/cli/v1/account/credentials"
+  def credentials_uri(server, account_id)
+    "#{server}/api/cli/v1/accounts/#{account_id}/credentials"
   end
 
   def preview_services_uri(server, project_slug, deployment_id)
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers"
   end
 
-  def credential_uri(server, credential_type)
-    "#{server}/api/cli/v1/account/credentials/#{credential_type}"
+  def credential_uri(server, account_id, credential_type)
+    "#{server}/api/cli/v1/accounts/#{account_id}/credentials/#{credential_type}"
   end
 
   def preview_service_logs_uri(server, project_slug, deployment_id, container_name)
