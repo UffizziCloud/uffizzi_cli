@@ -12,19 +12,24 @@ module Uffizzi
     desc 'service', 'Show the preview services info'
     require_relative 'preview/service'
     subcommand 'service', Uffizzi::Cli::Preview::Service
+
     desc 'list', 'List all previews'
+    method_option :filter, required: false, type: :string, aliases: '-f'
+    method_option :output, required: false, type: :string, aliases: '-o', enum: ['json']
     def list
       run('list')
     end
 
     desc 'create [COMPOSE_FILE]', 'Create a preview'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
+    method_option :"set-labels", required: false, type: :string, aliases: '-s'
     def create(file_path = nil)
       run('create', file_path: file_path)
     end
 
     desc 'uffizzi preview update [DEPLOYMENT_ID] [COMPOSE_FILE]', 'Update a preview'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
+    method_option :"set-labels", required: false, type: :string, aliases: '-s'
     def update(deployment_name, file_path)
       run('update', deployment_name: deployment_name, file_path: file_path)
     end
@@ -47,10 +52,7 @@ module Uffizzi
     private
 
     def run(command, file_path: nil, deployment_name: nil)
-      unless options[:output].nil?
-        Uffizzi.ui.output_format = options[:output]
-        Uffizzi.ui.disable_stdout
-      end
+      Uffizzi.ui.output_format = options[:output]
       raise Uffizzi::Error.new('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
       raise Uffizzi::Error.new('This command needs project to be set in config file') unless CommandService.project_set?(options)
 
@@ -58,11 +60,11 @@ module Uffizzi
 
       case command
       when 'list'
-        handle_list_command(project_slug)
+        handle_list_command(project_slug, options[:filter])
       when 'create'
-        handle_create_command(file_path, project_slug)
+        handle_create_command(file_path, project_slug, options[:"set-labels"])
       when 'update'
-        handle_update_command(deployment_name, file_path, project_slug)
+        handle_update_command(deployment_name, file_path, project_slug, options[:"set-labels"])
       when 'delete'
         handle_delete_command(deployment_name, project_slug)
       when 'describe'
@@ -72,8 +74,9 @@ module Uffizzi
       end
     end
 
-    def handle_list_command(project_slug)
-      response = fetch_deployments(ConfigFile.read_option(:server), project_slug)
+    def handle_list_command(project_slug, filter)
+      parsed_filter = filter.nil? ? {} : build_filter_params(filter)
+      response = fetch_deployments(ConfigFile.read_option(:server), project_slug, parsed_filter)
 
       if ResponseHelper.ok?(response)
         handle_succeed_list_response(response)
@@ -82,8 +85,10 @@ module Uffizzi
       end
     end
 
-    def handle_create_command(file_path, project_slug)
-      params = file_path.nil? ? {} : prepare_params(file_path)
+    def handle_create_command(file_path, project_slug, labels)
+      Uffizzi.ui.disable_stdout unless options[:output].nil?
+      params = prepare_params(file_path, labels)
+
       response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
 
       if !ResponseHelper.created?(response)
@@ -101,12 +106,13 @@ module Uffizzi
       handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
     end
 
-    def handle_update_command(deployment_name, file_path, project_slug)
+    def handle_update_command(deployment_name, file_path, project_slug, labels)
+      Uffizzi.ui.disable_stdout unless options[:output].nil?
       deployment_id = PreviewService.read_deployment_id(deployment_name)
 
       raise Uffizzi::Error.new("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
 
-      params = prepare_params(file_path)
+      params = prepare_params(file_path, labels)
       response = update_deployment(ConfigFile.read_option(:server), project_slug, deployment_id, params)
 
       if !ResponseHelper.ok?(response)
@@ -175,7 +181,11 @@ module Uffizzi
       raise Uffizzi::Error.new('The project has no active deployments') if deployments.empty?
 
       deployments.each do |deployment|
-        Uffizzi.ui.say("deployment-#{deployment[:id]}")
+        if Uffizzi.ui.output_format.nil?
+          Uffizzi.ui.say("deployment-#{deployment[:id]}")
+        else
+          Uffizzi.ui.pretty_say(deployment)
+        end
       end
     end
 
@@ -205,26 +215,10 @@ module Uffizzi
       end
     end
 
-    def prepare_params(file_path)
-      begin
-        compose_file_data = EnvVariablesService.substitute_env_variables(File.read(file_path))
-      rescue Errno::ENOENT => e
-        raise Uffizzi::Error.new(e.message)
-      end
-
-      compose_file_dir = File.dirname(file_path)
-      dependencies = ComposeFileService.parse(compose_file_data, compose_file_dir)
-      absolute_path = File.absolute_path(file_path)
-      compose_file_params = {
-        path: absolute_path,
-        content: Base64.encode64(compose_file_data),
-        source: absolute_path,
-      }
-
-      {
-        compose_file: compose_file_params,
-        dependencies: dependencies,
-      }
+    def prepare_params(file_path, labels)
+      compose_file_params = file_path.nil? ? {} : build_compose_file_params(file_path)
+      metadata_params = labels.nil? ? {} : build_metadata_params(labels)
+      compose_file_params.merge(metadata_params)
     end
 
     def handle_preview_interruption(deployment_id, server, project_slug)
@@ -251,10 +245,77 @@ module Uffizzi
     end
 
     def build_deployment_data(deployment)
+      url_server = ConfigFile.read_option(:server)
+
       {
         id: "deployment-#{deployment[:id]}",
         url: "https://#{deployment[:preview_url]}",
+        containers_uri: "#{url_server}/projects/#{deployment[:project_id]}/deployments/#{deployment[:id]}/containers",
       }
+    end
+
+    def build_compose_file_params(file_path)
+      begin
+        compose_file_data = EnvVariablesService.substitute_env_variables(File.read(file_path))
+      rescue Errno::ENOENT => e
+        raise Uffizzi::Error.new(e.message)
+      end
+
+      compose_file_dir = File.dirname(file_path)
+      dependencies = ComposeFileService.parse(compose_file_data, compose_file_dir)
+      absolute_path = File.absolute_path(file_path)
+      compose_file_params = {
+        path: absolute_path,
+        content: Base64.encode64(compose_file_data),
+        source: absolute_path,
+      }
+
+      {
+        compose_file: compose_file_params,
+        dependencies: dependencies,
+      }
+    end
+
+    def build_metadata_params(labels)
+      {
+        metadata: {
+          'labels' => parse_params(labels, 'Labels'),
+        },
+      }
+    end
+
+    def build_filter_params(filter_params)
+      {
+        'labels' => parse_params(filter_params, 'Filtering parameters'),
+      }
+    end
+
+    def parse_params(params, params_type)
+      validate_params(params, params_type)
+      params.split(' ').reduce({}) do |acc, param|
+        stringified_keys, value = param.split('=', 2)
+        keys = stringified_keys.split('.', -1)
+        inner_pair = { keys.pop => value }
+        prepared_param = keys.reverse.reduce(inner_pair) { |res, key| { key => res } }
+        merge_params(acc, prepared_param)
+      end
+    end
+
+    def validate_params(params, params_type)
+      params.split(' ').each do |param|
+        stringified_keys, value = param.split('=', 2)
+        raise Uffizzi::Error.new("#{params_type} were set in incorrect format.") if value.nil? || stringified_keys.nil? || value.empty?
+
+        keys = stringified_keys.split('.', -1)
+        raise Uffizzi::Error.new("#{params_type} were set in incorrect format.") if keys.empty? || keys.any?(&:empty?)
+      end
+    end
+
+    def merge_params(result, param)
+      key = param.keys.first
+      return result.merge(param) unless result.has_key?(key)
+
+      { key => result[key].merge(merge_params(result[key], param[key])) }
     end
   end
 end

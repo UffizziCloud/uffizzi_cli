@@ -147,8 +147,8 @@ module ApiClient
     build_response(response)
   end
 
-  def fetch_deployments(server, project_slug)
-    uri = deployments_uri(server, project_slug)
+  def fetch_deployments(server, project_slug, filter)
+    uri = deployments_uri(server, project_slug, filter)
     response = http_client.make_get_request(uri)
 
     build_response(response)

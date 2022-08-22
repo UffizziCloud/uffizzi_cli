@@ -22,6 +22,11 @@ uffizzi preview update - update a preview
     [COMPOSE_FILE]
         The new compose file you want to preview.
 
+## FLAGS
+    --set-labels=METADATA
+        Metadata of deployment that contains any information which can
+        be usefull for filtering deployments.
+
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
     help for details.
@@ -31,3 +36,15 @@ uffizzi preview update - update a preview
     compose file docker-compose.alt.yml:
 
         $ uffizzi preview update deployment-67 docker-compose.alt.yml
+
+    To update a preview with single label, run:
+
+        $ uffizzi preview update \
+        deployment-67 docker-compose.alt.yml \
+        --set-labels github.repo=my_repo
+
+    To update a preview with multiple labels, run:
+
+        $ uffizzi preview update \
+        deployment-67 docker-compose.alt.yml \
+        --set-labels="github.repo=my_repo github.pull_request.number=23"

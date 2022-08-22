@@ -5,8 +5,8 @@ require 'uffizzi/clients/api/api_routes'
 module UffizziPreviewStubSupport
   include ApiRoutes
 
-  def stub_uffizzi_preview_list_success(body, project_slug)
-    url = deployments_uri(Uffizzi.configuration.server, project_slug)
+  def stub_uffizzi_preview_list_success(body, project_slug, filter = nil)
+    url = deployments_uri(Uffizzi.configuration.server, project_slug, filter)
 
     stub_request(:get, url).to_return(status: 200, body: body.to_json)
   end
