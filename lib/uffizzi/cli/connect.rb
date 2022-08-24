@@ -230,7 +230,13 @@ module Uffizzi
       server = ConfigFile.read_option(:server)
       account_id = ConfigFile.read_option(:account_id)
       response = check_credential(server, account_id, type)
-      !ResponseHelper.ok?(response)
+      return false if ResponseHelper.ok?(response)
+      return true if ResponseHelper.unprocessable_entity?(response)
+
+      if ResponseHelper.forbidden?(response)
+        Uffizzi.ui.say('Unauthorized. Skipping credentials action.')
+        exit(true)
+      end
     end
 
     def handle_existing_credential_options(credential_type_slug)
