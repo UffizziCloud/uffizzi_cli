@@ -1,6 +1,7 @@
 {
   "project":
     {
+      "account_id": 1,
       "slug": "project_slug_1"
     }
 }

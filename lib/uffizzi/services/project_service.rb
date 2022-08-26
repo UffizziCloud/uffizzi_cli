@@ -24,6 +24,7 @@ class ProjectService
       Uffizzi.ui.say("Project name: #{project[:name]}")
       Uffizzi.ui.say("Project slug: #{project[:slug]}")
       Uffizzi.ui.say("Description: #{project[:description]}".strip)
+      Uffizzi.ui.say("Account name: #{project[:account][:name]}".strip)
       Uffizzi.ui.say("Created: #{project[:created_at]}")
       default_compose = project[:default_compose].nil? ? nil : project[:default_compose][:source]
       Uffizzi.ui.say("Default compose: #{default_compose}".strip)
