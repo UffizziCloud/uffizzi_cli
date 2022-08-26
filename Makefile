@@ -3,6 +3,7 @@
 NEXT_PATCH=$(shell docker-compose run --rm gem bash -c "bundle exec bump show-next patch")
 NEXT_MINOR=$(shell docker-compose run --rm gem bash -c "bundle exec bump show-next minor")
 NEXT_MAJOR=$(shell docker-compose run --rm gem bash -c "bundle exec bump show-next major")
+TAG_FULL_VERSION=v${VERSION}
 
 release_patch: export VERSION=${NEXT_PATCH}
 release_patch:
@@ -28,8 +29,8 @@ release:
 	git merge --no-ff --no-edit develop
 	git push origin main
 	@echo 'Create a new tag'
-	git tag v${VERSION}
-	git push origin v${VERSION}
+	git tag ${TAG_FULL_VERSION}
+	git push origin ${TAG_FULL_VERSION}
 
 shell:
 	docker-compose run --rm gem bash
