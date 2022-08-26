@@ -22,7 +22,9 @@ class ProjectsTest < Minitest::Test
 
   def test_project_create_success
     body = json_fixture('files/uffizzi/uffizzi_project_success.json')
-    stubbed_uffizzi_project = stub_uffizzi_project_create_success(body)
+    login_body = json_fixture('files/uffizzi/uffizzi_login_success.json')
+    account_id = login_body[:user][:accounts].first[:id].to_s
+    stubbed_uffizzi_project = stub_uffizzi_project_create_success(body, account_id)
     @project.options = {
       name: 'name',
       description: 'project description',

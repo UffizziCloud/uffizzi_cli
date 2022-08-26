@@ -61,6 +61,7 @@ module Uffizzi
     end
 
     def handle_succeed_response(response, server, username)
+      # TODO Choose a personal account
       account = response[:body][:user][:accounts].first
       return Uffizzi.ui.say('No account related to this email') unless account_valid?(account)
 
@@ -95,9 +96,11 @@ module Uffizzi
       end
       all_choices = choices + [{ name: 'Create a new project', value: nil }]
       answer = Uffizzi.prompt.select(question, all_choices)
-      return ConfigFile.write_option(:project, answer) if answer
+      return create_new_project(server) unless answer
 
-      create_new_project(server)
+      account_id = projects.detect { |project| project[:slug] == answer }[:account_id]
+      ConfigFile.write_option(:project, answer)
+      ConfigFile.write_option(:account_id, account_id)
     end
 
     def create_new_project(server)
@@ -116,7 +119,8 @@ module Uffizzi
         },
       }
 
-      response = create_project(server, params)
+      account_id = ConfigFile.read_option(:account_id)
+      response = create_project(server, account_id, params)
 
       if ResponseHelper.created?(response)
         handle_create_project_succeess(response)
@@ -139,6 +143,7 @@ module Uffizzi
       project = response[:body][:project]
 
       ConfigFile.write_option(:project, project[:slug])
+      ConfigFile.write_option(:account_id, project[:account_id])
 
       Uffizzi.ui.say("Project #{project[:name]} was successfully created")
     end

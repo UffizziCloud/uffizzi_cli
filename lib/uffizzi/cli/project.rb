@@ -102,12 +102,13 @@ module Uffizzi
       raise Uffizzi::Error.new('Slug must not content spaces or special characters') unless slug.match?(/^[a-zA-Z0-9\-_]+\Z/i)
 
       server = ConfigFile.read_option(:server)
+      account_id = ConfigFile.read_option(:account_id)
       params = {
         name: name,
         description: options[:description],
         slug: slug,
       }
-      response = create_project(server, params)
+      response = create_project(server, account_id, params)
 
       if ResponseHelper.created?(response)
         handle_create_success_response(response)
@@ -165,6 +166,7 @@ module Uffizzi
 
     def set_default_project(project)
       ConfigFile.write_option(:project, project[:slug])
+      ConfigFile.write_option(:account_id, project[:account_id])
     end
   end
 end

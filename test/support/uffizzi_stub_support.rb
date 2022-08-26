@@ -62,8 +62,8 @@ module UffizziStubSupport
     stub_request(:get, url).to_return(status: 401, body: body.to_json)
   end
 
-  def stub_uffizzi_project_create_success(body)
-    url = projects_uri(Uffizzi.configuration.server)
+  def stub_uffizzi_project_create_success(body, account_id)
+    url = create_projects_uri(Uffizzi.configuration.server, account_id)
 
     stub_request(:post, url).to_return(status: 201, body: body.to_json)
   end
