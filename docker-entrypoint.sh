@@ -65,8 +65,8 @@ then
 fi
 
 if
-	[ $GHCR_USERNAME ] &&
-	[ $GHCR_ACCESS_TOKEN ]
+	[ $GITHUB_USERNAME ] &&
+	[ $GITHUB_ACCESS_TOKEN ]
 then
 	uffizzi connect ghcr --update-credential-if-exists
 fi

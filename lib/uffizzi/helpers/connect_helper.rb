@@ -35,8 +35,8 @@ module Uffizzi
       end
 
       def get_ghcr_data(options)
-        username = options[:username] || ENV['GHCR_USERNAME'] || Uffizzi.ui.ask('Github Username:')
-        password = options[:token] || ENV['GHCR_ACCESS_TOKEN'] || Uffizzi.ui.ask('Access Token:', echo: false)
+        username = options[:username] || ENV['GITHUB_USERNAME'] || Uffizzi.ui.ask('Github Username:')
+        password = options[:token] || ENV['GITHUB_ACCESS_TOKEN'] || Uffizzi.ui.ask('Access Token:', echo: false)
 
         [username, password]
       end
