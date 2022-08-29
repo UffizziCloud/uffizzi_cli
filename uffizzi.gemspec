@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'thor'
   spec.add_dependency 'tty-prompt'
   spec.add_dependency 'tty-spinner'
+  spec.add_dependency 'minitar'
 
   spec.add_development_dependency 'bump'
   spec.add_development_dependency 'bundler', '~> 2.2'

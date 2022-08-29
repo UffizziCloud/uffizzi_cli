@@ -3,6 +3,7 @@ PATH
   specs:
     uffizzi-cli (1.0.2)
       awesome_print
+      minitar
       thor
       tty-prompt
       tty-spinner
@@ -36,6 +37,7 @@ GEM
     kramdown (2.3.1)
       rexml
     method_source (1.0.0)
+    minitar (0.9)
     minitest (5.14.4)
     minitest-power_assert (0.3.1)
       minitest
