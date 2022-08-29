@@ -12,8 +12,21 @@ module UffizziStubSupport
     stub_request(:post, url).to_return(status: 201, body: body.to_json, headers: headers)
   end
 
+  def stub_uffizzi_login_by_identity_token_success(body)
+    url = ci_session_uri(Uffizzi.configuration.server)
+    headers = { "set-cookie": '_uffizzi=test; path=/; HttpOnly' }
+
+    stub_request(:post, url).to_return(status: 201, body: body.to_json, headers: headers)
+  end
+
   def stub_uffizzi_login_failed(body)
     url = session_uri(Uffizzi.configuration.server)
+
+    stub_request(:post, url).to_return(status: 422, body: body.to_json)
+  end
+
+  def stub_uffizzi_login_by_identity_token_failure(body)
+    url = ci_session_uri(Uffizzi.configuration.server)
 
     stub_request(:post, url).to_return(status: 422, body: body.to_json)
   end
@@ -49,8 +62,8 @@ module UffizziStubSupport
     stub_request(:get, url).to_return(status: 401, body: body.to_json)
   end
 
-  def stub_uffizzi_project_create_success(body)
-    url = projects_uri(Uffizzi.configuration.server)
+  def stub_uffizzi_project_create_success(body, account_id)
+    url = create_projects_uri(Uffizzi.configuration.server, account_id)
 
     stub_request(:post, url).to_return(status: 201, body: body.to_json)
   end
@@ -91,50 +104,50 @@ module UffizziStubSupport
     stub_request(:delete, url).to_return(status: 204, body: '')
   end
 
-  def stub_uffizzi_create_credential(body)
-    uri = credentials_uri(Uffizzi.configuration.server)
+  def stub_uffizzi_create_credential(account_id, body)
+    uri = credentials_uri(Uffizzi.configuration.server, account_id)
 
     stub_request(:post, uri).to_return(status: 201, body: body.to_json)
   end
 
-  def stub_uffizzi_update_credential(body, type)
-    uri = credential_uri(Uffizzi.configuration.server, type)
+  def stub_uffizzi_update_credential(account_id, body, type)
+    uri = credential_uri(Uffizzi.configuration.server, account_id, type)
 
     stub_request(:put, uri).to_return(status: 200, body: body.to_json)
   end
 
-  def stub_uffizzi_check_credential_success(type)
-    uri = check_credential_uri(Uffizzi.configuration.server, type)
+  def stub_uffizzi_check_credential_success(account_id, type)
+    uri = check_credential_uri(Uffizzi.configuration.server, account_id, type)
 
     stub_request(:get, uri).to_return(status: 200, body: '')
   end
 
-  def stub_uffizzi_check_credential_fail(type)
-    uri = check_credential_uri(Uffizzi.configuration.server, type)
+  def stub_uffizzi_check_credential_fail(account_id, type)
+    uri = check_credential_uri(Uffizzi.configuration.server, account_id, type)
 
     stub_request(:get, uri).to_return(status: 422, body: '')
   end
 
-  def stub_uffizzi_list_credentials(body)
-    uri = credentials_uri(Uffizzi.configuration.server)
+  def stub_uffizzi_list_credentials(account_id, body)
+    uri = credentials_uri(Uffizzi.configuration.server, account_id)
 
     stub_request(:get, uri).to_return(status: 200, body: body.to_json)
   end
 
-  def stub_uffizzi_create_credential_fail(body)
-    uri = credentials_uri(Uffizzi.configuration.server)
+  def stub_uffizzi_create_credential_fail(account_id, body)
+    uri = credentials_uri(Uffizzi.configuration.server, account_id)
 
     stub_request(:post, uri).to_return(status: 422, body: body.to_json)
   end
 
-  def stub_uffizzi_delete_credential(credential_type)
-    uri = credential_uri(Uffizzi.configuration.server, credential_type)
+  def stub_uffizzi_delete_credential(account_id, credential_type)
+    uri = credential_uri(Uffizzi.configuration.server, account_id, credential_type)
 
     stub_request(:delete, uri).to_return(status: 204)
   end
 
-  def stub_uffizzi_delete_credential_fail(body, credential_type)
-    uri = credential_uri(Uffizzi.configuration.server, credential_type)
+  def stub_uffizzi_delete_credential_fail(account_id, body, credential_type)
+    uri = credential_uri(Uffizzi.configuration.server, account_id, credential_type)
 
     stub_request(:delete, uri).to_return(status: 422, body: body.to_json)
   end

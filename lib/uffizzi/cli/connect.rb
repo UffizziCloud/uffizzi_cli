@@ -10,7 +10,8 @@ module Uffizzi
     desc 'list-credentials', 'List existing credentials for an account'
     def list_credentials
       server = ConfigFile.read_option(:server)
-      response = fetch_credentials(server)
+      account_id = ConfigFile.read_option(:account_id)
+      response = fetch_credentials(server, account_id)
       if ResponseHelper.ok?(response)
         handle_list_credentials_success(response)
       else
@@ -37,11 +38,12 @@ module Uffizzi
         type: type,
       }
       server = ConfigFile.read_option(:server)
+      account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, type)
+        update_credential(server, params, account_id, type)
       else
-        create_credential(server, params)
+        create_credential(server, account_id, params)
       end
 
       handle_result_for('Docker Hub', response)
@@ -68,11 +70,12 @@ module Uffizzi
         type: type,
       }
       server = ConfigFile.read_option(:server)
+      account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, type)
+        update_credential(server, params, account_id, type)
       else
-        create_credential(server, params)
+        create_credential(server, account_id, params)
       end
 
       handle_result_for('Docker Registry', response)
@@ -99,11 +102,12 @@ module Uffizzi
         type: type,
       }
       server = ConfigFile.read_option(:server)
+      account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, type)
+        update_credential(server, params, account_id, type)
       else
-        create_credential(server, params)
+        create_credential(server, account_id, params)
       end
 
       handle_result_for('ACR', response)
@@ -130,11 +134,12 @@ module Uffizzi
         type: type,
       }
       server = ConfigFile.read_option(:server)
+      account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, type)
+        update_credential(server, params, account_id, type)
       else
-        create_credential(server, params)
+        create_credential(server, account_id, params)
       end
 
       handle_result_for('ECR', response)
@@ -156,11 +161,12 @@ module Uffizzi
         type: type,
       }
       server = ConfigFile.read_option(:server)
+      account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, type)
+        update_credential(server, params, account_id, type)
       else
-        create_credential(server, params)
+        create_credential(server, account_id, params)
       end
 
       handle_result_for('GCR', response)
@@ -185,11 +191,12 @@ module Uffizzi
         type: type,
       }
       server = ConfigFile.read_option(:server)
+      account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, type)
+        update_credential(server, params, account_id, type)
       else
-        create_credential(server, params)
+        create_credential(server, account_id, params)
       end
 
       handle_result_for('GHCR', response)
@@ -221,8 +228,15 @@ module Uffizzi
 
     def credential_exists?(type)
       server = ConfigFile.read_option(:server)
-      response = check_credential(server, type)
-      !ResponseHelper.ok?(response)
+      account_id = ConfigFile.read_option(:account_id)
+      response = check_credential(server, account_id, type)
+      return false if ResponseHelper.ok?(response)
+      return true if ResponseHelper.unprocessable_entity?(response)
+
+      if ResponseHelper.forbidden?(response)
+        Uffizzi.ui.say('Unauthorized. Skipping credentials action.')
+        exit(true)
+      end
     end
 
     def handle_existing_credential_options(credential_type_slug)

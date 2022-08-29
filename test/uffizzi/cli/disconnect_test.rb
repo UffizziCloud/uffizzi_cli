@@ -7,10 +7,11 @@ class DisconnectTest < Minitest::Test
     @cli = Uffizzi::Cli.new
 
     sign_in
+    @account_id = Uffizzi::ConfigFile.read_option(:account_id)
   end
 
   def test_disconnect_docker_hub_success
-    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(Uffizzi.configuration.credential_types[:dockerhub])
+    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(@account_id, Uffizzi.configuration.credential_types[:dockerhub])
 
     @cli.disconnect('docker-hub')
 
@@ -19,7 +20,8 @@ class DisconnectTest < Minitest::Test
   end
 
   def test_disconnect_docker_registry_success
-    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(Uffizzi.configuration.credential_types[:docker_registry])
+    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(@account_id,
+                                                                       Uffizzi.configuration.credential_types[:docker_registry])
 
     @cli.disconnect('docker-registry')
 
@@ -28,7 +30,8 @@ class DisconnectTest < Minitest::Test
   end
 
   def test_disconnect_github_registry_success
-    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(Uffizzi.configuration.credential_types[:github_registry])
+    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(@account_id,
+                                                                       Uffizzi.configuration.credential_types[:github_registry])
 
     @cli.disconnect('ghcr')
 
@@ -37,7 +40,7 @@ class DisconnectTest < Minitest::Test
   end
 
   def test_disconnect_azure_success
-    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(Uffizzi.configuration.credential_types[:azure])
+    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(@account_id, Uffizzi.configuration.credential_types[:azure])
 
     @cli.disconnect('acr')
 
@@ -46,7 +49,7 @@ class DisconnectTest < Minitest::Test
   end
 
   def test_disconnect_amazon_success
-    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(Uffizzi.configuration.credential_types[:amazon])
+    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(@account_id, Uffizzi.configuration.credential_types[:amazon])
 
     @cli.disconnect('ecr')
 
@@ -55,7 +58,7 @@ class DisconnectTest < Minitest::Test
   end
 
   def test_disconnect_google_success
-    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(Uffizzi.configuration.credential_types[:google])
+    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential(@account_id, Uffizzi.configuration.credential_types[:google])
 
     @cli.disconnect('gcr')
 
@@ -75,7 +78,8 @@ class DisconnectTest < Minitest::Test
 
   def test_disconnect_credential_failed
     body = json_fixture('files/uffizzi/credentials/delete_credential_failed.json')
-    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential_fail(body, Uffizzi.configuration.credential_types[:dockerhub])
+    stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential_fail(@account_id, body,
+                                                                            Uffizzi.configuration.credential_types[:dockerhub])
 
     error = assert_raises(Uffizzi::Error) do
       @cli.disconnect('docker-hub')

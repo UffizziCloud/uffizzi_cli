@@ -24,7 +24,7 @@ module Uffizzi
                           raise Uffizzi::Error.new('Unsupported credential type.')
       end
 
-      response = delete_credential(ConfigFile.read_option(:server), connection_type)
+      response = delete_credential(ConfigFile.read_option(:server), ConfigFile.read_option(:account_id), connection_type)
 
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say("Successfully disconnected from #{connection_name(credential_type)}.")

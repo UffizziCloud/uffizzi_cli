@@ -1,0 +1,21 @@
+  uffizzi-login-by-identity-token - login to Uffizzi using a OIDC token provided by a CI/CD pipeline
+================================================================
+
+## SYNOPSIS
+    uffizzi uffizzi-login-by-identity-token [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    The uffizzi login command lets you authenticate with Uffizzi from a CI/CD pipeline.
+    If a user/account do not exist, Uffizzi will create them based on token payload.
+
+    For more information on authentication and credential types, see:
+    https://github.com/UffizziCloud/uffizzi_cli
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi 
+    help for details.
+
+## EXAMPLES
+    To login from the CI/CD pipeline, run:
+
+        $ uffizzi uffizzi-login-by-identity-token --server=uffizzi.example.com --token=[$CI_JOB_TOKEN]

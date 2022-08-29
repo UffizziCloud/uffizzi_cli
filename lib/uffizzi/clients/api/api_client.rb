@@ -13,6 +13,13 @@ module ApiClient
     build_response(response)
   end
 
+  def create_ci_session(server, params = {})
+    uri = ci_session_uri(server)
+    response = http_client.make_post_request(uri, params)
+
+    build_response(response)
+  end
+
   def destroy_session(server)
     uri = session_uri(server)
     response = http_client.make_delete_request(uri)
@@ -27,16 +34,16 @@ module ApiClient
     build_response(response)
   end
 
-  def fetch_credentials(server)
-    uri = credentials_uri(server)
+  def fetch_credentials(server, account_id)
+    uri = credentials_uri(server, account_id)
 
     response = http_client.make_get_request(uri)
 
     build_response(response)
   end
 
-  def check_credential(server, type)
-    uri = check_credential_uri(server, type)
+  def check_credential(server, account_id, type)
+    uri = check_credential_uri(server, account_id, type)
     response = http_client.make_get_request(uri)
 
     build_response(response)
@@ -49,8 +56,8 @@ module ApiClient
     build_response(response)
   end
 
-  def create_project(server, params)
-    uri = projects_uri(server)
+  def create_project(server, account_id, params)
+    uri = create_projects_uri(server, account_id)
     response = http_client.make_post_request(uri, params)
 
     build_response(response)
@@ -63,15 +70,15 @@ module ApiClient
     build_response(response)
   end
 
-  def create_credential(server, params)
-    uri = credentials_uri(server)
+  def create_credential(server, account_id, params)
+    uri = credentials_uri(server, account_id)
     response = http_client.make_post_request(uri, params)
 
     build_response(response)
   end
 
-  def update_credential(server, params, type)
-    uri = credential_uri(server, type)
+  def update_credential(server, params, account_id, type)
+    uri = credential_uri(server, account_id, type)
     response = http_client.make_put_request(uri, params)
 
     build_response(response)
@@ -84,8 +91,8 @@ module ApiClient
     build_response(response)
   end
 
-  def delete_credential(server, credential_type)
-    uri = credential_uri(server, credential_type)
+  def delete_credential(server, account_id, credential_type)
+    uri = credential_uri(server, account_id, credential_type)
     response = http_client.make_delete_request(uri)
 
     build_response(response)
