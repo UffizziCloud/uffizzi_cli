@@ -3,6 +3,7 @@
 require 'psych'
 require 'pathname'
 require 'base64'
+require 'byebug'
 
 class EnvVariablesService
   class << self
