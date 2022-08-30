@@ -41,7 +41,7 @@ module Uffizzi
       account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, account_id, type)
+        update_credential(server, account_id, params, type)
       else
         create_credential(server, account_id, params)
       end
@@ -73,7 +73,7 @@ module Uffizzi
       account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, account_id, type)
+        update_credential(server, account_id, params, type)
       else
         create_credential(server, account_id, params)
       end
@@ -105,7 +105,7 @@ module Uffizzi
       account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, account_id, type)
+        update_credential(server, account_id, params, type)
       else
         create_credential(server, account_id, params)
       end
@@ -137,7 +137,7 @@ module Uffizzi
       account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, account_id, type)
+        update_credential(server, account_id, params, type)
       else
         create_credential(server, account_id, params)
       end
@@ -164,7 +164,7 @@ module Uffizzi
       account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, account_id, type)
+        update_credential(server, account_id, params, type)
       else
         create_credential(server, account_id, params)
       end
@@ -194,7 +194,7 @@ module Uffizzi
       account_id = ConfigFile.read_option(:account_id)
 
       response = if credential_exists
-        update_credential(server, params, account_id, type)
+        update_credential(server, account_id, params, type)
       else
         create_credential(server, account_id, params)
       end
