@@ -27,6 +27,7 @@ class LoginTest < Minitest::Test
     assert_requested(stubbed_uffizzi_login)
     assert(Uffizzi::ConfigFile.option_exists?(:server))
     assert(Uffizzi::ConfigFile.option_exists?(:username))
+    assert(Uffizzi::ConfigFile.option_exists?(:account_id))
   end
 
   def test_login_success_with_options_from_config
