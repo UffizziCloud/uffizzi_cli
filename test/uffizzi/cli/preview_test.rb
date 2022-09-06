@@ -35,7 +35,7 @@ class PreviewTest < Minitest::Test
 
     deployments = body[:deployments]
 
-    @preview.options = command_options(output: 'pretty-json')
+    @preview.options = command_options(output: Uffizzi::UI::Shell::PRETTY_JSON)
     @preview.list
 
     assert_equal(JSON.pretty_generate(deployments), Uffizzi.ui.last_message)
@@ -402,7 +402,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
     stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
-    @preview.options = command_options(output: 'github-action')
+    @preview.options = command_options(output: Uffizzi::UI::Shell::GITHUB_ACTION)
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
 
     expected_message_keys = ['name=id', 'name=url', 'containers_uri']

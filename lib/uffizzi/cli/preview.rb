@@ -146,7 +146,8 @@ module Uffizzi
     end
 
     def handle_succeed_events_response(response)
-      Uffizzi.ui.pretty_say(response[:body][:events])
+      Uffizzi.ui.output_format = Uffizzi::UI::Shell::PRETTY_JSON
+      Uffizzi.ui.say(response[:body][:events])
     end
 
     def handle_delete_command(deployment_name, project_slug)
