@@ -15,6 +15,7 @@ module Uffizzi
     end
 
     def run
+      Uffizzi.ui.disable_stdout if @options[:silent]
       Uffizzi.ui.say('Login to Uffizzi server.')
       server = set_server
 

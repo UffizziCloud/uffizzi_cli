@@ -18,6 +18,7 @@ module Uffizzi
     end
 
     desc 'set [PROPERTY] [VALUE]', 'Sets the value of the specified option'
+    method_option :silent, required: false, type: :boolean
     def set(property, value)
       run('set', property, value)
     end
@@ -78,6 +79,7 @@ module Uffizzi
     end
 
     def handle_set_command(property, value)
+      Uffizzi.ui.disable_stdout if @options[:silent]
       ConfigFile.write_option(property.to_sym, value)
       Uffizzi.ui.say("Updated property [#{property}]")
     end

@@ -13,6 +13,7 @@ module Uffizzi
     end
 
     def run
+      Uffizzi.ui.disable_stdout if @options[:silent]
       token = @options[:token]
       server = @options[:server]
       params = prepare_request_params(token)
