@@ -7,17 +7,21 @@ module Uffizzi
     class Shell
       attr_accessor :output_format
 
+      PRETTY_JSON = 'pretty-json'
+      REGULAR_JSON = 'json'
+      GITHUB_ACTION = 'github-action'
+
       def initialize
         @shell = Thor::Shell::Basic.new
       end
 
       def say(message)
         formatted_message = case output_format
-                            when 'pretty-json'
+                            when PRETTY_JSON
                               format_to_pretty_json(message)
-                            when 'json'
+                            when REGULAR_JSON
                               format_to_json(message)
-                            when 'github-action'
+                            when GITHUB_ACTION
                               format_to_github_action(message)
                             else
                               message
