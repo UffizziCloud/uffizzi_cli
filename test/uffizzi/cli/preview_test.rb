@@ -28,6 +28,20 @@ class PreviewTest < Minitest::Test
     assert_requested(stubbed_uffizzi_preview_list)
   end
 
+  def test_list_preview_with_output_option
+    body = json_fixture('files/uffizzi/uffizzi_preview_list.json')
+    filter = {}
+    stubbed_uffizzi_preview_list = stub_uffizzi_preview_list_success(body, @project_slug, filter)
+
+    deployments = body[:deployments]
+
+    @preview.options = command_options(output: 'pretty-json')
+    @preview.list
+
+    assert_equal(JSON.pretty_generate(deployments), Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_preview_list)
+  end
+
   def test_list_preview_with_filter_success
     body = json_fixture('files/uffizzi/uffizzi_preview_list.json')
     filter = {
@@ -392,7 +406,7 @@ class PreviewTest < Minitest::Test
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
 
     expected_message_keys = ['name=id', 'name=url', 'containers_uri']
-    actual_messages = Uffizzi.ui.messages.last(3)
+    actual_messages = Uffizzi.ui.messages.last.split("\n")
 
     expected_message_keys.zip(actual_messages).each do |(expected_msg_key, actual_msg)|
       assert_match(expected_msg_key, actual_msg)
