@@ -26,7 +26,8 @@ uffizzi config - configure the Uffizzi command-line interface (CLI)
         Lists all options and their values from the config file.
 
      set OPTION VALUE
-        Sets the value of the specified option.
+        Sets the value of the specified option. This command has --silent flag
+        which disable any output during execution.
 
      unset OPTION
         Deletes the value of the specified option.    

@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "CONFIG" "" "May 2022" ""
+.TH "CONFIG" "" "September 2022" ""
 .SH "NAME"
 \fBconfig\fR \- configure the Uffizzi command\-line interface (CLI)
 .SH "SYNOPSIS"
@@ -32,7 +32,8 @@ COMMAND is one of the following:
     Lists all options and their values from the config file\.
 
  set OPTION VALUE
-    Sets the value of the specified option\.
+    Sets the value of the specified option\. This command has \-\-silent flag
+    which disable any output during execution\.
 
  unset OPTION
     Deletes the value of the specified option\.

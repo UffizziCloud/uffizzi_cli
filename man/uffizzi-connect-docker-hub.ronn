@@ -30,6 +30,8 @@ https://docs.uffizzi.com/guides/container-registry-integrations
   Username for the service.
 * `-p`, `--password=<password>`:
   Password for the service.
+* `--silent`:
+  Disable any output during execution.
 
 ## EXAMPLES
 

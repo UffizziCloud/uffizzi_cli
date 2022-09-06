@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-LOGIN" "" "May 2022" ""
+.TH "UFFIZZI\-LOGIN" "" "September 2022" ""
 .SH "NAME"
 \fBuffizzi\-login\fR \- login to Uffizzi to view and manage your previews\.
 .SH "SYNOPSIS"
@@ -18,6 +18,11 @@ https://github\.com/UffizziCloud/uffizzi_cli
 .nf
 These flags are available to all commands: \-\-project\. Run $ uffizzi
 help for details\.
+.fi
+.SH "FLAGS"
+.nf
+\-\-silent
+    Disable any output during execution\.
 .fi
 .SH "EXAMPLES"
 .nf

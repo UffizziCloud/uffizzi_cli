@@ -15,6 +15,10 @@
     These flags are available to all commands: --project. Run $ uffizzi 
     help for details.
 
+## FLAGS
+    --silent
+        Disable any output during execution.
+
 ## EXAMPLES
     To login from the CI/CD pipeline, run:
 

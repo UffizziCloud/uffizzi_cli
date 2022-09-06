@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CONNECT\-DOCKER\-HUB" "" "August 2022" ""
+.TH "UFFIZZI\-CONNECT\-DOCKER\-HUB" "" "September 2022" ""
 .SH "NAME"
 \fBuffizzi\-connect\-docker\-hub\fR \- grant a Uffizzi user account access to a private Docker Hub registry\.
 .SH "SYNOPSIS"
@@ -28,6 +28,9 @@ Username for the service\.
 .TP
 \fB\-p\fR, \fB\-\-password=<password>\fR
 Password for the service\.
+.TP
+\fB\-\-silent\fR
+Disable any output during execution\.
 .SH "EXAMPLES"
 The following command will prompt the user to enter Docker Hub credentials, including Docker ID and password or access token:
 .P
