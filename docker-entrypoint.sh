@@ -7,10 +7,10 @@ if
 	[ $UFFIZZI_SERVER ] &&
 	[ $UFFIZZI_PASSWORD ]
 then
-	uffizzi login --username "${UFFIZZI_USER}" --server "${UFFIZZI_SERVER}"
+	uffizzi login --username "${UFFIZZI_USER}" --server "${UFFIZZI_SERVER}" --silent
 	if [ $UFFIZZI_PROJECT ]
 	then
-		uffizzi config set project "${UFFIZZI_PROJECT}"
+		uffizzi config set project "${UFFIZZI_PROJECT}" --silent
 	fi
 else
 	if
@@ -18,7 +18,7 @@ else
     [ $REQUEST_TOKEN_URL ]
 	then
     OIDC_TOKEN=$(curl -sLS "${REQUEST_TOKEN_URL}&audience=uffizzi" -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $REQUEST_TOKEN")
-		uffizzi login_by_identity_token --token "${OIDC_TOKEN}" --server "${UFFIZZI_SERVER}"
+		uffizzi login_by_identity_token --token "${OIDC_TOKEN}" --server "${UFFIZZI_SERVER}" --silent
 	else
 		echo "Specify environment variables to login before executing Uffizzi CLI."
 		echo "UFFIZZI_USER, UFFIZZI_SERVER, UFFIZZI_PASSWORD, and optionally UFFIZZI_PROJECT"
@@ -31,7 +31,7 @@ if
 	[ $DOCKERHUB_USERNAME ] &&
 	[ $DOCKERHUB_PASSWORD ]
 then
-	uffizzi connect docker-hub --update-credential-if-exists
+	uffizzi connect docker-hub --update-credential-if-exists --silent
 fi
 
 if
@@ -39,7 +39,7 @@ if
 	[ $DOCKER_REGISTRY_PASSWORD ] &&
 	[ $DOCKER_REGISTRY_URL ]
 then
-	uffizzi connect docker-registry --update-credential-if-exists
+	uffizzi connect docker-registry --update-credential-if-exists --silent
 fi
 
 if
@@ -47,7 +47,7 @@ if
 	[ $ACR_PASSWORD ] &&
 	[ $ACR_REGISTRY_URL ]
 then
-	uffizzi connect acr --update-credential-if-exists
+	uffizzi connect acr --update-credential-if-exists --silent
 fi
 
 if
@@ -55,20 +55,20 @@ if
 	[ $AWS_SECRET_ACCESS_KEY ] &&
 	[ $AWS_REGISTRY_URL ]
 then
-	uffizzi connect ecr --update-credential-if-exists
+	uffizzi connect ecr --update-credential-if-exists --silent
 fi
 
 if
 	[ $GCLOUD_SERVICE_KEY ]
 then
-	uffizzi connect gcr --update-credential-if-exists
+	uffizzi connect gcr --update-credential-if-exists --silent
 fi
 
 if
 	[ $GITHUB_USERNAME ] &&
 	[ $GITHUB_ACCESS_TOKEN ]
 then
-	uffizzi connect ghcr --update-credential-if-exists
+	uffizzi connect ghcr --update-credential-if-exists --silent
 fi
 
 exec uffizzi "$@"
