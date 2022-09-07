@@ -41,6 +41,30 @@ class ConnectTest < Minitest::Test
     assert_requested(stubbed_check_credential)
   end
 
+  def test_silent_connect_docker_hub_success
+    body = json_fixture('files/uffizzi/credentials/dockerhub_credential.json')
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(@account_id, body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(@account_id, Uffizzi.configuration.credential_types[:dockerhub])
+
+    credential_params = {
+      username: generate(:string),
+      password: generate(:string),
+    }
+
+    console_mock = mock('console_mock')
+    console_mock.stubs(:write)
+    console_mock.stubs(:gets).returns(credential_params[:username])
+    console_mock.stubs(:getpass).returns(credential_params[:password])
+    IO.stubs(:console).returns(console_mock)
+
+    @cli.options = command_options(silent: true)
+    @cli.docker_hub
+
+    refute(Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
   def test_connect_docker_registry_success
     body = json_fixture('files/uffizzi/credentials/docker_registry_credentials.json')
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(@account_id, body)
@@ -61,6 +85,31 @@ class ConnectTest < Minitest::Test
     @cli.docker_registry
 
     assert_equal('Successfully connected to Docker Registry.', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_silent_connect_docker_registry_success
+    body = json_fixture('files/uffizzi/credentials/docker_registry_credentials.json')
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(@account_id, body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(@account_id, Uffizzi.configuration.credential_types[:docker_registry])
+
+    credential_params = {
+      registry_url: generate(:url),
+      username: generate(:string),
+      password: generate(:string),
+    }
+
+    console_mock = mock('console_mock')
+    console_mock.stubs(:write)
+    console_mock.stubs(:gets).returns(credential_params[:registry_url], credential_params[:username])
+    console_mock.stubs(:getpass).returns(credential_params[:password])
+    IO.stubs(:console).returns(console_mock)
+
+    @cli.options = command_options(silent: true)
+    @cli.docker_registry
+
+    refute(Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -89,6 +138,31 @@ class ConnectTest < Minitest::Test
     assert_requested(stubbed_check_credential)
   end
 
+  def test_silent_connect_azure_success
+    body = json_fixture('files/uffizzi/credentials/azure_credential.json')
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(@account_id, body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(@account_id, Uffizzi.configuration.credential_types[:azure])
+
+    credential_params = {
+      registry_url: generate(:url),
+      username: generate(:string),
+      password: generate(:string),
+    }
+
+    console_mock = mock('console_mock')
+    console_mock.stubs(:write)
+    console_mock.stubs(:gets).returns(credential_params[:registry_url], credential_params[:username])
+    console_mock.stubs(:getpass).returns(credential_params[:password])
+    IO.stubs(:console).returns(console_mock)
+
+    @cli.options = command_options(silent: true)
+    @cli.acr
+
+    refute(Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
   def test_connect_amazon_success
     body = json_fixture('files/uffizzi/credentials/amazon_credential.json')
     stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(@account_id, body)
@@ -113,6 +187,31 @@ class ConnectTest < Minitest::Test
     assert_requested(stubbed_check_credential)
   end
 
+  def test_silent_connect_amazon_success
+    body = json_fixture('files/uffizzi/credentials/amazon_credential.json')
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(@account_id, body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(@account_id, Uffizzi.configuration.credential_types[:amazon])
+
+    credential_params = {
+      registry_url: generate(:url),
+      username: generate(:string),
+      password: generate(:string),
+    }
+
+    console_mock = mock('console_mock')
+    console_mock.stubs(:write)
+    console_mock.stubs(:gets).returns(credential_params[:registry_url], credential_params[:username])
+    console_mock.stubs(:getpass).returns(credential_params[:password])
+    IO.stubs(:console).returns(console_mock)
+
+    @cli.options = command_options(silent: true)
+    @cli.ecr
+
+    refute(Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
   def test_connect_google_success
     body = json_fixture('files/uffizzi/credentials/google_credential.json')
     credential_path = "#{Dir.pwd}/test/fixtures/files/google/service-account.json"
@@ -123,6 +222,21 @@ class ConnectTest < Minitest::Test
     @cli.gcr(credential_path)
 
     assert_equal('Successfully connected to GCR.', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_silent_connect_google_success
+    body = json_fixture('files/uffizzi/credentials/google_credential.json')
+    credential_path = "#{Dir.pwd}/test/fixtures/files/google/service-account.json"
+
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(@account_id, body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(@account_id, Uffizzi.configuration.credential_types[:google])
+
+    @cli.options = command_options(silent: true)
+    @cli.gcr(credential_path)
+
+    refute(Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
@@ -146,6 +260,30 @@ class ConnectTest < Minitest::Test
     @cli.ghcr
 
     assert_equal('Successfully connected to GHCR.', Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_create_credential)
+    assert_requested(stubbed_check_credential)
+  end
+
+  def test_silent_connect_github_registry_success
+    body = json_fixture('files/uffizzi/credentials/github_registry_credential.json')
+    stubbed_uffizzi_create_credential = stub_uffizzi_create_credential(@account_id, body)
+    stubbed_check_credential = stub_uffizzi_check_credential_success(@account_id, Uffizzi.configuration.credential_types[:github_registry])
+
+    credential_params = {
+      username: generate(:string),
+      password: generate(:string),
+    }
+
+    console_mock = mock('console_mock')
+    console_mock.stubs(:write)
+    console_mock.stubs(:gets).returns(credential_params[:username])
+    console_mock.stubs(:getpass).returns(credential_params[:password])
+    IO.stubs(:console).returns(console_mock)
+
+    @cli.options = command_options(silent: true)
+    @cli.ghcr
+
+    refute(Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
