@@ -48,10 +48,6 @@ module Uffizzi
         @shell.send(:stdout).string.strip
       end
 
-      def pretty_say(collection, index = true)
-        ap(collection, { index: index })
-      end
-
       def disable_stdout
         $stdout = StringIO.new
       end
