@@ -38,6 +38,8 @@ class Minitest::Test
     @mock_shell = MockShell.new
     Uffizzi::UI::Shell.stubs(:new).returns(@mock_shell)
     Uffizzi::ConfigFile.stubs(:config_path).returns(TEST_CONFIG_PATH)
+    Uffizzi.ui.messages.clear
+    Uffizzi.ui.enable_stdout
   end
 
   def before_teardown

@@ -26,6 +26,7 @@ module Uffizzi
     method_option :username, type: :string, aliases: :u
     method_option :password, type: :string, aliases: :p
     def docker_hub
+      Uffizzi.ui.disable_stdout if options[:silent]
       type = Uffizzi.configuration.credential_types[:dockerhub]
       credential_exists = credential_exists?(type)
       handle_existing_credential_options('docker-hub') if credential_exists
@@ -57,6 +58,7 @@ module Uffizzi
     method_option :username, type: :string, aliases: :u
     method_option :password, type: :string, aliases: :p
     def docker_registry
+      Uffizzi.ui.disable_stdout if @options[:silent]
       type = Uffizzi.configuration.credential_types[:docker_registry]
       credential_exists = credential_exists?(type)
       handle_existing_credential_options('docker-registry') if credential_exists
@@ -89,6 +91,7 @@ module Uffizzi
     method_option :username, type: :string, aliases: :u
     method_option :password, type: :string, aliases: :p
     def acr
+      Uffizzi.ui.disable_stdout if @options[:silent]
       type = Uffizzi.configuration.credential_types[:azure]
       credential_exists = credential_exists?(type)
       handle_existing_credential_options('acr') if credential_exists
@@ -121,6 +124,7 @@ module Uffizzi
     method_option :id, type: :string
     method_option :secret, type: :string, aliases: :s
     def ecr
+      Uffizzi.ui.disable_stdout if @options[:silent]
       type = Uffizzi.configuration.credential_types[:amazon]
       credential_exists = credential_exists?(type)
       handle_existing_credential_options('ecr') if credential_exists
@@ -150,6 +154,7 @@ module Uffizzi
                                                desc: 'Skip raising an error within check the credential'
     method_option :update_credential_if_exists, type: :boolean, default: false
     def gcr(credential_file_path = nil)
+      Uffizzi.ui.disable_stdout if @options[:silent]
       type = Uffizzi.configuration.credential_types[:google]
       credential_exists = credential_exists?(type)
       handle_existing_credential_options('gcr') if credential_exists
@@ -179,6 +184,7 @@ module Uffizzi
     method_option :username, type: :string, aliases: :u
     method_option :token, type: :string, aliases: :t
     def ghcr
+      Uffizzi.ui.disable_stdout if @options[:silent]
       type = Uffizzi.configuration.credential_types[:github_registry]
       credential_exists = credential_exists?(type)
       handle_existing_credential_options('ghcr') if credential_exists

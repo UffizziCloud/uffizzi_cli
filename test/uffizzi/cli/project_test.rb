@@ -114,7 +114,7 @@ class ProjectsTest < Minitest::Test
     project_slug = body[:project][:slug]
     stubbed_uffizzi_projects = stub_uffizzi_project_success(body, project_slug)
 
-    @project.options = { output: 'json' }
+    @project.options = { output: Uffizzi::UI::Shell::REGULAR_JSON }
 
     @project.describe(project_slug.to_s)
 

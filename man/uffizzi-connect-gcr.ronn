@@ -28,6 +28,11 @@ https://docs.uffizzi.com/guides/container-registry-integrations
 * KEY_FILE:
   A Google Cloud service account key file. The key file is a JSON file that grants Uffizzi access to a private GCR.
 
+## OPTIONS
+
+* `--silent`:
+  Disable any output during execution.
+
 ## EXAMPLES
 
 The following command uses a Google Cloud service account key 

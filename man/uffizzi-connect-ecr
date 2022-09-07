@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CONNECT\-ECR" "" "August 2022" ""
+.TH "UFFIZZI\-CONNECT\-ECR" "" "September 2022" ""
 .SH "NAME"
 \fBuffizzi\-connect\-ecr\fR \- grant a Uffizzi user account access to a private Amazon Elastic Container Registry (ECR)
 .SH "SYNOPSIS"
@@ -31,6 +31,9 @@ Access key id for the service\.
 .TP
 \fB\-s\fR, \fB\-\-secret=<secret>\fR
 Secret access key for the service\.
+.TP
+\fB\-\-silent\fR
+Disable any output during execution\.
 .SH "EXAMPLES"
 The following command will prompt the user to enter ACR credentials, including registry domain, access key ID and secret access key:
 .P

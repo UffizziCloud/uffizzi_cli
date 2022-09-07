@@ -32,6 +32,8 @@ https://docs.uffizzi.com/guides/container-registry-integrations
   Access key id for the service.
 * `-s`, `--secret=<secret>`:
   Secret access key for the service.
+* `--silent`:
+  Disable any output during execution.
 
 ## EXAMPLES
 

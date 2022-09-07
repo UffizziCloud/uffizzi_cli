@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-LOGIN\-BY\-IDENTITY\-TOKEN" "" "August 2022" ""
+.TH "UFFIZZI\-LOGIN\-BY\-IDENTITY\-TOKEN" "" "September 2022" ""
 .SH "NAME"
 \fBuffizzi\-login\-by\-identity\-token\fR \- login to Uffizzi using a OIDC token provided by a CI/CD pipeline
 .SH "SYNOPSIS"
@@ -19,6 +19,11 @@ https://github\.com/UffizziCloud/uffizzi_cli
 .nf
 These flags are available to all commands: \-\-project\. Run $ uffizzi
 help for details\.
+.fi
+.SH "FLAGS"
+.nf
+\-\-silent
+    Disable any output during execution\.
 .fi
 .SH "EXAMPLES"
 .nf

@@ -22,6 +22,22 @@ class LoginByIdentityTokenTest < Minitest::Test
     assert(Uffizzi::ConfigFile.option_exists?(:project))
   end
 
+  def test_silent_login_success_with_oidc
+    body = json_fixture('files/uffizzi/uffizzi_login_by_jwt_success.json')
+    stubbed_uffizzi_login = stub_uffizzi_login_by_identity_token_success(body)
+
+    refute(Uffizzi::ConfigFile.option_exists?(:server))
+    refute(Uffizzi::ConfigFile.option_exists?(:username))
+
+    @cli.options = command_options(token: 'token', server: Uffizzi.configuration.server, silent: true)
+    @cli.login_by_identity_token
+
+    refute(Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_login)
+    assert(Uffizzi::ConfigFile.option_exists?(:account_id))
+    assert(Uffizzi::ConfigFile.option_exists?(:project))
+  end
+
   def test_login_failed
     body = json_fixture('files/uffizzi/uffizzi_login_by_jwt_failure.json')
     stubbed_uffizzi_login = stub_uffizzi_login_by_identity_token_failure(body)

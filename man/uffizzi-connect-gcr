@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CONNECT\-GCR" "" "August 2022" ""
+.TH "UFFIZZI\-CONNECT\-GCR" "" "September 2022" ""
 .SH "NAME"
 \fBuffizzi\-connect\-gcr\fR \- grant a Uffizzi user account access to a private Google Container Registry (GCR)
 .SH "SYNOPSIS"
@@ -25,6 +25,10 @@ https://docs\.uffizzi\.com/guides/container\-registry\-integrations
 .TP
 KEY_FILE
 A Google Cloud service account key file\. The key file is a JSON file that grants Uffizzi access to a private GCR\.
+.SH "OPTIONS"
+.TP
+\fB\-\-silent\fR
+Disable any output during execution\.
 .SH "EXAMPLES"
 The following command uses a Google Cloud service account key file called sa\-private\-key\.json to connect to a private GCR:
 .P

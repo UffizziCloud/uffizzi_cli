@@ -43,6 +43,19 @@ class ConfigTest < Minitest::Test
     assert_equal("Updated property [#{property}]", Uffizzi.ui.last_message)
   end
 
+  def test_silent_set_with_property_and_value
+    new_cookie = '_uffizzi=test2'
+    property = 'cookie'
+
+    refute_equal(Uffizzi::ConfigFile.read_option(:cookie), new_cookie)
+
+    @config.options = command_options(silent: true)
+    @config.set(property, new_cookie)
+
+    assert_equal(Uffizzi::ConfigFile.read_option(:cookie), new_cookie)
+    refute(Uffizzi.ui.last_message)
+  end
+
   def test_set_without_config
     cookie = '_uffizzi=test'
     property = 'cookie'

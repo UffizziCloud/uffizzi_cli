@@ -30,6 +30,20 @@ class LoginTest < Minitest::Test
     assert(Uffizzi::ConfigFile.option_exists?(:account_id))
   end
 
+  def test_silent_login
+    body = json_fixture('files/uffizzi/uffizzi_login_success.json')
+    stubbed_uffizzi_login = stub_uffizzi_login_success(body)
+
+    @cli.options = command_options(username: @command_params[:username], server: @command_params[:server], silent: true)
+    @cli.login
+
+    refute(Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_login)
+    assert(Uffizzi::ConfigFile.option_exists?(:server))
+    assert(Uffizzi::ConfigFile.option_exists?(:username))
+    assert(Uffizzi::ConfigFile.option_exists?(:account_id))
+  end
+
   def test_login_success_with_options_from_config
     body = json_fixture('files/uffizzi/uffizzi_login_success.json')
     stubbed_uffizzi_login = stub_uffizzi_login_success(body)

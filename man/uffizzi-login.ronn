@@ -14,6 +14,11 @@
     These flags are available to all commands: --project. Run $ uffizzi 
     help for details.
 
+## FLAGS
+    --silent
+        Disable any output during execution.
+
+
 ## EXAMPLES
     To login to the default host with the default user account, run:
 
