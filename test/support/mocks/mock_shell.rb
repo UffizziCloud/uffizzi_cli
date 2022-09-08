@@ -56,10 +56,6 @@ class MockShell
     @output_enabled = true
   end
 
-  def pretty_say(collection, _index = true)
-    collection
-  end
-
   private
 
   def format_to_json(data)
