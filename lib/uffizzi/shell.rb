@@ -7,12 +7,26 @@ module Uffizzi
     class Shell
       attr_accessor :output_format
 
+      PRETTY_JSON = 'pretty-json'
+      REGULAR_JSON = 'json'
+      GITHUB_ACTION = 'github-action'
+
       def initialize
         @shell = Thor::Shell::Basic.new
       end
 
       def say(message)
-        @shell.say(message)
+        formatted_message = case output_format
+                            when PRETTY_JSON
+                              format_to_pretty_json(message)
+                            when REGULAR_JSON
+                              format_to_json(message)
+                            when GITHUB_ACTION
+                              format_to_github_action(message)
+                            else
+                              message
+        end
+        @shell.say(formatted_message)
       end
 
       def print_in_columns(messages)
@@ -34,33 +48,28 @@ module Uffizzi
         @shell.send(:stdout).string.strip
       end
 
-      def pretty_say(collection, index = true)
-        ap(collection, { index: index })
-      end
-
       def disable_stdout
         $stdout = StringIO.new
       end
 
-      def output(data)
+      def enable_stdout
         $stdout = IO.new(1, 'w')
-        json_format? ? output_in_json(data) : output_in_github_format(data)
       end
 
       private
 
-      def json_format?
-        output_format == 'json'
+      def format_to_json(data)
+        data.to_json
       end
 
-      def output_in_json(data)
-        say(data.to_json)
+      def format_to_pretty_json(data)
+        JSON.pretty_generate(data)
       end
 
-      def output_in_github_format(data)
-        data.each_key do |key|
-          say("::set-output name=#{key}::#{data[key]}")
-        end
+      def format_to_github_action(data)
+        return '' unless data.is_a?(Hash)
+
+        data.reduce('') { |acc, (key, value)| "#{acc}::set-output name=#{key}::#{value}\n" }
       end
     end
   end

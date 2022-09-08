@@ -15,7 +15,7 @@ uffizzi-preview-list - list previews in a project
     --filter=METADATA
         Metadata to filtering list of deployments.
 
-    --output=json
+    --output=pretty-json
         Use this option for a more detailed description of listed
         deployments.
 
@@ -34,7 +34,7 @@ uffizzi-preview-list - list previews in a project
 
     To list all previews in json format, run:
 
-        $ uffizzi preview list --output="json"
+        $ uffizzi preview list --output="pretty-json"
 
     To list all previews filtered by metadata using single
     label, run:
