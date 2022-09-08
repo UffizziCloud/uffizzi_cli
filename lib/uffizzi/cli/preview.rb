@@ -15,7 +15,7 @@ module Uffizzi
 
     desc 'list', 'List all previews'
     method_option :filter, required: false, type: :string, aliases: '-f'
-    method_option :output, required: false, type: :string, aliases: '-o', enum: ['pretty-json']
+    method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def list
       run('list')
     end
