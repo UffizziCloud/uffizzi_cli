@@ -97,7 +97,7 @@ module Uffizzi
       end
 
       deployment = response[:body][:deployment]
-      Uffizzi.ui.say("Preview created with name deployment-#{deployment[:id]}")
+      Uffizzi.ui.say("Preview with ID deployment-#{deployment[:id]} was created.")
 
       success = PreviewService.run_containers_deploy(project_slug, deployment)
 
@@ -121,7 +121,7 @@ module Uffizzi
       end
 
       deployment = response[:body][:deployment]
-      Uffizzi.ui.say("Preview with ID deployment-#{deployment_id} was successfully updated.")
+      Uffizzi.ui.say("Preview with ID deployment-#{deployment_id} was updated.")
 
       success = PreviewService.run_containers_deploy(project_slug, deployment)
 
