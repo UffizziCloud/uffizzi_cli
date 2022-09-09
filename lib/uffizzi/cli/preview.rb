@@ -104,6 +104,9 @@ module Uffizzi
     rescue SystemExit, Interrupt, SocketError
       deployment_id = response[:body][:deployment][:id]
       handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
+    rescue Uffizzi::Error => e
+      deployment_id = response[:body][:deployment][:id]
+      handle_preview_error(deployment_id, e)
     end
 
     def handle_update_command(deployment_name, file_path, project_slug, labels)
@@ -128,6 +131,8 @@ module Uffizzi
     rescue SystemExit, Interrupt, SocketError
       deployment_id = response[:body][:deployment][:id]
       handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
+    rescue Uffizzi::Error => e
+      handle_preview_error(deployment_id, e)
     end
 
     def handle_events_command(deployment_name, project_slug)
@@ -231,6 +236,18 @@ module Uffizzi
       end
 
       raise Uffizzi::Error.new("The preview creation was interrupted. #{preview_deletion_message}")
+    end
+
+    def handle_preview_error(deployment_id, error)
+      if Uffizzi.ui.output_format.nil?
+        error
+      else
+
+        Uffizzi.ui.output({
+                            id: deployment_id,
+                            error: error,
+                          })
+      end
     end
 
     def display_deployment_data(deployment, success)
