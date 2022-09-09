@@ -105,7 +105,7 @@ module Uffizzi
       deployment_id = response[:body][:deployment][:id]
       handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
     rescue Uffizzi::Error => e
-      deployment_id = response[:body][:deployment][:id]
+      deployment_id = deployment ? deployment[:id] : nil
       handle_preview_error(deployment_id, e)
     end
 
@@ -240,7 +240,7 @@ module Uffizzi
 
     def handle_preview_error(deployment_id, error)
       if Uffizzi.ui.output_format.nil?
-        error
+        raise error
       else
 
         Uffizzi.ui.output({
