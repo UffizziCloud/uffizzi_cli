@@ -242,11 +242,7 @@ module Uffizzi
       if Uffizzi.ui.output_format.nil?
         raise error
       else
-
-        Uffizzi.ui.output({
-                            id: deployment_id,
-                            error: error,
-                          })
+        raise Uffizzi::Error.new("Preview with ID deployment-#{deployment_id} failed.")
       end
     end
 
