@@ -8,8 +8,6 @@ require 'zlib'
 require 'uffizzi/services/project_service'
 require 'uffizzi/services/volume_parser_service'
 
-require 'byebug'
-
 class ComposeFileService
   MAX_HOST_VOLUME_GZIP_FILE_SIZE = 1024 * 900
   DEPENDENCY_CONFIG_USE_KIND = :config_map
