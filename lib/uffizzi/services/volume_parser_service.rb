@@ -1,9 +1,10 @@
 # frozen_string_literal: true
-#
+
 class VolumeParserService
   class << self
     def parse(volumes)
       return [] if volumes.empty?
+
       Uffizzi.ui.say("Volumes '#{volumes}' should be an array") if volumes.is_a?(String)
 
       volumes.map do |volume|
@@ -21,9 +22,9 @@ class VolumeParserService
     private
 
     def process_short_syntax(volume_data)
-      path_part_1, path_part_2 = volume_data.split(':').map(&:strip)
+      path_part1, path_part2 = volume_data.split(':').map(&:strip)
 
-      path_part_1 if host_volume?(path_part_1, path_part_2)
+      path_part1 if host_volume?(path_part1, path_part2)
     end
 
     def process_long_syntax(volume_data)
