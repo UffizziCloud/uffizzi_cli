@@ -8,12 +8,10 @@ require 'zlib'
 require 'uffizzi/services/project_service'
 require 'uffizzi/services/volume_parser_service'
 
-require 'byebug'
-
 class ComposeFileService
   MAX_HOST_VOLUME_GZIP_FILE_SIZE = 1024 * 900
-  DEPENDENCY_CONFIG_USE_KIND = :config_map.freeze
-  DEPENDENCY_VOLUME_USE_KIND = :volume.freeze
+  DEPENDENCY_CONFIG_USE_KIND = :config_map
+  DEPENDENCY_VOLUME_USE_KIND = :volume
 
   class << self
     def parse(compose_content, compose_file_dir)
@@ -54,14 +52,14 @@ class ComposeFileService
     def prepare_dependency_host_volumes_files(dependency_file_paths, compose_file_dir)
       dependency_file_paths.map do |dependency_file_path|
         base_dependency_path = if Pathname.new(dependency_file_path).absolute?
-                                 dependency_file_path
-                               elsif (/^\.\//.match?(dependency_file_path)) # start with ./
-                                 path = "#{compose_file_dir}/#{Pathname.new(dependency_file_path).cleanpath.to_s}"
-                               elsif (/^\.\.\//.match?(dependency_file_path)) # start with ../
-                                 path = "#{compose_file_dir}/#{dependency_file_path}"
-                               else
-                                 Uffizzi.ui.say("Unsupported path #{dependency_file_path}")
-                               end
+          dependency_file_path
+        elsif /^\.\//.match?(dependency_file_path) # start with ./
+          "#{compose_file_dir}/#{Pathname.new(dependency_file_path).cleanpath}"
+        elsif /^\.\.\//.match?(dependency_file_path) # start with ../
+          "#{compose_file_dir}/#{dependency_file_path}"
+        else
+          Uffizzi.ui.say("Unsupported path #{dependency_file_path}")
+        end
 
         absolute_dependency_path = Pathname.new(base_dependency_path).realpath.to_s
         dependency_file_content = prepare_host_volume_file_content(absolute_dependency_path)
