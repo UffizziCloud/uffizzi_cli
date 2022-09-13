@@ -38,4 +38,7 @@ shell:
 test:
 	docker-compose run --rm gem bash -c "bundle exec rake test"
 
+lint:
+	docker-compose run --rm gem bash -c "bundle exec rubocop"
+
 .PHONY: test
