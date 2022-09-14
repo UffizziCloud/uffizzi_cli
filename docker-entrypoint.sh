@@ -1,12 +1,16 @@
 #!/bin/sh
 
 set -e # Exit immediately if anything below exits with non-zero status.
+echo $UFFIZZI_SERVER
+echo $UFFIZZI_USER
+echo $UFFIZZI_PASSWORD
 
 if
 	[ $UFFIZZI_USER ] &&
 	[ $UFFIZZI_SERVER ] &&
 	[ $UFFIZZI_PASSWORD ]
 then
+        echo "USE PASSWORD"
 	uffizzi login --username "${UFFIZZI_USER}" --server "${UFFIZZI_SERVER}"
 	if [ $UFFIZZI_PROJECT ]
 	then
@@ -17,6 +21,7 @@ else
     [ $REQUEST_TOKEN ] &&
     [ $REQUEST_TOKEN_URL ]
 	then
+        echo "USE TOKEN"
     OIDC_TOKEN=$(curl -sLS "${REQUEST_TOKEN_URL}&audience=uffizzi" -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $REQUEST_TOKEN")
 		uffizzi login_by_identity_token --token "${OIDC_TOKEN}" --server "${UFFIZZI_SERVER}"
 	else
@@ -32,6 +37,7 @@ if
 	[ $DOCKERHUB_PASSWORD ]
 then
 	uffizzi connect docker-hub --update-credential-if-exists
+	echo "uffizzi connect docker-hub --update-credential-if-exists"
 fi
 
 if
@@ -40,6 +46,7 @@ if
 	[ $DOCKER_REGISTRY_URL ]
 then
 	uffizzi connect docker-registry --update-credential-if-exists
+	echo "uffizzi connect docker-registry --update-credential-if-exists"
 fi
 
 if
@@ -48,6 +55,7 @@ if
 	[ $ACR_REGISTRY_URL ]
 then
 	uffizzi connect acr --update-credential-if-exists
+	echo "uffizzi connect acr --update-credential-if-exists"
 fi
 
 if
@@ -56,12 +64,14 @@ if
 	[ $AWS_REGISTRY_URL ]
 then
 	uffizzi connect ecr --update-credential-if-exists
+        echo "uffizzi connect ecr --update-credential-if-exists"
 fi
 
 if
 	[ $GCLOUD_SERVICE_KEY ]
 then
 	uffizzi connect gcr --update-credential-if-exists
+	echo "uffizzi connect gcr --update-credential-if-exists"
 fi
 
 if
@@ -69,6 +79,8 @@ if
 	[ $GITHUB_ACCESS_TOKEN ]
 then
 	uffizzi connect ghcr --update-credential-if-exists
+	echo "uffizzi connect ghcr --update-credential-if-exists"
 fi
 
+echo "START UFFIZZI COMMAND"
 exec uffizzi "$@"

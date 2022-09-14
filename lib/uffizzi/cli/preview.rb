@@ -52,11 +52,20 @@ module Uffizzi
     private
 
     def run(command, file_path: nil, deployment_name: nil)
-      Uffizzi.ui.output_format = options[:output]
+      Uffizzi.ui.say('====RUN====')
+      Uffizzi.ui.say('====RUN====')
+      Uffizzi.ui.say('====RUN====')
+      Uffizzi.ui.say(options.to_s)
+      # Uffizzi.ui.output_format = options[:output]
+      Uffizzi.ui.say('0====RUN====')
       raise Uffizzi::Error.new('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
+      Uffizzi.ui.say('1====RUN====')
       raise Uffizzi::Error.new('This command needs project to be set in config file') unless CommandService.project_set?(options)
+      Uffizzi.ui.say('2====RUN====')
 
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
+      Uffizzi.ui.say('3====RUN====')
+      Uffizzi.ui.say(project_slug)
 
       case command
       when 'list'
@@ -86,13 +95,17 @@ module Uffizzi
     end
 
     def handle_create_command(file_path, project_slug, labels)
-      Uffizzi.ui.disable_stdout unless options[:output].nil?
+      Uffizzi.ui.say('====RUN=handle_create_command===')
+      # Uffizzi.ui.disable_stdout unless options[:output].nil?
 
       params = prepare_params(file_path, labels)
+      Uffizzi.ui.say(params)
 
       response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
+      Uffizzi.ui.say(response)
 
       if !ResponseHelper.created?(response)
+        Uffizzi.ui.say('if !ResponseHelper.created?(response)')
         ResponseHelper.handle_failed_response(response)
       end
 
@@ -100,9 +113,12 @@ module Uffizzi
       Uffizzi.ui.say("Preview with ID deployment-#{deployment[:id]} was created.")
 
       success = PreviewService.run_containers_deploy(project_slug, deployment)
+      Uffizzi.ui.say(success)
 
       display_deployment_data(deployment, success)
     rescue SystemExit, Interrupt, SocketError
+      Uffizzi.ui.say('RESCUE')
+      Uffizzi.ui.say(response)
       deployment_id = response[:body][:deployment][:id]
       handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
     end

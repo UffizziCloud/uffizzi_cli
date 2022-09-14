@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (1.0.1)
+    uffizzi-cli (1.0.2)
       awesome_print
       thor
       tty-prompt
