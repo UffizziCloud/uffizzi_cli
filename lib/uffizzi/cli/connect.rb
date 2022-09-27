@@ -270,6 +270,7 @@ module Uffizzi
         'UffizziCore::Credential::Amazon' => 'ecr',
         'UffizziCore::Credential::GithubContainerRegistry' => 'ghcr',
         'UffizziCore::Credential::Google' => 'gcr',
+        'UffizziCore::Credential::DockerRegistry' => 'docker-registry',
       }
 
       map[credential]
