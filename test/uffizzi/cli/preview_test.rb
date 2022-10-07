@@ -249,11 +249,71 @@ class PreviewTest < Minitest::Test
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = create_body[:deployment][:id]
-    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+
+    # rubocop:disable Layout/LineLength
+    expected_data = {
+      compose_file: {
+        content: Base64.encode64(File.read('test/compose_files/test_compose_success.yml')),
+        path: File.expand_path('test/compose_files/test_compose_success.yml'),
+        source: File.expand_path('test/compose_files/test_compose_success.yml'),
+      },
+      dependencies: [
+        {
+          content: "S0VZPXZhbHVl\n",
+          path: 'env_files/env_file.env',
+          source: 'env_files/env_file.env',
+          use_kind: 'config_map',
+        },
+        {
+          content: "UE9TVEdSRVNfVVNFUj1wb3N0Z3JlcyBQT1NUR1JFU19QQVNTV09SRD1wb3N0\nZ3Jlcw==\n",
+          path: 'local.env',
+          source: 'local.env',
+          use_kind: 'config_map',
+        },
+        {
+          content: "c2VydmVyIHsgbGlzdGVuICAgICAgIDg4ODg7IHNlcnZlcl9uYW1lICBsb2Nh\nbGhvc3Q7IGxvY2F0aW9uIC8geyBwcm94eV9wYXNzICAgICAgaHR0cDovLzEy\nNy4wLjAuMTo4MDg4LzsgfSBsb2NhdGlvbiAvdm90ZS8geyBwcm94eV9wYXNz\nICAgICAgaHR0cDovLzEyNy4wLjAuMTo4ODg4LzsgfSB9\n",
+          path: 'config_files/config_file.conf',
+          source: 'config_files/config_file.conf',
+          use_kind: 'config_map',
+        },
+        {
+          content: "c2VydmVyIHsgbGlzdGVuICAgICAgIDgwODA7IHNlcnZlcl9uYW1lICBsb2Nh\nbGhvc3Q7IGxvY2F0aW9uIC8geyBwcm94eV9wYXNzICAgICAgaHR0cDovLzEy\nNy4wLjAuMTo4MDg4LzsgfSBsb2NhdGlvbiAvdm90ZS8geyBwcm94eV9wYXNz\nICAgICAgaHR0cDovLzEyNy4wLjAuMTo4ODg4LzsgfSB9\n",
+          path: 'vote.conf',
+          source: 'vote.conf',
+          use_kind: 'config_map',
+        },
+        {
+          content: "ZGF0YQ==\n",
+          is_file: false,
+          path: File.expand_path('test/compose_files/volume_files'),
+          source: './volume_files',
+          use_kind: 'volume',
+        },
+        {
+          content: "ZGF0YQ==\n",
+          is_file: true,
+          path: File.expand_path('test/compose_files/volume_files/some_text_2.txt'),
+          source: './volume_files/some_text_2.txt',
+          use_kind: 'volume',
+        },
+        {
+          content: "ZGF0YQ==\n",
+          is_file: true,
+          path: File.expand_path('test/compose_files/volume_files/some_text_1.txt'),
+          source: './volume_files/some_text_1.txt',
+          use_kind: 'volume',
+        },
+      ],
+    }
+    # rubocop:enable Layout/LineLength
+
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success_with_expected(create_body, @project_slug, expected_data)
     stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
     stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
-    @preview.create('test/compose_files/test_compose_success.yml')
+    File.stub(:binread, 'data') do
+      @preview.create('test/compose_files/test_compose_success.yml')
+    end
 
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
     assert_requested(stubbed_uffizzi_preview_deploy_containers)

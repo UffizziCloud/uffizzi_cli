@@ -82,7 +82,11 @@ class ComposeFileService
       tmp_tar_path = "/tmp/#{tmp_tar_name}.tar.gz"
 
       Minitar.pack(path, Zlib::GzipWriter.new(File.open(tmp_tar_path, 'wb')))
-      Uffizzi.ui.say("Unsupported path #{path}") if Pathname.new(tmp_tar_path).size > MAX_HOST_VOLUME_GZIP_FILE_SIZE
+      gzipped_file_size = Pathname.new(tmp_tar_path).size
+
+      if gzipped_file_size > MAX_HOST_VOLUME_GZIP_FILE_SIZE
+        Uffizzi.ui.say("File/Directory too big by path: #{path}. Gzipped tar archive size is #{gzipped_file_size}")
+      end
 
       Base64.encode64(File.binread(tmp_tar_path))
     end

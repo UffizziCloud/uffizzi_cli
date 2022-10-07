@@ -27,8 +27,10 @@ GEM
     concurrent-ruby (1.1.9)
     crack (0.4.5)
       rexml
+    deepsort (0.4.5)
     factory_bot (6.2.0)
       activesupport (>= 5.0.0)
+    fakefs (1.8.0)
     faker (2.20.0)
       i18n (>= 1.8.11, < 2)
     hashdiff (1.0.1)
@@ -119,7 +121,9 @@ DEPENDENCIES
   bump
   bundler (~> 2.2)
   byebug
+  deepsort (~> 0.4.5)
   factory_bot
+  fakefs
   faker
   minitest
   minitest-power_assert
