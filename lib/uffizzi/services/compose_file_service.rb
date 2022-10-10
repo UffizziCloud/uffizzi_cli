@@ -73,7 +73,7 @@ class ComposeFileService
       end
     rescue Errno::ENOENT => e
       dependency_path = e.message.split('- ').last
-      raise Uffizzi::Error.new("The file #{dependency_path} does not exist")
+      raise Uffizzi::Error.new("No such file or directory: #{dependency_path}")
     end
 
     def prepare_host_volume_file_content(path)
