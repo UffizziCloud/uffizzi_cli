@@ -5,7 +5,7 @@ class VolumeParserService
     def parse(volumes)
       return [] if volumes.empty?
 
-      Uffizzi.ui.say("Volumes '#{volumes}' should be an array") if volumes.is_a?(String)
+      Uffizzi.ui.say("Volumes '#{volumes}' should be an array") unless volumes.is_a?(Array)
 
       volumes.map { |volume| parse_volume(volume) }
     end
@@ -41,7 +41,7 @@ class VolumeParserService
     end
 
     def path?(path)
-      /^(\/|\.\/|\.\.\/)/.match?(path) # volume path should start with / or ./ or ../
+      path.to_s.start_with?('/', './', '../')
     end
   end
 end
