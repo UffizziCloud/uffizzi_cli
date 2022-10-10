@@ -50,17 +50,16 @@ class ComposeFileService
     end
 
     def prepare_dependency_host_volumes_files(dependency_file_paths, compose_file_dir)
-      dependency_file_paths.map do |dependency_file_path|
-        base_dependency_path = if Pathname.new(dependency_file_path).absolute?
-          dependency_file_path
-        elsif /^\.\//.match?(dependency_file_path) # start with ./
-          "#{compose_file_dir}/#{Pathname.new(dependency_file_path).cleanpath}"
-        elsif /^\.\.\//.match?(dependency_file_path) # start with ../
-          "#{compose_file_dir}/#{dependency_file_path}"
-        else
-          Uffizzi.ui.say("Unsupported path #{dependency_file_path}")
-        end
+      base_dependency_paths = dependency_file_paths.map do |dependency_file_path|
+        dependency_pathname = Pathname.new(dependency_file_path)
+        next dependency_file_path if dependency_pathname.absolute?
+        next "#{compose_file_dir}/#{dependency_pathname.cleanpath}" if dependency_file_path.start_with?('./')
+        next "#{compose_file_dir}/#{dependency_pathname}" if dependency_file_path.start_with?('../')
 
+        raise Uffizzi::Error.new("Unsupported path #{dependency_pathname}")
+      end
+
+      base_dependency_paths.zip(dependency_file_paths).map do |base_dependency_path, dependency_file_path|
         absolute_dependency_path = Pathname.new(base_dependency_path).realpath.to_s
         dependency_file_content = prepare_host_volume_file_content(absolute_dependency_path)
 
@@ -128,11 +127,13 @@ class ComposeFileService
     def prepare_env_files_paths(services)
       return [] if services.nil?
 
-      services.map do |_, service_data|
-        service_data.map do |key, value|
-          parse_env_file(value) if key.to_sym == :env_file
-        end
-      end.flatten.compact.uniq
+      services
+        .values
+        .select { |s| s.has_key?('env_file') }
+        .map { |s| parse_env_file(s['env_file']) }
+        .flatten
+        .compact
+        .uniq
     end
 
     def parse_compose_content_to_object(compose_content)
@@ -150,11 +151,13 @@ class ComposeFileService
     def prepare_host_volumes_paths(services)
       return [] if services.nil?
 
-      services.map do |_, service_data|
-        service_data.map do |key, value|
-          VolumeParserService.parse(value) if key.to_sym == :volumes
-        end
-      end.flatten.compact.uniq
+      services
+        .values
+        .select { |s| s.has_key?('volumes') }
+        .map { |s| VolumeParserService.parse(s['volumes']) }
+        .flatten
+        .compact
+        .uniq
     end
   end
 end
