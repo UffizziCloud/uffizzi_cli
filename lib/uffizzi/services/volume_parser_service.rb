@@ -7,19 +7,21 @@ class VolumeParserService
 
       Uffizzi.ui.say("Volumes '#{volumes}' should be an array") if volumes.is_a?(String)
 
-      volumes.map do |volume|
-        case volume
-        when String
-          process_short_syntax(volume)
-        when Hash
-          process_long_syntax(volume)
-        else
-          Uffizzi.ui.say("Unsupported type of '#{volumes}' option")
-        end
-      end
+      volumes.map { |volume| parse_volume(volume) }
     end
 
     private
+
+    def parse_volume(volume)
+      case volume
+      when String
+        process_short_syntax(volume)
+      when Hash
+        process_long_syntax(volume)
+      else
+        Uffizzi.ui.say("Unsupported type of '#{volumes}' option")
+      end
+    end
 
     def process_short_syntax(volume_data)
       path_part1, path_part2 = volume_data.split(':').map(&:strip)
