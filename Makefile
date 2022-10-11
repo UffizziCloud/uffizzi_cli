@@ -41,4 +41,7 @@ test:
 lint:
 	docker-compose run --rm gem bash -c "bundle exec rubocop"
 
+run_single_test:
+	docker-compose run --rm gem bash -c 'bundle exec rake test TEST=$(TEST_PATH) TESTOPTS="--name=${TEST_NAME}"'
+
 .PHONY: test

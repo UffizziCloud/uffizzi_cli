@@ -15,7 +15,7 @@ module Uffizzi
 
     desc 'list', 'List all previews'
     method_option :filter, required: false, type: :string, aliases: '-f'
-    method_option :output, required: false, type: :string, aliases: '-o', enum: ['json']
+    method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def list
       run('list')
     end
@@ -87,6 +87,7 @@ module Uffizzi
 
     def handle_create_command(file_path, project_slug, labels)
       Uffizzi.ui.disable_stdout unless options[:output].nil?
+
       params = prepare_params(file_path, labels)
 
       response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
@@ -96,7 +97,7 @@ module Uffizzi
       end
 
       deployment = response[:body][:deployment]
-      Uffizzi.ui.say("Preview created with name deployment-#{deployment[:id]}")
+      Uffizzi.ui.say("Preview with ID deployment-#{deployment[:id]} was created.")
 
       success = PreviewService.run_containers_deploy(project_slug, deployment)
 
@@ -120,7 +121,7 @@ module Uffizzi
       end
 
       deployment = response[:body][:deployment]
-      Uffizzi.ui.say("Preview with ID deployment-#{deployment_id} was successfully updated.")
+      Uffizzi.ui.say("Preview with ID deployment-#{deployment_id} was updated.")
 
       success = PreviewService.run_containers_deploy(project_slug, deployment)
 
@@ -145,7 +146,8 @@ module Uffizzi
     end
 
     def handle_succeed_events_response(response)
-      Uffizzi.ui.pretty_say(response[:body][:events])
+      Uffizzi.ui.output_format = Uffizzi::UI::Shell::PRETTY_JSON
+      Uffizzi.ui.say(response[:body][:events])
     end
 
     def handle_delete_command(deployment_name, project_slug)
@@ -180,13 +182,12 @@ module Uffizzi
       deployments = response[:body][:deployments] || []
       raise Uffizzi::Error.new('The project has no active deployments') if deployments.empty?
 
-      deployments.each do |deployment|
-        if Uffizzi.ui.output_format.nil?
-          Uffizzi.ui.say("deployment-#{deployment[:id]}")
-        else
-          Uffizzi.ui.pretty_say(deployment)
-        end
+      if Uffizzi.ui.output_format.nil?
+        deployments = deployments.reduce('') do |acc, deployment|
+          "#{acc}deployment-#{deployment[:id]}\n"
+        end.strip
       end
+      Uffizzi.ui.say(deployments)
     end
 
     def handle_succeed_delete_response(deployment_id)
@@ -202,9 +203,8 @@ module Uffizzi
 
         container
       end
-      deployment.each_key do |key|
-        Uffizzi.ui.say("#{key}: #{deployment[key]}")
-      end
+      deployment_data = deployment.reduce('') { |acc, (key, value)| "#{acc}#{key}: #{value}\n" }.strip
+      Uffizzi.ui.say(deployment_data)
     end
 
     def hide_secrets(secret_variables)
@@ -240,7 +240,8 @@ module Uffizzi
         Uffizzi.ui.say(preview_url) if success
       else
         deployment_data = build_deployment_data(deployment)
-        Uffizzi.ui.output(deployment_data)
+        Uffizzi.ui.enable_stdout
+        Uffizzi.ui.say(deployment_data)
       end
     end
 

@@ -77,7 +77,7 @@ module ApiClient
     build_response(response)
   end
 
-  def update_credential(server, params, account_id, type)
+  def update_credential(server, account_id, params, type)
     uri = credential_uri(server, account_id, type)
     response = http_client.make_put_request(uri, params)
 

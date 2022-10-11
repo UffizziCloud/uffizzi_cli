@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-PREVIEW\-LIST" "" "August 2022" ""
+.TH "UFFIZZI\-PREVIEW\-LIST" "" "September 2022" ""
 .SH "NAME"
 \fBuffizzi\-preview\-list\fR \- list previews in a project
 .SH "SYNOPSIS"
@@ -20,7 +20,7 @@ https://github\.com/UffizziCloud/uffizzi_cli
 \-\-filter=METADATA
     Metadata to filtering list of deployments\.
 
-\-\-output=json
+\-\-output=pretty\-json
     Use this option for a more detailed description of listed
     deployments\.
 .fi
@@ -41,7 +41,7 @@ To list all previews in a project with name my_project, run:
 
 To list all previews in json format, run:
 
-    $ uffizzi preview list \-\-output="json"
+    $ uffizzi preview list \-\-output="pretty\-json"
 
 To list all previews filtered by metadata using single
 label, run:
