@@ -11,6 +11,8 @@ require 'byebug'
 require 'minitest/autorun'
 require 'webmock/minitest'
 require 'mocha/minitest'
+require 'deepsort'
+require 'fakefs/safe'
 
 require_relative '../config/uffizzi'
 require 'uffizzi'

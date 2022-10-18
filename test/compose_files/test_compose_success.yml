@@ -7,6 +7,17 @@ services:
     configs:
       - source: vote_conf
         target: /etc/nginxz
+    volumes:
+      - ./volume_files/some_text_1.txt:/var/dir_text_1
+      - ./volume_files:/var/dir_texts
+
+  db:
+    image: postgres
+    volumes:
+      - source: ./volume_files/some_text_2.txt
+        target: /var/text_2
+      - source: ./volume_files
+        target: /var/texts
 
 configs:
   vote_conf:
