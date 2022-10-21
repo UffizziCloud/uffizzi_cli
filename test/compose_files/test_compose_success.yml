@@ -10,6 +10,7 @@ services:
     volumes:
       - ./volume_files/some_text_1.txt:/var/dir_text_1
       - ./volume_files:/var/dir_texts
+      - ./:/var/all_files
 
   db:
     image: postgres

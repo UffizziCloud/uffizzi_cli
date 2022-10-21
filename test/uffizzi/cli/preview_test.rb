@@ -249,13 +249,14 @@ class PreviewTest < Minitest::Test
     create_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = create_body[:deployment][:id]
+    compose_file_path = 'test/compose_files/test_compose_success.yml'
 
     # rubocop:disable Layout/LineLength
     expected_data = {
       compose_file: {
-        content: Base64.encode64(File.read('test/compose_files/test_compose_success.yml')),
-        path: File.expand_path('test/compose_files/test_compose_success.yml'),
-        source: File.expand_path('test/compose_files/test_compose_success.yml'),
+        content: Base64.encode64(File.read(compose_file_path)),
+        path: File.expand_path(compose_file_path),
+        source: File.expand_path(compose_file_path),
       },
       dependencies: [
         {
@@ -303,6 +304,13 @@ class PreviewTest < Minitest::Test
           source: './volume_files/some_text_1.txt',
           use_kind: 'volume',
         },
+        {
+          content: "ZGF0YQ==\n",
+          is_file: false,
+          path: File.expand_path('test/compose_files'),
+          source: './',
+          use_kind: 'volume',
+        },
       ],
     }
     # rubocop:enable Layout/LineLength
@@ -312,7 +320,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
     File.stub(:binread, 'data') do
-      @preview.create('test/compose_files/test_compose_success.yml')
+      @preview.create(compose_file_path)
     end
 
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
