@@ -17,7 +17,7 @@ else
     [ $REQUEST_TOKEN ] &&
     [ $REQUEST_TOKEN_URL ]
 	then
-    OIDC_TOKEN=$(curl -sLS "${REQUEST_TOKEN_URL}&audience=uffizzi" -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $REQUEST_TOKEN")
+    OIDC_TOKEN=$(curl -sLS "${REQUEST_TOKEN_URL}&audience=${HEAD_REPOSITORY}" -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $REQUEST_TOKEN")
 		uffizzi login_by_identity_token --token "${OIDC_TOKEN}" --server "${UFFIZZI_SERVER}"
 	else
 		echo "Specify environment variables to login before executing Uffizzi CLI."
