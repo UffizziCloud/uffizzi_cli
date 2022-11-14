@@ -70,9 +70,8 @@ module Uffizzi
       logs = response[:body][:logs] || []
       return Uffizzi.ui.say("The service '#{container_name}' has no logs") if logs.empty?
 
-      logs.each do |log|
-        Uffizzi.ui.say(log)
-      end
+      logs_columns = logs.map { |log| [log[:timestamp], log[:payload]] }
+      Uffizzi.ui.print_table(logs_columns)
     end
   end
 end
