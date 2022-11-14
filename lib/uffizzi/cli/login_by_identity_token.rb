@@ -19,7 +19,7 @@ module Uffizzi
       response = create_ci_session(server, params)
 
       if ResponseHelper.created?(response)
-        handle_succeed_response(response, server)
+        handle_succeed_response(response, server, token)
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -35,12 +35,13 @@ module Uffizzi
       }
     end
 
-    def handle_succeed_response(response, server)
+    def handle_succeed_response(response, server, token)
       ConfigFile.write_option(:server, server)
       ConfigFile.write_option(:cookie, response[:headers])
       ConfigFile.write_option(:account_id, response[:body][:account_id])
       ConfigFile.write_option(:project, response[:body][:project_slug])
-
+      ConfigFile.write_option(:token, token)
+      
       Uffizzi.ui.say('Successful Login by Identity Token')
     end
   end
