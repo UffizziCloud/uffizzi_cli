@@ -218,7 +218,9 @@ module Uffizzi
     def prepare_params(file_path, labels)
       compose_file_params = file_path.nil? ? {} : build_compose_file_params(file_path)
       metadata_params = labels.nil? ? {} : build_metadata_params(labels)
-      compose_file_params.merge(metadata_params)
+      token = ConfigFile.read_option(:token)
+      params = compose_file_params.merge(metadata_params)
+      params.merge({token: token})
     end
 
     def handle_preview_interruption(deployment_id, server, project_slug)
