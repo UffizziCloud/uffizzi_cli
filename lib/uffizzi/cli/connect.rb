@@ -32,10 +32,13 @@ module Uffizzi
 
       username, password = Uffizzi::ConnectHelper.get_docker_hub_data(options)
 
+      token = ConfigFile.read_option(:token)
+
       params = {
         username: username,
         password: password,
         type: type,
+        token: token
       }
       server = ConfigFile.read_option(:server)
       account_id = ConfigFile.read_option(:account_id)
