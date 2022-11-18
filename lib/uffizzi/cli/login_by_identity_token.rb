@@ -41,7 +41,7 @@ module Uffizzi
       ConfigFile.write_option(:account_id, response[:body][:account_id])
       ConfigFile.write_option(:project, response[:body][:project_slug])
       ConfigFile.write_option(:token, token)
-      
+
       Uffizzi.ui.say('Successful Login by Identity Token')
     end
   end

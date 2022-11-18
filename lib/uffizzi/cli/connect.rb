@@ -38,7 +38,7 @@ module Uffizzi
         username: username,
         password: password,
         type: type,
-        token: token
+        token: token,
       }
       server = ConfigFile.read_option(:server)
       account_id = ConfigFile.read_option(:account_id)
