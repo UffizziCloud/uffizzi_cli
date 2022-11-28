@@ -39,7 +39,7 @@ test:
 	docker-compose run --rm gem bash -c "bundle exec rake test"
 
 lint:
-	docker-compose run --rm gem bash -c "bundle exec rubocop"
+	docker-compose run --rm gem bash -c "bundle exec rubocop -A"
 
 run_single_test:
 	docker-compose run --rm gem bash -c 'bundle exec rake test TEST=$(TEST_PATH) TESTOPTS="--name=${TEST_NAME}"'

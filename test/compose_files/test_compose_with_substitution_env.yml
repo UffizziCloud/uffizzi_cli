@@ -1,0 +1,12 @@
+---
+services:
+  hello-world:
+    image: $IMAGE
+    entrypoint: "/bin/bash"
+    command:
+      - "-c"
+      - "REDIRECT_URL=$$UFFIZZI_URL/home ENDPOINT=$$UFFIZZI_URL/entrypoint node /app/app/app.js"
+
+x-uffizzi-ingress:
+  service: hello-world
+  port: 80
