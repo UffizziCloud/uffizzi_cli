@@ -29,13 +29,14 @@ module UffizziPreviewStubSupport
     stub_request(:post, url).to_return(status: 201, body: body.to_json)
   end
 
-  def stub_uffizzi_preview_create_success_with_expected(body, project_slug, expected_data)
+  def stub_uffizzi_preview_create_success_with_expected(body, project_slug, expected_data, comparator = nil)
     url = deployments_uri(Uffizzi.configuration.server, project_slug)
 
     stub_request(:post, url).with do |req|
       actual_request_body = JSON.parse(req.body).deep_symbolize_keys.deep_sort
-      expected_reques_body = expected_data.deep_symbolize_keys.deep_sort
+      next comparator.call(expected_data, actual_request_body) unless comparator.nil?
 
+      expected_reques_body = expected_data.deep_symbolize_keys.deep_sort
       actual_request_body == expected_reques_body
     end.to_return(status: 201, body: body.to_json)
   end
