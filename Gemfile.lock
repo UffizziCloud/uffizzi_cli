@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (1.0.4)
+    uffizzi-cli (1.0.5)
       awesome_print
       minitar
       thor
