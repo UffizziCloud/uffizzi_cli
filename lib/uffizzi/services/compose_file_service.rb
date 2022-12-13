@@ -84,7 +84,7 @@ class ComposeFileService
       gzipped_file_size = Pathname.new(tmp_tar_path).size
 
       if gzipped_file_size > MAX_HOST_VOLUME_GZIP_FILE_SIZE
-        Uffizzi.ui.say("File/Directory too big by path: #{path}. Gzipped tar archive size is #{gzipped_file_size}")
+        raise Uffizzi::Error.new("File or directory is too large:: #{path}. Gzipped tar archive size is #{gzipped_file_size}")
       end
 
       Base64.encode64(File.binread(tmp_tar_path))
