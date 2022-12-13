@@ -54,6 +54,21 @@ class ComposeTest < Minitest::Test
     refute_requested(stubbed_uffizzi_create_compose)
   end
 
+  def test_compose_set_with_compose_file_with_syntax_error
+    body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
+    stubbed_uffizzi_create_compose = stub_uffizzi_create_compose_success(body, @project_slug)
+    ENV['IMAGE'] = 'nginx'
+    ENV['CONFIG_SOURCE'] = 'vote.conf'
+
+    @compose.options = command_options(file: 'test/compose_files/test_compose_with_syntax_error.yml')
+    error = assert_raises(StandardError) do
+      @compose.set
+    end
+
+    assert_equal('Syntax error: mapping values are not allowed in this context at line 3 column 10', error.message)
+    refute_requested(stubbed_uffizzi_create_compose)
+  end
+
   def test_compose_set_with_default_env_var_success
     body = json_fixture('files/uffizzi/uffizzi_create_compose_success.json')
     stubbed_uffizzi_create_compose = stub_uffizzi_create_compose_success(body, @project_slug)

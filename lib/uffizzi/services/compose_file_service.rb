@@ -139,11 +139,12 @@ class ComposeFileService
     def parse_compose_content_to_object(compose_content)
       begin
         compose_data = Psych.safe_load(compose_content, aliases: true)
-      rescue Psych::SyntaxError
-        Uffizzi.ui.say('Invalid compose file')
+      rescue Psych::SyntaxError => e
+        err = [e.problem, e.context].compact.join(' ')
+        raise Uffizzi::Error.new("Syntax error: #{err} at line #{e.line} column #{e.column}")
       end
 
-      Uffizzi.ui.say('Unsupported compose file') if compose_data.nil?
+      raise Uffizzi::Error.new('Unsupported compose file') if compose_data.nil?
 
       compose_data
     end
