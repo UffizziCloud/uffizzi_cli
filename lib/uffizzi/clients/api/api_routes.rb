@@ -81,4 +81,8 @@ module ApiRoutes
   def preview_service_logs_uri(server, project_slug, deployment_id, container_name)
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers/#{container_name}/logs"
   end
+
+  def k8s_container_description_uri(server, project_slug, deployment_id, container_name)
+    "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers/#{container_name}/k8s_container_description"
+  end
 end

@@ -67,6 +67,8 @@ class MockShell
   end
 
   def format_to_github_action(data)
+    return '' unless data.is_a?(Hash)
+
     data.reduce('') { |acc, (key, value)| "#{acc}::set-output name=#{key}::#{value}\n" }
   end
 end

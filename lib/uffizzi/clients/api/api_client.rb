@@ -4,6 +4,16 @@ require_relative 'api_routes'
 require_relative 'http_client'
 
 module ApiClient
+  class ResponseError < StandardError
+    attr_reader :response
+
+    def initialize(response)
+      @response = response
+
+      super(response.to_s)
+    end
+  end
+
   include ApiRoutes
 
   def create_session(server, params = {})
@@ -206,6 +216,13 @@ module ApiClient
   def deploy_containers(server, project_slug, deployment_id, params)
     uri = deploy_containers_uri(server, project_slug, deployment_id)
     response = http_client.make_post_request(uri, params)
+
+    build_response(response)
+  end
+
+  def get_k8s_container_description(server, project_slug, deployment_id, container_name)
+    uri = k8s_container_description_uri(server, project_slug, deployment_id, container_name)
+    response = http_client.make_get_request(uri)
 
     build_response(response)
   end
