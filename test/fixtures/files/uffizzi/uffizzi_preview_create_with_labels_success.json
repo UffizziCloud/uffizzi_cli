@@ -46,7 +46,8 @@
         "public": true,
         "repo_id": 270,
         "continuously_deploy": "enabled",
-        "receive_incoming_requests": true
+        "receive_incoming_requests": true,
+        "service_name": "web"
       },
       {
         "id": 271,
@@ -69,7 +70,8 @@
         "public": false,
         "repo_id": 271,
         "continuously_deploy": "enabled",
-        "receive_incoming_requests": false
+        "receive_incoming_requests": false,
+        "service_name": "redis"
       }
     ],
     "deployed_by": {
