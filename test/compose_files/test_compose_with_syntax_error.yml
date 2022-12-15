@@ -1,0 +1,30 @@
+services:
+  hello-world
+    image: nginx
+    env_file:
+      - local.env
+      - ./env_files/env_file.env
+    configs:
+      - source: vote_conf
+        target: /etc/nginxz
+    volumes:
+      - ./volume_files/some_text_1.txt:/var/dir_text_1
+      - ./volume_files:/var/dir_texts
+
+  db:
+    image: postgres
+    volumes:
+      - source: ./volume_files/some_text_2.txt
+        target: /var/text_2
+      - source: ./volume_files
+        target: /var/texts
+
+configs:
+  vote_conf:
+    file: ./vote.conf
+  defaulf_conf:
+    file: config_files/config_file.conf
+
+x-uffizzi-ingress:
+  service: hello-world
+  port: 80
