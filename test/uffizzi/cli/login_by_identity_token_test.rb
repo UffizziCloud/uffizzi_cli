@@ -5,7 +5,7 @@ require 'test_helper'
 class LoginByIdentityTokenTest < Minitest::Test
   def setup
     @cli = Uffizzi::Cli.new
-    @cli.options = command_options(token: 'token', server: Uffizzi.configuration.server)
+    @cli.options = command_options(token: 'token', server: Uffizzi.configuration.server, access_token: 'token')
   end
 
   def test_login_success_with_oidc

@@ -14,6 +14,7 @@ module Uffizzi
 
     def run
       token = @options[:token]
+      access_token = @options[:access_token]
       server = @options[:server]
       params = prepare_request_params(token)
       response = create_ci_session(server, params)
@@ -31,6 +32,7 @@ module Uffizzi
       {
         user: {
           token: token,
+          access_token: access_token,
         },
       }
     end
