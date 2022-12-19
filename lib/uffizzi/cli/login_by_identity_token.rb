@@ -16,7 +16,7 @@ module Uffizzi
       token = @options[:token]
       access_token = @options[:access_token]
       server = @options[:server]
-      params = prepare_request_params(token)
+      params = prepare_request_params(token, access_token)
       response = create_ci_session(server, params)
 
       if ResponseHelper.created?(response)
@@ -28,7 +28,7 @@ module Uffizzi
 
     private
 
-    def prepare_request_params(token)
+    def prepare_request_params(token, access_token)
       {
         user: {
           token: token,
