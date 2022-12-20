@@ -98,7 +98,7 @@ module Uffizzi
         when Interrupt
           raise Uffizzi::Error.new('CI process was interrupted')
         else
-          raise Uffizzi::Error.new('System Error')
+          raise Uffizzi::Error.new('CLI System Fault')
         end
       end
 

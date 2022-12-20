@@ -29,12 +29,12 @@ module Uffizzi
 
       def handle_failed_response(response)
         prepared_errors = prepare_errors(response[:body][:errors])
-        raise Uffizzi::Error.new(prepared_errors)
+        raise Uffizzi::Error.new("Server Error:\n#{prepared_errors}")
       end
 
       def handle_invalid_compose_response(response)
         prepared_errors = prepare_errors(response[:body][:compose_file][:payload][:errors])
-        raise Uffizzi::Error.new(prepared_errors)
+        raise Uffizzi::Error.new("Server Error:\n#{prepared_errors}")
       end
 
       private
