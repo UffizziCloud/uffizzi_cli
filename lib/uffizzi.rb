@@ -2,6 +2,7 @@
 
 require 'io/console'
 require 'tty-spinner'
+require 'sentry-ruby'
 
 require 'thor'
 require 'uffizzi/error'
@@ -12,6 +13,11 @@ require 'uffizzi/clients/api/api_client'
 require 'uffizzi/clients/api/api_routes'
 require 'uffizzi/config_file'
 require_relative '../config/uffizzi'
+
+Sentry.init do |config|
+  config.dsn = Base64.decode64(ENV['LOGGER_KEY'].to_s)
+  config.logger = Sentry::Logger.new(nil)
+end
 
 module Uffizzi
   class << self
