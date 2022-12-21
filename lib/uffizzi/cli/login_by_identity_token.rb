@@ -14,9 +14,9 @@ module Uffizzi
 
     def run
       token = @options[:token]
-      access_token = @options[:access_token]
+      github_access_token = @options[:access_token]
       server = @options[:server]
-      params = prepare_request_params(token, access_token)
+      params = prepare_request_params(token, github_access_token)
       response = create_ci_session(server, params)
 
       if ResponseHelper.created?(response)
@@ -28,11 +28,11 @@ module Uffizzi
 
     private
 
-    def prepare_request_params(token, access_token)
+    def prepare_request_params(token, github_access_token)
       {
         user: {
           token: token,
-          access_token: access_token,
+          github_access_token: github_access_token,
         },
       }
     end
