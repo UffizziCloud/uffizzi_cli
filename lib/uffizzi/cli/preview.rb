@@ -23,6 +23,7 @@ module Uffizzi
     desc 'create [COMPOSE_FILE]', 'Create a preview'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
     method_option :"set-labels", required: false, type: :string, aliases: '-s'
+    method_option :"creation-source", required: false, type: :string
     def create(file_path = nil)
       run('create', file_path: file_path)
     end
@@ -62,7 +63,7 @@ module Uffizzi
       when 'list'
         handle_list_command(project_slug, options[:filter])
       when 'create'
-        handle_create_command(file_path, project_slug, options[:"set-labels"])
+        handle_create_command(file_path, project_slug, options[:"set-labels"], options[:"creation-source"])
       when 'update'
         handle_update_command(deployment_name, file_path, project_slug, options[:"set-labels"])
       when 'delete'
@@ -85,10 +86,10 @@ module Uffizzi
       end
     end
 
-    def handle_create_command(file_path, project_slug, labels)
+    def handle_create_command(file_path, project_slug, labels, creation_source)
       Uffizzi.ui.disable_stdout unless options[:output].nil?
 
-      params = prepare_params(file_path, labels)
+      params = prepare_params(file_path, labels, creation_source)
 
       response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
 
@@ -215,13 +216,13 @@ module Uffizzi
       end
     end
 
-    def prepare_params(file_path, labels)
+    def prepare_params(file_path, labels, creation_source)
       compose_file_params = file_path.nil? ? {} : build_compose_file_params(file_path)
       metadata_params = labels.nil? ? {} : build_metadata_params(labels)
       token = ConfigFile.read_option(:token)
       extra_params = token.nil? ? {} : { token: token }
       params = compose_file_params.merge(metadata_params)
-      params.merge(extra_params)
+      params.merge(extra_params, { creation_source: creation_source })
     end
 
     def handle_preview_interruption(deployment_id, server, project_slug)
