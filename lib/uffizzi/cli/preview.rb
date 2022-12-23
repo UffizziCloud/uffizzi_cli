@@ -216,7 +216,7 @@ module Uffizzi
       end
     end
 
-    def prepare_params(file_path, labels, creation_source)
+    def prepare_params(file_path, labels, creation_source = nil)
       compose_file_params = file_path.nil? ? {} : build_compose_file_params(file_path)
       metadata_params = labels.nil? ? {} : build_metadata_params(labels)
       token = ConfigFile.read_option(:token)

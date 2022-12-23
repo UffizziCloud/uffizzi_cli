@@ -252,6 +252,7 @@ class PreviewTest < Minitest::Test
 
     # rubocop:disable Layout/LineLength
     expected_data = {
+      creation_source: nil,
       compose_file: {
         content: Base64.encode64(File.read('test/compose_files/test_compose_success.yml')),
         path: File.expand_path('test/compose_files/test_compose_success.yml'),
