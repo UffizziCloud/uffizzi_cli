@@ -250,9 +250,11 @@ class PreviewTest < Minitest::Test
     activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
     deployment_id = create_body[:deployment][:id]
 
+    @preview.options = command_options("creation-source": 'github_actions')
+
     # rubocop:disable Layout/LineLength
     expected_data = {
-      creation_source: nil,
+      creation_source: 'github_actions',
       compose_file: {
         content: Base64.encode64(File.read('test/compose_files/test_compose_success.yml')),
         path: File.expand_path('test/compose_files/test_compose_success.yml'),

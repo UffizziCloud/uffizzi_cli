@@ -36,8 +36,8 @@ module UffizziPreviewStubSupport
       actual_request_body = JSON.parse(req.body).deep_symbolize_keys.deep_sort
       next comparator.call(expected_data, actual_request_body) unless comparator.nil?
 
-      expected_reques_body = expected_data.deep_symbolize_keys.deep_sort
-      actual_request_body == expected_reques_body
+      expected_request_body = expected_data.deep_symbolize_keys.deep_sort
+      actual_request_body == expected_request_body
     end.to_return(status: 201, body: body.to_json)
   end
 
