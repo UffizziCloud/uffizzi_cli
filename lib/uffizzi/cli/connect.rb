@@ -31,11 +31,13 @@ module Uffizzi
       handle_existing_credential_options('docker-hub') if credential_exists
 
       username, password = Uffizzi::ConnectHelper.get_docker_hub_data(options)
+      token = ConfigFile.read_option(:token)
 
       params = {
         username: username,
         password: password,
         type: type,
+        token: token,
       }
       server = ConfigFile.read_option(:server)
       account_id = ConfigFile.read_option(:account_id)
@@ -62,12 +64,14 @@ module Uffizzi
       handle_existing_credential_options('docker-registry') if credential_exists
 
       registry_url, username, password = Uffizzi::ConnectHelper.get_docker_registry_data(options)
+      token = ConfigFile.read_option(:token)
 
       params = {
         registry_url: prepare_registry_url(registry_url),
         username: username,
         password: password,
         type: type,
+        token: token,
       }
       server = ConfigFile.read_option(:server)
       account_id = ConfigFile.read_option(:account_id)
@@ -94,12 +98,14 @@ module Uffizzi
       handle_existing_credential_options('acr') if credential_exists
 
       registry_url, username, password = Uffizzi::ConnectHelper.get_acr_data(options)
+      token = ConfigFile.read_option(:token)
 
       params = {
         username: username,
         password: password,
         registry_url: prepare_registry_url(registry_url),
         type: type,
+        token: token,
       }
       server = ConfigFile.read_option(:server)
       account_id = ConfigFile.read_option(:account_id)
@@ -126,12 +132,14 @@ module Uffizzi
       handle_existing_credential_options('ecr') if credential_exists
 
       registry_url, access_key_id, secret_access_key = Uffizzi::ConnectHelper.get_ecr_data(options)
+      token = ConfigFile.read_option(:token)
 
       params = {
         username: access_key_id,
         password: secret_access_key,
         registry_url: prepare_registry_url(registry_url),
         type: type,
+        token: token,
       }
       server = ConfigFile.read_option(:server)
       account_id = ConfigFile.read_option(:account_id)
@@ -155,10 +163,12 @@ module Uffizzi
       handle_existing_credential_options('gcr') if credential_exists
 
       credential_content = google_service_account_content(credential_file_path)
+      token = ConfigFile.read_option(:token)
 
       params = {
         password: credential_content,
         type: type,
+        token: token,
       }
       server = ConfigFile.read_option(:server)
       account_id = ConfigFile.read_option(:account_id)
@@ -184,11 +194,13 @@ module Uffizzi
       handle_existing_credential_options('ghcr') if credential_exists
 
       username, password = Uffizzi::ConnectHelper.get_ghcr_data(options)
+      token = ConfigFile.read_option(:token)
 
       params = {
         username: username,
         password: password,
         type: type,
+        token: token,
       }
       server = ConfigFile.read_option(:server)
       account_id = ConfigFile.read_option(:account_id)
@@ -270,6 +282,7 @@ module Uffizzi
         'UffizziCore::Credential::Amazon' => 'ecr',
         'UffizziCore::Credential::GithubContainerRegistry' => 'ghcr',
         'UffizziCore::Credential::Google' => 'gcr',
+        'UffizziCore::Credential::DockerRegistry' => 'docker-registry',
       }
 
       map[credential]

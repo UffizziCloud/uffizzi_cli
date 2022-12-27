@@ -51,4 +51,8 @@ class Minitest::Test
   def command_options(options)
     Thor::CoreExt::HashWithIndifferentAccess.new(options)
   end
+
+  def render_error(error)
+    "Server Error:\n#{error}"
+  end
 end

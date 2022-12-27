@@ -85,7 +85,9 @@ class DisconnectTest < Minitest::Test
       @cli.disconnect('docker-hub')
     end
 
-    assert_equal(body[:errors][:title].first, error.message.strip)
+    expected_error_message = render_error(body[:errors][:title].first)
+
+    assert_equal(expected_error_message, error.message.strip)
     assert_requested(stubbed_uffizzi_delete_credential)
   end
 end

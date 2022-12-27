@@ -73,7 +73,7 @@ class ComposeFileService
       end
     rescue Errno::ENOENT => e
       dependency_path = e.message.split('- ').last
-      raise Uffizzi::Error.new("The file #{dependency_path} does not exist")
+      raise Uffizzi::Error.new("No such file or directory: #{dependency_path}")
     end
 
     def prepare_host_volume_file_content(path)
@@ -84,7 +84,7 @@ class ComposeFileService
       gzipped_file_size = Pathname.new(tmp_tar_path).size
 
       if gzipped_file_size > MAX_HOST_VOLUME_GZIP_FILE_SIZE
-        Uffizzi.ui.say("File/Directory too big by path: #{path}. Gzipped tar archive size is #{gzipped_file_size}")
+        raise Uffizzi::Error.new("File or directory is too large:: #{path}. Gzipped tar archive size is #{gzipped_file_size}")
       end
 
       Base64.encode64(File.binread(tmp_tar_path))
@@ -139,11 +139,12 @@ class ComposeFileService
     def parse_compose_content_to_object(compose_content)
       begin
         compose_data = Psych.safe_load(compose_content, aliases: true)
-      rescue Psych::SyntaxError
-        Uffizzi.ui.say('Invalid compose file')
+      rescue Psych::SyntaxError => e
+        err = [e.problem, e.context].compact.join(' ')
+        raise Uffizzi::Error.new("Syntax error: #{err} at line #{e.line} column #{e.column}")
       end
 
-      Uffizzi.ui.say('Unsupported compose file') if compose_data.nil?
+      raise Uffizzi::Error.new('Unsupported compose file') if compose_data.nil?
 
       compose_data
     end

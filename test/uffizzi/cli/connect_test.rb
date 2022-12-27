@@ -170,7 +170,9 @@ class ConnectTest < Minitest::Test
       @cli.docker_hub
     end
 
-    assert_equal(body[:errors][:username].first, error.message.strip)
+    expected_error_message = render_error(body[:errors][:username].first)
+
+    assert_equal(expected_error_message, error.message.strip)
     assert_requested(stubbed_uffizzi_create_credential)
     assert_requested(stubbed_check_credential)
   end
