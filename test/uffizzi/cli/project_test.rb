@@ -105,7 +105,9 @@ class ProjectsTest < Minitest::Test
       @project.set_default(project_slug)
     end
 
-    assert_match(error.message, "Resource Not Found\n")
+    expected_error_message = render_error("Resource Not Found\n")
+
+    assert_match(expected_error_message, error.message)
     assert_requested(stubbed_uffizzi_projects)
   end
 

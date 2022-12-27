@@ -107,7 +107,9 @@ class PreviewTest < Minitest::Test
       @preview.delete("deployment-#{deployment_id}")
     end
 
-    assert_equal('Resource Not Found', error.message.strip)
+    expected_error_message = render_error('Resource Not Found')
+
+    assert_equal(expected_error_message, error.message.strip)
     assert_requested(stubbed_uffizzi_preview_delete)
   end
 
@@ -142,7 +144,9 @@ class PreviewTest < Minitest::Test
       @preview.describe("deployment-#{deployment_id}")
     end
 
-    assert_equal('Resource Not Found', error.message.strip)
+    expected_error_message = render_error('Resource Not Found')
+
+    assert_equal(expected_error_message, error.message.strip)
     assert_requested(stubbed_uffizzi_preview_describe)
   end
 
@@ -485,7 +489,9 @@ class PreviewTest < Minitest::Test
       @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
     end
 
-    assert_equal('Resource Not Found', error.message.strip)
+    expected_error_message = render_error('Resource Not Found')
+
+    assert_equal(expected_error_message, error.message.strip)
     assert_requested(stubbed_uffizzi_preview_update)
   end
 
