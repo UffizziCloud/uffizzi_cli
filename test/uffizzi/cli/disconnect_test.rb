@@ -81,11 +81,13 @@ class DisconnectTest < Minitest::Test
     stubbed_uffizzi_delete_credential = stub_uffizzi_delete_credential_fail(@account_id, body,
                                                                             Uffizzi.configuration.credential_types[:dockerhub])
 
-    error = assert_raises(Uffizzi::Error) do
+    error = assert_raises(Uffizzi::ServerResponseError) do
       @cli.disconnect('docker-hub')
     end
 
-    assert_equal(body[:errors][:title].first, error.message.strip)
+    expected_error_message = render_server_error(body[:errors][:title].first)
+
+    assert_equal(expected_error_message, error.message.strip)
     assert_requested(stubbed_uffizzi_delete_credential)
   end
 end

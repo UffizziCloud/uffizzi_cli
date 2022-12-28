@@ -90,25 +90,25 @@ module Uffizzi
       end
 
       def ci_workflow?
-        ['', 'false', 'f', '0'].exclude?(ENV['CI_WORKFLOW'].to_s.downcase)
+        !['', 'false', 'f', '0'].include?(ENV['CI_WORKFLOW'].to_s.downcase)
       end
 
       def handle_ci_exceptions(exception)
         Sentry.capture_exception(exception)
         case exception
         when Interrupt
-          raise Uffizzi::Error.new('CI process was interrupted')
+          raise Uffizzi::CliError.new('CI process was interrupted')
         else
-          raise Uffizzi::Error.new('CLI System Fault')
+          raise Uffizzi::CliError.new('System Fault')
         end
       end
 
       def handle_repl_exceptions(exception)
         case exception
         when Interrupt
-          raise Uffizzi::Error.new('The command was interrupted')
+          raise Uffizzi::CliError.new('The command was interrupted')
         when StandardError
-          raise Uffizzi::Error.new(e.message)
+          raise Uffizzi::CliError.new(e.message)
         else
           raise exception
         end
