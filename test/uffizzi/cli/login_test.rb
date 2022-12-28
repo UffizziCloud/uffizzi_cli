@@ -74,7 +74,7 @@ class LoginTest < Minitest::Test
 
     @cli.options = command_options(username: @command_params[:username], server: @command_params[:server])
 
-    assert_raises(Uffizzi::Error) do
+    assert_raises(Uffizzi::ServerResponseError) do
       @cli.login
     end
 
