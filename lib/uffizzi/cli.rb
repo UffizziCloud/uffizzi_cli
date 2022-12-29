@@ -71,10 +71,8 @@ module Uffizzi
         return Common.show_manual(filename(args)) if show_help?(args, opts)
 
         super
-      rescue Interrupt
-        raise Uffizzi::Error.new('The command was interrupted')
       rescue StandardError => e
-        raise Uffizzi::Error.new(e.message)
+        ci_workflow? ? handle_ci_exceptions(e) : handle_repl_exceptions(e)
       end
 
       private
@@ -89,6 +87,31 @@ module Uffizzi
       def show_help?(args, opts)
         help_options = ['--help', '-h', '--help=true']
         args.empty? || args.include?('help') || opts.any? { |opt| help_options.include?(opt) }
+      end
+
+      def ci_workflow?
+        !['', 'false', 'f', '0'].include?(ENV['CI_WORKFLOW'].to_s.downcase)
+      end
+
+      def handle_ci_exceptions(exception)
+        Sentry.capture_exception(exception)
+        case exception
+        when Interrupt
+          raise Uffizzi::CliError.new('CI process was interrupted')
+        else
+          raise Uffizzi::CliError.new('System Fault')
+        end
+      end
+
+      def handle_repl_exceptions(exception)
+        case exception
+        when Interrupt
+          raise Uffizzi::CliError.new('The command was interrupted')
+        when StandardError
+          raise Uffizzi::CliError.new(e.message)
+        else
+          raise exception
+        end
       end
     end
   end

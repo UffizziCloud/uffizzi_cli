@@ -103,11 +103,13 @@ class PreviewTest < Minitest::Test
     deployment_id = 1
     stubbed_uffizzi_preview_delete = stub_uffizzi_preview_delete_failed(body, @project_slug, deployment_id)
 
-    error = assert_raises(Uffizzi::Error) do
+    error = assert_raises(Uffizzi::ServerResponseError) do
       @preview.delete("deployment-#{deployment_id}")
     end
 
-    assert_equal('Resource Not Found', error.message.strip)
+    expected_error_message = render_server_error("Resource Not Found\n")
+
+    assert_equal(expected_error_message, error.message)
     assert_requested(stubbed_uffizzi_preview_delete)
   end
 
@@ -138,11 +140,13 @@ class PreviewTest < Minitest::Test
     deployment_id = 1
     stubbed_uffizzi_preview_describe = stub_uffizzi_preview_describe_not_found(body, @project_slug, deployment_id)
 
-    error = assert_raises(Uffizzi::Error) do
+    error = assert_raises(Uffizzi::ServerResponseError) do
       @preview.describe("deployment-#{deployment_id}")
     end
 
-    assert_equal('Resource Not Found', error.message.strip)
+    expected_error_message = render_server_error("Resource Not Found\n")
+
+    assert_equal(expected_error_message, error.message)
     assert_requested(stubbed_uffizzi_preview_describe)
   end
 
@@ -236,7 +240,7 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
     stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
-    assert_raises(Uffizzi::Error) do
+    assert_raises(Uffizzi::ServerResponseError) do
       @preview.create
     end
 
@@ -334,7 +338,7 @@ class PreviewTest < Minitest::Test
       deployment_id,
     )
 
-    assert_raises(Uffizzi::Error) do
+    assert_raises(Uffizzi::ServerResponseError) do
       @preview.create
     end
 
@@ -481,11 +485,13 @@ class PreviewTest < Minitest::Test
     deployment_id = 1
     stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_not_found(body, @project_slug, deployment_id)
 
-    error = assert_raises(Uffizzi::Error) do
+    error = assert_raises(Uffizzi::ServerResponseError) do
       @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
     end
 
-    assert_equal('Resource Not Found', error.message.strip)
+    expected_error_message = render_server_error("Resource Not Found\n")
+
+    assert_equal(expected_error_message, error.message)
     assert_requested(stubbed_uffizzi_preview_update)
   end
 

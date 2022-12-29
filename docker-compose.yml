@@ -15,6 +15,7 @@ services:
       - BUNDLE_PATH=/bundle_cache
       - GEM_HOME=/bundle_cache
       - GEM_PATH=/bundle_cache
+      - CI_WORKFLOW=false
 
   bundle_cache:
     image: busybox

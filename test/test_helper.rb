@@ -7,7 +7,6 @@ require 'factory_bot'
 require 'faker'
 require 'net/http'
 require 'io/console'
-require 'byebug'
 require 'minitest/autorun'
 require 'webmock/minitest'
 require 'mocha/minitest'
@@ -19,6 +18,7 @@ require 'uffizzi'
 require 'uffizzi/cli'
 require 'uffizzi/config_file'
 require 'uffizzi/shell'
+require 'uffizzi/error'
 
 include AuthSupport
 include FixtureSupport
@@ -50,5 +50,9 @@ class Minitest::Test
 
   def command_options(options)
     Thor::CoreExt::HashWithIndifferentAccess.new(options)
+  end
+
+  def render_server_error(error)
+    "#{Uffizzi::RESPONSE_SERVER_ERROR_HEADER}#{error}"
   end
 end

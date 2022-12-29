@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'awesome_print'
   spec.add_dependency 'minitar'
+  spec.add_dependency 'sentry-ruby'
   spec.add_dependency 'thor'
   spec.add_dependency 'tty-prompt'
   spec.add_dependency 'tty-spinner'
