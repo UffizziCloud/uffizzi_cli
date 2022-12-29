@@ -108,7 +108,7 @@ module Uffizzi
         when Interrupt
           raise Uffizzi::CliError.new('The command was interrupted')
         when StandardError
-          raise Uffizzi::CliError.new(e.message)
+          raise Uffizzi::CliError.new(exception.message)
         else
           raise exception
         end
