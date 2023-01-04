@@ -94,11 +94,13 @@ module Uffizzi
       end
 
       def handle_ci_exceptions(exception)
-        Sentry.capture_exception(exception)
         case exception
+        when Thor::Error
+          raise exception
         when Interrupt
           raise Uffizzi::CliError.new('CI process was interrupted')
         else
+          Sentry.capture_exception(exception)
           raise Uffizzi::CliError.new('System Fault')
         end
       end
