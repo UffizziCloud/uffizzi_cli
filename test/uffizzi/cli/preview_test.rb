@@ -626,4 +626,49 @@ class PreviewTest < Minitest::Test
     assert_requested(stubbed_uffizzi_preview_deploy_containers)
     assert_requested(stubbed_uffizzi_preview_create)
   end
+
+  def test_create_preview_with_failed_deployment
+    create_body = json_fixture('files/uffizzi/uffizzi_preview_create_with_labels_success.json')
+    activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
+    deployment_id = create_body[:deployment][:id]
+    web_service_name = create_body[:deployment][:containers][0][:service_name]
+    redis_service_name = create_body[:deployment][:containers][1][:service_name]
+    stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    failed_response_body_for_activity_items = { 'errors' => { 'title' => ["Preview with ID deployment-#{deployment_id} failed"] } }
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_unprocessable_entity(
+      failed_response_body_for_activity_items, @project_slug, deployment_id
+    )
+
+    k8s_container_last_state = {
+      code: 127,
+      reason: 'MOOKiller',
+      exit_code: 999,
+      started_at: Time.now,
+      finished_at: Time.now,
+    }
+    stub_uffizzi_k8s_container_description_success({ last_state: k8s_container_last_state }, @project_slug, deployment_id, web_service_name)
+    stub_uffizzi_k8s_container_description_success({}, @project_slug, deployment_id, redis_service_name)
+
+    @preview.options = command_options("set-labels": 'github.repository=UffizziCloud/example-voting-app github.pull_request.number=23')
+
+    error = assert_raises(Uffizzi::ServerResponseError) do
+      PreviewService.stub(:wait_containers_creation, activity_items_body[:activity_items]) do
+        @preview.create
+      end
+    end
+
+    assert_requested(stubbed_uffizzi_preview_activity_items, times: 1)
+    assert_requested(stubbed_uffizzi_preview_deploy_containers)
+    assert_requested(stubbed_uffizzi_preview_create)
+
+    expected_msg = "Preview with ID deployment-#{deployment_id} failed\n"\
+                   "Last State for container '#{web_service_name}':\n"\
+                   " code: #{k8s_container_last_state[:code]}\n"\
+                   " reason: #{k8s_container_last_state[:reason]}\n"\
+                   " exit_code: #{k8s_container_last_state[:exit_code]}\n"\
+                   " started_at: #{k8s_container_last_state[:started_at]}\n"\
+                   " finished_at: #{k8s_container_last_state[:finished_at]}\n"
+    assert_equal(render_server_error(expected_msg), error.message)
+  end
 end

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (1.0.14)
+    uffizzi-cli (1.0.15)
       awesome_print
       minitar
       sentry-ruby
