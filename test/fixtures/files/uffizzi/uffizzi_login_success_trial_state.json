@@ -1,0 +1,10 @@
+{
+  "user": {
+    "accounts": [
+      {
+        "id": 1,
+        "state": "trial"
+      }
+    ]
+  }
+}

@@ -79,7 +79,10 @@ module Uffizzi
     end
 
     def account_valid?(account)
-      account[:state] == 'active'
+      state = account[:state]
+      allowed_states = ['active', 'trial']
+
+      allowed_states.include?(state)
     end
 
     def check_default_project(default_project, server)
