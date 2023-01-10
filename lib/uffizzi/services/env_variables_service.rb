@@ -28,7 +28,7 @@ class EnvVariablesService
       else
         "Environment variable #{variable_name} doesn't exist"
       end
-      raise StandardError.new(error_message)
+      raise Uffizzi::Error.new(error_message)
     end
 
     def variable_has_default_value?(variable_content)
