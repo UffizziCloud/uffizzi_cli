@@ -46,7 +46,7 @@ class ComposeTest < Minitest::Test
     ENV['CONFIG_SOURCE'] = 'vote.conf'
 
     @compose.options = command_options(file: 'test/compose_files/test_compose_with_env_vars.yml')
-    error = assert_raises(StandardError) do
+    error = assert_raises(Uffizzi::Error) do
       @compose.set
     end
 
@@ -61,7 +61,7 @@ class ComposeTest < Minitest::Test
     ENV['CONFIG_SOURCE'] = 'vote.conf'
 
     @compose.options = command_options(file: 'test/compose_files/test_compose_with_syntax_error.yml')
-    error = assert_raises(StandardError) do
+    error = assert_raises(Uffizzi::Error) do
       @compose.set
     end
 
@@ -89,7 +89,7 @@ class ComposeTest < Minitest::Test
     ENV['PORT'] = '80'
 
     @compose.options = command_options(file: 'test/compose_files/test_compose_with_env_vars.yml')
-    error = assert_raises(StandardError) do
+    error = assert_raises(Uffizzi::Error) do
       @compose.set
     end
 
