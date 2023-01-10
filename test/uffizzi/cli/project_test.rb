@@ -74,7 +74,7 @@ class ProjectsTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_projects_failed.json')
     stubbed_uffizzi_projects = stub_uffizzi_projects_failed(body)
 
-    error = assert_raises(StandardError) do
+    error = assert_raises(Uffizzi::Error) do
       @project.list
     end
 

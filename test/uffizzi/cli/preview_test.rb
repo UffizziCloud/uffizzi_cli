@@ -420,7 +420,7 @@ class PreviewTest < Minitest::Test
     ENV['IMAGE'] = 'nginx'
     ENV['CONFIG_SOURCE'] = 'vote.conf'
 
-    error = assert_raises(StandardError) do
+    error = assert_raises(Uffizzi::Error) do
       @preview.create('test/compose_files/test_compose_with_env_vars.yml')
     end
 
@@ -435,7 +435,7 @@ class PreviewTest < Minitest::Test
     ENV['IMAGE'] = 'nginx'
     ENV['PORT'] = '80'
 
-    error = assert_raises(StandardError) do
+    error = assert_raises(Uffizzi::Error) do
       @preview.create('test/compose_files/test_compose_with_env_vars.yml')
     end
 
@@ -520,7 +520,7 @@ class PreviewTest < Minitest::Test
     ENV['IMAGE'] = 'nginx'
     ENV['CONFIG_SOURCE'] = 'vote.conf'
 
-    error = assert_raises(StandardError) do
+    error = assert_raises(Uffizzi::Error) do
       @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_with_env_vars.yml')
     end
 
@@ -536,7 +536,7 @@ class PreviewTest < Minitest::Test
     ENV['IMAGE'] = 'nginx'
     ENV['PORT'] = '80'
 
-    error = assert_raises(StandardError) do
+    error = assert_raises(Uffizzi::Error) do
       @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_with_env_vars.yml')
     end
 
