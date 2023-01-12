@@ -1,10 +1,8 @@
 {
   "user": {
-    "accounts": [
-      {
-        "id": 1,
-        "state": "active"
-      }
-    ]
+    "default_account": {
+      "id": 1,
+      "state": "active"
+    }
   }
 }

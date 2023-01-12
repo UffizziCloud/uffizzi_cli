@@ -61,9 +61,7 @@ module Uffizzi
     end
 
     def handle_succeed_response(response, server, username)
-      # TODO Choose a personal account
-      account = response[:body][:user][:accounts].first
-      return Uffizzi.ui.say('No account related to this email') unless account_valid?(account)
+      account = response[:body][:user][:default_account]
 
       ConfigFile.write_option(:server, server)
       ConfigFile.write_option(:username, username)
@@ -76,10 +74,6 @@ module Uffizzi
       return unless default_project
 
       check_default_project(default_project, server)
-    end
-
-    def account_valid?(account)
-      account[:state] == 'active'
     end
 
     def check_default_project(default_project, server)
