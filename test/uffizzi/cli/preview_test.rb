@@ -12,6 +12,7 @@ class PreviewTest < Minitest::Test
     ENV.delete('IMAGE')
     ENV.delete('CONFIG_SOURCE')
     ENV.delete('PORT')
+    ENV['GITHUB_OUTPUT'] = '/tmp'
     Uffizzi.ui.output_format = nil
   end
 
@@ -472,11 +473,15 @@ class PreviewTest < Minitest::Test
     @preview.options = command_options(output: Uffizzi::UI::Shell::GITHUB_ACTION)
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
 
-    expected_message_keys = ['name=id', 'name=url', 'containers_uri']
+    expected_message_patterns = [
+      'id=deployment-',
+      'url=https://preview_url',
+      /containers_uri=http:\/\/web:7000\/projects\/.*?\/deployments\/.*?\/containers/,
+    ]
     actual_messages = Uffizzi.ui.messages.last.split("\n")
 
-    expected_message_keys.zip(actual_messages).each do |(expected_msg_key, actual_msg)|
-      assert_match(expected_msg_key, actual_msg)
+    expected_message_patterns.zip(actual_messages).each do |(expected_msg_pattern, actual_msg)|
+      assert_match(expected_msg_pattern, actual_msg)
     end
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
     assert_requested(stubbed_uffizzi_preview_deploy_containers)

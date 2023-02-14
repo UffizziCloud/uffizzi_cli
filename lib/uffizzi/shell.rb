@@ -69,7 +69,11 @@ module Uffizzi
       def format_to_github_action(data)
         return '' unless data.is_a?(Hash)
 
-        data.reduce('') { |acc, (key, value)| "#{acc}::set-output name=#{key}::#{value}\n" }
+        github_output = ENV.fetch('GITHUB_OUTPUT') { raise 'GITHUB_OUTPUT is not defined' }
+
+        File.open(github_output, 'a') do |f|
+          data.each { |(key, value)| f.puts("#{key}=#{value}") }
+        end
       end
     end
   end
