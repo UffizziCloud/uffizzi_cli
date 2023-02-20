@@ -87,8 +87,6 @@ module Uffizzi
     end
 
     def handle_create_command(file_path, project_slug, labels, creation_source)
-      Uffizzi.ui.disable_stdout unless options[:output].nil?
-
       params = prepare_params(file_path, labels, creation_source)
 
       response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
@@ -109,7 +107,6 @@ module Uffizzi
     end
 
     def handle_update_command(deployment_name, file_path, project_slug, labels)
-      Uffizzi.ui.disable_stdout unless options[:output].nil?
       deployment_id = PreviewService.read_deployment_id(deployment_name)
 
       raise Uffizzi::Error.new("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
@@ -244,7 +241,6 @@ module Uffizzi
         Uffizzi.ui.say(preview_url) if success
       else
         deployment_data = build_deployment_data(deployment)
-        Uffizzi.ui.enable_stdout
         Uffizzi.ui.say(deployment_data)
       end
     end
