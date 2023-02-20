@@ -87,6 +87,8 @@ module Uffizzi
     end
 
     def handle_create_command(file_path, project_slug, labels, creation_source)
+      output_format = output_format(options[:output])
+      Uffizzi.ui.output_format = output_format
       params = prepare_params(file_path, labels, creation_source)
 
       response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
@@ -96,7 +98,7 @@ module Uffizzi
       end
 
       deployment = response[:body][:deployment]
-      Uffizzi.ui.say("Preview with ID deployment-#{deployment[:id]} was created.")
+      Uffizzi.ui.say("Preview with ID deployment-#{deployment[:id]} was created.") unless output_format == 'github-action'
 
       success = PreviewService.run_containers_deploy(project_slug, deployment)
 
@@ -107,6 +109,8 @@ module Uffizzi
     end
 
     def handle_update_command(deployment_name, file_path, project_slug, labels)
+      output_format = output_format(options[:output])
+      Uffizzi.ui.output_format = output_format
       deployment_id = PreviewService.read_deployment_id(deployment_name)
 
       raise Uffizzi::Error.new("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
@@ -119,7 +123,7 @@ module Uffizzi
       end
 
       deployment = response[:body][:deployment]
-      Uffizzi.ui.say("Preview with ID deployment-#{deployment_id} was updated.")
+      Uffizzi.ui.say("Preview with ID deployment-#{deployment_id} was updated.") unless output_format == 'github-action'
 
       success = PreviewService.run_containers_deploy(project_slug, deployment)
 
@@ -317,6 +321,13 @@ module Uffizzi
       return result.merge(param) unless result.has_key?(key)
 
       { key => result[key].merge(merge_params(result[key], param[key])) }
+    end
+
+    def output_format(output)
+      return output if output
+      return 'github-output' if ENV['GITHUB_ACTIONS']
+
+      nil
     end
   end
 end
