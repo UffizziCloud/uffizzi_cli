@@ -15,7 +15,6 @@ module Uffizzi
     def run
       token = @options[:token]
       github_access_token = @options[:access_token]
-      puts github_access_token
       server = @options[:server]
       params = prepare_request_params(token, github_access_token)
       response = create_ci_session(server, params)

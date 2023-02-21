@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'byebug'
 
 class PreviewTest < Minitest::Test
   def setup
@@ -412,7 +413,7 @@ class PreviewTest < Minitest::Test
 
     @preview.create('test/compose_files/test_compose_with_env_vars.yml')
 
-    assert_equal("https://#{create_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
+    assert_equal("Deployment url: https://#{create_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
     assert_requested(stubbed_uffizzi_preview_deploy_containers)
     assert_requested(stubbed_uffizzi_preview_create)
@@ -470,19 +471,15 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
     stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
 
-    @preview.options = command_options(output: Uffizzi::UI::Shell::GITHUB_ACTION)
+    @preview.options = command_options(output: Uffizzi::UI::Shell::REGULAR_JSON)
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
 
-    expected_message_patterns = [
-      'id=deployment-',
-      'url=https://preview_url',
-      /containers_uri=http:\/\/web:7000\/projects\/.*?\/deployments\/.*?\/containers/,
-    ]
-    actual_messages = Uffizzi.ui.messages.last.split("\n")
+    last_message = Uffizzi.ui.last_message
+    data = JSON.parse(last_message)
+    assert_equal("deployment-#{deployment_id}", data['id'])
+    assert_equal('https://preview_url', data['url'])
+    assert_equal('http://web:7000/projects/2/deployments/160/containers', data['containers_uri'])
 
-    expected_message_patterns.zip(actual_messages).each do |(expected_msg_pattern, actual_msg)|
-      assert_match(expected_msg_pattern, actual_msg)
-    end
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
     assert_requested(stubbed_uffizzi_preview_deploy_containers)
     assert_requested(stubbed_uffizzi_preview_update)
@@ -515,7 +512,7 @@ class PreviewTest < Minitest::Test
 
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_with_env_vars.yml')
 
-    assert_equal("https://#{update_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
+    assert_equal("Deployment url: https://#{update_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
     assert_requested(stubbed_uffizzi_preview_deploy_containers)
     assert_requested(stubbed_uffizzi_preview_update)
@@ -604,7 +601,7 @@ class PreviewTest < Minitest::Test
 
     @preview.create('test/compose_files/test_compose_with_alias.yml')
 
-    assert_equal("https://#{create_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
+    assert_equal("Deployment url: https://#{create_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
     assert_requested(stubbed_uffizzi_preview_deploy_containers)
     assert_requested(stubbed_uffizzi_preview_create)
