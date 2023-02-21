@@ -87,7 +87,7 @@ module Uffizzi
     end
 
     def handle_create_command(file_path, project_slug, labels, creation_source)
-      Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format.present?
+      Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
       params = prepare_params(file_path, labels, creation_source)
 
       response = create_deployment(ConfigFile.read_option(:server), project_slug, params)
@@ -99,7 +99,7 @@ module Uffizzi
       deployment = response[:body][:deployment]
       Uffizzi.ui.say("Preview with ID deployment-#{deployment[:id]} was created.")
       deployment_data = build_deployment_data(deployment)
-      Uffizzi.ui.say("Deployment details url: #{deployment[:containers_uri]}")
+      Uffizzi.ui.say("Deployment details url: #{deployment_data[:containers_uri]}")
 
       success = PreviewService.run_containers_deploy(project_slug, deployment)
       handle_result(deployment_data, success)
@@ -242,7 +242,7 @@ module Uffizzi
       Uffizzi.ui.enable_stdout
       return Uffizzi.ui.say('Something went wrong') unless success
 
-      Uffizzi.ui.say(deployment_data) if Uffizzi.ui.output_format.present?
+      Uffizzi.ui.say(deployment_data) if Uffizzi.ui.output_format
       write_to_github_env(deployment_data) if ENV['GITHUB_ACTIONS']
     end
 
