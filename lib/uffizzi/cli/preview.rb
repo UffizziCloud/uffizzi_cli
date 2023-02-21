@@ -109,7 +109,7 @@ module Uffizzi
     end
 
     def handle_update_command(deployment_name, file_path, project_slug, labels)
-      Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format.present?
+      Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
       deployment_id = PreviewService.read_deployment_id(deployment_name)
 
       raise Uffizzi::Error.new("Preview should be specified in 'deployment-PREVIEW_ID' format") if deployment_id.nil?
