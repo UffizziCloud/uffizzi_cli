@@ -13,7 +13,8 @@ class PreviewTest < Minitest::Test
     ENV.delete('IMAGE')
     ENV.delete('CONFIG_SOURCE')
     ENV.delete('PORT')
-    ENV['GITHUB_OUTPUT'] = '/tmp'
+    ENV['GITHUB_OUTPUT'] = '/tmp/.env'
+    ENV['GITHUB_ACTIONS'] = 'true'
     Uffizzi.ui.output_format = nil
   end
 
