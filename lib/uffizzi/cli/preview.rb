@@ -101,8 +101,8 @@ module Uffizzi
       deployment_data = build_deployment_data(deployment)
       Uffizzi.ui.say("Deployment details url: #{deployment_data[:containers_uri]}")
 
-      success = PreviewService.run_containers_deploy(project_slug, deployment)
-      handle_result(deployment_data, success)
+      PreviewService.run_containers_deploy(project_slug, deployment)
+      handle_result(deployment_data)
     rescue SystemExit, Interrupt, SocketError
       deployment_id = response[:body][:deployment][:id]
       handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
@@ -126,8 +126,8 @@ module Uffizzi
       deployment_data = build_deployment_data(deployment)
       Uffizzi.ui.say("Deployment details url: #{deployment_data[:containers_uri]}")
 
-      success = PreviewService.run_containers_deploy(project_slug, deployment)
-      handle_result(deployment_data, success)
+      PreviewService.run_containers_deploy(project_slug, deployment)
+      handle_result(deployment_data)
     rescue SystemExit, Interrupt, SocketError
       deployment_id = response[:body][:deployment][:id]
       handle_preview_interruption(deployment_id, ConfigFile.read_option(:server), project_slug)
@@ -238,10 +238,8 @@ module Uffizzi
       raise Uffizzi::Error.new("The preview creation was interrupted. #{preview_deletion_message}")
     end
 
-    def handle_result(deployment_data, success)
+    def handle_result(deployment_data)
       Uffizzi.ui.enable_stdout
-      return Uffizzi.ui.say('Something went wrong') unless success
-
       Uffizzi.ui.say(deployment_data) if Uffizzi.ui.output_format
       write_to_github_env(deployment_data) if ENV['GITHUB_ACTIONS']
     end
