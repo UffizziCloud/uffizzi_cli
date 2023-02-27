@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (1.0.18)
+    uffizzi-cli (1.0.19)
       awesome_print
       minitar
       sentry-ruby
@@ -91,7 +91,7 @@ GEM
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
     ruby-progressbar (1.11.0)
-    sentry-ruby (5.7.0)
+    sentry-ruby (5.8.0)
       concurrent-ruby (~> 1.0, >= 1.0.2)
     thor (1.2.1)
     tty-color (0.6.0)
