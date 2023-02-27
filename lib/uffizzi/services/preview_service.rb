@@ -54,7 +54,8 @@ class PreviewService
 
       spinner.success
 
-      Uffizzi.ui.say('Done')
+      Uffizzi.ui.say('Deployed')
+      Uffizzi.ui.say("Deployment url: https://#{deployment[:preview_url]}")
 
       activity_items
     rescue ApiClient::ResponseError => e

@@ -9,7 +9,6 @@ module Uffizzi
 
       PRETTY_JSON = 'pretty-json'
       REGULAR_JSON = 'json'
-      GITHUB_ACTION = 'github-action'
 
       def initialize
         @shell = Thor::Shell::Basic.new
@@ -21,8 +20,6 @@ module Uffizzi
                               format_to_pretty_json(message)
                             when REGULAR_JSON
                               format_to_json(message)
-                            when GITHUB_ACTION
-                              format_to_github_action(message)
                             else
                               message
         end
@@ -64,12 +61,6 @@ module Uffizzi
 
       def format_to_pretty_json(data)
         JSON.pretty_generate(data)
-      end
-
-      def format_to_github_action(data)
-        return '' unless data.is_a?(Hash)
-
-        data.reduce('') { |acc, (key, value)| "#{acc}::set-output name=#{key}::#{value}\n" }
       end
     end
   end
