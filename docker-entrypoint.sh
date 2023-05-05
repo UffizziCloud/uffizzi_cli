@@ -4,7 +4,7 @@ set -e # Exit immediately if anything below exits with non-zero status.
 
 if [ $OIDC_TOKEN ]
 then
-		uffizzi login_by_identity_token --token "${OIDC_TOKEN}" --server "${UFFIZZI_SERVER}"
+		uffizzi login_by_identity_token --token "${OIDC_TOKEN}" --access-token "${ACCESS_TOKEN}" --server "${UFFIZZI_SERVER}"
 elif
 	[ $UFFIZZI_USER ] &&
 	[ $UFFIZZI_SERVER ] &&
