@@ -250,6 +250,7 @@ module Uffizzi
       {
         id: "deployment-#{deployment[:id]}",
         url: "https://#{deployment[:preview_url]}",
+        proxy_url: "https://#{deployment[:proxy_preview_url]}",
         containers_uri: "#{url_server}/projects/#{deployment[:project_id]}/deployments/#{deployment[:id]}/containers",
       }
     end

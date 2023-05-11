@@ -413,7 +413,9 @@ class PreviewTest < Minitest::Test
 
     @preview.create('test/compose_files/test_compose_with_env_vars.yml')
 
-    assert_equal("Deployment url: https://#{create_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
+    *_, url_message, proxy_url_message = Uffizzi.ui.messages
+    assert_equal("Deployment url: https://#{create_body[:deployment][:preview_url]}", url_message)
+    assert_equal("Deployment proxy url: https://#{create_body[:deployment][:proxy_preview_url]}", proxy_url_message)
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
     assert_requested(stubbed_uffizzi_preview_deploy_containers)
     assert_requested(stubbed_uffizzi_preview_create)
@@ -478,6 +480,7 @@ class PreviewTest < Minitest::Test
     data = JSON.parse(last_message)
     assert_equal("deployment-#{deployment_id}", data['id'])
     assert_equal('https://preview_url', data['url'])
+    assert_equal('https://proxy_preview_url', data['proxy_url'])
     assert_equal('http://web:7000/projects/2/deployments/160/containers', data['containers_uri'])
 
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
@@ -512,7 +515,9 @@ class PreviewTest < Minitest::Test
 
     @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_with_env_vars.yml')
 
-    assert_equal("Deployment url: https://#{update_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
+    *_, url_message, proxy_url_message = Uffizzi.ui.messages
+    assert_equal("Deployment url: https://#{update_body[:deployment][:preview_url]}", url_message)
+    assert_equal("Deployment proxy url: https://#{update_body[:deployment][:proxy_preview_url]}", proxy_url_message)
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
     assert_requested(stubbed_uffizzi_preview_deploy_containers)
     assert_requested(stubbed_uffizzi_preview_update)
@@ -601,7 +606,9 @@ class PreviewTest < Minitest::Test
 
     @preview.create('test/compose_files/test_compose_with_alias.yml')
 
-    assert_equal("Deployment url: https://#{create_body[:deployment][:preview_url]}", Uffizzi.ui.last_message)
+    *_, url_message, proxy_url_message = Uffizzi.ui.messages
+    assert_equal("Deployment url: https://#{create_body[:deployment][:preview_url]}", url_message)
+    assert_equal("Deployment proxy url: https://#{create_body[:deployment][:proxy_preview_url]}", proxy_url_message)
     assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
     assert_requested(stubbed_uffizzi_preview_deploy_containers)
     assert_requested(stubbed_uffizzi_preview_create)
