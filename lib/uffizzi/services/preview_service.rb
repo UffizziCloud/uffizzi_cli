@@ -56,6 +56,7 @@ class PreviewService
 
       Uffizzi.ui.say('Deployed')
       Uffizzi.ui.say("Deployment url: https://#{deployment[:preview_url]}")
+      Uffizzi.ui.say("Deployment proxy url: https://#{deployment[:proxy_preview_url]}")
 
       activity_items
     rescue ApiClient::ResponseError => e
