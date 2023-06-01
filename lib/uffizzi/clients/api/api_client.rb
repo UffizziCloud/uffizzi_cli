@@ -227,6 +227,20 @@ module ApiClient
     build_response(response)
   end
 
+  def create_cluster(server, project_slug, params)
+    uri = clusters_uri(server, project_slug)
+    response = http_client.make_post_request(uri, params)
+
+    build_response(response)
+  end
+
+  def delete_cluster(server, project_slug, cluster_id)
+    uri = cluster_uri(server, project_slug, cluster_id)
+    response = http_client.make_delete_request(uri)
+
+    build_response(response)
+  end
+
   private
 
   def http_client
