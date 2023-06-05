@@ -13,14 +13,14 @@ then
 		uffizzi config set project "${UFFIZZI_PROJECT}"
 	fi
 else
-	if
+  if [ "$OIDC_TOKEN" ];
+  then
+		uffizzi login_by_identity_token --token "${OIDC_TOKEN}" --access-token "${ACCESS_TOKEN}" --server "${UFFIZZI_SERVER}"
+	elif
     [ "$REQUEST_TOKEN" ] &&
     [ "$REQUEST_TOKEN_URL" ];
 	then
     OIDC_TOKEN=$(curl -sLS "${REQUEST_TOKEN_URL}&audience=uffizzi" -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $REQUEST_TOKEN")
-		uffizzi login_by_identity_token --token "${OIDC_TOKEN}" --access-token "${ACCESS_TOKEN}" --server "${UFFIZZI_SERVER}"
-  elif [ "$OIDC_TOKEN" ];
-  then
 		uffizzi login_by_identity_token --token "${OIDC_TOKEN}" --access-token "${ACCESS_TOKEN}" --server "${UFFIZZI_SERVER}"
 	else
 		echo "Specify environment variables to login before executing Uffizzi CLI."
