@@ -47,6 +47,8 @@ GEM
       power_assert (>= 1.1)
     mocha (1.13.0)
     mustache (0.99.8)
+    nokogiri (1.13.1-aarch64-linux)
+      racc (~> 1.4)
     nokogiri (1.13.1-x86_64-linux)
       racc (~> 1.4)
     open3 (0.1.1)
@@ -118,6 +120,7 @@ GEM
     zeitwerk (2.5.1)
 
 PLATFORMS
+  aarch64-linux-musl
   x86_64-linux-musl
 
 DEPENDENCIES
