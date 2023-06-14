@@ -151,4 +151,9 @@ module UffizziStubSupport
 
     stub_request(:delete, uri).to_return(status: 422, body: body.to_json)
   end
+
+  def stub_uffizzi_create_cluster(body, project_slug)
+    uri = clusters_uri(Uffizzi.configuration.server, project_slug)
+    stub_request(:post, uri).to_return(status: 201, body: body.to_json)
+  end
 end

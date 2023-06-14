@@ -2,7 +2,7 @@
 
 class GithubService
   class << self
-    GITHUB_OUTPUT = 'GITHUB_OUTPUT'.freeze
+    GITHUB_OUTPUT = 'GITHUB_OUTPUT'
 
     def write_to_github_env_if_needed(data)
       return unless ENV['GITHUB_ACTIONS']

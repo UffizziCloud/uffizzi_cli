@@ -9,14 +9,17 @@ module Uffizzi
   class Cli::Cluster < Thor
     include ApiClient
 
-    desc 'create [COMPOSE_FILE]', 'Create a cluster'
+    desc 'create [NAME] [KUBECONFIG] [MANIFEST]', 'Create a cluster'
+    method_option :name, type: :string, required: true
+    method_option :kubeconfig, type: :string, required: true
+    method_option :manifest, type: :string, required: false
     def create
       run('create')
     end
 
     private
 
-    def run(command, file_path: nil, deployment_name: nil)
+    def run(command)
       Uffizzi.ui.output_format = options[:output]
       raise Uffizzi::Error.new('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
       raise Uffizzi::Error.new('This command needs project to be set in config file') unless CommandService.project_set?(options)
@@ -30,8 +33,13 @@ module Uffizzi
     end
 
     def handle_create_command(project_slug)
+      kubeconfig_path = options[:kubeconfig]
+      raise Uffizzi::Error.new('The kubeconfig file path already exists') if File.exists?(kubeconfig_path)
+
       Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
-      params = prepare_params(file_path, labels, creation_source)
+      name = options[:name]
+      manifest = options[:manifest]
+      params = prepare_params(name, manifest)
 
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
 
@@ -43,18 +51,19 @@ module Uffizzi
       Uffizzi.ui.say("Cluster with name: #{cluster[:name]} was created.")
       cluster_data = build_cluster_data(cluster)
 
-      handle_result(cluster_data)
+      handle_result(cluster_data, kubeconfig_path)
     rescue SystemExit, Interrupt, SocketError
       handle_interruption(cluster, ConfigFile.read_option(:server), project_slug)
     end
 
-    def prepare_params(file_path, labels, creation_source = nil)
-      compose_file_params = file_path.nil? ? {} : build_compose_file_params(file_path)
-      metadata_params = labels.nil? ? {} : build_metadata_params(labels)
+    def prepare_params(name, manifest)
       token = ConfigFile.read_option(:token)
       extra_params = token.nil? ? {} : { token: token }
-      params = compose_file_params.merge(metadata_params)
-      params.merge(extra_params, { creation_source: creation_source })
+      params = {
+        name: name,
+        manifest: manifest,
+      }
+      params.merge(extra_params)
     end
 
     def handle_interruption(cluster, server, project_slug)
@@ -68,15 +77,17 @@ module Uffizzi
       raise Uffizzi::Error.new("The cluster creation was interrupted. #{deletion_message}")
     end
 
-    def handle_result(deployment_data)
+    def handle_result(cluster_data, kubeconfig_path)
       Uffizzi.ui.enable_stdout
-      Uffizzi.ui.say(deployment_data) if Uffizzi.ui.output_format
-      GithubService.write_to_github_env_if_needed(deployment_data)
+      Uffizzi.ui.say(cluster_data) if Uffizzi.ui.output_format
+      File.write(kubeconfig_path, cluster_data[:kubeconfig_content])
+      GithubService.write_to_github_env_if_needed(cluster_data)
     end
 
     def build_cluster_data(cluster)
       {
         name: cluster[:name],
+        kubeconfig_content: cluster[:kubeconfig_content]
       }
     end
   end

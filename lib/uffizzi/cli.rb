@@ -53,7 +53,6 @@ module Uffizzi
     subcommand 'preview', Cli::Preview
 
     desc 'cluster', 'cluster'
-    method_option :project, required: false
     require_relative 'cli/cluster'
     subcommand 'cluster', Cli::Cluster
 

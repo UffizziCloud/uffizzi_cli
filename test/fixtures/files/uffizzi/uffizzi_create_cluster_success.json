@@ -1,0 +1,8 @@
+{
+  "cluster": {
+    "id":1,
+    "name": "test-cluster",
+    "namespace": "test-cluster",
+    "kubeconfig_content": "test-content"
+  }
+}
