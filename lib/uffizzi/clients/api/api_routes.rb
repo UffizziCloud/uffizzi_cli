@@ -92,7 +92,7 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/clusters?q=#{filter.to_json}"
   end
 
-  def cluster_uri(server, project_slug, cluster_id)
-    "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_id}"
+  def cluster_uri(server, project_slug, cluster_name)
+    "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}"
   end
 end
