@@ -4,6 +4,7 @@ require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/services/preview_service'
 require 'uffizzi/services/command_service'
+require 'byebug'
 
 module Uffizzi
   class Cli::Cluster < Thor
@@ -15,6 +16,11 @@ module Uffizzi
     method_option :manifest, type: :string, required: false
     def create
       run('create')
+    end
+
+    desc 'delete [NAME]', 'Delete a cluster'
+    def delete
+      run('delete', cluster_name)
     end
 
     private
@@ -29,17 +35,19 @@ module Uffizzi
       case command
       when 'create'
         handle_create_command(project_slug)
+      when 'delete'
+        handle_delete_command(cluster_name, project_slug)
       end
     end
 
     def handle_create_command(project_slug)
       kubeconfig_path = options[:kubeconfig]
-      raise Uffizzi::Error.new('The kubeconfig file path already exists') if File.exists?(kubeconfig_path)
+      raise Uffizzi::Error.new('The kubeconfig file path already exists') if File.exist?(kubeconfig_path)
 
       Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
       name = options[:name]
       manifest = options[:manifest]
-      params = prepare_params(name, manifest)
+      params = cluster_params(name, manifest)
 
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
 
@@ -47,27 +55,52 @@ module Uffizzi
         ResponseHelper.handle_failed_response(response)
       end
 
-      cluster = response[:body][:cluster]
-      Uffizzi.ui.say("Cluster with name: #{cluster[:name]} was created.")
-      cluster_data = build_cluster_data(cluster)
+      cluster_data = response[:body][:cluster]
+      status = cluster_data.dig(:status, :ready)
+      unless status
+        10.times do
+          response = get_cluster(ConfigFile.read_option(:server), project_slug, name)
+          return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
+
+          cluster_data = response[:body][:cluster]
+          puts '-------'
+          puts cluster_data
+          puts '-------'
+
+          break if cluster_data.dig(:status, :ready)
+
+          sleep(5)
+        end
+      end
+
+      Uffizzi.ui.say("Cluster with name: #{cluster_data[:name]} was created.")
 
       handle_result(cluster_data, kubeconfig_path)
     rescue SystemExit, Interrupt, SocketError
-      handle_interruption(cluster, ConfigFile.read_option(:server), project_slug)
+      handle_interruption(cluster_data, ConfigFile.read_option(:server), project_slug)
     end
 
-    def prepare_params(name, manifest)
-      token = ConfigFile.read_option(:token)
-      extra_params = token.nil? ? {} : { token: token }
-      params = {
-        name: name,
-        manifest: manifest,
+    def handle_delete_command(cluster_name, project_slug)
+      response = delete_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+
+      if ResponseHelper.no_content?(response)
+        Uffizzi.ui.say("Cluster #{cluster_name} deleted")
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
+    end
+
+    def cluster_params(name, manifest)
+      {
+        cluster: {
+          name: name,
+          manifest: manifest,
+        },
       }
-      params.merge(extra_params)
     end
 
     def handle_interruption(cluster, server, project_slug)
-      deletion_response = delete_cluster(server, project_slug, cluster_id)
+      deletion_response = delete_cluster(server, project_slug, cluster_data[:name])
       deletion_message = if ResponseHelper.no_content?(deletion_response)
         "The cluster #{cluster[:name]} has been disabled."
       else
@@ -80,15 +113,9 @@ module Uffizzi
     def handle_result(cluster_data, kubeconfig_path)
       Uffizzi.ui.enable_stdout
       Uffizzi.ui.say(cluster_data) if Uffizzi.ui.output_format
-      File.write(kubeconfig_path, cluster_data[:kubeconfig_content])
+      kubeconfig = cluster_data.dig(:status, :kube_config)
+      File.write(kubeconfig_path, Base64.decode64(kubeconfig))
       GithubService.write_to_github_env_if_needed(cluster_data)
-    end
-
-    def build_cluster_data(cluster)
-      {
-        name: cluster[:name],
-        kubeconfig_content: cluster[:kubeconfig_content]
-      }
     end
   end
 end
