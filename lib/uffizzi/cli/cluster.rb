@@ -52,7 +52,8 @@ module Uffizzi
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
       return ResponseHelper.handle_failed_response(response) if !ResponseHelper.created?(response)
 
-      10.times do
+      cluster_data = response[:body][:cluster]
+      3.times do
         response = get_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
         return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
 
@@ -92,7 +93,7 @@ module Uffizzi
     end
 
     def handle_interruption(cluster, server, project_slug)
-      deletion_response = delete_cluster(server, project_slug, cluster_data[:name])
+      deletion_response = delete_cluster(server, project_slug, cluster[:name])
       deletion_message = if ResponseHelper.no_content?(deletion_response)
         "The cluster #{cluster[:name]} has been disabled."
       else
@@ -109,16 +110,6 @@ module Uffizzi
       kubeconfig = cluster_data.dig(:status, :kube_config)
       File.write(kubeconfig_path, Base64.decode64(kubeconfig))
       GithubService.write_to_github_env_if_needed(cluster_data)
-    end
-
-    def check_cluster_status_and_get_config(project_slug, cluster_name)
-      response = get_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
-      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
-
-      cluster_data = response[:body][:cluster]
-      return cluster_data if cluster_data.dig(:status, :ready)
-
-      sleep(5)
     end
   end
 end
