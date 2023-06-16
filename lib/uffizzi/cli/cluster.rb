@@ -18,9 +18,10 @@ module Uffizzi
       run('create')
     end
 
+    method_option :name, type: :string, required: true
     desc 'delete [NAME]', 'Delete a cluster'
     def delete
-      run('delete', cluster_name)
+      run('delete')
     end
 
     private
@@ -36,7 +37,7 @@ module Uffizzi
       when 'create'
         handle_create_command(project_slug)
       when 'delete'
-        handle_delete_command(cluster_name, project_slug)
+        handle_delete_command(project_slug)
       end
     end
 
@@ -45,42 +46,33 @@ module Uffizzi
       raise Uffizzi::Error.new('The kubeconfig file path already exists') if File.exist?(kubeconfig_path)
 
       Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
-      name = options[:name]
+      cluster_name = options[:name]
       manifest = options[:manifest]
-      params = cluster_params(name, manifest)
-
+      params = cluster_params(cluster_name, manifest)
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
+      return ResponseHelper.handle_failed_response(response) if !ResponseHelper.created?(response)
 
-      if !ResponseHelper.created?(response)
-        ResponseHelper.handle_failed_response(response)
+      10.times do
+        response = get_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+        return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
+
+        cluster_data = response[:body][:cluster]
+        return cluster_data if cluster_data.dig(:status, :ready)
+
+        sleep(5)
       end
 
-      cluster_data = response[:body][:cluster]
-      status = cluster_data.dig(:status, :ready)
-      unless status
-        10.times do
-          response = get_cluster(ConfigFile.read_option(:server), project_slug, name)
-          return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
-
-          cluster_data = response[:body][:cluster]
-          puts '-------'
-          puts cluster_data
-          puts '-------'
-
-          break if cluster_data.dig(:status, :ready)
-
-          sleep(5)
-        end
+      if !cluster_data.dig(:status, :ready)
+        return Uffizzi.ui.say("Cluster with name: #{cluster_name} failed to be created.")
       end
-
-      Uffizzi.ui.say("Cluster with name: #{cluster_data[:name]} was created.")
 
       handle_result(cluster_data, kubeconfig_path)
     rescue SystemExit, Interrupt, SocketError
       handle_interruption(cluster_data, ConfigFile.read_option(:server), project_slug)
     end
 
-    def handle_delete_command(cluster_name, project_slug)
+    def handle_delete_command(project_slug)
+      cluster_name = options[:name]
       response = delete_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
 
       if ResponseHelper.no_content?(response)
@@ -112,10 +104,21 @@ module Uffizzi
 
     def handle_result(cluster_data, kubeconfig_path)
       Uffizzi.ui.enable_stdout
+      Uffizzi.ui.say("Cluster with name: #{cluster_data[:name]} was created.")
       Uffizzi.ui.say(cluster_data) if Uffizzi.ui.output_format
       kubeconfig = cluster_data.dig(:status, :kube_config)
       File.write(kubeconfig_path, Base64.decode64(kubeconfig))
       GithubService.write_to_github_env_if_needed(cluster_data)
+    end
+
+    def check_cluster_status_and_get_config(project_slug, cluster_name)
+      response = get_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
+
+      cluster_data = response[:body][:cluster]
+      return cluster_data if cluster_data.dig(:status, :ready)
+
+      sleep(5)
     end
   end
 end

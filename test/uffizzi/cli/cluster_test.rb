@@ -31,12 +31,12 @@ class ClusterTest < Minitest::Test
     assert_requested(stubbed_uffizzi_cluster_get_request)
   end
 
-  # def test_create_cluster_if_path_already_exists
-  #   File.stubs(:exists?).returns(true)
-  #   @cluster.options = command_options(name: 'test-cluster', kubeconfig: './kubeconfig.json')
+  def test_create_cluster_if_path_already_exists
+    File.stubs(:exists?).returns(true)
+    @cluster.options = command_options(name: 'test-cluster', kubeconfig: './kubeconfig.json')
 
-  #   assert_raises(Uffizzi::Error) do
-  #     @cluster.create
-  #   end
-  # end
+    assert_raises(Uffizzi::Error) do
+      @cluster.create
+    end
+  end
 end
