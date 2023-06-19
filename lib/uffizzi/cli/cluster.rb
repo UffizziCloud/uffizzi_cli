@@ -4,7 +4,6 @@ require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/services/preview_service'
 require 'uffizzi/services/command_service'
-require 'byebug'
 
 module Uffizzi
   class Cli::Cluster < Thor
