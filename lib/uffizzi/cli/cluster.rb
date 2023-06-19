@@ -52,12 +52,12 @@ module Uffizzi
       return ResponseHelper.handle_failed_response(response) if !ResponseHelper.created?(response)
 
       cluster_data = response[:body][:cluster]
-      3.times do
+      loop do
         response = get_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
         return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
 
         cluster_data = response[:body][:cluster]
-        return cluster_data if cluster_data.dig(:status, :ready)
+        break if cluster_data.dig(:status, :ready)
 
         sleep(5)
       end
