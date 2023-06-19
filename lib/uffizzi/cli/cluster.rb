@@ -12,7 +12,7 @@ module Uffizzi
     desc 'create [NAME] [KUBECONFIG] [MANIFEST]', 'Create a cluster'
     method_option :name, type: :string, required: true
     method_option :kubeconfig, type: :string, required: true
-    method_option :manifest, type: :string, required: false
+    method_option :manifest_file_path, type: :string, required: false
     def create
       run('create')
     end
@@ -46,8 +46,8 @@ module Uffizzi
 
       Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
       cluster_name = options[:name]
-      manifest = options[:manifest]
-      params = cluster_params(cluster_name, manifest)
+      manifest_file_path = options[:manifest_file_path]
+      params = cluster_params(cluster_name, manifest_file_path)
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
       return ResponseHelper.handle_failed_response(response) if !ResponseHelper.created?(response)
 
@@ -82,13 +82,23 @@ module Uffizzi
       end
     end
 
-    def cluster_params(name, manifest)
+    def cluster_params(name, manifest_file_path)
+      manifest_content = load_manifest_file(manifest_file_path)
+
       {
         cluster: {
           name: name,
-          manifest: manifest,
+          manifest: manifest_content,
         },
       }
+    end
+
+    def load_manifest_file(file_path)
+      return nil if file_path.nil?
+
+      File.read(file_path)
+    rescue Errno::ENOENT => e
+      raise Uffizzi::Error.new(e.message)
     end
 
     def handle_interruption(cluster, server, project_slug)
