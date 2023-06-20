@@ -9,6 +9,13 @@ module Uffizzi
   class Cli::Cluster < Thor
     include ApiClient
 
+    desc 'list', 'List all clusters'
+    method_option :filter, required: false, type: :string, aliases: '-f'
+    method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
+    def list
+      run('list')
+    end
+
     desc 'create [NAME] [KUBECONFIG] [MANIFEST]', 'Create a cluster'
     method_option :name, type: :string, required: true
     method_option :kubeconfig, type: :string, required: true
@@ -33,10 +40,28 @@ module Uffizzi
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
 
       case command
+      when 'list'
+        handle_list_command(project_slug)
       when 'create'
         handle_create_command(project_slug)
       when 'delete'
         handle_delete_command(project_slug)
+      end
+    end
+
+    def handle_list_command(project_slug)
+      filter = options[:filter]
+      parsed_filter = filter.nil? ? filter : {
+        q: {
+          name_equal: filter
+        }
+      }
+      response = get_clusters(ConfigFile.read_option(:server), project_slug, parsed_filter)
+
+      if ResponseHelper.ok?(response)
+        handle_succeed_list_response(response)
+      else
+        ResponseHelper.handle_failed_response(response)
       end
     end
 
@@ -110,6 +135,18 @@ module Uffizzi
       end
 
       raise Uffizzi::Error.new("The cluster creation was interrupted. #{deletion_message}")
+    end
+
+    def handle_succeed_list_response(response)
+      clusters = response[:body][:clusters] || []
+      raise Uffizzi::Error.new('The project has no active clusters') if clusters.empty?
+
+      if Uffizzi.ui.output_format.nil?
+        clusters = clusters.reduce('') do |acc, cluster|
+          "#{cluster[:name]}\n"
+        end.strip
+      end
+      Uffizzi.ui.say(clusters)
     end
 
     def handle_result(cluster_data, kubeconfig_path)

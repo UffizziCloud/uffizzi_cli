@@ -162,4 +162,9 @@ module UffizziStubSupport
 
     stub_request(:get, uri).to_return(status: 200, body: body.to_json)
   end
+
+  def stub_uffizzi_get_clusters(body, project_slug)
+    uri = clusters_uri(Uffizzi.configuration.server, project_slug)
+    stub_request(:get, uri).to_return(status: 200, body: body.to_json)
+  end
 end
