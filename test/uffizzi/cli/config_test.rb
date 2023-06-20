@@ -13,7 +13,7 @@ class ConfigTest < Minitest::Test
   def test_list
     result = @config.list
 
-    assert_equal(result[:account_id], Uffizzi::ConfigFile.read_option(:account_id))
+    assert_equal(result[:account], Uffizzi::ConfigFile.read_option(:account))
     assert_equal(result[:cookie], Uffizzi::ConfigFile.read_option(:cookie))
     assert_equal(result[:server], Uffizzi.configuration.server)
   end
@@ -69,17 +69,14 @@ class ConfigTest < Minitest::Test
   def test_setup
     Uffizzi::ConfigFile.unset_option(:server)
     Uffizzi::ConfigFile.unset_option(:username)
-    Uffizzi::ConfigFile.unset_option(:project)
 
     refute(Uffizzi::ConfigFile.option_has_value?(:server))
     refute(Uffizzi::ConfigFile.option_has_value?(:username))
-    refute(Uffizzi::ConfigFile.option_has_value?(:project))
 
     @config.setup
 
     assert(Uffizzi::ConfigFile.option_has_value?(:server))
     assert(Uffizzi::ConfigFile.option_has_value?(:username))
-    assert(Uffizzi::ConfigFile.option_has_value?(:project))
     assert_equal('To login, run: uffizzi login', Uffizzi.ui.last_message)
   end
 end

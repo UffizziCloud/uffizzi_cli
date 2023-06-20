@@ -3,6 +3,7 @@
 require 'uffizzi'
 require 'uffizzi/response_helper'
 require 'uffizzi/clients/api/api_client'
+require 'uffizzi/helpers/config_helper'
 
 module Uffizzi
   class Cli::LoginByIdentityToken
@@ -40,7 +41,7 @@ module Uffizzi
     def handle_succeed_response(response, server, token)
       ConfigFile.write_option(:server, server)
       ConfigFile.write_option(:cookie, response[:headers])
-      ConfigFile.write_option(:account_id, response[:body][:account_id])
+      ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(response[:body][:account_id]))
       ConfigFile.write_option(:project, response[:body][:project_slug])
       ConfigFile.write_option(:token, token)
 

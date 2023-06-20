@@ -5,6 +5,7 @@ require 'uffizzi/clients/api/api_client'
 
 module Uffizzi
   class Cli::Config < Thor
+    ACCOUNT_PROPERTY = 'account'
     include ApiClient
 
     desc 'list', 'Lists all options and their values from the config file'
@@ -58,11 +59,12 @@ module Uffizzi
                       \nUffizzi API service and manage previews.\n")
       server = Uffizzi.ui.ask('Server: ', default: Uffizzi.configuration.default_server.to_s)
       username = Uffizzi.ui.ask('Username: ')
-      project = Uffizzi.ui.ask('Project: ', default: 'default')
+
       ConfigFile.delete
+
       ConfigFile.write_option(:server, server)
       ConfigFile.write_option(:username, username)
-      ConfigFile.write_option(:project, project)
+
       Uffizzi.ui.say('To login, run: uffizzi login')
     end
 
@@ -78,6 +80,8 @@ module Uffizzi
     end
 
     def handle_set_command(property, value)
+      return handle_set_account(value) if property == ACCOUNT_PROPERTY
+
       ConfigFile.write_option(property.to_sym, value)
       Uffizzi.ui.say("Updated property [#{property}]")
     end

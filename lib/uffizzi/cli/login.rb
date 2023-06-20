@@ -3,7 +3,11 @@
 require 'uffizzi'
 require 'uffizzi/response_helper'
 require 'uffizzi/helpers/project_helper'
+require 'uffizzi/helpers/login_helper'
+require 'uffizzi/helpers/config_helper'
 require 'uffizzi/clients/api/api_client'
+require 'launchy'
+require 'securerandom'
 require 'tty-prompt'
 
 module Uffizzi
@@ -12,92 +16,139 @@ module Uffizzi
 
     def initialize(options)
       @options = options
+      @server = Uffizzi::LoginHelper.set_server(@options)
     end
 
     def run
-      Uffizzi.ui.say('Login to Uffizzi server.')
-      server = set_server
+      return perform_email_login if @options[:email]
 
-      username = set_username
-      password = set_password
-      params = prepare_request_params(username, password)
-      response = create_session(server, params)
+      perform_browser_login
+    end
+
+    private
+
+    def perform_email_login
+      Uffizzi.ui.say('Login to Uffizzi server.')
+      username =  Uffizzi::LoginHelper.set_username(@options)
+      password =  Uffizzi::LoginHelper.set_password
+      params = Uffizzi::LoginHelper.prepare_request_params(username, password)
+      response = create_session(@server, params)
 
       if ResponseHelper.created?(response)
-        handle_succeed_response(response, server, username)
+        handle_succeed_response(response, username)
       else
         ResponseHelper.handle_failed_response(response)
       end
     end
 
-    private
+    def perform_browser_login
+      session_id = SecureRandom.uuid
+      response = create_access_token(@server, session_id)
+      return handle_failed_response(response) unless ResponseHelper.created?(response)
 
-    def set_server
-      config_server = ConfigFile.exists? ? read_option_from_config(:server) : nil
-      server_address = (@options[:server] || config_server || Uffizzi.ui.ask('Server:')).sub(/\/+$/, '')
-      server_address.start_with?('http:', 'https:') ? server_address : "https://#{server_address}"
+      url = browser_sign_in_url(@server, session_id)
+      open_browser(url)
+
+      loop do
+        response = get_access_token(@server, session_id)
+
+        if ResponseHelper.ok?(response)
+          break handle_token_success(response)
+        elsif ResponseHelper.unprocessable_entity?(response)
+          break Uffizzi.ui.say('The session has expired. Please try again.')
+        else
+          sleep(3)
+        end
+      end
     end
 
-    def set_username
-      config_username = ConfigFile.exists? ? read_option_from_config(:username) : nil
-      @options[:username] || config_username || Uffizzi.ui.ask('Username:')
-    end
-
-    def set_password
-      ENV['UFFIZZI_PASSWORD'] || Uffizzi.ui.ask('Password:', echo: false)
-    end
-
-    def read_option_from_config(option)
-      ConfigFile.option_has_value?(option) ? ConfigFile.read_option(option) : nil
-    end
-
-    def prepare_request_params(username, password)
-      {
-        user: {
-          email: username,
-          password: password,
-        },
-      }
-    end
-
-    def handle_succeed_response(response, server, username)
-      account = response[:body][:user][:default_account]
-
-      ConfigFile.write_option(:server, server)
-      ConfigFile.write_option(:username, username)
-      ConfigFile.write_option(:cookie, response[:headers])
-      ConfigFile.write_option(:account_id, account[:id])
-
+    def handle_token_success(response)
+      ConfigFile.write_option(:server, @server)
+      token = response[:body][:access_token]
+      Uffizzi::Token.delete
+      Uffizzi::Token.write(token)
       Uffizzi.ui.say('Login successfull')
 
-      default_project = ConfigFile.read_option(:project)
-      return unless default_project
-
-      check_default_project(default_project, server)
+      set_current_account_and_project
     end
 
-    def check_default_project(default_project, server)
-      check_project_response = fetch_projects(server)
+    def open_browser(url)
+      Launchy.open(url)
+    rescue StandardError
+      Uffizzi.ui.say('Login to Uffizzi server.')
+      Uffizzi.ui.say(url)
+    end
+
+    def handle_succeed_response(response, username)
+      ConfigFile.write_option(:server, @server)
+      ConfigFile.write_option(:username, username)
+      ConfigFile.write_option(:cookie, response[:headers])
+
+      Uffizzi.ui.say('Login successfull')
+      return if ENV.fetch('CI_PIPELINE_RUN', false)
+
+      set_current_account_and_project
+    end
+
+    def set_current_account_and_project
+      current_account_id = ConfigFile.read_option(:account, :id)
+      current_project_slug = ConfigFile.read_option(:project)
+
+      unless current_account_id
+        account_id = set_account
+        return set_project(account_id)
+      end
+
+      return if current_project_slug && project_exists?(current_account_id, current_project_slug)
+
+      set_project(account_id)
+    end
+
+    def project_exists?(account_id, project_slug)
+      check_project_response = fetch_account_projects(@server, account_id)
       return ResponseHelper.handle_failed_response(check_project_response) unless ResponseHelper.ok?(check_project_response)
 
       projects = check_project_response[:body][:projects]
       slugs = projects.map { |project| project[:slug] }
-      return if slugs.include?(default_project)
 
-      question = "Project '#{default_project}' does not exist. Select one of the following projects or create a new project:"
+      slugs.include?(project_slug)
+    end
+
+    def set_account
+      accounts_response = fetch_accounts(@server)
+      accounts = accounts_response[:body][:accounts]
+      if accounts.length == 1
+        current_account = accounts.first
+        ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(current_account[:id], current_account[:name]))
+        return current_account[:id]
+      end
+      question = 'Select an account:'
+      choices = accounts.map do |account|
+        { name: account[:name], value: account[:id] }
+      end
+      account_id = Uffizzi.prompt.select(question, choices)
+      account_name = accounts.detect { |account| account[:id] == account_id }[:name]
+
+      ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(account_id, account_name))
+
+      account_id
+    end
+
+    def set_project(account_id)
+      projects_response = fetch_account_projects(@server, account_id)
+      projects = projects_response[:body][:projects]
+      question = 'Select a project or create a new project:'
       choices = projects.map do |project|
         { name: project[:name], value: project[:slug] }
       end
       all_choices = choices + [{ name: 'Create a new project', value: nil }]
       answer = Uffizzi.prompt.select(question, all_choices)
-      return create_new_project(server) unless answer
+      return create_new_project unless answer
 
-      account_id = projects.detect { |project| project[:slug] == answer }[:account_id]
       ConfigFile.write_option(:project, answer)
-      ConfigFile.write_option(:account_id, account_id)
     end
 
-    def create_new_project(server)
+    def create_new_project
       project_name = Uffizzi.prompt.ask('Project name: ', required: true)
       generated_slug = Uffizzi::ProjectHelper.generate_slug(project_name)
       project_slug = Uffizzi.prompt.ask('Project slug: ', default: generated_slug)
@@ -113,8 +164,8 @@ module Uffizzi
         },
       }
 
-      account_id = ConfigFile.read_option(:account_id)
-      response = create_project(server, account_id, params)
+      account_id = ConfigFile.read_option(:account, :id)
+      response = create_project(@server, account_id, params)
 
       if ResponseHelper.created?(response)
         handle_create_project_succeess(response)
@@ -137,7 +188,6 @@ module Uffizzi
       project = response[:body][:project]
 
       ConfigFile.write_option(:project, project[:slug])
-      ConfigFile.write_option(:account_id, project[:account_id])
 
       Uffizzi.ui.say("Project #{project[:name]} was successfully created")
     end

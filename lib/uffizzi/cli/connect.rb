@@ -10,7 +10,7 @@ module Uffizzi
     desc 'list-credentials', 'List existing credentials for an account'
     def list_credentials
       server = ConfigFile.read_option(:server)
-      account_id = ConfigFile.read_option(:account_id)
+      account_id = ConfigFile.read_option(:account, :id)
       response = fetch_credentials(server, account_id)
       if ResponseHelper.ok?(response)
         handle_list_credentials_success(response)
@@ -40,7 +40,7 @@ module Uffizzi
         token: token,
       }
       server = ConfigFile.read_option(:server)
-      account_id = ConfigFile.read_option(:account_id)
+      account_id = ConfigFile.read_option(:account, :id)
 
       response = if credential_exists
         update_credential(server, account_id, params, type)
@@ -74,7 +74,7 @@ module Uffizzi
         token: token,
       }
       server = ConfigFile.read_option(:server)
-      account_id = ConfigFile.read_option(:account_id)
+      account_id = ConfigFile.read_option(:account, :id)
 
       response = if credential_exists
         update_credential(server, account_id, params, type)
@@ -108,7 +108,7 @@ module Uffizzi
         token: token,
       }
       server = ConfigFile.read_option(:server)
-      account_id = ConfigFile.read_option(:account_id)
+      account_id = ConfigFile.read_option(:account, :id)
 
       response = if credential_exists
         update_credential(server, account_id, params, type)
@@ -142,7 +142,7 @@ module Uffizzi
         token: token,
       }
       server = ConfigFile.read_option(:server)
-      account_id = ConfigFile.read_option(:account_id)
+      account_id = ConfigFile.read_option(:account, :id)
 
       response = if credential_exists
         update_credential(server, account_id, params, type)
@@ -171,7 +171,7 @@ module Uffizzi
         token: token,
       }
       server = ConfigFile.read_option(:server)
-      account_id = ConfigFile.read_option(:account_id)
+      account_id = ConfigFile.read_option(:account, :id)
 
       response = if credential_exists
         update_credential(server, account_id, params, type)
@@ -203,7 +203,7 @@ module Uffizzi
         token: token,
       }
       server = ConfigFile.read_option(:server)
-      account_id = ConfigFile.read_option(:account_id)
+      account_id = ConfigFile.read_option(:account, :id)
 
       response = if credential_exists
         update_credential(server, account_id, params, type)
@@ -240,7 +240,7 @@ module Uffizzi
 
     def credential_exists?(type)
       server = ConfigFile.read_option(:server)
-      account_id = ConfigFile.read_option(:account_id)
+      account_id = ConfigFile.read_option(:account, :id)
       response = check_credential(server, account_id, type)
       return false if ResponseHelper.ok?(response)
       return true if ResponseHelper.unprocessable_entity?(response)

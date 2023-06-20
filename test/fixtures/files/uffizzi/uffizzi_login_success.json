@@ -2,6 +2,7 @@
   "user": {
     "default_account": {
       "id": 1,
+      "name": "uffizzi",
       "state": "active"
     }
   }
