@@ -51,11 +51,15 @@ module Uffizzi
 
     def handle_list_command(project_slug)
       filter = options[:filter]
-      parsed_filter = filter.nil? ? filter : {
-        q: {
-          name_equal: filter
+      parsed_filter = if filter.nil?
+        filter
+      else
+        {
+          q: {
+            name_equal: filter,
+          },
         }
-      }
+      end
       response = get_clusters(ConfigFile.read_option(:server), project_slug, parsed_filter)
 
       if ResponseHelper.ok?(response)
@@ -142,7 +146,7 @@ module Uffizzi
       raise Uffizzi::Error.new('The project has no active clusters') if clusters.empty?
 
       if Uffizzi.ui.output_format.nil?
-        clusters = clusters.reduce('') do |acc, cluster|
+        clusters = clusters.reduce('') do |_acc, cluster|
           "#{cluster[:name]}\n"
         end.strip
       end
