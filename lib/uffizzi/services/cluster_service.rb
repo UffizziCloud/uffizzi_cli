@@ -3,11 +3,11 @@
 require 'uffizzi/clients/api/api_client'
 
 class ClusterService
-  CLUSTER_STATE_DEPLOYING_NAMESPACE = 'deploying_namespace'.freeze
-  CLUSTER_STATE_DEPLOYING = 'deploying'.freeze
-  CLUSTER_STATE_DEPLOYED = 'deployed'.freeze
-  CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE = 'failed_deploy_namespace'.freeze
-  CLUSTER_STATE_FAILED = 'failed'.freeze
+  CLUSTER_STATE_DEPLOYING_NAMESPACE = 'deploying_namespace'
+  CLUSTER_STATE_DEPLOYING = 'deploying'
+  CLUSTER_STATE_DEPLOYED = 'deployed'
+  CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE = 'failed_deploy_namespace'
+  CLUSTER_STATE_FAILED = 'failed'
 
   class << self
     include ApiClient
