@@ -39,4 +39,13 @@ class ClusterTest < Minitest::Test
       @cluster.create
     end
   end
+
+  def test_list_clusters
+    clusters_get_body = json_fixture('files/uffizzi/uffizzi_clusters_list.json')
+    stubbed_uffizzi_cluster_get_request = stub_uffizzi_get_clusters(clusters_get_body, @project_slug)
+
+    @cluster.list
+
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
 end

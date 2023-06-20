@@ -227,6 +227,13 @@ module ApiClient
     build_response(response)
   end
 
+  def get_clusters(server, project_slug, params)
+    uri = clusters_uri(server, project_slug, params)
+    response = http_client.make_get_request(uri)
+
+    build_response(response)
+  end
+
   def create_cluster(server, project_slug, params)
     uri = clusters_uri(server, project_slug)
     response = http_client.make_post_request(uri, params)
