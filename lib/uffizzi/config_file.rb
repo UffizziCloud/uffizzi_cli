@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'json'
-require 'fileutils'
+require 'uffizzi/helpers/file_helper'
 
 module Uffizzi
   class ConfigFile
-    CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default"
+    CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default.json"
 
     class << self
       def config_path
@@ -20,23 +20,25 @@ module Uffizzi
         File.exist?(config_path)
       end
 
-      def read_option(option)
+      def read_option(option, nested_option = nil)
         data = read
-        return nil unless data.is_a?(Hash)
 
-        data[option]
+        value = data[option]
+        return value.presence if nested_option.nil?
+        return nil unless value.is_a?(Hash)
+
+        value[nested_option].presence
       end
 
       def option_has_value?(option)
         data = read
-        return false if !data.is_a?(Hash) || !option_exists?(option)
+        return false unless option_exists?(option)
 
-        !data[option].empty?
+        data[option].present?
       end
 
       def write_option(key, value)
         data = exists? ? read : {}
-        return nil unless data.is_a?(Hash)
 
         data[key] = value
         write(data)
@@ -44,7 +46,7 @@ module Uffizzi
 
       def unset_option(key)
         data = read
-        return nil unless data.is_a?(Hash) || !option_exists?(key)
+        return unless option_exists?(key)
 
         data[key] = ''
         write(data)
@@ -56,7 +58,6 @@ module Uffizzi
 
       def list
         data = read
-        return nil unless data.is_a?(Hash)
 
         content = data.reduce('') do |acc, pair|
           property, value = pair
@@ -70,7 +71,6 @@ module Uffizzi
 
       def option_exists?(option)
         data = read
-        return false unless data.is_a?(Hash)
 
         data.key?(option)
       end
@@ -79,43 +79,18 @@ module Uffizzi
 
       def read
         data = File.read(config_path)
-        options = data.split("\n")
-        options.reduce({}) do |acc, option|
-          key, value = option.split('=', 2)
-          acc.merge({ key.strip.to_sym => value.strip })
-        end
+        JSON.parse(data).deep_symbolize_keys
       rescue Errno::ENOENT => e
         file_path = e.message.split(' ').last
         message = "Configuration file not found: #{file_path}\n" \
         'To configure the uffizzi CLI interactively, run $ uffizzi config'
         raise Uffizzi::Error.new(message)
+      rescue JSON::ParserError
+        {}
       end
 
       def write(data)
-        prepared_data = prepare_data(data)
-
-        lock(config_path) { atomic_write(config_path, "#{config_path}.tmp", prepared_data) }
-      end
-
-      def prepare_data(data)
-        data.reduce('') do |acc, option|
-          key, value = option
-          "#{acc}#{key} = #{value}\n"
-        end
-      end
-
-      def atomic_write(path, temp_path, content)
-        File.open(temp_path, 'w') { |f| f.write(content) }
-        FileUtils.mv(temp_path, path)
-      end
-
-      def lock(path)
-        dir = File.dirname(path)
-        FileUtils.mkdir_p(dir) unless File.directory?(dir)
-
-        File.open(path).flock(File::LOCK_EX) if File.exist?(path)
-        yield
-        File.open(path).flock(File::LOCK_UN)
+        Uffizzi::FileHelper.write_with_lock(config_path, data.to_json)
       end
     end
   end

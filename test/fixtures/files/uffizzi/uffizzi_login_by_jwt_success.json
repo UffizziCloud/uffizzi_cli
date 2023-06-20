@@ -1,4 +1,7 @@
 {
-  "account_id": 1,
+  "account": {
+    "id": 1,
+    "name": "uffizzi"
+  },
   "project_slug": "default"
 }

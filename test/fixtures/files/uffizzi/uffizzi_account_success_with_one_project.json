@@ -1,0 +1,13 @@
+{
+  "account":
+    { 
+      "id": 1,
+      "name": "test",
+      "projects": [
+        {
+          "id": 1,
+          "slug": "uffizzi-test-slug-1"
+        }
+      ]
+    }
+}

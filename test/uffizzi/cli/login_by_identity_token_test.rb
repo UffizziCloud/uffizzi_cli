@@ -18,7 +18,7 @@ class LoginByIdentityTokenTest < Minitest::Test
     @cli.login_by_identity_token
 
     assert_requested(stubbed_uffizzi_login)
-    assert(Uffizzi::ConfigFile.option_exists?(:account_id))
+    assert(Uffizzi::ConfigFile.option_exists?(:account))
     assert(Uffizzi::ConfigFile.option_exists?(:project))
   end
 
@@ -31,7 +31,7 @@ class LoginByIdentityTokenTest < Minitest::Test
     end
 
     assert_requested(stubbed_uffizzi_login)
-    refute(Uffizzi::ConfigFile.option_exists?(:account_id))
+    refute(Uffizzi::ConfigFile.option_exists?(:account))
     refute(Uffizzi::ConfigFile.option_exists?(:project))
   end
 end

@@ -7,10 +7,10 @@ module Uffizzi
   class HttpClient
     attr_accessor :auth_cookie, :basic_auth_user, :basic_auth_password
 
-    def initialize(auth_cookie, basic_auth_user, basic_auth_password)
-      @auth_cookie = auth_cookie
-      @basic_auth_user = basic_auth_user
-      @basic_auth_password = basic_auth_password
+    def initialize(params)
+      @auth_cookie = params[:cookie]
+      @basic_auth_user = params[:basic_auth_user]
+      @basic_auth_password = params[:basic_auth_password]
     end
 
     def make_get_request(request_uri)
@@ -41,13 +41,17 @@ module Uffizzi
         http.request(request)
       end
 
-      raise Uffizzi::Error.new('Not authorized') if response.is_a?(Net::HTTPUnauthorized)
+      if response.is_a?(Net::HTTPUnauthorized)
+        Uffizzi::Token.delete if Uffizzi::Token.exists?
+        raise Uffizzi::Error.new('Not authorized')
+      end
 
       response
     end
 
     def build_request(uri, params, method)
-      headers = { 'Content-Type' => 'application/json' }
+      access_token = Uffizzi::Token.read
+      headers = get_headers(access_token)
       request = case method
                 when :get
                   Net::HTTP::Get.new(uri.request_uri, headers)
@@ -62,9 +66,16 @@ module Uffizzi
         request.body = params.to_json
       end
       request['Cookie'] = @auth_cookie
-      request.basic_auth(@basic_auth_user, @basic_auth_password)
+      request.basic_auth(@basic_auth_user, @basic_auth_password) unless access_token
 
       request
+    end
+
+    def get_headers(access_token)
+      content_type_headers = { 'Content-Type' => 'application/json' }
+      auth_headers = access_token ? { 'Authorization' => "Bearer #{access_token}" } : {}
+
+      content_type_headers.merge(auth_headers)
     end
   end
 end

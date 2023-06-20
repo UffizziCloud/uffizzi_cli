@@ -26,9 +26,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   spec.required_ruby_version = '>= 2.5.0'
 
+  spec.add_dependency 'activesupport'
   spec.add_dependency 'awesome_print'
   spec.add_dependency 'faker'
+  spec.add_dependency 'launchy'
   spec.add_dependency 'minitar'
+  spec.add_dependency 'securerandom'
   spec.add_dependency 'sentry-ruby'
   spec.add_dependency 'thor'
   spec.add_dependency 'tty-prompt'
@@ -40,7 +43,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'deepsort', '~> 0.4.5'
   spec.add_development_dependency 'factory_bot'
   spec.add_development_dependency 'fakefs'
-  spec.add_development_dependency 'faker'
   spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'minitest-power_assert'
   spec.add_development_dependency 'mocha'
