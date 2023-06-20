@@ -4,6 +4,7 @@ require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/services/preview_service'
 require 'uffizzi/services/command_service'
+require 'uffizzi/services/cluster_service'
 
 module Uffizzi
   class Cli::Cluster < Thor
@@ -78,20 +79,12 @@ module Uffizzi
       manifest_file_path = options[:manifest_file_path]
       params = cluster_params(cluster_name, manifest_file_path)
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
-      return ResponseHelper.handle_failed_response(response) if !ResponseHelper.created?(response)
 
-      cluster_data = response[:body][:cluster]
-      loop do
-        response = get_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
-        return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
+      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
 
-        cluster_data = response[:body][:cluster]
-        break if cluster_data.dig(:status, :ready)
+      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name)
 
-        sleep(5)
-      end
-
-      if !cluster_data.dig(:status, :ready)
+      if ClusterService.failed?(cluster_data[:state])
         return Uffizzi.ui.say("Cluster with name: #{cluster_name} failed to be created.")
       end
 
@@ -157,7 +150,7 @@ module Uffizzi
       Uffizzi.ui.enable_stdout
       Uffizzi.ui.say("Cluster with name: #{cluster_data[:name]} was created.")
       Uffizzi.ui.say(cluster_data) if Uffizzi.ui.output_format
-      kubeconfig = cluster_data.dig(:status, :kube_config)
+      kubeconfig = cluster_data[:kube_config]
       File.write(kubeconfig_path, Base64.decode64(kubeconfig))
       GithubService.write_to_github_env_if_needed(cluster_data)
     end
