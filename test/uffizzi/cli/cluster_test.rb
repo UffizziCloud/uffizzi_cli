@@ -17,10 +17,10 @@ class ClusterTest < Minitest::Test
   end
 
   def test_create_cluster_success
-    @cluster.options = command_options(name: 'test-cluster', kubeconfig: @config_path)
-    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_not_ready.json')
+    @cluster.options = command_options(name: 'uffizzi-test-cluster', kubeconfig: @config_path)
+    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_deploying.json')
     stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
-    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_ready.json')
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
 
     File.stubs(:write).returns(100)
