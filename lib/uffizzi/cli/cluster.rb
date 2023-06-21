@@ -31,6 +31,10 @@ module Uffizzi
       run('delete')
     end
 
+    desc 'kubeconfig', 'Update kubeconfig'
+    require_relative 'cluster/kubeconfig'
+    subcommand 'kubeconfig', Uffizzi::Cli::Cluster::Kubeconfig
+
     private
 
     def run(command)
