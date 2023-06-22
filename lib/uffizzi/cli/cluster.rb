@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require 'psych'
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/services/preview_service'
 require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
+require 'uffizzi/services/kubeconfig_service'
 
 module Uffizzi
   class Cli::Cluster < Thor
@@ -20,7 +22,8 @@ module Uffizzi
     desc 'create [NAME] [KUBECONFIG] [MANIFEST]', 'Create a cluster'
     method_option :name, type: :string, required: true
     method_option :kubeconfig, type: :string, required: true
-    method_option :manifest_file_path, type: :string, required: false
+    method_option :manifest, type: :string, required: false
+    method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def create
       run('create')
     end
@@ -31,9 +34,12 @@ module Uffizzi
       run('delete')
     end
 
-    desc 'kubeconfig', 'Update kubeconfig'
-    require_relative 'cluster/kubeconfig'
-    subcommand 'kubeconfig', Uffizzi::Cli::Cluster::Kubeconfig
+    method_option :name, type: :string, required: true
+    method_option :kubeconfig, type: :string, required: true
+    desc 'update-kubeconfig [NAME]', 'Udpate the your kubeconfig'
+    def update_kubeconfig
+      run('update-kubeconfig')
+    end
 
     private
 
@@ -51,6 +57,8 @@ module Uffizzi
         handle_create_command(project_slug)
       when 'delete'
         handle_delete_command(project_slug)
+      when 'update-kubeconfig'
+        handle_update_kubeconfig_command(project_slug)
       end
     end
 
@@ -80,7 +88,7 @@ module Uffizzi
 
       Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
       cluster_name = options[:name]
-      manifest_file_path = options[:manifest_file_path]
+      manifest_file_path = options[:manifest]
       params = cluster_params(cluster_name, manifest_file_path)
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
 
@@ -92,7 +100,7 @@ module Uffizzi
         return Uffizzi.ui.say("Cluster with name: #{cluster_name} failed to be created.")
       end
 
-      handle_result(cluster_data, kubeconfig_path)
+      handle_succeed_create_response(cluster_data, kubeconfig_path)
     rescue SystemExit, Interrupt, SocketError
       handle_interruption(cluster_data, ConfigFile.read_option(:server), project_slug)
     end
@@ -106,6 +114,19 @@ module Uffizzi
       else
         ResponseHelper.handle_failed_response(response)
       end
+    end
+
+    def handle_update_kubeconfig_command(project_slug)
+      cluster_name = options[:name]
+      target_kubeconfig_path = options[:kubeconfig]
+      response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, cluster_name)
+      return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
+
+      cluster_data = response.dig(:body, :cluster)
+      return if cluster_data[:kubeconfig].nil?
+
+      source_kubeconfig = parsed_kubeconfig(cluster_data[:kubeconfig])
+      KubeconfigService.save_to_filepath(target_kubeconfig_path, source_kubeconfig)
     end
 
     def cluster_params(name, manifest_file_path)
@@ -150,13 +171,28 @@ module Uffizzi
       Uffizzi.ui.say(clusters)
     end
 
-    def handle_result(cluster_data, kubeconfig_path)
+    def handle_succeed_create_response(cluster_data, kubeconfig_path)
+      kubeconfig = parsed_kubeconfig(cluster_data[:kubeconfig])
+      rendered_cluster_data = render_cluster_data(cluster_data)
+
       Uffizzi.ui.enable_stdout
-      Uffizzi.ui.say("Cluster with name: #{cluster_data[:name]} was created.")
-      Uffizzi.ui.say(cluster_data) if Uffizzi.ui.output_format
-      kubeconfig = cluster_data[:kube_config]
-      File.write(kubeconfig_path, Base64.decode64(kubeconfig))
-      GithubService.write_to_github_env_if_needed(cluster_data)
+      Uffizzi.ui.say("Cluster with name: #{rendered_cluster_data[:name]} was created.")
+      Uffizzi.ui.say(rendered_cluster_data) if Uffizzi.ui.output_format
+
+      KubeconfigService.save_to_filepath(kubeconfig_path, kubeconfig)
+      GithubService.write_to_github_env_if_needed(rendered_cluster_data)
+    end
+
+    def render_cluster_data(cluster_data)
+      kubeconfig = parsed_kubeconfig(cluster_data[:kubeconfig])
+      new_cluster_data = cluster_data.slice(:name)
+      new_cluster_data[:context_name] = kubeconfig['current-context']
+
+      new_cluster_data
+    end
+
+    def parsed_kubeconfig(kubeconfig)
+      @parsed_kubeconfig ||= Psych.safe_load(Base64.decode64(kubeconfig))
     end
   end
 end
