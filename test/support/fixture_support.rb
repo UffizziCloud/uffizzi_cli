@@ -2,8 +2,8 @@
 
 module FixtureSupport
   def file_fixture(file_path)
-    full_path = "/test/fixtures/#{file_path}"
-    File.new(Dir.pwd + full_path)
+    full_path = File.join(Dir.pwd, 'test', 'fixtures', file_path)
+    File.new(full_path)
   end
 
   def json_fixture(file_path, symbolize_names: true)

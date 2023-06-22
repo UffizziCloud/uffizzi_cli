@@ -2,6 +2,6 @@
   "cluster": {
     "name": "uffizzi-test-cluster",
     "state": "deploying",
-    "kube_config": ""
+    "kubeconfig": ""
   }
 }
