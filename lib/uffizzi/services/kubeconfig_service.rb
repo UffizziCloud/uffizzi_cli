@@ -33,7 +33,7 @@ class KubeconfigService
     end
 
     def add(target_kubeconfig, source_kubeconfig)
-      new_kubeconfig = target_kubeconfig.clone
+      new_kubeconfig = target_kubeconfig.deep_dup
       new_kubeconfig['clusters'] << source_kubeconfig['clusters'][0]
       new_kubeconfig['contexts'] << source_kubeconfig['contexts'][0]
       new_kubeconfig['users'] << source_kubeconfig['users'][0]
@@ -42,7 +42,7 @@ class KubeconfigService
     end
 
     def replace(target_kubeconfig, source_kubeconfig, cluster_name)
-      new_kubeconfig = target_kubeconfig.clone
+      new_kubeconfig = target_kubeconfig.deep_dup
       new_kubeconfig['clusters'].delete_if { |c| c['name'] == cluster_name }
       target_user = new_kubeconfig['contexts']
         .detect { |c| c.dig('context', 'cluster') == cluster_name }
