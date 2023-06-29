@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class MockShell
-  attr_accessor :messages, :output_format
+  attr_accessor :messages, :output_format, :stdout_pipe
 
   PRETTY_JSON = 'pretty-json'
   REGULAR_JSON = 'json'
@@ -10,6 +10,7 @@ class MockShell
   def initialize
     @messages = []
     @output_enabled = true
+    @stdout_pipe = false
   end
 
   def say(message)
@@ -26,6 +27,10 @@ class MockShell
                           message
     end
     @messages << formatted_message
+  end
+
+  def stdout_pipe?
+    @stdout_pipe
   end
 
   def last_message
