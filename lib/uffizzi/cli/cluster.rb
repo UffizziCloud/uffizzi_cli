@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+require 'byebug'
 require 'psych'
+require 'faker'
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/services/preview_service'
@@ -10,6 +12,7 @@ require 'uffizzi/services/kubeconfig_service'
 
 module Uffizzi
   class Cli::Cluster < Thor
+    class Error < StandardError; end
     include ApiClient
 
     desc 'list', 'List all clusters'
@@ -19,31 +22,32 @@ module Uffizzi
       run('list')
     end
 
-    desc 'create [NAME] [KUBECONFIG] [MANIFEST]', 'Create a cluster'
-    method_option :name, type: :string, required: true
-    method_option :kubeconfig, type: :string, required: true
-    method_option :manifest, type: :string, required: false
+    desc 'create', 'Create a cluster'
+    method_option :name, type: :string, required: false, aliases: '-n'
+    method_option :kubeconfig, type: :string, required: false, aliases: '-k'
+    method_option :manifest, type: :string, required: true, aliases: '-m'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def create
       run('create')
     end
 
-    method_option :name, type: :string, required: true
     desc 'delete [NAME]', 'Delete a cluster'
-    def delete
-      run('delete')
+    def delete(name)
+      run('delete', cluster_name: name)
     end
 
-    method_option :name, type: :string, required: true
-    method_option :kubeconfig, type: :string, required: true
-    desc 'update-kubeconfig [NAME]', 'Udpate the your kubeconfig'
+    method_option :name, type: :string, required: true, aliases: '-n'
+    method_option :kubeconfig, type: :string, required: false, aliases: '-k'
+    method_option :print, type: :boolean, required: false, aliases: '-p'
+    method_option :quiet, type: :boolean, required: false, aliases: '-q'
+    desc 'update-kubeconfig', 'Udpate the your kubeconfig'
     def update_kubeconfig
       run('update-kubeconfig')
     end
 
     private
 
-    def run(command)
+    def run(command, command_args = {})
       Uffizzi.ui.output_format = options[:output]
       raise Uffizzi::Error.new('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
       raise Uffizzi::Error.new('This command needs project to be set in config file') unless CommandService.project_set?(options)
@@ -56,7 +60,7 @@ module Uffizzi
       when 'create'
         handle_create_command(project_slug)
       when 'delete'
-        handle_delete_command(project_slug)
+        handle_delete_command(project_slug, command_args)
       when 'update-kubeconfig'
         handle_update_kubeconfig_command(project_slug)
       end
@@ -83,11 +87,13 @@ module Uffizzi
     end
 
     def handle_create_command(project_slug)
-      kubeconfig_path = options[:kubeconfig]
-      raise Uffizzi::Error.new('The kubeconfig file path already exists') if File.exist?(kubeconfig_path)
-
       Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
-      cluster_name = options[:name]
+      cluster_name = options[:name] || ClusterService.generate_name
+
+      unless ClusterService.valid_name?(cluster_name)
+        Uffizzi.ui.say_error_and_exit("Cluster name: #{cluster_name} is not valid.")
+      end
+
       manifest_file_path = options[:manifest]
       params = cluster_params(cluster_name, manifest_file_path)
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
@@ -97,16 +103,16 @@ module Uffizzi
       cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name)
 
       if ClusterService.failed?(cluster_data[:state])
-        return Uffizzi.ui.say("Cluster with name: #{cluster_name} failed to be created.")
+        Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")
       end
 
-      handle_succeed_create_response(cluster_data, kubeconfig_path)
+      handle_succeed_create_response(cluster_data, options[:kubeconfig])
     rescue SystemExit, Interrupt, SocketError
       handle_interruption(cluster_data, ConfigFile.read_option(:server), project_slug)
     end
 
-    def handle_delete_command(project_slug)
-      cluster_name = options[:name]
+    def handle_delete_command(project_slug, command_args)
+      cluster_name = command_args[:cluster_name]
       response = delete_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
 
       if ResponseHelper.no_content?(response)
@@ -118,15 +124,37 @@ module Uffizzi
 
     def handle_update_kubeconfig_command(project_slug)
       cluster_name = options[:name]
-      target_kubeconfig_path = options[:kubeconfig]
+      kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
       response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, cluster_name)
       return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
 
       cluster_data = response.dig(:body, :cluster)
-      return if cluster_data[:kubeconfig].nil?
 
-      source_kubeconfig = parsed_kubeconfig(cluster_data[:kubeconfig])
-      KubeconfigService.save_to_filepath(target_kubeconfig_path, source_kubeconfig)
+      if cluster_data[:kubeconfig].nil? && ClusterService.failed?(cluster_data[:state])
+        Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")
+      end
+
+      if cluster_data[:kubeconfig].nil? && ClusterService.deploying?(cluster_data[:state])
+        Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} is deploying.")
+      end
+
+      if cluster_data[:kubeconfig].nil? && ClusterService.deployed?(cluster_data[:state])
+        raise Error.new("Cluster with name: #{cluster_name} is deployed but kubeconfig does not exist.")
+      end
+
+      parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
+
+      return Uffizzi.ui.say(parsed_kubeconfig.to_yaml) if Uffizzi.ui.stdout_pipe?
+      return Uffizzi.ui.say(parsed_kubeconfig.to_yaml) if options[:print]
+
+      KubeconfigService.save_to_filepath(kubeconfig_path, parsed_kubeconfig) do |kubeconfig_by_path|
+        merged_kubeconfig = KubeconfigService.merge(kubeconfig_by_path, parsed_kubeconfig)
+        current_context = KubeconfigService.get_current_context(parsed_kubeconfig)
+        KubeconfigService.update_current_context(merged_kubeconfig, current_context)
+      end
+
+      return if options[:quiet]
+      Uffizzi.ui.say("Kubeconfig was updated by the path: #{kubeconfig_path}")
     end
 
     def cluster_params(name, manifest_file_path)
@@ -164,35 +192,35 @@ module Uffizzi
       raise Uffizzi::Error.new('The project has no active clusters') if clusters.empty?
 
       if Uffizzi.ui.output_format.nil?
-        clusters = clusters.reduce('') do |_acc, cluster|
-          "#{cluster[:name]}\n"
-        end.strip
+        clusters = clusters.map { |cluster| "- #{cluster[:name]}" }.join("\n").strip
       end
+
       Uffizzi.ui.say(clusters)
     end
 
     def handle_succeed_create_response(cluster_data, kubeconfig_path)
-      kubeconfig = parsed_kubeconfig(cluster_data[:kubeconfig])
+      kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
       rendered_cluster_data = render_cluster_data(cluster_data)
 
       Uffizzi.ui.enable_stdout
       Uffizzi.ui.say("Cluster with name: #{rendered_cluster_data[:name]} was created.")
       Uffizzi.ui.say(rendered_cluster_data) if Uffizzi.ui.output_format
 
+      kubeconfig_path = kubeconfig_path.nil? ? KubeconfigService.default_path : kubeconfig_path
       KubeconfigService.save_to_filepath(kubeconfig_path, kubeconfig)
       GithubService.write_to_github_env_if_needed(rendered_cluster_data)
     end
 
     def render_cluster_data(cluster_data)
-      kubeconfig = parsed_kubeconfig(cluster_data[:kubeconfig])
+      kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
       new_cluster_data = cluster_data.slice(:name)
       new_cluster_data[:context_name] = kubeconfig['current-context']
 
       new_cluster_data
     end
 
-    def parsed_kubeconfig(kubeconfig)
-      @parsed_kubeconfig ||= Psych.safe_load(Base64.decode64(kubeconfig))
+    def parse_kubeconfig(kubeconfig)
+      Psych.safe_load(Base64.decode64(kubeconfig))
     end
   end
 end

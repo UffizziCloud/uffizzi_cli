@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'byebug'
 require 'psych'
 require 'base64'
 require 'test_helper'
@@ -108,5 +109,24 @@ class ClusterTest < Minitest::Test
     assert_equal(kubeconfig_from_backend['contexts'][0]['name'], updated_kubeconfig['contexts'][0]['name'])
     assert_equal(kubeconfig_from_backend['contexts'][0]['context']['user'], updated_kubeconfig['contexts'][0]['context']['user'])
     assert_equal(kubeconfig_from_backend['users'][0]['name'], updated_kubeconfig['users'][0]['name'])
+  end
+
+  def test_update_kubeconfig_if_kubeconfig_option_is_empty
+    @cluster.options = command_options(name: 'uffizzi-test-cluster')
+
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+    kubeconfig_from_backend = Psych.safe_load(Base64.decode64(cluster_get_body[:cluster][:kubeconfig]))
+
+    @cluster.update_kubeconfig
+
+    byebug
+    new_file = File.expand_path(KubeconfigService::DEFAULT_KUBECONFIG_PATH)
+    kubeconfig_from_file = Psych.safe_load(File.read(new_file))
+
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+    assert_equal(kubeconfig_from_backend['clusters'][0]['name'], kubeconfig_from_file['clusters'][0]['name'])
+
+    File.delete(new_file)
   end
 end

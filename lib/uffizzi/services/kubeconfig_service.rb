@@ -4,11 +4,13 @@ require 'uffizzi/clients/api/api_client'
 require 'psych'
 
 class KubeconfigService
+  DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
+
   class << self
     include ApiClient
 
     def merge(target_kubeconfig, source_kubeconfig)
-      return source_kubeconfig if target_kubeconfig.nil?
+      return source_kubeconfig.deep_dup if target_kubeconfig.nil?
 
       new_cluster_name = get_current_cluster_name(source_kubeconfig)
 
@@ -19,11 +21,29 @@ class KubeconfigService
       end
     end
 
-    def save_to_filepath(filepath, kubeconfig)
-      target_kubeconfig = File.exist?(filepath) ? Psych.safe_load(File.read(filepath)) : nil
-      new_kubeconfig = merge(target_kubeconfig, kubeconfig)
+    def get_current_context(kubeconfig)
+      kubeconfig['current-context']
+    end
 
-      File.write(filepath, new_kubeconfig.to_yaml)
+    def update_current_context(kubeconfig, current_context)
+      new_kubeconfig = kubeconfig.deep_dup
+      new_kubeconfig['current-context'] = current_context
+
+      new_kubeconfig
+    end
+
+    def save_to_filepath(filepath, kubeconfig)
+      real_file_path = File.expand_path(filepath)
+      target_kubeconfig = File.exist?(real_file_path) ? Psych.safe_load(File.read(real_file_path)) : nil
+      new_kubeconfig = block_given? ? yield(target_kubeconfig) : merge(target_kubeconfig, kubeconfig)
+
+      dir_path = File.dirname(real_file_path)
+      FileUtils.mkdir_p(dir_path) unless File.directory?(dir_path)
+      File.write(real_file_path, new_kubeconfig.to_yaml)
+    end
+
+    def default_path
+      ENV['KUBECONFIG'] || DEFAULT_KUBECONFIG_PATH
     end
 
     private

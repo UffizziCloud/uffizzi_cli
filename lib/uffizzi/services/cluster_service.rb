@@ -35,5 +35,19 @@ class ClusterService
         sleep(5)
       end
     end
+
+    def generate_name
+      name = [Faker::Name.first_name, Faker::Name.last_name].map(&:downcase).join('-')
+
+      return name if valid_name?(name)
+
+      generate_name
+    end
+
+    def valid_name?(name)
+      return false if name.nil?
+      regex = /^[a-zA-Z0-9-]*$/
+      regex.match?(name)
+    end
   end
 end
