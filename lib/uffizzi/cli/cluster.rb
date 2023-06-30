@@ -77,10 +77,6 @@ module Uffizzi
         }
       end
       response = get_clusters(ConfigFile.read_option(:server), project_slug, parsed_filter)
-      puts '------'
-      puts 'list response'
-      puts response
-      puts '------'
 
       if ResponseHelper.ok?(response)
         handle_succeed_list_response(response)
@@ -100,10 +96,6 @@ module Uffizzi
       manifest_file_path = options[:manifest]
       params = cluster_params(cluster_name, manifest_file_path)
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
-      puts '------'
-      puts 'create response'
-      puts response
-      puts '------'
 
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
 
@@ -226,6 +218,8 @@ module Uffizzi
 
     def render_cluster_data(cluster_data)
       kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
+      raise Uffizzi::Error.new('The kubeconfig data is empty') unless kubeconfig
+
       new_cluster_data = cluster_data.slice(:name)
       new_cluster_data[:context_name] = kubeconfig['current-context']
 
