@@ -3,6 +3,7 @@ PATH
   specs:
     uffizzi-cli (1.1.0)
       awesome_print
+      faker
       minitar
       sentry-ruby
       thor
