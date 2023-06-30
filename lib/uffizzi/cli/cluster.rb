@@ -24,7 +24,7 @@ module Uffizzi
     desc 'create', 'Create a cluster'
     method_option :name, type: :string, required: false, aliases: '-n'
     method_option :kubeconfig, type: :string, required: false, aliases: '-k'
-    method_option :manifest, type: :string, required: true, aliases: '-m'
+    method_option :manifest, type: :string, required: false, aliases: '-m'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def create
       run('create')
