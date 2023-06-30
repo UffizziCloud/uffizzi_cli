@@ -5,6 +5,7 @@ require 'awesome_print'
 module Uffizzi
   module UI
     class Shell
+      class ExitError < Thor::Error; end
       attr_accessor :output_format
 
       PRETTY_JSON = 'pretty-json'
@@ -19,8 +20,7 @@ module Uffizzi
       end
 
       def say_error_and_exit(message)
-        @shell.say(format_message(message))
-        exit(false)
+        raise ExitError.new(format_message(message))
       end
 
       def print_in_columns(messages)
@@ -66,12 +66,12 @@ module Uffizzi
 
       def format_message(message)
         case output_format
-          when PRETTY_JSON
-            format_to_pretty_json(message)
-          when REGULAR_JSON
-            format_to_json(message)
-          else
-            message
+        when PRETTY_JSON
+          format_to_pretty_json(message)
+        when REGULAR_JSON
+          format_to_json(message)
+        else
+          message
         end
       end
     end

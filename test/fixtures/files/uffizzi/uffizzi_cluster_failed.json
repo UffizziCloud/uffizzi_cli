@@ -1,0 +1,7 @@
+{
+  "cluster": {
+    "name": "uffizzi-test-cluster",
+    "state": "failed",
+    "kubeconfig": ""
+  }
+}

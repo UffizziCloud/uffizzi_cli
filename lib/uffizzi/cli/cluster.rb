@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'byebug'
 require 'psych'
 require 'faker'
 require 'uffizzi'
@@ -130,22 +129,13 @@ module Uffizzi
 
       cluster_data = response.dig(:body, :cluster)
 
-      if cluster_data[:kubeconfig].nil? && ClusterService.failed?(cluster_data[:state])
-        Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")
-      end
-
-      if cluster_data[:kubeconfig].nil? && ClusterService.deploying?(cluster_data[:state])
-        Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} is deploying.")
-      end
-
-      if cluster_data[:kubeconfig].nil? && ClusterService.deployed?(cluster_data[:state])
-        raise Error.new("Cluster with name: #{cluster_name} is deployed but kubeconfig does not exist.")
+      if cluster_data[:kubeconfig].nil? || cluster_data[:kubeconfig].empty?
+        say_error_update_kubeconfig(cluster_data)
       end
 
       parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
 
-      return Uffizzi.ui.say(parsed_kubeconfig.to_yaml) if Uffizzi.ui.stdout_pipe?
-      return Uffizzi.ui.say(parsed_kubeconfig.to_yaml) if options[:print]
+      return Uffizzi.ui.say(parsed_kubeconfig.to_yaml) if Uffizzi.ui.stdout_pipe? || options[:print]
 
       KubeconfigService.save_to_filepath(kubeconfig_path, parsed_kubeconfig) do |kubeconfig_by_path|
         merged_kubeconfig = KubeconfigService.merge(kubeconfig_by_path, parsed_kubeconfig)
@@ -154,7 +144,22 @@ module Uffizzi
       end
 
       return if options[:quiet]
+
       Uffizzi.ui.say("Kubeconfig was updated by the path: #{kubeconfig_path}")
+    end
+
+    def say_error_update_kubeconfig(cluster_data)
+      if ClusterService.failed?(cluster_data[:state])
+        Uffizzi.ui.say_error_and_exit('Kubeconfig is empty because cluster failed to be created.')
+      end
+
+      if ClusterService.deploying?(cluster_data[:state])
+        Uffizzi.ui.say_error_and_exit('Kubeconfig is empty because cluster is deploying.')
+      end
+
+      if ClusterService.deployed?(cluster_data[:state])
+        raise Error.new("Cluster with data: #{cluster_data.to_json} is deployed but kubeconfig does not exist.")
+      end
     end
 
     def cluster_params(name, manifest_file_path)
@@ -181,7 +186,7 @@ module Uffizzi
       deletion_message = if ResponseHelper.no_content?(deletion_response)
         "The cluster #{cluster[:name]} has been disabled."
       else
-        "Couldn't disable the cluster #{cluster[:name]} - please disable maually."
+        "Couldn't disable the cluster #{cluster[:name]} - please disable manually."
       end
 
       raise Uffizzi::Error.new("The cluster creation was interrupted. #{deletion_message}")
@@ -208,7 +213,7 @@ module Uffizzi
 
       kubeconfig_path = kubeconfig_path.nil? ? KubeconfigService.default_path : kubeconfig_path
       KubeconfigService.save_to_filepath(kubeconfig_path, kubeconfig)
-      GithubService.write_to_github_env_if_needed(rendered_cluster_data)
+      GithubService.write_to_github_env(rendered_cluster_data) if GithubService.github_actions_exists?
     end
 
     def render_cluster_data(cluster_data)
