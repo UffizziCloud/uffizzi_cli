@@ -111,6 +111,8 @@ module Uffizzi
 
       def handle_repl_exceptions(exception)
         case exception
+        when Thor::Error
+          raise exception
         when Interrupt
           raise Uffizzi::CliError.new('The command was interrupted')
         when StandardError

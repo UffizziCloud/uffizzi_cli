@@ -46,6 +46,7 @@ class ClusterService
 
     def valid_name?(name)
       return false if name.nil?
+
       regex = /^[a-zA-Z0-9-]*$/
       regex.match?(name)
     end
