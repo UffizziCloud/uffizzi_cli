@@ -85,6 +85,8 @@ module Uffizzi
       ConfigFile.write_option(:cookie, response[:headers])
 
       Uffizzi.ui.say('Login successfull')
+      puts '-------'
+      puts ENV.fetch('CI_PIPELINE_RUN', false)
       return if ENV.fetch('CI_PIPELINE_RUN', false)
 
       set_current_account_and_project
