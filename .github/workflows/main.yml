@@ -39,7 +39,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.0.2
-          bundler-cache: true
+          bundler-cache: false
       - name: Build Image
         uses: docker/build-push-action@v2
         with:

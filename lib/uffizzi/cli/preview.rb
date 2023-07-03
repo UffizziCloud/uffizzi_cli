@@ -4,6 +4,7 @@ require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/services/preview_service'
 require 'uffizzi/services/command_service'
+require 'uffizzi/services/github_service'
 
 module Uffizzi
   class Cli::Preview < Thor
@@ -232,7 +233,7 @@ module Uffizzi
       preview_deletion_message = if ResponseHelper.no_content?(deletion_response)
         "The preview #{deployment_name} has been disabled."
       else
-        "Couldn't disable the deployment #{deployment_name} - please disable maually."
+        "Couldn't disable the deployment #{deployment_name} - please disable manually."
       end
 
       raise Uffizzi::Error.new("The preview creation was interrupted. #{preview_deletion_message}")
@@ -241,7 +242,7 @@ module Uffizzi
     def handle_result(deployment_data)
       Uffizzi.ui.enable_stdout
       Uffizzi.ui.say(deployment_data) if Uffizzi.ui.output_format
-      write_to_github_env(deployment_data) if ENV['GITHUB_ACTIONS']
+      GithubService.write_to_github_env(deployment_data) if GithubService.github_actions_exists?
     end
 
     def build_deployment_data(deployment)
@@ -317,16 +318,6 @@ module Uffizzi
       return result.merge(param) unless result.has_key?(key)
 
       { key => result[key].merge(merge_params(result[key], param[key])) }
-    end
-
-    def write_to_github_env(data)
-      return '' unless data.is_a?(Hash)
-
-      github_output = ENV.fetch('GITHUB_OUTPUT') { raise 'GITHUB_OUTPUT is not defined' }
-
-      File.open(github_output, 'a') do |f|
-        data.each { |(key, value)| f.puts("#{key}=#{value}") }
-      end
     end
   end
 end

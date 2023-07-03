@@ -52,6 +52,10 @@ module Uffizzi
     require_relative 'cli/preview'
     subcommand 'preview', Cli::Preview
 
+    desc 'cluster', 'cluster'
+    require_relative 'cli/cluster'
+    subcommand 'cluster', Cli::Cluster
+
     desc 'connect', 'connect'
     require_relative 'cli/connect'
     subcommand 'connect', Cli::Connect
@@ -107,6 +111,8 @@ module Uffizzi
 
       def handle_repl_exceptions(exception)
         case exception
+        when Thor::Error
+          raise exception
         when Interrupt
           raise Uffizzi::CliError.new('The command was interrupted')
         when StandardError
