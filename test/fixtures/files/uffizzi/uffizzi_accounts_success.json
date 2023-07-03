@@ -1,0 +1,12 @@
+{
+  "accounts": [
+    { 
+      "id": 1,
+      "name": "uffizzi"
+    },
+    {
+      "id": 2,
+      "name": "hello-world"
+    }
+  ]
+}

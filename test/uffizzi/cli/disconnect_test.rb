@@ -7,7 +7,7 @@ class DisconnectTest < Minitest::Test
     @cli = Uffizzi::Cli.new
 
     sign_in
-    @account_id = Uffizzi::ConfigFile.read_option(:account_id)
+    @account_id = Uffizzi::ConfigFile.read_option(:account, :id)
   end
 
   def test_disconnect_docker_hub_success

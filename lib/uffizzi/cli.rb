@@ -19,6 +19,7 @@ module Uffizzi
     desc 'login [OPTIONS]', 'Login to Uffizzi to view and manage your previews'
     method_option :server, required: false, aliases: '-s'
     method_option :username, required: false, aliases: '-u'
+    method_option :email, required: false, aliases: '-e'
     def login
       require_relative 'cli/login'
       Login.new(options).run
@@ -38,6 +39,10 @@ module Uffizzi
       require_relative 'cli/logout'
       Logout.new(options).run
     end
+
+    desc 'account', 'account'
+    require_relative 'cli/account'
+    subcommand 'account', Cli::Account
 
     desc 'project', 'project'
     require_relative 'cli/project'
