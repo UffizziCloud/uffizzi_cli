@@ -9,7 +9,7 @@ if
 	[ "$UFFIZZI_SERVER" ] &&
 	[ "$UFFIZZI_PASSWORD" ];
 then
-	uffizzi login --username "${UFFIZZI_USER}" --server "${UFFIZZI_SERVER} --email"
+	uffizzi login --username "${UFFIZZI_USER}" --server "${UFFIZZI_SERVER}" --email
 	if [ "$UFFIZZI_PROJECT" ];
 	then
 		uffizzi project set-default "${UFFIZZI_PROJECT}"
