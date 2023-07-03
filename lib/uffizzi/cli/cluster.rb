@@ -94,7 +94,7 @@ module Uffizzi
       end
 
       manifest_file_path = options[:manifest]
-      params = cluster_params(cluster_name, manifest_file_path)
+      params = cluster_creation_params(cluster_name, manifest_file_path)
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
 
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
@@ -162,14 +162,16 @@ module Uffizzi
       end
     end
 
-    def cluster_params(name, manifest_file_path)
+    def cluster_creation_params(name, manifest_file_path)
       manifest_content = load_manifest_file(manifest_file_path)
+      token = Uffizzi::ConfigFile.read_option(:token)
 
       {
         cluster: {
           name: name,
           manifest: manifest_content,
         },
+        token: token,
       }
     end
 
