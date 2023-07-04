@@ -146,4 +146,21 @@ class ClusterTest < Minitest::Test
 
     assert_match('is empty', error.message)
   end
+
+  def test_describe_cluster
+    clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
+
+    @cluster.describe('cluster-name')
+
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_delete_cluster
+    stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
+
+    @cluster.delete('cluster-name')
+
+    assert_requested(stubbed_uffizzi_cluster_delete_request)
+  end
 end

@@ -1,0 +1,6 @@
+{
+  "cluster":{
+    "name":"uffizzi-test-cluster-1",
+    "state": "deployed"
+  }
+}

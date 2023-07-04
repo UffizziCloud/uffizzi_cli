@@ -31,6 +31,7 @@ module Uffizzi
     end
 
     desc 'describe [NAME]', 'Describe a cluster'
+    method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def describe(name)
       run('describe', cluster_name: name)
     end
@@ -118,11 +119,10 @@ module Uffizzi
     end
 
     def handle_describe_command(project_slug, command_args)
-      cluster_name = command_args[:cluster_name]
-      response = delete_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+      response = get_cluster(ConfigFile.read_option(:server), project_slug, command_args[:cluster_name])
 
-      if ResponseHelper.no_content?(response)
-        Uffizzi.ui.say("Cluster #{cluster_name} deleted")
+      if ResponseHelper.ok?(response)
+        handle_succeed_describe_response(response)
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -153,10 +153,6 @@ module Uffizzi
 
       parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
 
-      Uffizzi.ui.say('pipe?================')
-      Uffizzi.ui.say($stdout.stat.pipe?)
-      Uffizzi.ui.say('================')
-      # return Uffizzi.ui.say(parsed_kubeconfig.to_yaml) if Uffizzi.ui.stdout_pipe? || options[:print]
       return Uffizzi.ui.say(parsed_kubeconfig.to_yaml) if options[:print]
 
       KubeconfigService.save_to_filepath(kubeconfig_path, parsed_kubeconfig) do |kubeconfig_by_path|
@@ -225,6 +221,17 @@ module Uffizzi
       end
 
       Uffizzi.ui.say(clusters)
+    end
+
+    def handle_succeed_describe_response(response)
+      rendered_options = [:name, :state]
+      cluster = response[:body][:cluster].slice(*rendered_options)
+
+      if Uffizzi.ui.output_format.nil?
+        cluster = cluster.map { |k, v| "- #{k.to_s.capitalize}: #{v}" }.join("\n").strip
+      end
+
+      Uffizzi.ui.say(cluster)
     end
 
     def handle_succeed_create_response(cluster_data, kubeconfig_path)
