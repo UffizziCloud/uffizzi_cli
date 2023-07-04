@@ -1,0 +1,23 @@
+  uffizzi-account - manage Uffizzi accounts
+================================================================
+
+## SYNOPSIS
+    uffizzi account COMMAND [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Manage Uffizzi accounts
+
+    For more information on Uffizzi accounts, see:
+    https://github.com/UffizziCloud/uffizzi_cli
+
+## COMMANDS
+    COMMAND is one of the following:
+
+     list
+        List all projects in the account.
+
+     set-default
+        Set the default project in the uffizzi configuration. Also see
+        $ uffizzi config help for details.
+
+Run $ uffizzi account COMMAND --help for more information on a command.
