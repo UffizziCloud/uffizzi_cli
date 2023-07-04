@@ -83,11 +83,12 @@ module Uffizzi
       ConfigFile.write_option(:server, @server)
       ConfigFile.write_option(:username, username)
       ConfigFile.write_option(:cookie, response[:headers])
-
       Uffizzi.ui.say('Login successfull')
-      puts '-------'
-      puts ENV.fetch('CI_PIPELINE_RUN', false)
-      return if ENV.fetch('CI_PIPELINE_RUN', false)
+
+      if ENV.fetch('CI_PIPELINE_RUN', false)
+        account = response[:body][:user][:default_account]
+        return ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(account[:id]))
+      end
 
       set_current_account_and_project
     end

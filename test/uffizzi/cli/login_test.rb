@@ -22,6 +22,7 @@ class LoginTest < Minitest::Test
 
     refute(Uffizzi::ConfigFile.option_exists?(:server))
     refute(Uffizzi::ConfigFile.option_exists?(:username))
+    refute(Uffizzi::ConfigFile.option_exists?(:account))
 
     @cli.options = command_options(username: @command_params[:username], server: @command_params[:server], email: true)
 
@@ -31,6 +32,7 @@ class LoginTest < Minitest::Test
     refute_requested(stubbed_uffizzi_accounts_request)
     assert(Uffizzi::ConfigFile.option_exists?(:server))
     assert(Uffizzi::ConfigFile.option_exists?(:username))
+    assert(Uffizzi::ConfigFile.option_exists?(:account))
   end
 
   def test_login_success_with_options_from_config
@@ -59,8 +61,6 @@ class LoginTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_login_success.json')
 
     stubbed_uffizzi_login = stub_uffizzi_login_success(body)
-    # accounts_body = json_fixture('files/uffizzi/uffizzi_accounts_success.json')
-    # stubbed_uffizzi_accounts_request = stub_uffizzi_accounts_success(accounts_body)
     account_id = 1
     projects_body = json_fixture('files/uffizzi/uffizzi_projects_success_two_projects.json')
     stubbed_uffizzi_projects = stub_uffizzi_account_projects_success(projects_body, account_id)
@@ -75,7 +75,6 @@ class LoginTest < Minitest::Test
     @cli.login
 
     assert_requested(stubbed_uffizzi_login)
-    # assert_requested(stubbed_uffizzi_accounts_request)
     assert_requested(stubbed_uffizzi_projects)
   end
 
