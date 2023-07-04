@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-PROJECT" "" "May 2022" ""
+.TH "UFFIZZI\-PROJECT" "" "July 2023" ""
 .SH "NAME"
 \fBuffizzi\-project\fR \- manage Uffizzi projects
 .SH "SYNOPSIS"
@@ -36,7 +36,7 @@ COMMAND is one of the following:
  secret
     Manage secrets for a project\.
 
- set\-as\-default
+ set\-default
     Set the default project in the uffizzi configuration\. Also see
     $ uffizzi config help for details\.
 

@@ -1,0 +1,29 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-ACCOUNT\-SET\-DEFAULT" "" "July 2023" ""
+.SH "NAME"
+\fBuffizzi\-account\-set\-default\fR \- set the default account
+.SH "SYNOPSIS"
+.nf
+uffizzi account set\-default ACCOUNT_NAME
+.fi
+.SH "DESCRIPTION"
+.nf
+Sets the default account given with the given account name\. When set,
+all commands use this account as the default context unless
+overridden by the \-\-project flag\.
+
+This command can fail for the following reasons:
+  \- There is no account with the given account name
+
+For more information on Uffizzi projects, see:
+https://github\.com/UffizziCloud/uffizzi_cli
+.fi
+.SH "EXAMPLES"
+.nf
+The following sets the default account with account name
+example for the active account:
+
+    $ uffizzi account set\-default example
+.fi
+

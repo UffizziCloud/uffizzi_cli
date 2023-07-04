@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-LOGIN" "" "May 2022" ""
+.TH "UFFIZZI\-LOGIN" "" "July 2023" ""
 .SH "NAME"
 \fBuffizzi\-login\fR \- login to Uffizzi to view and manage your previews\.
 .SH "SYNOPSIS"
@@ -21,9 +21,13 @@ help for details\.
 .fi
 .SH "EXAMPLES"
 .nf
-To login to the default host with the default user account, run:
+To login via the browser, run:
 
     $ uffizzi login
+
+To login to the default host with the default user account, run:
+
+    $ uffizzi login \-\-email
 
 To login to an alternate host, run:
 
