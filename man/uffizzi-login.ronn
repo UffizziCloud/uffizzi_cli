@@ -15,9 +15,13 @@
     help for details.
 
 ## EXAMPLES
-    To login to the default host with the default user account, run:
+    To login via the browser, run:
 
         $ uffizzi login
+
+    To login to the default host with the default user account, run:
+
+        $ uffizzi login --email
 
     To login to an alternate host, run:
 

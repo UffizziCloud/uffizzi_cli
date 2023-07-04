@@ -31,7 +31,7 @@
      secret
         Manage secrets for a project.
 
-     set-as-default
+     set-default
         Set the default project in the uffizzi configuration. Also see
         $ uffizzi config help for details.
 
