@@ -30,6 +30,11 @@ module Uffizzi
       run('create')
     end
 
+    desc 'describe [NAME]', 'Describe a cluster'
+    def describe(name)
+      run('describe', cluster_name: name)
+    end
+
     desc 'delete [NAME]', 'Delete a cluster'
     def delete(name)
       run('delete', cluster_name: name)
@@ -58,6 +63,8 @@ module Uffizzi
         handle_list_command(project_slug)
       when 'create'
         handle_create_command(project_slug)
+      when 'describe'
+        handle_describe_command(project_slug, command_args)
       when 'delete'
         handle_delete_command(project_slug, command_args)
       when 'update-kubeconfig'
@@ -110,6 +117,17 @@ module Uffizzi
       handle_interruption(cluster_data, ConfigFile.read_option(:server), project_slug)
     end
 
+    def handle_describe_command(project_slug, command_args)
+      cluster_name = command_args[:cluster_name]
+      response = delete_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+
+      if ResponseHelper.no_content?(response)
+        Uffizzi.ui.say("Cluster #{cluster_name} deleted")
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
+    end
+
     def handle_delete_command(project_slug, command_args)
       cluster_name = command_args[:cluster_name]
       response = delete_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
@@ -135,7 +153,11 @@ module Uffizzi
 
       parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
 
-      return Uffizzi.ui.say(parsed_kubeconfig.to_yaml) if Uffizzi.ui.stdout_pipe? || options[:print]
+      Uffizzi.ui.say('pipe?================')
+      Uffizzi.ui.say($stdout.stat.pipe?)
+      Uffizzi.ui.say('================')
+      # return Uffizzi.ui.say(parsed_kubeconfig.to_yaml) if Uffizzi.ui.stdout_pipe? || options[:print]
+      return Uffizzi.ui.say(parsed_kubeconfig.to_yaml) if options[:print]
 
       KubeconfigService.save_to_filepath(kubeconfig_path, parsed_kubeconfig) do |kubeconfig_by_path|
         merged_kubeconfig = KubeconfigService.merge(kubeconfig_by_path, parsed_kubeconfig)
