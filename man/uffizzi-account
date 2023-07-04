@@ -1,0 +1,29 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-ACCOUNT" "" "July 2023" ""
+.SH "NAME"
+\fBuffizzi\-account\fR \- manage Uffizzi accounts
+.SH "SYNOPSIS"
+.nf
+uffizzi account COMMAND [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
+.SH "DESCRIPTION"
+.nf
+Manage Uffizzi accounts
+
+For more information on Uffizzi accounts, see:
+https://github\.com/UffizziCloud/uffizzi_cli
+.fi
+.SH "COMMANDS"
+.nf
+COMMAND is one of the following:
+
+ list
+    List all projects in the account\.
+
+ set\-default
+    Set the default project in the uffizzi configuration\. Also see
+    $ uffizzi config help for details\.
+.fi
+.P
+Run $ uffizzi account COMMAND \-\-help for more information on a command\.
