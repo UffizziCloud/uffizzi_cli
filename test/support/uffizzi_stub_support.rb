@@ -38,6 +38,30 @@ module UffizziStubSupport
     stub_request(:delete, url).to_return(status: 204, body: '', headers: headers)
   end
 
+  def stub_uffizzi_accounts_success(body)
+    url = accounts_uri(Uffizzi.configuration.server)
+
+    stub_request(:get, url).to_return(status: 200, body: body.to_json)
+  end
+
+  def stub_uffizzi_account_success(body, account_name)
+    url = account_uri(Uffizzi.configuration.server, account_name)
+
+    stub_request(:get, url).to_return(status: 200, body: body.to_json)
+  end
+
+  def stub_uffizzi_account_projects_success(body, account_id)
+    url = account_projects_uri(Uffizzi.configuration.server, account_id)
+
+    stub_request(:get, url).to_return(status: 200, body: body.to_json)
+  end
+
+  def stub_uffizzi_account_projects_failed(body, account_id)
+    url = account_projects_uri(Uffizzi.configuration.server, account_id)
+
+    stub_request(:get, url).to_return(status: 401, body: body.to_json)
+  end
+
   def stub_uffizzi_projects_success(body)
     url = projects_uri(Uffizzi.configuration.server)
 
@@ -54,12 +78,6 @@ module UffizziStubSupport
     url = project_uri(Uffizzi.configuration.server, project_slug)
 
     stub_request(:get, url).to_return(status: 422, body: body.to_json)
-  end
-
-  def stub_uffizzi_projects_failed(body)
-    url = projects_uri(Uffizzi.configuration.server)
-
-    stub_request(:get, url).to_return(status: 401, body: body.to_json)
   end
 
   def stub_uffizzi_project_create_success(body, account_id)
@@ -150,5 +168,41 @@ module UffizziStubSupport
     uri = credential_uri(Uffizzi.configuration.server, account_id, credential_type)
 
     stub_request(:delete, uri).to_return(status: 422, body: body.to_json)
+  end
+
+  def stub_uffizzi_create_cluster(body, project_slug)
+    uri = clusters_uri(Uffizzi.configuration.server, project_slug)
+    stub_request(:post, uri).to_return(status: 201, body: body.to_json)
+  end
+
+  def stub_get_cluster_request(body, project_slug)
+    uri = cluster_uri(Uffizzi.configuration.server, project_slug, nil)
+    uri = %r{#{uri}([A-Za-z0-9\-_]+)}
+
+    stub_request(:get, uri).to_return(status: 200, body: body.to_json)
+  end
+
+  def stub_uffizzi_get_clusters(body, project_slug)
+    uri = clusters_uri(Uffizzi.configuration.server, project_slug)
+    stub_request(:get, uri).to_return(status: 200, body: body.to_json)
+  end
+
+  def stub_uffizzi_delete_cluster(project_slug)
+    uri = cluster_uri(Uffizzi.configuration.server, project_slug, nil)
+    uri = %r{#{uri}([A-Za-z0-9\-_]+)}
+
+    stub_request(:delete, uri).to_return(status: 204)
+  end
+
+  def stub_get_token_request(body)
+    uri = %r{#{Uffizzi.configuration.server}/api/cli/v1/access_tokens/([A-Za-z0-9\-_]+)}
+
+    stub_request(:get, uri).to_return(status: 200, body: body.to_json)
+  end
+
+  def stub_create_token_request(body)
+    uri = "#{Uffizzi.configuration.server}/api/cli/v1/access_tokens"
+
+    stub_request(:post, uri).to_return(status: 201, body: body.to_json)
   end
 end

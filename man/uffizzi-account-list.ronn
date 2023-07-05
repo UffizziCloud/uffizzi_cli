@@ -1,0 +1,20 @@
+  uffizzi-account-list - list the accounts of the user
+================================================================
+
+## SYNOPSIS
+    uffizzi account list
+
+## DESCRIPTION
+    Shows a list of the container services that make up a given preview 
+    deployment.
+
+    This command can fail for the following reasons: 
+        - The user is not authenticated
+
+    For more information on preview services, see:
+    https://github.com/UffizziCloud/uffizzi_cli
+
+## EXAMPLES
+    The following command lists the user's accounts:
+
+        $ uffizzi account list

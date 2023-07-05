@@ -1,0 +1,22 @@
+uffizzi-account-set-default - set the default account
+================================================================
+
+## SYNOPSIS
+    uffizzi account set-default ACCOUNT_NAME
+
+## DESCRIPTION
+    Sets the default account given with the given account name. When set, 
+    all commands use this account as the default context unless 
+    overridden by the --project flag.
+
+    This command can fail for the following reasons:
+      - There is no account with the given account name
+
+    For more information on Uffizzi projects, see:
+    https://github.com/UffizziCloud/uffizzi_cli
+
+## EXAMPLES
+    The following sets the default account with account name 
+    example for the active account:
+
+        $ uffizzi account set-default example

@@ -4,6 +4,7 @@ require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
 require 'uffizzi/helpers/project_helper'
+require 'uffizzi/helpers/config_helper'
 require 'uffizzi/services/project_service'
 
 module Uffizzi
@@ -36,6 +37,7 @@ module Uffizzi
     end
 
     map('set-default' => :set_default)
+    map('set' => :set_default)
 
     method_option :name, required: true
     method_option :slug, default: ''
@@ -70,7 +72,7 @@ module Uffizzi
     end
 
     def handle_describe_command(project_slug)
-      response = describe_project(ConfigFile.read_option(:server), project_slug)
+      response = fetch_project(ConfigFile.read_option(:server), project_slug)
 
       if ResponseHelper.ok?(response)
         handle_succeed_describe_response(response)
@@ -87,7 +89,8 @@ module Uffizzi
 
     def handle_list_command
       server = ConfigFile.read_option(:server)
-      response = fetch_projects(server)
+      account_id = ConfigFile.read_option(:account, :id)
+      response = fetch_account_projects(server, account_id)
 
       if ResponseHelper.ok?(response)
         handle_list_success_response(response)
@@ -102,7 +105,8 @@ module Uffizzi
       raise Uffizzi::Error.new('Slug must not content spaces or special characters') unless slug.match?(/^[a-zA-Z0-9\-_]+\Z/i)
 
       server = ConfigFile.read_option(:server)
-      account_id = ConfigFile.read_option(:account_id)
+      account_id = ConfigFile.read_option(:account, :id)
+
       params = {
         name: name,
         description: options[:description],
@@ -130,14 +134,14 @@ module Uffizzi
 
     def handle_list_success_response(response)
       projects = response[:body][:projects]
-      return Uffizzi.ui.say('No projects related to this email') if projects.empty?
+      return Uffizzi.ui.say('No projects found') if projects.empty?
 
       set_default_project(projects.first) if projects.size == 1
       print_projects(projects)
     end
 
     def handle_set_default_command(project_slug)
-      response = describe_project(ConfigFile.read_option(:server), project_slug)
+      response = fetch_project(ConfigFile.read_option(:server), project_slug)
 
       if ResponseHelper.ok?(response)
         handle_succeed_set_default_response(response)
@@ -152,9 +156,9 @@ module Uffizzi
     end
 
     def handle_create_success_response(response)
-      project_name = response[:body][:project][:name]
-
-      Uffizzi.ui.say("Project #{project_name} was successfully created")
+      project = response[:body][:project]
+      ConfigFile.write_option(:project, project[:slug])
+      Uffizzi.ui.say("Project #{project[:name]} was successfully created")
     end
 
     def print_projects(projects)
@@ -166,7 +170,7 @@ module Uffizzi
 
     def set_default_project(project)
       ConfigFile.write_option(:project, project[:slug])
-      ConfigFile.write_option(:account_id, project[:account_id])
+      ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(project[:account_id]))
     end
   end
 end

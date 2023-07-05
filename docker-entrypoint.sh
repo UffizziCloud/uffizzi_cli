@@ -2,15 +2,17 @@
 
 set -e # Exit immediately if anything below exits with non-zero status.
 
+export CI_PIPELINE_RUN=true
+
 if
   [ "$UFFIZZI_USER" ] &&
 	[ "$UFFIZZI_SERVER" ] &&
 	[ "$UFFIZZI_PASSWORD" ];
 then
-	uffizzi login --username "${UFFIZZI_USER}" --server "${UFFIZZI_SERVER}"
+	uffizzi login --username "${UFFIZZI_USER}" --server "${UFFIZZI_SERVER}" --email
 	if [ "$UFFIZZI_PROJECT" ];
 	then
-		uffizzi config set project "${UFFIZZI_PROJECT}"
+		uffizzi project set-default "${UFFIZZI_PROJECT}"
 	fi
 else
   if [ "$OIDC_TOKEN" ];

@@ -6,7 +6,7 @@ class ConnectTest < Minitest::Test
   def setup
     @cli = Uffizzi::Cli::Connect.new
     sign_in
-    @account_id = Uffizzi::ConfigFile.read_option(:account_id)
+    @account_id = Uffizzi::ConfigFile.read_option(:account, :id)
   end
 
   def test_list_credentials

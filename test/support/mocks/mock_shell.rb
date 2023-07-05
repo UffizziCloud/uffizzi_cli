@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class MockShell
-  attr_accessor :messages, :output_format
+  class ExitError < StandardError; end
+  attr_accessor :messages, :output_format, :stdout_pipe
 
   PRETTY_JSON = 'pretty-json'
   REGULAR_JSON = 'json'
@@ -10,22 +11,21 @@ class MockShell
   def initialize
     @messages = []
     @output_enabled = true
+    @stdout_pipe = false
   end
 
   def say(message)
     return unless @output_enabled
 
-    formatted_message = case output_format
-                        when PRETTY_JSON
-                          format_to_pretty_json(message)
-                        when REGULAR_JSON
-                          format_to_json(message)
-                        when GITHUB_ACTION
-                          format_to_github_action(message)
-                        else
-                          message
-    end
-    @messages << formatted_message
+    @messages << format_message(message)
+  end
+
+  def say_error_and_exit(message)
+    raise ExitError.new(format_message(message))
+  end
+
+  def stdout_pipe?
+    @stdout_pipe
   end
 
   def last_message
@@ -73,6 +73,17 @@ class MockShell
 
     MockFile.open(github_output, 'a') do |f|
       data.each { |(key, value)| f.puts("#{key}=#{value}") }
+    end
+  end
+
+  def format_message(message)
+    case output_format
+    when PRETTY_JSON
+      format_to_pretty_json(message)
+    when REGULAR_JSON
+      format_to_json(message)
+    else
+      message
     end
   end
 end

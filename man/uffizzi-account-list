@@ -1,0 +1,27 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-ACCOUNT\-LIST" "" "July 2023" ""
+.SH "NAME"
+\fBuffizzi\-account\-list\fR \- list the accounts of the user
+.SH "SYNOPSIS"
+.nf
+uffizzi account list
+.fi
+.SH "DESCRIPTION"
+.nf
+Shows a list of the container services that make up a given preview
+deployment\.
+
+This command can fail for the following reasons:
+    \- The user is not authenticated
+
+For more information on preview services, see:
+https://github\.com/UffizziCloud/uffizzi_cli
+.fi
+.SH "EXAMPLES"
+.nf
+The following command lists the user\'s accounts:
+
+    $ uffizzi account list
+.fi
+

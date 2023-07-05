@@ -3,6 +3,14 @@
 require 'cgi'
 
 module ApiRoutes
+  def accounts_uri(server)
+    "#{server}/api/cli/v1/accounts"
+  end
+
+  def account_uri(server, account_name)
+    "#{server}/api/cli/v1/accounts/#{account_name}"
+  end
+
   def compose_file_uri(server, project_slug)
     "#{server}/api/cli/v1/projects/#{project_slug}/compose_file"
   end
@@ -13,6 +21,10 @@ module ApiRoutes
 
   def projects_uri(server)
     "#{server}/api/cli/v1/projects"
+  end
+
+  def account_projects_uri(server, account_id)
+    "#{server}/api/cli/v1/accounts/#{account_id}/projects"
   end
 
   def create_projects_uri(server, account_id)
@@ -84,5 +96,27 @@ module ApiRoutes
 
   def k8s_container_description_uri(server, project_slug, deployment_id, container_name)
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers/#{container_name}/k8s_container_description"
+  end
+
+  def clusters_uri(server, project_slug, filter = nil)
+    return "#{server}/api/cli/v1/projects/#{project_slug}/clusters" if filter.nil?
+
+    "#{server}/api/cli/v1/projects/#{project_slug}/clusters?q=#{filter.to_json}"
+  end
+
+  def cluster_uri(server, project_slug, cluster_name)
+    "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}"
+  end
+
+  def access_token_url(server, code)
+    "#{server}/api/cli/v1/access_tokens/#{code}"
+  end
+
+  def access_tokens_url(server)
+    "#{server}/api/cli/v1/access_tokens"
+  end
+
+  def browser_sign_in_url(server, session_id)
+    "#{server}/sign_in?session_id=#{session_id}"
   end
 end

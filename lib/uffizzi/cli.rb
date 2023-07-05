@@ -19,6 +19,7 @@ module Uffizzi
     desc 'login [OPTIONS]', 'Login to Uffizzi to view and manage your previews'
     method_option :server, required: false, aliases: '-s'
     method_option :username, required: false, aliases: '-u'
+    method_option :email, required: false, aliases: '-e'
     def login
       require_relative 'cli/login'
       Login.new(options).run
@@ -39,6 +40,10 @@ module Uffizzi
       Logout.new(options).run
     end
 
+    desc 'account', 'account'
+    require_relative 'cli/account'
+    subcommand 'account', Cli::Account
+
     desc 'project', 'project'
     require_relative 'cli/project'
     subcommand 'project', Cli::Project
@@ -51,6 +56,10 @@ module Uffizzi
     method_option :project, required: false
     require_relative 'cli/preview'
     subcommand 'preview', Cli::Preview
+
+    desc 'cluster', 'cluster'
+    require_relative 'cli/cluster'
+    subcommand 'cluster', Cli::Cluster
 
     desc 'connect', 'connect'
     require_relative 'cli/connect'
@@ -107,6 +116,8 @@ module Uffizzi
 
       def handle_repl_exceptions(exception)
         case exception
+        when Thor::Error
+          raise exception
         when Interrupt
           raise Uffizzi::CliError.new('The command was interrupted')
         when StandardError

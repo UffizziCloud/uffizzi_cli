@@ -3,6 +3,9 @@
 require 'io/console'
 require 'tty-spinner'
 require 'sentry-ruby'
+require 'active_support'
+require 'active_support/core_ext/hash/indifferent_access'
+require 'active_support/core_ext/object/blank'
 
 require 'thor'
 require 'uffizzi/error'
@@ -12,6 +15,7 @@ require 'uffizzi/version'
 require 'uffizzi/clients/api/api_client'
 require 'uffizzi/clients/api/api_routes'
 require 'uffizzi/config_file'
+require 'uffizzi/token'
 require_relative '../config/uffizzi'
 
 Sentry.init do |config|
