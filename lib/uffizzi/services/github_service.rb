@@ -16,6 +16,8 @@ class GithubService
 
     def github_actions_exists?
       return unless ENV['GITHUB_ACTIONS']
+
+      true
     end
   end
 end
