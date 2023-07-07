@@ -1,0 +1,66 @@
+name: Create Linux release
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+env:
+  RELEASE_VERSION: ${GITHUB_REF#refs/*/}
+jobs:
+  make:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: 'Install Linux dependencies'
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential squashfs-tools curl gcc make bison
+      - name: 'Install MacOs dependencies'
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install squashfs
+      - uses: actions/checkout@v2
+      - name: 'Set up Ruby'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0.3'
+      - name: 'Create Linux Bin'
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          wget https://github.com/pmq20/ruby-packer/releases/download/linux-x64/rubyc
+          chmod +x ./rubyc
+          ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+      - name: 'Create Darwin Bin'
+        if: matrix.os == 'macos-latest'
+        run: |
+          wget https://github.com/pmq20/ruby-packer/releases/download/darwin-x64/rubyc
+          chmod +x ./rubyc
+          ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with: 
+          name: uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+          path: uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with: 
+          name: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+          path: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+  create_release:
+    runs-on: ubuntu-latest
+    needs:
+      - make
+    steps:
+      - name: Generate release notes
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: v${{ steps.fetch-version.outputs.version }}
+          name: ${{ env.RELEASE_VERSION }}
+          files: |
+            uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+            uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+          generate_release_notes: true

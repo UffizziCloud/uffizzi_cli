@@ -127,12 +127,14 @@ GEM
     zeitwerk (2.5.1)
 
 PLATFORMS
+  aarch64-linux
   aarch64-linux-musl
+  x86_64-linux
   x86_64-linux-musl
 
 DEPENDENCIES
   bump
-  bundler (~> 2.2)
+  bundler (~> 2.1)
   byebug
   deepsort (~> 0.4.5)
   factory_bot
@@ -152,4 +154,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.2.32
+   2.4.16
