@@ -28,7 +28,7 @@ LINUX_TRAVELING_RUBY_VERSION = '20230605-2.6.10'
 MACOS_TRAVELING_RUBY_VERSION = '20230605-3.0.6'
 
 desc 'Package your app'
-task package: ['package:linux:x86_64', 'package:osx:arm64', 'package:osx:x86_64']
+task package: ['package:linux:x86_64', 'package:linux:arm64', 'package:osx:arm64', 'package:osx:x86_64']
 
 # rubocop:disable Naming/VariableNumber
 namespace :package do
@@ -36,6 +36,10 @@ namespace :package do
     desc 'Package your app for Linux x86_64'
     task x86_64: [:bundle_install, "packaging/traveling-ruby-#{LINUX_TRAVELING_RUBY_VERSION}-linux-x86_64.tar.gz"] do
       create_package('linux-x86_64', LINUX_TRAVELING_RUBY_VERSION)
+    end
+
+    task arm64: [:bundle_install, "packaging/traveling-ruby-#{LINUX_TRAVELING_RUBY_VERSION}-linux-arm64.tar.gz"] do
+      create_package('linux-arm64', LINUX_TRAVELING_RUBY_VERSION)
     end
   end
 
@@ -60,7 +64,7 @@ namespace :package do
     sh 'cp lib/uffizzi/version.rb packaging/tmp/lib/uffizzi/version.rb'
     sh 'cp Gemfile uffizzi.gemspec Gemfile.lock packaging/tmp/'
     Bundler.with_clean_env do
-      sh 'cd packaging/tmp && env BUNDLE_IGNORE_CONFIG=0 bundle install --path ../vendor --without development'
+      sh 'cd packaging/tmp && env BUNDLE_IGNORE_CONFIG=1 bundle install --path ../vendor --without development'
     end
     sh 'rm -rf packaging/tmp'
     sh 'rm -f packaging/vendor/*/*/cache/*'
@@ -69,6 +73,10 @@ end
 
 file "packaging/traveling-ruby-#{LINUX_TRAVELING_RUBY_VERSION}-linux-x86_64.tar.gz" do
   download_runtime('linux-x86_64', LINUX_TRAVELING_RUBY_VERSION)
+end
+
+file "packaging/traveling-ruby-#{LINUX_TRAVELING_RUBY_VERSION}-linux-arm64.tar.gz" do
+  download_runtime('linux-arm64', LINUX_TRAVELING_RUBY_VERSION)
 end
 
 file "packaging/traveling-ruby-#{MACOS_TRAVELING_RUBY_VERSION}-osx-x86_64.tar.gz" do
