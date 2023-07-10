@@ -80,7 +80,7 @@ module Uffizzi
         return Common.show_manual(filename(args)) if show_help?(args, opts)
 
         super
-      rescue StandardError => e
+      rescue Interrupt, StandardError => e
         ci_workflow? ? handle_ci_exceptions(e) : handle_repl_exceptions(e)
       end
 
