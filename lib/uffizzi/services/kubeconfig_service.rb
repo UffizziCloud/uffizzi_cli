@@ -43,7 +43,7 @@ class KubeconfigService
     end
 
     def default_path
-      ENV['KUBECONFIG'] || DEFAULT_KUBECONFIG_PATH
+      kubeconfig_env_path || DEFAULT_KUBECONFIG_PATH
     end
 
     private
@@ -77,6 +77,13 @@ class KubeconfigService
       kubeconfig['contexts']
         .detect { |c| c['name'] == kubeconfig['current-context'] }
         .dig('context', 'cluster')
+    end
+
+    def kubeconfig_env_path
+      file_paths = ENV['KUBECONFIG']
+      return if file_paths.blank?
+
+      file_paths.split(':').first
     end
   end
 end
