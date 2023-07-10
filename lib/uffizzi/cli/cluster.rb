@@ -109,7 +109,7 @@ module Uffizzi
 
       spinner = TTY::Spinner.new("[:spinner] Creating cluster #{cluster_name}...", format: :dots)
       spinner.auto_spin
-      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, spinner)
+      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name)
 
       if ClusterService.failed?(cluster_data[:state])
         spinner.error
