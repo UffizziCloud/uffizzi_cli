@@ -107,9 +107,12 @@ module Uffizzi
 
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
 
-      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name)
+      spinner = TTY::Spinner.new("[:spinner] Creating cluster #{cluster_name}...", format: :dots)
+      spinner.auto_spin
+      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, spinner)
 
       if ClusterService.failed?(cluster_data[:state])
+        spinner.error
         Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")
       end
 

@@ -24,10 +24,7 @@ class ClusterService
       [CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE, CLUSTER_STATE_FAILED].include?(cluster_state)
     end
 
-    def wait_cluster_deploy(project_slug, cluster_name)
-      spinner = TTY::Spinner.new("[:spinner] Creating cluster #{cluster_name}...", format: :dots)
-      spinner.auto_spin
-
+    def wait_cluster_deploy(project_slug, cluster_name, spinner)
       loop do
         response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, cluster_name)
         return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
