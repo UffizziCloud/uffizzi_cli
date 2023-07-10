@@ -1,11 +1,16 @@
 name: Uffizzi CLI Release
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  release:
+    types: [created, published]
+
 jobs:
+  code-quality:
+    name: Test and Lint
+    uses: ./.github/workflows/code-quality.yml
   release:
     runs-on: ubuntu-latest
+    needs:
+      - code-quality
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -29,3 +34,10 @@ jobs:
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+  notify:
+    needs:
+      - code-quality
+      - build-and-push-some-branches
+    if: ${{ always() }}
+    uses: ./.github/workflows/notify.yml
+    secrets: inherit
