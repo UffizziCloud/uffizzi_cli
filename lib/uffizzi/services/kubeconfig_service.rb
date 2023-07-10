@@ -4,7 +4,16 @@ require 'uffizzi/clients/api/api_client'
 require 'psych'
 
 class KubeconfigService
+  class Invalid < StandardError
+    def initialize(file_path)
+      msg = "Kubeconfig is invalid by path '#{file_path}'"
+
+      super(msg)
+    end
+  end
+
   DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
+  KUBECONFIG_GENERAL_KEYS = ['apiVersion', 'clusters', 'contexts', 'current-context', 'kind', 'users'].freeze
 
   class << self
     include ApiClient
@@ -35,6 +44,11 @@ class KubeconfigService
     def save_to_filepath(filepath, kubeconfig)
       real_file_path = File.expand_path(filepath)
       target_kubeconfig = File.exist?(real_file_path) ? Psych.safe_load(File.read(real_file_path)) : nil
+
+      if target_kubeconfig.present? && !valid_kubeconfig?(target_kubeconfig)
+        raise Invalid.new(filepath)
+      end
+
       new_kubeconfig = block_given? ? yield(target_kubeconfig) : merge(target_kubeconfig, kubeconfig)
 
       dir_path = File.dirname(real_file_path)
@@ -84,6 +98,14 @@ class KubeconfigService
       return if file_paths.blank?
 
       file_paths.split(':').first
+    end
+
+    def valid_kubeconfig?(data)
+      return false unless data.is_a?(Hash)
+
+      data_keys = data.keys.map(&:to_s)
+
+      KUBECONFIG_GENERAL_KEYS.all? { |k| data_keys.include?(k) }
     end
   end
 end
