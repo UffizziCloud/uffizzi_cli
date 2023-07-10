@@ -116,6 +116,7 @@ module Uffizzi
         Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")
       end
 
+      spinner.success
       handle_succeed_create_response(cluster_data, options[:kubeconfig])
     rescue SystemExit, Interrupt, SocketError
       handle_interruption(cluster_data, ConfigFile.read_option(:server), project_slug)
