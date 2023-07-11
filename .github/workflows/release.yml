@@ -1,7 +1,7 @@
 name: Uffizzi CLI Release
 on:
   release:
-    types: [created, published]
+    types: [published]
 
 jobs:
   code-quality:
