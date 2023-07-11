@@ -41,13 +41,12 @@ module Uffizzi
       run('delete', cluster_name: name)
     end
 
-    method_option :name, type: :string, required: true, aliases: '-n'
     method_option :kubeconfig, type: :string, required: false, aliases: '-k'
     method_option :print, type: :boolean, required: false, aliases: '-p'
     method_option :quiet, type: :boolean, required: false, aliases: '-q'
     desc 'update-kubeconfig', 'Udpate the your kubeconfig'
-    def update_kubeconfig
-      run('update-kubeconfig')
+    def update_kubeconfig(name)
+      run('update-kubeconfig', cluster_name: name)
     end
 
     private
@@ -69,7 +68,7 @@ module Uffizzi
       when 'delete'
         handle_delete_command(project_slug, command_args)
       when 'update-kubeconfig'
-        handle_update_kubeconfig_command(project_slug)
+        handle_update_kubeconfig_command(project_slug, command_args)
       end
     end
 
@@ -143,8 +142,8 @@ module Uffizzi
       end
     end
 
-    def handle_update_kubeconfig_command(project_slug)
-      cluster_name = options[:name]
+    def handle_update_kubeconfig_command(project_slug, command_args)
+      cluster_name = command_args[:cluster_name]
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
       response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, cluster_name)
       return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
@@ -228,14 +227,17 @@ module Uffizzi
     end
 
     def handle_succeed_describe_response(response)
-      rendered_options = [:name, :state]
-      cluster = response[:body][:cluster].slice(*rendered_options)
+      map_options_to_rendered_options = { name: :name, state: :status, created_at: :created }
+      cluster_data = response[:body][:cluster].slice(*map_options_to_rendered_options.keys)
+      prepared_cluster_data = cluster_data.transform_keys { |orig_key| map_options_to_rendered_options[orig_key]  }
 
-      if Uffizzi.ui.output_format.nil?
-        cluster = cluster.map { |k, v| "- #{k.to_s.capitalize}: #{v}" }.join("\n").strip
-      end
+      rendered_cluster_data = if Uffizzi.ui.output_format.nil?
+                                prepared_cluster_data.map { |k, v| "- #{k.to_s.upcase}: #{v}" }.join("\n").strip
+                              else
+                                prepared_cluster_data
+                              end
 
-      Uffizzi.ui.say(cluster)
+      Uffizzi.ui.say(rendered_cluster_data)
     end
 
     def handle_succeed_create_response(cluster_data, kubeconfig_path)
