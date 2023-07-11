@@ -37,7 +37,6 @@ jobs:
   notify:
     needs:
       - code-quality
-      - build-and-push-some-branches
     if: ${{ always() }}
     uses: ./.github/workflows/notify.yml
     secrets: inherit
