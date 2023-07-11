@@ -227,7 +227,7 @@ module Uffizzi
     end
 
     def handle_succeed_describe_response(response)
-      map_options_to_rendered_options = { name: :name, state: :status, created_at: :created }
+      map_options_to_rendered_options = { name: :name, state: :status, created_at: :created, host: :url }
       cluster_data = response[:body][:cluster].slice(*map_options_to_rendered_options.keys)
       prepared_cluster_data = cluster_data.transform_keys { |orig_key| map_options_to_rendered_options[orig_key]  }
 
