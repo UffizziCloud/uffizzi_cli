@@ -30,6 +30,7 @@ class ClusterService
         return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
 
         cluster_data = response.dig(:body, :cluster)
+
         return cluster_data unless deploying?(cluster_data[:state])
 
         sleep(5)

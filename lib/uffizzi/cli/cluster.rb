@@ -107,12 +107,16 @@ module Uffizzi
 
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
 
+      spinner = TTY::Spinner.new("[:spinner] Creating cluster #{cluster_name}...", format: :dots)
+      spinner.auto_spin
       cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name)
 
       if ClusterService.failed?(cluster_data[:state])
+        spinner.error
         Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")
       end
 
+      spinner.success
       handle_succeed_create_response(cluster_data, options[:kubeconfig])
     rescue SystemExit, Interrupt, SocketError
       handle_interruption(cluster_data, ConfigFile.read_option(:server), project_slug)

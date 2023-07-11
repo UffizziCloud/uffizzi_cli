@@ -4,56 +4,18 @@ on:
     branches:
       - qa
       - develop
-      - main
   pull_request:
     types: [opened,synchronize,reopened]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.0.2
-          bundler-cache: true
-      - name: Run rubocop
-        run: bundle exec rubocop
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.0.2
-          bundler-cache: true
-      - name: Run tests
-        run: bundle exec rake test
-  test-installation:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.0.2
-          bundler-cache: false
-      - name: Build Image
-        uses: docker/build-push-action@v2
-        with:
-          tags: uffizzi/cli:test-install
-          platforms: linux/amd64
-      - name: Display uffizzi-cli version
-        run: docker run --rm uffizzi/cli:test-install version
+  code-quality:
+    name: Test and Lint
+    uses: ./.github/workflows/code-quality.yml
   build-and-push-some-branches:
     runs-on: ubuntu-latest
     needs:
-      - lint
-      - test
-      - test-installation
-    if: ${{ github.ref_name == 'main' || github.ref_name == 'qa' || github.ref_name == 'develop' || github.event_name == 'pull_request' }}
+      - code-quality
+    if: ${{ github.ref_name == 'qa' || github.event_name == 'pull_request' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -93,17 +55,8 @@ jobs:
           repository: uffizzi/cli
   notify:
     needs:
-      - lint
-      - test
+      - code-quality
       - build-and-push-some-branches
     if: ${{ always() }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: technote-space/workflow-conclusion-action@v2
-      - uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ env.WORKFLOW_CONCLUSION }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: ${{ (github.ref_name == 'main' && env.WORKFLOW_CONCLUSION == 'success') || ((github.ref_name == 'main' || github.ref_name == 'qa' || github.ref_name == 'develop') && env.WORKFLOW_CONCLUSION == 'failure') }}
+    uses: ./.github/workflows/notify.yml
+    secrets: inherit
