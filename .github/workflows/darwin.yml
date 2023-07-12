@@ -1,0 +1,32 @@
+name: Create and Upload Darwin Binary
+on:
+  push:
+    branches: [ feature/237_create_portable_binaries_2 ]
+  pull_request:
+    branches: [ feature/237_create_portable_binaries_2 ]
+jobs:
+  make:
+    strategy:
+      matrix:
+        os: [macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: "Install dependencies"
+        run: |
+          brew install squashfs-tools
+      - uses: actions/checkout@v2
+      - name: "Set up Ruby"
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0.3'
+      - name: "Create Darwin Bin"
+        run: |
+          wget https://github.com/pmq20/ruby-packer/releases/download/darwin-x64/rubyc
+          chmod +x ./rubyc
+          ./rubyc --openssl-dir=/etc/ssl ./uffizzi
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with: 
+          name: package archive
+          path: a.out
