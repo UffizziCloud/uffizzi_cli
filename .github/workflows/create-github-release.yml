@@ -74,6 +74,6 @@ jobs:
           tag_name: ${{ env.RELEASE_VERSION }}
           name: ${{ env.RELEASE_VERSION }}
           files: |
-            ~/download/uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
-            ~/download/uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+            /home/runner/download/uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+            /home/runner/download/uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
           generate_release_notes: true
