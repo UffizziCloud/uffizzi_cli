@@ -79,6 +79,8 @@ jobs:
         with:
           name: world
           path: world.txt
+      - name: Check downloaded file
+        run: cat ${{ github.workspace }}/world.txt 
       - name: Generate release notes
         uses: softprops/action-gh-release@v1
         with:
