@@ -78,7 +78,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: world
-          path: world.txt
+          path: ${{ github.workspace }}
       - name: Check downloaded file
         run: cat ${{ github.workspace }}/world.txt 
       - name: Generate release notes
