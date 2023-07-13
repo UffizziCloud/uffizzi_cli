@@ -78,7 +78,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: world
-          path: ~/download/world.txt
+          path: world.txt
       - name: Generate release notes
         uses: softprops/action-gh-release@v1
         with:
@@ -86,7 +86,7 @@ jobs:
           tag_name: ${{ env.RELEASE_VERSION }}
           name: ${{ env.RELEASE_VERSION }}
           files: |
-            /home/runner/download/world.txt
+            ${{ github.workspace }}/world.txt
           # files: |
           #   /home/runner/download/uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
           #   /home/runner/download/uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
