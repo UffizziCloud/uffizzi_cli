@@ -4,8 +4,8 @@ on:
     branches:
       - qa
       - develop
-  pull_request:
-    types: [opened,synchronize,reopened]
+  # pull_request:
+  #   types: [opened,synchronize,reopened]
 
 concurrency:
   group: ${{ github.ref }}

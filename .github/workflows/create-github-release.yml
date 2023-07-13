@@ -6,7 +6,7 @@ on:
     branches:
       - feature/237_create_portable_binaries_2
 env:
-  RELEASE_VERSION: TEST-4
+  RELEASE_VERSION: TEST-5
   # RELEASE_VERSION: ${GITHUB_REF#refs/*/}
 jobs:
   make:
@@ -16,57 +16,69 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
-      - name: 'Install Linux dependencies'
-        if: matrix.os == 'ubuntu-20.04'
-        run: |
-          sudo apt update
-          sudo apt install -y build-essential squashfs-tools curl gcc make bison
-      - name: 'Install MacOs dependencies'
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew install squashfs
-      - uses: actions/checkout@v2
-      - name: 'Set up Ruby'
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.0.3'
-      - name: 'Create Linux Bin'
-        if: matrix.os == 'ubuntu-20.04'
-        run: |
-          wget https://github.com/pmq20/ruby-packer/releases/download/linux-x64/rubyc
-          chmod +x ./rubyc
-          ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
-      - name: 'Create Darwin Bin'
-        if: matrix.os == 'macos-latest'
-        run: |
-          wget https://github.com/pmq20/ruby-packer/releases/download/darwin-x64/rubyc
-          chmod +x ./rubyc
-          ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+      # - name: 'Install Linux dependencies'
+      #   if: matrix.os == 'ubuntu-20.04'
+      #   run: |
+      #     sudo apt update
+      #     sudo apt install -y build-essential squashfs-tools curl gcc make bison
+      # - name: 'Install MacOs dependencies'
+      #   if: matrix.os == 'macos-latest'
+      #   run: |
+      #     brew install squashfs
+      # - uses: actions/checkout@v2
+      # - name: 'Set up Ruby'
+      #   uses: ruby/setup-ruby@v1
+      #   with:
+      #     ruby-version: '3.0.3'
+      # - name: 'Create Linux Bin'
+      #   if: matrix.os == 'ubuntu-20.04'
+      #   run: |
+      #     wget https://github.com/pmq20/ruby-packer/releases/download/linux-x64/rubyc
+      #     chmod +x ./rubyc
+      #     ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+      # - name: 'Create Darwin Bin'
+      #   if: matrix.os == 'macos-latest'
+      #   run: |
+      #     wget https://github.com/pmq20/ruby-packer/releases/download/darwin-x64/rubyc
+      #     chmod +x ./rubyc
+      #     ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v2
+      #   with: 
+      #     name: uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+      #     path: uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v2
+      #   with: 
+      #     name: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+      #     path: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+      - name: Create Test File
+        run: echo hello > world.txt
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with: 
-          name: uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
-          path: uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
-        with: 
-          name: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
-          path: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+          name: world
+          path: world.txt
   create_release:
     runs-on: ubuntu-latest
     needs:
       - make
     steps:
+      # - name: Download Linux Bin
+      #   uses: actions/download-artifact@master
+      #   with:
+      #     name: uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+      #     path: ~/download/uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+      # - name: Download Macos Bin
+      #   uses: actions/download-artifact@master
+      #   with:
+      #     name: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+      #     path: ~/download/uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
       - name: Download Linux Bin
         uses: actions/download-artifact@master
         with:
-          name: uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
-          path: uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
-      - name: Download Macos Bin
-        uses: actions/download-artifact@master
-        with:
-          name: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
-          path: ~/download/uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+          name: world
+          path: ~/download/world.txt
       - name: Generate release notes
         uses: softprops/action-gh-release@v1
         with:
