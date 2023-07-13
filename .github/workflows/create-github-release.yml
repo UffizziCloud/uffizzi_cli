@@ -3,11 +3,10 @@ on:
   push:
     tags:
       - 'v*.*.*'
-    branches:
-      - feature/237_create_portable_binaries_2
+
 env:
-  RELEASE_VERSION: TEST-6
-  # RELEASE_VERSION: ${GITHUB_REF#refs/*/}
+  RELEASE_VERSION: ${GITHUB_REF#refs/*/}
+
 jobs:
   make:
     strategy:
