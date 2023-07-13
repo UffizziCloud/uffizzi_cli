@@ -3,8 +3,11 @@ on:
   push:
     tags:
       - 'v*.*.*'
+    branches:
+      - feature/237_create_portable_binaries_2
 env:
-  RELEASE_VERSION: ${GITHUB_REF#refs/*/}
+  RELEASE_VERSION: TEST-4
+  # RELEASE_VERSION: ${GITHUB_REF#refs/*/}
 jobs:
   make:
     strategy:
@@ -63,7 +66,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
-          path: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+          path: ~/download/uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
       - name: Generate release notes
         uses: softprops/action-gh-release@v1
         with:
@@ -71,6 +74,6 @@ jobs:
           tag_name: ${{ env.RELEASE_VERSION }}
           name: ${{ env.RELEASE_VERSION }}
           files: |
-            uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
-            uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+            ~/download/uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+            ~/download/uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
           generate_release_notes: true
