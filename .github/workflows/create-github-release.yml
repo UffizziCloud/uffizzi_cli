@@ -3,6 +3,8 @@ on:
   push:
     tags:
       - 'v*.*.*'
+    branches:
+      - feature/237_create_portable_binaries_2
 env:
   RELEASE_VERSION: ${GITHUB_REF#refs/*/}
 jobs:
@@ -54,6 +56,16 @@ jobs:
     needs:
       - make
     steps:
+      - name: Download Linux Bin
+        uses: actions/download-artifact@master
+        with:
+          name: uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+          path: uffizzi-linux-x86_64-${{ env.RELEASE_VERSION }}
+      - name: Download Macos Bin
+        uses: actions/download-artifact@master
+        with:
+          name: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
+          path: uffizzi-darwin-x86_64-${{ env.RELEASE_VERSION }}
       - name: Generate release notes
         uses: softprops/action-gh-release@v1
         with:
