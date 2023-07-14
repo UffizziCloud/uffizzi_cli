@@ -173,7 +173,7 @@ module Uffizzi
       account = project[:account]
       return ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(account[:id], account[:name])) if account
 
-      # Legacy response
+      # For core versions < core_v2.2.3
       ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(project[:account_id]))
     end
   end
