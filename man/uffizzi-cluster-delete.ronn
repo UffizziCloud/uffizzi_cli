@@ -1,0 +1,24 @@
+uffizzi-cluster-delete - delete a cluster
+================================================================
+
+## SYNOPSIS
+    uffizzi cluster delete [CLUSTER_NAME]
+
+## DESCRIPTION
+    Deletes a cluster with the given cluster name.
+
+    This command can fail for the following reasons:
+        - The cluster specified does not exist.
+        - The cluster specified belongs to a different project.
+
+    For more information on Uffizzi clusters, see:
+    https://github.com/UffizziCloud/uffizzi_cli
+
+## POSITIONAL ARGUMENTS
+    [CLUSTER_NAME]
+        Name for the cluster you want to delete.
+
+## EXAMPLES
+    The following command deletes the cluster with CLUSTER_NAME my-cluster:
+
+        $ uffizzi cluster delete my-cluster

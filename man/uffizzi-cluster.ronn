@@ -1,0 +1,32 @@
+uffizzi-cluster - manage clusters
+================================================================
+
+## SYNOPSIS
+    uffizzi cluster COMMAND
+
+## DESCRIPTION
+    Manage Uffizzi clusters
+
+    For more information on Uffizzi clusters, see:
+    https://github.com/UffizziCloud/uffizzi_cli
+
+## COMMANDS
+    COMMAND is one of the following:
+
+     create
+        Create a cluster
+
+     delete
+        Delete a cluster
+
+     describe
+        Display details of a cluster
+
+     list
+        List all clusters
+
+     update-kubeconfig
+        Update kubeconfig file
+
+##
+Run 'uffizzi cluster COMMAND --help' for more information on a command.
