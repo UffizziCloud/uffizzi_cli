@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "CONFIG" "" "May 2022" ""
+.TH "CONFIG" "" "February 2023" ""
 .SH "NAME"
 \fBconfig\fR \- configure the Uffizzi command\-line interface (CLI)
 .SH "SYNOPSIS"

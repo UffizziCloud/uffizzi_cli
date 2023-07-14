@@ -1,0 +1,32 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-CLUSTER\-DELETE" "" "July 2023" ""
+.SH "NAME"
+\fBuffizzi\-cluster\-delete\fR \- delete a cluster
+.SH "SYNOPSIS"
+.nf
+uffizzi cluster delete [CLUSTER_NAME]
+.fi
+.SH "DESCRIPTION"
+.nf
+Deletes a cluster with the given cluster name\.
+
+This command can fail for the following reasons:
+    \- The cluster specified does not exist\.
+    \- The cluster specified belongs to a different project\.
+
+For more information on Uffizzi clusters, see:
+https://github\.com/UffizziCloud/uffizzi_cli
+.fi
+.SH "POSITIONAL ARGUMENTS"
+.nf
+[CLUSTER_NAME]
+    Name for the cluster you want to delete\.
+.fi
+.SH "EXAMPLES"
+.nf
+The following command deletes the cluster with CLUSTER_NAME my\-cluster:
+
+    $ uffizzi cluster delete my\-cluster
+.fi
+

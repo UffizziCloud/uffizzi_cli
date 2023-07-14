@@ -16,7 +16,6 @@ module Uffizzi
     include ApiClient
 
     desc 'list', 'List all clusters'
-    method_option :filter, required: false, type: :string, aliases: '-f'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def list
       run('list')
@@ -46,7 +45,7 @@ module Uffizzi
     method_option :kubeconfig, type: :string, required: false, aliases: '-k'
     method_option :print, type: :boolean, required: false, aliases: '-p'
     method_option :quiet, type: :boolean, required: false, aliases: '-q'
-    desc 'update-kubeconfig', 'Udpate the your kubeconfig'
+    desc 'update-kubeconfig', 'Udpate your kubeconfig'
     def update_kubeconfig(name)
       run('update-kubeconfig', cluster_name: name)
     end
@@ -75,17 +74,7 @@ module Uffizzi
     end
 
     def handle_list_command(project_slug)
-      filter = options[:filter]
-      parsed_filter = if filter.nil?
-        filter
-      else
-        {
-          q: {
-            name_equal: filter,
-          },
-        }
-      end
-      response = get_clusters(ConfigFile.read_option(:server), project_slug, parsed_filter)
+      response = get_clusters(ConfigFile.read_option(:server), project_slug)
 
       if ResponseHelper.ok?(response)
         handle_succeed_list_response(response)

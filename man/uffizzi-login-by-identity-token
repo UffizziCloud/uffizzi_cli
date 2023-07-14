@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-LOGIN\-BY\-IDENTITY\-TOKEN" "" "August 2022" ""
+.TH "UFFIZZI\-LOGIN\-BY\-IDENTITY\-TOKEN" "" "February 2023" ""
 .SH "NAME"
 \fBuffizzi\-login\-by\-identity\-token\fR \- login to Uffizzi using a OIDC token provided by a CI/CD pipeline
 .SH "SYNOPSIS"
