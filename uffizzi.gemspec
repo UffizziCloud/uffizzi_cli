@@ -38,7 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'tty-spinner'
 
   spec.add_development_dependency 'bump'
-  spec.add_development_dependency 'bundler', '~> 2.2'
+  spec.add_development_dependency 'bundler', '~> 2.1'
   spec.add_development_dependency 'byebug'
   spec.add_development_dependency 'deepsort', '~> 0.4.5'
   spec.add_development_dependency 'factory_bot'
