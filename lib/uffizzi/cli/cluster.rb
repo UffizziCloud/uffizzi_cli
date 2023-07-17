@@ -227,9 +227,13 @@ module Uffizzi
     end
 
     def handle_succeed_describe_response(response)
-      map_options_to_rendered_options = { name: :name, state: :status, created_at: :created, host: :url }
-      cluster_data = response[:body][:cluster].slice(*map_options_to_rendered_options.keys)
-      prepared_cluster_data = cluster_data.transform_keys { |orig_key| map_options_to_rendered_options[orig_key] }
+      cluster_data = response[:body][:cluster]
+      prepared_cluster_data = {
+        name: cluster_data[:name],
+        status: cluster_data[:state],
+        created: Time.strptime(cluster_data[:created_at], '%Y-%m-%dT%H-%M-%S.%N').strftime('%a %b %m %H-%M-%S %Y'),
+        url: cluster_data[:host],
+      }
 
       rendered_cluster_data = if Uffizzi.ui.output_format.nil?
         prepared_cluster_data.map { |k, v| "- #{k.to_s.upcase}: #{v}" }.join("\n").strip
