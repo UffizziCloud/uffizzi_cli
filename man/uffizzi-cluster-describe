@@ -9,7 +9,7 @@ uffizzi cluster describe [CLUSTER_NAME] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
 .fi
 .SH "DESCRIPTION"
 .nf
-Shows metadata for a project given a valid cluster NAME\.
+Shows metadata for a cluster given a valid cluster NAME
 
 This command can fail for the following reasons:
     \- The cluster specified does not exist\.

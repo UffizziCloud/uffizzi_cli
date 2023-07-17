@@ -5,7 +5,7 @@ uffizzi-cluster-describe - show metadata for a cluster
     uffizzi cluster describe [CLUSTER_NAME] [UFFIZZI_WIDE_FLAG ...]
 
 ## DESCRIPTION
-    Shows metadata for a project given a valid cluster NAME.
+    Shows metadata for a cluster given a valid cluster NAME
 
     This command can fail for the following reasons:
         - The cluster specified does not exist.
