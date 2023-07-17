@@ -1,7 +1,14 @@
 {
   "projects": [
     {
-      "slug": "project_slug_1"
+      "slug": "project_slug_1",
+      "account_id": 1,
+      "account": {
+        "id": 1,
+        "kind": "organizational",
+        "name": "uffizzi",
+        "state": "trial"
+      }
     }
   ]
 }

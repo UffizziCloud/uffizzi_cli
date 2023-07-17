@@ -158,7 +158,7 @@ module Uffizzi
     def handle_create_success_response(response)
       project = response[:body][:project]
       ConfigFile.write_option(:project, project[:slug])
-      Uffizzi.ui.say("Project #{project[:name]} was successfully created")
+      Uffizzi.ui.say("Project '#{project[:name]}' with slug '#{project[:slug]}' was successfully created")
     end
 
     def print_projects(projects)
@@ -170,6 +170,10 @@ module Uffizzi
 
     def set_default_project(project)
       ConfigFile.write_option(:project, project[:slug])
+      account = project[:account]
+      return ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(account[:id], account[:name])) if account
+
+      # For core versions < core_v2.2.3
       ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(project[:account_id]))
     end
   end

@@ -97,7 +97,9 @@ class ProjectsTest < Minitest::Test
 
     @project.set_default(project_slug)
 
+    account_id = body[:project][:account][:id]
     assert_equal(project_slug, Uffizzi::ConfigFile.read_option(:project))
+    assert_equal(account_id, Uffizzi::ConfigFile.read_option(:account)[:id])
     assert_equal('Default project has been updated.', Uffizzi.ui.last_message)
     assert_requested(stubbed_uffizzi_projects)
   end

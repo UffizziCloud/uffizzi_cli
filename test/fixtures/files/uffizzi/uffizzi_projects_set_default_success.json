@@ -1,7 +1,16 @@
 {
   "project":
     {
-      "account_id": 1,
-      "slug": "project_slug_1"
+      "name": "default",
+      "slug": "project_slug_1",
+      "description": "",
+      "deployments": [],
+      "secrets": [],
+      "account": {
+        "id": 1,
+        "kind": "organizational",
+        "name": "uffizzi",
+        "state": "trial"
+      }
     }
 }
