@@ -1,13 +1,15 @@
-name: Uffizzi CLI Release
+name: Uffizzi CLI Image Release
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*.*.*'
 
 jobs:
   code-quality:
     name: Test and Lint
     uses: ./.github/workflows/code-quality.yml
   release:
+    name: Build and publish image
     runs-on: ubuntu-latest
     needs:
       - code-quality
