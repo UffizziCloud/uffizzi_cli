@@ -109,7 +109,7 @@ module ApiRoutes
   end
 
   def cluster_kubeconfig_uri(server, project_slug, cluster_name)
-    "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}/update_kubeconfig"
+    "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}/kubeconfig"
   end
 
   def access_token_url(server, code)
