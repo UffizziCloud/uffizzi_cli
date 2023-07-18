@@ -146,7 +146,7 @@ module Uffizzi
     def handle_update_kubeconfig_command(project_slug)
       cluster_name = options[:name]
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
-      response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, cluster_name)
+      response = get_kubeconfig(Uffizzi::ConfigFile.read_option(:server), project_slug, cluster_name)
       return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
 
       cluster_data = response.dig(:body, :cluster)

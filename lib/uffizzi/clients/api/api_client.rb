@@ -279,6 +279,13 @@ module ApiClient
     build_response(response)
   end
 
+  def get_kubeconfig(server, project_slug, cluster_name)
+    uri = cluster_kubecongig_uri(server, project_slug, cluster_name)
+    response = http_client.make_get_request(uri)
+
+    build_response(response)
+  end
+
   def get_access_token(server, code)
     uri = access_token_url(server, code)
     response = http_client.make_get_request(uri)
