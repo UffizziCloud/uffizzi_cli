@@ -119,7 +119,7 @@ module Uffizzi
       spinner.success
       handle_succeed_create_response(cluster_data, options[:kubeconfig])
     rescue SystemExit, Interrupt, SocketError
-      handle_interruption(cluster_data, ConfigFile.read_option(:server), project_slug)
+      handle_interrupt_creation(cluster_name, ConfigFile.read_option(:server), project_slug)
     end
 
     def handle_describe_command(project_slug, command_args)
@@ -205,12 +205,12 @@ module Uffizzi
       raise Uffizzi::Error.new(e.message)
     end
 
-    def handle_interruption(cluster, server, project_slug)
-      deletion_response = delete_cluster(server, project_slug, cluster[:name])
+    def handle_interrupt_creation(cluster_name, server, project_slug)
+      deletion_response = delete_cluster(server, project_slug, cluster_name)
       deletion_message = if ResponseHelper.no_content?(deletion_response)
-        "The cluster #{cluster[:name]} has been disabled."
+        "The cluster #{cluster_name} has been disabled."
       else
-        "Couldn't disable the cluster #{cluster[:name]} - please disable manually."
+        "Couldn't disable the cluster #{cluster_name} - please disable manually."
       end
 
       raise Uffizzi::Error.new("The cluster creation was interrupted. #{deletion_message}")
