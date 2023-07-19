@@ -4,9 +4,9 @@ require 'uffizzi/clients/api/api_client'
 require 'psych'
 
 class KubeconfigService
-  class Invalid < StandardError
+  class InvalidKubeconfigError < StandardError
     def initialize(file_path)
-      msg = "Kubeconfig is invalid by path '#{file_path}'"
+      msg = "Invalid kubeconfig at path '#{file_path}'"
 
       super(msg)
     end
@@ -46,7 +46,7 @@ class KubeconfigService
       target_kubeconfig = File.exist?(real_file_path) ? Psych.safe_load(File.read(real_file_path)) : nil
 
       if target_kubeconfig.present? && !valid_kubeconfig?(target_kubeconfig)
-        raise Invalid.new(filepath)
+        raise InvalidKubeconfigError.new(filepath)
       end
 
       new_kubeconfig = block_given? ? yield(target_kubeconfig) : merge(target_kubeconfig, kubeconfig)

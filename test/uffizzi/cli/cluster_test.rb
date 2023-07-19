@@ -156,12 +156,12 @@ class ClusterTest < Minitest::Test
 
     File.write(@kubeconfig_path, kubeconfig_from_filesystem)
 
-    error = assert_raises(KubeconfigService::Invalid) do
+    error = assert_raises(KubeconfigService::InvalidKubeconfigError) do
       @cluster.update_kubeconfig
     end
 
     assert_requested(stubbed_uffizzi_cluster_get_request)
-    assert_match('is invalid', error.message)
+    assert_match('Invalid kubeconfig', error.message)
   end
 
   def test_describe_cluster
