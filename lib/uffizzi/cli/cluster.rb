@@ -231,7 +231,7 @@ module Uffizzi
       prepared_cluster_data = {
         name: cluster_data[:name],
         status: cluster_data[:state],
-        created: Time.strptime(cluster_data[:created_at], '%Y-%m-%dT%H-%M-%S.%N').strftime('%a %b %m %H-%M-%S %Y'),
+        created: Time.strptime(cluster_data[:created_at], '%Y-%m-%dT%H:%M:%S.%N').strftime('%a %b %d %H:%M:%S %Y'),
         url: cluster_data[:host],
       }
 
