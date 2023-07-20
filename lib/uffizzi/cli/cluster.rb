@@ -4,6 +4,7 @@ require 'psych'
 require 'faker'
 require 'uffizzi'
 require 'uffizzi/auth_helper'
+require 'uffizzi/helpers/config_helper'
 require 'uffizzi/services/preview_service'
 require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
@@ -37,6 +38,7 @@ module Uffizzi
     end
 
     desc 'delete [NAME]', 'Delete a cluster'
+    method_option :'delete-config', required: false, type: :boolean, aliases: '-dc'
     def delete(name)
       run('delete', cluster_name: name)
     end
@@ -122,17 +124,45 @@ module Uffizzi
     end
 
     def handle_describe_command(project_slug, command_args)
-      response = get_cluster(ConfigFile.read_option(:server), project_slug, command_args[:cluster_name])
+      cluster_data = fetch_cluster_data(project_slug, command_args[:cluster_name])
 
-      if ResponseHelper.ok?(response)
-        handle_succeed_describe_response(response)
-      else
-        ResponseHelper.handle_failed_response(response)
-      end
+      handle_succeed_describe(cluster_data)
     end
 
     def handle_delete_command(project_slug, command_args)
       cluster_name = command_args[:cluster_name]
+      is_delete_kubeconfig = options[:'delete-config']
+
+      return handle_delete_cluster(project_slug, cluster_name) unless is_delete_kubeconfig
+
+      cluster_data = fetch_cluster_data(project_slug, cluster_name)
+      kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
+
+      handle_delete_cluster(project_slug, cluster_name)
+      exclude_kubeconfig(cluster_data[:id], kubeconfig)
+    end
+
+    def exclude_kubeconfig(cluster_id, kubeconfig)
+      cluster_config = Uffizzi::ConfigHelper.cluster_config_by_id(cluster_id)
+      return if cluster_config.nil?
+
+      kubeconfig_path = cluster_config[:kubeconfig_path]
+      ConfigFile.write_option(:clusters, Uffizzi::ConfigHelper.clusters_config_without(cluster_id))
+
+      KubeconfigService.save_to_filepath(kubeconfig_path, kubeconfig) do |kubeconfig_by_path|
+        if kubeconfig_by_path.nil?
+          msg = "Warning: kubeconfig at path #{kubeconfig_path} does not exist"
+          return Uffizzi.ui.say(msg)
+        end
+
+        new_kubeconfig = KubeconfigService.exclude(kubeconfig_by_path, kubeconfig)
+        first_context = KubeconfigService.get_first_context(new_kubeconfig)
+        new_current_context = first_context.present? ? first_context['name'] : nil
+        KubeconfigService.update_current_context(new_kubeconfig, new_current_context)
+      end
+    end
+
+    def handle_delete_cluster(project_slug, cluster_name)
       response = delete_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
 
       if ResponseHelper.no_content?(response)
@@ -145,12 +175,9 @@ module Uffizzi
     def handle_update_kubeconfig_command(project_slug, command_args)
       cluster_name = command_args[:cluster_name]
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
-      response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, cluster_name)
-      return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
+      cluster_data = fetch_cluster_data(project_slug, cluster_name)
 
-      cluster_data = response.dig(:body, :cluster)
-
-      if cluster_data[:kubeconfig].nil? || cluster_data[:kubeconfig].empty?
+      unless cluster_data[:kubeconfig].present?
         say_error_update_kubeconfig(cluster_data)
       end
 
@@ -163,6 +190,8 @@ module Uffizzi
         current_context = KubeconfigService.get_current_context(parsed_kubeconfig)
         KubeconfigService.update_current_context(merged_kubeconfig, current_context)
       end
+
+      update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
 
       return if options[:quiet]
 
@@ -226,8 +255,7 @@ module Uffizzi
       Uffizzi.ui.say(clusters)
     end
 
-    def handle_succeed_describe_response(response)
-      cluster_data = response[:body][:cluster]
+    def handle_succeed_describe(cluster_data)
       prepared_cluster_data = {
         name: cluster_data[:name],
         status: cluster_data[:state],
@@ -245,7 +273,7 @@ module Uffizzi
     end
 
     def handle_succeed_create_response(cluster_data, kubeconfig_path)
-      kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
+      parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
       rendered_cluster_data = render_cluster_data(cluster_data)
 
       Uffizzi.ui.enable_stdout
@@ -253,8 +281,17 @@ module Uffizzi
       Uffizzi.ui.say(rendered_cluster_data) if Uffizzi.ui.output_format
 
       kubeconfig_path = kubeconfig_path.nil? ? KubeconfigService.default_path : kubeconfig_path
-      KubeconfigService.save_to_filepath(kubeconfig_path, kubeconfig)
+      KubeconfigService.save_to_filepath(kubeconfig_path, parsed_kubeconfig) do |kubeconfig_by_path|
+        KubeconfigService.merge(kubeconfig_by_path, parsed_kubeconfig)
+      end
+
+      update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
       GithubService.write_to_github_env(rendered_cluster_data) if GithubService.github_actions_exists?
+    end
+
+    def update_clusters_config(id, params)
+      clusters_config = Uffizzi::ConfigHelper.update_clusters_config_by_id(id, params)
+      ConfigFile.write_option(:clusters, clusters_config)
     end
 
     def render_cluster_data(cluster_data)
@@ -269,6 +306,16 @@ module Uffizzi
 
     def parse_kubeconfig(kubeconfig)
       Psych.safe_load(Base64.decode64(kubeconfig))
+    end
+
+    def fetch_cluster_data(project_slug, cluster_name)
+      response = get_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+
+      if ResponseHelper.ok?(response)
+        response.dig(:body, :cluster)
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
     end
   end
 end

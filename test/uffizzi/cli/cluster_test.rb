@@ -14,7 +14,12 @@ class ClusterTest < Minitest::Test
     ENV['GITHUB_OUTPUT'] = '/tmp/.env'
     ENV['GITHUB_ACTIONS'] = 'true'
     Uffizzi.ui.output_format = nil
-    @kubeconfig_path = './test-kubeconfig.yaml'
+    @kubeconfig_path = "/tmp/test/#{rand(10000)}/test-kubeconfig.yaml"
+  end
+
+  def teardown
+    super
+
     File.delete(@kubeconfig_path) if File.exist?(@kubeconfig_path)
   end
 
@@ -58,6 +63,7 @@ class ClusterTest < Minitest::Test
     kubeconfig_from_filesystem['users'][0]['name'] = cluster_name_from_filesystem
     kubeconfig_from_filesystem['current-context'] = cluster_name_from_filesystem
 
+    FileUtils.mkdir_p(File.dirname(@kubeconfig_path))
     File.write(@kubeconfig_path, kubeconfig_from_filesystem.to_yaml)
 
     @cluster.update_kubeconfig('cluster_name')
@@ -85,6 +91,7 @@ class ClusterTest < Minitest::Test
     kubeconfig_from_filesystem['contexts'][0]['context']['user'] = 'old_user_name'
     kubeconfig_from_filesystem['users'][0]['name'] = 'old_user_name'
 
+    FileUtils.mkdir_p(File.dirname(@kubeconfig_path))
     File.write(@kubeconfig_path, kubeconfig_from_filesystem.to_yaml)
 
     @cluster.update_kubeconfig('cluster_name')
@@ -110,7 +117,7 @@ class ClusterTest < Minitest::Test
 
     @cluster.update_kubeconfig('cluster_name')
 
-    new_file = File.expand_path(KubeconfigService::DEFAULT_KUBECONFIG_PATH)
+    new_file = File.expand_path(Uffizzi.configuration.default_kubeconfig_path)
     kubeconfig_from_file = Psych.safe_load(File.read(new_file))
 
     assert_requested(stubbed_uffizzi_cluster_get_request)
@@ -148,6 +155,7 @@ class ClusterTest < Minitest::Test
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
     kubeconfig_from_filesystem = 'some data'
 
+    FileUtils.mkdir_p(File.dirname(@kubeconfig_path))
     File.write(@kubeconfig_path, kubeconfig_from_filesystem)
 
     error = assert_raises(KubeconfigService::InvalidKubeconfigError) do
@@ -173,5 +181,114 @@ class ClusterTest < Minitest::Test
     @cluster.delete('cluster-name')
 
     assert_requested(stubbed_uffizzi_cluster_delete_request)
+  end
+
+  def test_delete_cluster_with_flag_delete_config_and_single_cluster_in_kubeconfig
+    @cluster.options = command_options('delete-config' => true)
+    clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    kubeconfig = Psych.safe_load(Base64.decode64(clusters_get_body[:cluster][:kubeconfig]))
+    clusters_config = [{ id: clusters_get_body[:cluster][:id], kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path }]
+
+    FileUtils.mkdir_p(File.dirname(Uffizzi.configuration.default_kubeconfig_path))
+    File.write(Uffizzi.configuration.default_kubeconfig_path, kubeconfig.to_yaml)
+    Uffizzi::ConfigFile.write_option(:clusters, clusters_config)
+
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
+    stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
+
+    @cluster.delete('cluster-name')
+
+    kubeconfig_after_exclude = Psych.safe_load(File.read(Uffizzi.configuration.default_kubeconfig_path))
+
+    assert_empty(kubeconfig_after_exclude['clusters'])
+    assert_empty(kubeconfig_after_exclude['contexts'])
+    assert_empty(kubeconfig_after_exclude['users'])
+    assert_nil(kubeconfig_after_exclude['current-context'])
+    assert_requested(stubbed_uffizzi_cluster_delete_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_delete_cluster_with_flag_delete_config_and_multiply_clusters_in_kubeconfig
+    @cluster.options = command_options('delete-config' => true)
+    clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    kubeconfig = Psych.safe_load(Base64.decode64(clusters_get_body[:cluster][:kubeconfig]))
+    clusters_config = [{ id: clusters_get_body[:cluster][:id], kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path }]
+
+    another_cluster = kubeconfig['clusters'][0].deep_dup
+    another_context = kubeconfig['contexts'][0].deep_dup
+    another_user = kubeconfig['users'][0].deep_dup
+    another_cluster['name'] = 'another-cluster-name'
+    another_user['name'] = 'another-user-name'
+    another_context['name'] = 'another-context-name'
+    another_context['context']['cluster'] = another_cluster['name']
+    another_context['context']['user'] = another_user['name']
+
+    kubeconfig['clusters'] << another_cluster
+    kubeconfig['contexts'] << another_context
+    kubeconfig['users'] << another_user
+
+    FileUtils.mkdir_p(File.dirname(Uffizzi.configuration.default_kubeconfig_path))
+    File.write(Uffizzi.configuration.default_kubeconfig_path, kubeconfig.to_yaml)
+    Uffizzi::ConfigFile.write_option(:clusters, clusters_config)
+
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
+    stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
+
+    @cluster.delete('cluster-name')
+
+    kubeconfig_after_exclude = Psych.safe_load(File.read(Uffizzi.configuration.default_kubeconfig_path))
+
+    assert_equal(1, kubeconfig_after_exclude['clusters'].count)
+    assert_equal(1, kubeconfig_after_exclude['contexts'].count)
+    assert_equal(1, kubeconfig_after_exclude['users'].count)
+    assert_equal(another_context['name'], kubeconfig_after_exclude['current-context'])
+    assert_requested(stubbed_uffizzi_cluster_delete_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_delete_cluster_with_flag_delete_config_and_kubeconfig_file_not_exists
+    @cluster.options = command_options('delete-config' => true)
+    clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    clusters_config = [{ id: clusters_get_body[:cluster][:id], kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path }]
+
+    Uffizzi::ConfigFile.write_option(:clusters, clusters_config)
+
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
+    stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
+
+    @cluster.delete('cluster-name')
+
+    assert_match('Warning', Uffizzi.ui.last_message)
+    refute(File.exist?(Uffizzi.configuration.default_kubeconfig_path))
+    assert_requested(stubbed_uffizzi_cluster_delete_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_delete_cluster_with_flag_delete_config_and_kubeconfig_file_has_empty_clusters
+    @cluster.options = command_options('delete-config' => true)
+    clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    clusters_config = [{ id: clusters_get_body[:cluster][:id], kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path }]
+    kubeconfig = Psych.safe_load(Base64.decode64(clusters_get_body[:cluster][:kubeconfig]))
+    kubeconfig['clusters'] = []
+    kubeconfig['contexts'] = []
+    kubeconfig['users'] = []
+
+    FileUtils.mkdir_p(File.dirname(Uffizzi.configuration.default_kubeconfig_path))
+    File.write(Uffizzi.configuration.default_kubeconfig_path, kubeconfig.to_yaml)
+    Uffizzi::ConfigFile.write_option(:clusters, clusters_config)
+
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
+    stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
+
+    @cluster.delete('cluster-name')
+
+    kubeconfig_after_exclude = Psych.safe_load(File.read(Uffizzi.configuration.default_kubeconfig_path))
+
+    assert_empty(kubeconfig_after_exclude['clusters'])
+    assert_empty(kubeconfig_after_exclude['contexts'])
+    assert_empty(kubeconfig_after_exclude['users'])
+    assert_nil(kubeconfig_after_exclude['current-context'])
+    assert_requested(stubbed_uffizzi_cluster_delete_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
   end
 end
