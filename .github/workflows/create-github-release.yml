@@ -5,23 +5,27 @@ on:
       - 'v*.*.*'
 
 env:
+  DARWIN_BIN_PATH: uffizzi-${GITHUB_REF#refs/*/}-darwin-x86_64
+  LINUX_BIN_PATH: uffizzi-${GITHUB_REF#refs/*/}-darwin-x86_64
   RELEASE_VERSION: ${GITHUB_REF#refs/*/}
 
 jobs:
   make:
     strategy:
       matrix:
-        os: [ubuntu-20.04, macos-latest]
+        os: [ubuntu-20.04, macos-12]
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Check env
+        run: echo ${{ env.DARWIN_BIN_PATH }}
       - name: 'Install Linux dependencies'
         if: matrix.os == 'ubuntu-20.04'
         run: |
           sudo apt update
           sudo apt install -y build-essential squashfs-tools curl gcc make bison
       - name: 'Install MacOs dependencies'
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-12'
         run: |
           brew install squashfs
       - uses: actions/checkout@v2
@@ -29,32 +33,37 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0.3'
-      - name: Set env
-        run: |
-          export LINUX_BIN_NAME=uffizzi-${{ env.RELEASE_VERSION }}-linux-x86_64
-          export DARWIN_BIN_NAME=uffizzi-${{ env.RELEASE_VERSION }}-darwin-x86_64
       - name: 'Create Linux Bin'
         if: matrix.os == 'ubuntu-20.04'
         run: |
           wget https://github.com/pmq20/ruby-packer/releases/download/linux-x64/rubyc
           chmod +x ./rubyc
-          ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=LINUX_BIN_NAME
+          ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=${{ env.LINUX_BIN_PATH }}
       - name: 'Create Darwin Bin'
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-12'
         run: |
+          export PATH="$(brew --prefix)/opt/openssl@1.1/bin:$PATH"
+          export LDFLAGS="-L$(brew --prefix)/opt/openssl@1.1/lib"
+          export CPPFLAGS="-I$(brew --prefix)/opt/openssl@1.1/include"
+          export PKG_CONFIG_PATH="$(brew --prefix)/opt/openssl@1.1/lib/pkgconfig"
+          export RUBY_CFLAGS=-DUSE_FFI_CLOSURE_ALLOC
+          export optflags="-Wno-error=implicit-function-declaration"
+          export SSL_CERT_FILE=/etc/ssl/cert.pem
           wget https://github.com/pmq20/ruby-packer/releases/download/darwin-x64/rubyc
           chmod +x ./rubyc
-          ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=DARWIN_BIN_NAME
+          ./rubyc --openssl-dir="$(brew --prefix)/opt/openssl@1.1" ./uffizzi --output=${{ env.DARWIN_BIN_PATH }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
+        if: matrix.os == 'ubuntu-20.04'
         with: 
-          name: LINUX_BIN_NAME
-          path: LINUX_BIN_NAME
+          name: ${{ env.LINUX_BIN_PATH }}
+          path: ${{ env.LINUX_BIN_PATH }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
+        if: matrix.os == 'macos-12'
         with: 
-          name: DARWIN_BIN_NAME
-          path: DARWIN_BIN_NAME
+          name: ${{ env.DARWIN_BIN_PATH }}
+          path: ${{ env.DARWIN_BIN_PATH }}
   create_release:
     runs-on: ubuntu-latest
     needs:
@@ -63,11 +72,11 @@ jobs:
       - name: Download Linux Bin
         uses: actions/download-artifact@master
         with:
-          name: LINUX_BIN_NAME
+          name: ${{ env.LINUX_BIN_PATH }}
       - name: Download Macos Bin
         uses: actions/download-artifact@master
         with:
-          name: DARWIN_BIN_NAME
+          name: ${{ env.DARWIN_BIN_PATH }}
       - name: Generate release notes
         uses: softprops/action-gh-release@v1
         with:
@@ -75,6 +84,6 @@ jobs:
           tag_name: ${{ env.RELEASE_VERSION }}
           name: ${{ env.RELEASE_VERSION }}
           files: |
-            ${{ github.workspace }}/LINUX_BIN_NAME
-            ${{ github.workspace }}/DARWIN_BIN_NAME
+            ${{ github.workspace }}/${{ env.LINUX_BIN_PATH }}
+            ${{ github.workspace }}/${{ env.DARWIN_BIN_PATH }}
           generate_release_notes: true

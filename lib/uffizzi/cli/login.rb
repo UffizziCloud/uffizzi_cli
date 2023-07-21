@@ -73,10 +73,10 @@ module Uffizzi
     end
 
     def open_browser(url)
-      Launchy.open(url)
-    rescue StandardError
-      Uffizzi.ui.say('Login to Uffizzi server.')
-      Uffizzi.ui.say(url)
+      Launchy.open(url) do |_exception|
+        Uffizzi.ui.say('Login to Uffizzi server.')
+        Uffizzi.ui.say(url)
+      end
     end
 
     def handle_succeed_response(response, username)
