@@ -3,8 +3,6 @@ on:
   push:
     tags:
       - 'v*.*.*'
-    branches:
-      - feature/237_fix_macos_binary
 
 env:
   DARWIN_BIN_PATH: uffizzi-${GITHUB_REF#refs/*/}-darwin-x86_64
