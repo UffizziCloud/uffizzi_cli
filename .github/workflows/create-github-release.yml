@@ -7,9 +7,9 @@ on:
       - feature/237_fix_artefacts_uploads
 
 env:
-  DARWIN_BIN_PATH: "uffizzi-${{ GITHUB_REF#refs/*/ }}-darwin-x86_64"
-  LINUX_BIN_PATH: "uffizzi-${{ GITHUB_REF#refs/*/ }}-darwin-x86_64"
-  RELEASE_VERSION: "${{ GITHUB_REF#refs/*/ }}"
+  DARWIN_BIN_PATH: "uffizzi-${GITHUB_REF#refs/*/}-darwin-x86_64"
+  LINUX_BIN_PATH: "uffizzi-${GITHUB_REF#refs/*/}-linux-x86_64"
+  RELEASE_VERSION: "${GITHUB_REF#refs/*/}"
 
 jobs:
   make:
