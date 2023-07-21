@@ -26,6 +26,7 @@ module Uffizzi
     method_option :name, type: :string, required: false, aliases: '-n'
     method_option :kubeconfig, type: :string, required: false, aliases: '-k'
     method_option :manifest, type: :string, required: false, aliases: '-m'
+    method_option :'update-current-context', type: :boolean, required: false
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def create
       run('create')
@@ -118,7 +119,7 @@ module Uffizzi
       end
 
       spinner.success
-      handle_succeed_create_response(cluster_data, options[:kubeconfig])
+      handle_succeed_create_response(cluster_data)
     rescue SystemExit, Interrupt, SocketError
       handle_interrupt_creation(cluster_name, ConfigFile.read_option(:server), project_slug)
     end
@@ -272,17 +273,31 @@ module Uffizzi
       Uffizzi.ui.say(rendered_cluster_data)
     end
 
-    def handle_succeed_create_response(cluster_data, kubeconfig_path)
+    def handle_succeed_create_response(cluster_data)
+      kubeconfig_path = options[:kubeconfig]
+      is_update_current_context = options[:'update-current-context']
       parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
       rendered_cluster_data = render_cluster_data(cluster_data)
 
       Uffizzi.ui.enable_stdout
       Uffizzi.ui.say("Cluster with name: #{rendered_cluster_data[:name]} was created.")
+
+      unless is_update_current_context
+        Uffizzi.ui.say("To update the current context, run:\nuffizzi cluster update-kubeconfig #{cluster_data[:name]}")
+      end
+
       Uffizzi.ui.say(rendered_cluster_data) if Uffizzi.ui.output_format
 
       kubeconfig_path = kubeconfig_path.nil? ? KubeconfigService.default_path : kubeconfig_path
       KubeconfigService.save_to_filepath(kubeconfig_path, parsed_kubeconfig) do |kubeconfig_by_path|
-        KubeconfigService.merge(kubeconfig_by_path, parsed_kubeconfig)
+        merged_kubeconfig = KubeconfigService.merge(kubeconfig_by_path, parsed_kubeconfig)
+
+        if is_update_current_context
+          current_context = KubeconfigService.get_current_context(parsed_kubeconfig)
+          KubeconfigService.update_current_context(merged_kubeconfig, current_context)
+        else
+          merged_kubeconfig
+        end
       end
 
       update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
