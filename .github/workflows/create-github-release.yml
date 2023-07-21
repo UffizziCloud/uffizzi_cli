@@ -5,9 +5,12 @@ on:
       - 'v*.*.*'
 
 env:
-  DARWIN_BIN_PATH: uffizzi-${GITHUB_REF#refs/*/}-darwin-x86_64
-  LINUX_BIN_PATH: uffizzi-${GITHUB_REF#refs/*/}-darwin-x86_64
-  RELEASE_VERSION: ${GITHUB_REF#refs/*/}
+  RELEASE_VERSION: ${{ github.ref_name }}
+  LINUX_BIN_PATH: uffizzi-${{ github.ref_name }}-linux-x86_64
+  DARWIN_BIN_PATH: uffizzi-${{ github.ref_name }}-darwin-x86_64
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   make:
@@ -17,8 +20,6 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Check env
-        run: echo ${{ env.DARWIN_BIN_PATH }}
       - name: 'Install Linux dependencies'
         if: matrix.os == 'ubuntu-20.04'
         run: |
