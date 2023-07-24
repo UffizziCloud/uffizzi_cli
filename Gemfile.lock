@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (2.0.8)
+    uffizzi-cli (2.0.9)
       activesupport
       awesome_print
       faker
