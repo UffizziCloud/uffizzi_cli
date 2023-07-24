@@ -147,6 +147,23 @@ class ClusterTest < Minitest::Test
     assert_match('is empty', error.message)
   end
 
+  def test_update_kubeconfig_if_kubeconfig_path_has_invalid_file
+    @cluster.options = command_options(name: 'uffizzi-test-cluster', kubeconfig: @kubeconfig_path)
+
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+    kubeconfig_from_filesystem = 'some data'
+
+    File.write(@kubeconfig_path, kubeconfig_from_filesystem)
+
+    error = assert_raises(KubeconfigService::InvalidKubeconfigError) do
+      @cluster.update_kubeconfig
+    end
+
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+    assert_match('Invalid kubeconfig', error.message)
+  end
+
   def test_describe_cluster
     clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
