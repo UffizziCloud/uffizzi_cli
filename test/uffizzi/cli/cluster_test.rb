@@ -43,7 +43,7 @@ class ClusterTest < Minitest::Test
   end
 
   def test_update_kubeconfig_if_kubeconfig_exists_with_another_cluster
-    @cluster.options = command_options(name: 'uffizzi-test-cluster', kubeconfig: @kubeconfig_path)
+    @cluster.options = command_options(kubeconfig: @kubeconfig_path)
 
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
@@ -60,7 +60,7 @@ class ClusterTest < Minitest::Test
 
     File.write(@kubeconfig_path, kubeconfig_from_filesystem.to_yaml)
 
-    @cluster.update_kubeconfig
+    @cluster.update_kubeconfig('cluster_name')
 
     assert_requested(stubbed_uffizzi_cluster_get_request)
 
@@ -72,7 +72,7 @@ class ClusterTest < Minitest::Test
   end
 
   def test_update_kubeconfig_if_kubeconfig_exists_with_same_cluster_but_another_values
-    @cluster.options = command_options(name: 'uffizzi-test-cluster', kubeconfig: @kubeconfig_path)
+    @cluster.options = command_options(kubeconfig: @kubeconfig_path)
 
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
@@ -87,7 +87,7 @@ class ClusterTest < Minitest::Test
 
     File.write(@kubeconfig_path, kubeconfig_from_filesystem.to_yaml)
 
-    @cluster.update_kubeconfig
+    @cluster.update_kubeconfig('cluster_name')
 
     assert_requested(stubbed_uffizzi_cluster_get_request)
 
@@ -104,13 +104,11 @@ class ClusterTest < Minitest::Test
   end
 
   def test_update_kubeconfig_if_kubeconfig_option_is_empty
-    @cluster.options = command_options(name: 'uffizzi-test-cluster')
-
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
     kubeconfig_from_backend = Psych.safe_load(Base64.decode64(cluster_get_body[:cluster][:kubeconfig]))
 
-    @cluster.update_kubeconfig
+    @cluster.update_kubeconfig('cluster_name')
 
     new_file = File.expand_path(KubeconfigService::DEFAULT_KUBECONFIG_PATH)
     kubeconfig_from_file = Psych.safe_load(File.read(new_file))
@@ -122,29 +120,42 @@ class ClusterTest < Minitest::Test
   end
 
   def test_update_kubeconfig_if_kubeconfig_is_empty_and_cluster_is_deploying
-    @cluster.options = command_options(name: 'uffizzi-test-cluster')
-
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deploying.json')
     stub_get_cluster_request(cluster_get_body, @project_slug)
 
     error = assert_raises(MockShell::ExitError) do
-      @cluster.update_kubeconfig
+      @cluster.update_kubeconfig('cluster_name')
     end
 
     assert_match('is empty', error.message)
   end
 
   def test_update_kubeconfig_if_kubeconfig_is_empty_and_cluster_is_failed
-    @cluster.options = command_options(name: 'uffizzi-test-cluster')
-
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_failed.json')
     stub_get_cluster_request(cluster_get_body, @project_slug)
 
     error = assert_raises(MockShell::ExitError) do
-      @cluster.update_kubeconfig
+      @cluster.update_kubeconfig('cluster_name')
     end
 
     assert_match('is empty', error.message)
+  end
+
+  def test_update_kubeconfig_if_kubeconfig_path_has_invalid_file
+    @cluster.options = command_options(kubeconfig: @kubeconfig_path)
+
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+    kubeconfig_from_filesystem = 'some data'
+
+    File.write(@kubeconfig_path, kubeconfig_from_filesystem)
+
+    error = assert_raises(KubeconfigService::InvalidKubeconfigError) do
+      @cluster.update_kubeconfig('cluster_name')
+    end
+
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+    assert_match('Invalid kubeconfig', error.message)
   end
 
   def test_describe_cluster
