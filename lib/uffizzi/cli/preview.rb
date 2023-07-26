@@ -221,8 +221,8 @@ module Uffizzi
     def prepare_params(file_path, labels, creation_source = nil)
       compose_file_params = file_path.nil? ? {} : build_compose_file_params(file_path)
       metadata_params = labels.nil? ? {} : build_metadata_params(labels)
-      token = ConfigFile.read_option(:token)
-      extra_params = token.nil? ? {} : { token: token }
+      oidc_token = ConfigFile.read_option(:oidc_token)
+      extra_params = oidc_token.nil? ? {} : { token: oidc_token }
       params = compose_file_params.merge(metadata_params)
       params.merge(extra_params, { creation_source: creation_source })
     end
