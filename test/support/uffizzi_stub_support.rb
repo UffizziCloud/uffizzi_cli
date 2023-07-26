@@ -86,6 +86,12 @@ module UffizziStubSupport
     stub_request(:post, url).to_return(status: 201, body: body.to_json)
   end
 
+  def stub_uffizzi_project_create_failed(body, account_id)
+    url = create_projects_uri(Uffizzi.configuration.server, account_id)
+
+    stub_request(:post, url).to_return(status: 422, body: body.to_json)
+  end
+
   def stub_uffizzi_project_delete_success(body, project_slug)
     url = project_uri(Uffizzi.configuration.server, project_slug)
 

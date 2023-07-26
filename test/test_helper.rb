@@ -39,7 +39,9 @@ class Minitest::Test
     super
 
     @mock_shell = MockShell.new
+    @mock_prompt = MockPrompt.new
     Uffizzi::UI::Shell.stubs(:new).returns(@mock_shell)
+    Uffizzi::UI::Prompt.stubs(:new).returns(@mock_prompt)
     Uffizzi::ConfigFile.stubs(:config_path).returns(TEST_CONFIG_PATH)
     Uffizzi::Token.stubs(:token_path).returns(TEST_TOKEN_PATH)
   end
