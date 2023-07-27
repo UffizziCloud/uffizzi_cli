@@ -5,7 +5,7 @@
 \fBuffizzi\-cluster\-create\fR \- create a cluster
 .SH "SYNOPSIS"
 .nf
-uffizzi cluster create [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+uffizzi cluster create
 .fi
 .SH "DESCRIPTION"
 .nf
@@ -24,6 +24,9 @@ https://github\.com/UffizziCloud/uffizzi_cli
 
 \-\-manifest="/path/to/your/manifest"
     Path to manifest file
+
+\-\-update\-current\-context
+    Update current\-context in kubeconfig file
 
 \-\-output=pretty\-json
 \-\-output=json

@@ -2,7 +2,7 @@ uffizzi-cluster-create - create a cluster
 ================================================================
 
 ## SYNOPSIS
-    uffizzi cluster create [UFFIZZI_WIDE_FLAG ...]
+    uffizzi cluster create
 
 ## DESCRIPTION
     Creates a new cluster.
@@ -19,6 +19,9 @@ uffizzi-cluster-create - create a cluster
 
     --manifest="/path/to/your/manifest"
         Path to manifest file
+
+    --update-current-context
+        Update current-context in kubeconfig file
 
     --output=pretty-json
     --output=json
