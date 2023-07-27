@@ -288,20 +288,25 @@ module Uffizzi
 
       Uffizzi.ui.say(rendered_cluster_data) if Uffizzi.ui.output_format
 
+      save_kubeconfig(parsed_kubeconfig, kubeconfig_path)
+      update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
+      GithubService.write_to_github_env(rendered_cluster_data) if GithubService.github_actions_exists?
+    end
+
+    def save_kubeconfig(kubeconfig, kubeconfig_path)
       kubeconfig_path = kubeconfig_path.nil? ? KubeconfigService.default_path : kubeconfig_path
-      KubeconfigService.save_to_filepath(kubeconfig_path, parsed_kubeconfig) do |kubeconfig_by_path|
-        merged_kubeconfig = KubeconfigService.merge(kubeconfig_by_path, parsed_kubeconfig)
+      is_update_current_context = options[:'update-current-context']
+
+      KubeconfigService.save_to_filepath(kubeconfig_path, kubeconfig) do |kubeconfig_by_path|
+        merged_kubeconfig = KubeconfigService.merge(kubeconfig_by_path, kubeconfig)
 
         if is_update_current_context
-          current_context = KubeconfigService.get_current_context(parsed_kubeconfig)
+          current_context = KubeconfigService.get_current_context(kubeconfig)
           KubeconfigService.update_current_context(merged_kubeconfig, current_context)
         else
           merged_kubeconfig
         end
       end
-
-      update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
-      GithubService.write_to_github_env(rendered_cluster_data) if GithubService.github_actions_exists?
     end
 
     def update_clusters_config(id, params)
