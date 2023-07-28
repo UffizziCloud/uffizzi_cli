@@ -3,7 +3,7 @@ on:
   push:
     tags:
       - 'v*.*.*'
-
+      - 'TEST-*'
 env:
   RELEASE_VERSION: ${{ github.ref_name }}
   LINUX_BIN_PATH: uffizzi-${{ github.ref_name }}-linux-x86_64
