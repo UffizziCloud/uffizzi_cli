@@ -5,6 +5,8 @@ require 'test_helper'
 class LoginTest < Minitest::Test
   def setup
     @cli = Uffizzi::Cli.new
+    @mock_prompt = MockPrompt.new
+    Uffizzi.stubs(:prompt).returns(@mock_prompt)
 
     @command_params = {
       username: generate(:email),
@@ -147,7 +149,7 @@ class LoginTest < Minitest::Test
     assert_match('was successfully created', Uffizzi.ui.last_message)
   end
 
-  def test_browser_login_with_new_project_creation_when_project_already_exists
+  def test_browser_login_with_new_project_creation_when_project_already_exists_and_abort_repeat
     account_id = 1
     access_token_body = json_fixture('files/uffizzi/uffizzi_access_token_success.json')
     account_body = json_fixture('files/uffizzi/uffizzi_accounts_success.json')
@@ -155,7 +157,7 @@ class LoginTest < Minitest::Test
 
     project_creation_error = {
       errors: {
-        name: ['This project name already exists. Uffizzi project names must be unique.'],
+        name: ['This project name already exists. Project names must be unique.'],
       },
     }
 
@@ -170,10 +172,16 @@ class LoginTest < Minitest::Test
     @mock_prompt.promise_question_answer('Project name: ', 'existing-project')
     @mock_prompt.promise_question_answer('Project slug: ', nil)
     @mock_prompt.promise_question_answer('Project desciption: ', 'some desc')
+    @mock_prompt.promise_question_answer('Do you want to a different project params? (y/n) ', 'y')
+    @mock_prompt.promise_question_answer('Project name: ', 'new-project')
+    @mock_prompt.promise_question_answer('Project slug: ', nil)
+    @mock_prompt.promise_question_answer('Project desciption: ', 'some desc')
+    @mock_prompt.promise_question_answer('Do you want to a different project params? (y/n) ', 'n')
     Uffizzi::ConfigFile.write_option(:project, nil)
     Uffizzi::ConfigFile.write_option(:account, nil)
 
     @cli.options = command_options(server: @command_params[:server])
+
     error = assert_raises(Uffizzi::Error) do
       @cli.login
     end
@@ -181,8 +189,8 @@ class LoginTest < Minitest::Test
     assert_requested(stubbed_create_access_token)
     assert_requested(stubbed_get_access_token)
     assert_requested(stubbed_uffizzi_projects)
-    assert_requested(stubbed_uffizzi_create_project)
+    assert_requested(stubbed_uffizzi_create_project, times: 2)
     assert_requested(stubbed_uffizzi_accounts)
-    assert_match('Please run', error.message)
+    assert_match('Project creation aborted', error.message)
   end
 end

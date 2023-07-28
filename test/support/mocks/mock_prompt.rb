@@ -32,6 +32,10 @@ class MockPrompt
   private
 
   def get_answer(question)
-    @question_answers.detect { |question_answer| question_answer[:question] == question }.fetch(:answer)
+    answer_index = @question_answers.index { |question_answer| question_answer[:question] == question }
+    answer = @question_answers[answer_index].fetch(:answer)
+    @question_answers.delete_at(answer_index)
+
+    answer
   end
 end
