@@ -6,9 +6,9 @@ module Uffizzi
   class Cli::Common
     class << self
       def show_manual(command_name)
-        manual_doc_path = File.join(Uffizzi.root, "man/#{command_name}")
+        manual_doc_path = File.join(Uffizzi.root, "man/#{command_name}.ronn")
 
-        Open3.pipeline("man #{manual_doc_path}")
+        Uffizzi.ui.say(File.read(manual_doc_path))
       end
     end
   end
