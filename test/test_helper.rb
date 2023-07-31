@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
+ENV['CLI_DEFAULT_KUBECONFIG_PATH'] = '/tmp/.kube/config'
 Dir[File.expand_path('support/**/*.rb', __dir__)].sort.each { |f| require f }
 
 require 'factory_bot'
@@ -48,6 +49,10 @@ class Minitest::Test
 
     Uffizzi::ConfigFile.delete
     Uffizzi::Token.delete
+
+    if File.exist?(Uffizzi.configuration.default_kubeconfig_path)
+      File.delete(Uffizzi.configuration.default_kubeconfig_path)
+    end
   end
 
   def command_options(options)

@@ -22,5 +22,6 @@ module Uffizzi
       docker_registry: 'UffizziCore::Credential::DockerRegistry',
     }
     config.default_server = 'app.uffizzi.com'
+    config.default_kubeconfig_path = ENV['CLI_DEFAULT_KUBECONFIG_PATH'] || '~/.kube/config'
   end
 end
