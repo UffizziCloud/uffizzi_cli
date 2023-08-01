@@ -168,13 +168,8 @@ module Uffizzi
     end
 
     def handle_update_kubeconfig_command(project_slug, command_args)
-      cluster_name = command_args[:cluster_name]
-      params = {
-        cluster_name: cluster_name,
-        oidc_token: ConfigFile.read_option(:oidc_token),
-      }
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
-      cluster_data = fetch_cluster_data(project_slug, cluster_name)
+      cluster_data = fetch_cluster_data(project_slug, command_args[:cluster_name])
 
       unless cluster_data[:kubeconfig].present?
         say_error_update_kubeconfig(cluster_data)
@@ -328,7 +323,7 @@ module Uffizzi
 
     def fetch_cluster_data(project_slug, cluster_name)
       params = {
-        cluster_name: command_args[:cluster_name],
+        cluster_name: cluster_name,
         oidc_token: ConfigFile.read_option(:oidc_token),
       }
       response = get_cluster(ConfigFile.read_option(:server), project_slug, params)
