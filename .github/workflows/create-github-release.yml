@@ -5,8 +5,8 @@ on:
       - 'v*.*.*'
 env:
   RELEASE_VERSION: ${{ github.ref_name }}
-  LINUX_BIN_PATH: uffizzi-${{ github.ref_name }}-linux-x86_64
-  DARWIN_BIN_PATH: uffizzi-${{ github.ref_name }}-darwin-x86_64
+  LINUX_BIN_PATH: uffizzi-linux
+  DARWIN_BIN_PATH: uffizzi-darwin
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
