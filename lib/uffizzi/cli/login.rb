@@ -198,31 +198,14 @@ module Uffizzi
     end
 
     def handle_create_project_failed(response, project_params)
-      errors = [
-        {
-          key: :name,
-          has_error: false,
-          regex: Regexp.new('name already exists', 'i'),
-          message: "A project with the name '#{project_params[:name]}' already exists.",
-        },
-        {
-          key: :slug,
-          has_error: false,
-          regex: Regexp.new('slug already taken', 'i'),
-          message: "A project slug '#{project_params[:slug]}' already taken.",
-        },
-      ].map do |e|
-        text_err = response.dig(:body, :errors, e[:key]).to_a.first
-        e[:has_error] = text_err.present? && text_err.match?(e[:regex])
-        e
-      end.select { |e| e[:has_error] }
+      errors = [:name, :slug].map { |error_key| response.dig(:body, :errors, error_key).to_a.first }.compact
 
       if errors.blank?
         return ResponseHelper.handle_failed_response(response)
       end
 
-      Uffizzi.ui.say(errors.map { |e| e[:message] }.join("\n"))
-      question = 'Do you want to a different project params? (y/n) '
+      Uffizzi.ui.say(errors.join("\n"))
+      question = 'Do you want to try different project params? (y/n) '
       answer = Uffizzi.prompt.ask(question, required: true).to_s.downcase
 
       return create_new_project(project_params) if answer == 'y'
