@@ -46,12 +46,11 @@ jobs:
           export LDFLAGS="-L$(brew --prefix)/opt/openssl@1.1/lib"
           export CPPFLAGS="-I$(brew --prefix)/opt/openssl@1.1/include"
           export PKG_CONFIG_PATH="$(brew --prefix)/opt/openssl@1.1/lib/pkgconfig"
-          export RUBY_CFLAGS=-DUSE_FFI_CLOSURE_ALLOC
-          export optflags="-Wno-error=implicit-function-declaration"
-          export SSL_CERT_FILE=/etc/ssl/cert.pem
+          export SSL_CERT_FILE=$(ruby -e "require 'openssl'; puts OpenSSL::X509::DEFAULT_CERT_FILE")
+
           wget https://github.com/pmq20/ruby-packer/releases/download/darwin-x64/rubyc
           chmod +x ./rubyc
-          ./rubyc --openssl-dir="$(brew --prefix)/opt/openssl@1.1" ./uffizzi --output=${{ env.DARWIN_BIN_PATH }}
+          ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=${{ env.DARWIN_BIN_PATH }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         if: matrix.os == 'ubuntu-20.04'
