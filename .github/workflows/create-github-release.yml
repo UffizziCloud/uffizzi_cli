@@ -43,11 +43,13 @@ jobs:
       - name: 'Create Darwin Bin'
         if: matrix.os == 'macos-12'
         run: |
+          export PATH="$(brew --prefix)/opt/openssl@3.1/bin:$PATH"
           export LDFLAGS="-L$(brew --prefix)/opt/openssl@3.1/lib"
           export CPPFLAGS="-I$(brew --prefix)/opt/openssl@3.1/include"
+          export PKG_CONFIG_PATH="$(brew --prefix)/opt/openssl@3.1/lib/pkgconfig"
           wget https://github.com/pmq20/ruby-packer/releases/download/darwin-x64/rubyc
           chmod +x ./rubyc
-          ./rubyc --openssl-dir=/usr/local/etc/openssl@3 ./uffizzi --output=${{ env.DARWIN_BIN_PATH }}
+          ./rubyc --openssl-dir="$(brew --prefix openssl@3)" ./uffizzi --output=${{ env.DARWIN_BIN_PATH }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         if: matrix.os == 'ubuntu-20.04'
@@ -94,4 +96,5 @@ jobs:
   # export PKG_CONFIG_PATH="$(brew --prefix)/opt/openssl@1.1/lib/pkgconfig"
   # export RUBY_CFLAGS=-DUSE_FFI_CLOSURE_ALLOC
   # export optflags="-Wno-error=implicit-function-declaration"
+  # export SSL_CERT_FILE=$(brew --prefix openssl@3)
   # export SSL_CERT_FILE=/etc/ssl/cert.pem
