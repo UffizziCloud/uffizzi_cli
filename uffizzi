@@ -9,7 +9,9 @@ require 'open3'
 begin
   File.open(OpenSSL::X509::DEFAULT_CERT_FILE)
 rescue Errno::ENOENT => e
-  actual_cert_path = ENV['SSL_CERT_FILE'] || '/etc/ssl/cert.pem'
+  puts '-----------'
+  puts Open3.pipeline('ls .')
+  actual_cert_path = ENV['SSL_CERT_FILE'] || './cert.pem'
   puts "The file does not exist by path #{OpenSSL::X509::DEFAULT_CERT_FILE}. Creating a link"
   Open3.pipeline("ln -s #{actual_cert_path} #{OpenSSL::X509::DEFAULT_CERT_FILE}")
 end
