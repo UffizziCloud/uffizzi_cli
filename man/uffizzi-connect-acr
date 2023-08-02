@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CONNECT\-ACR" "" "August 2022" ""
+.TH "UFFIZZI\-CONNECT\-ACR" "" "February 2023" ""
 .SH "NAME"
 \fBuffizzi\-connect\-acr\fR \- grant a Uffizzi user account access to a private Azure Container Registry (ACR)
 .SH "SYNOPSIS"

@@ -1,0 +1,39 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-CLUSTER\-DESCRIBE" "" "July 2023" ""
+.SH "NAME"
+\fBuffizzi\-cluster\-describe\fR \- show metadata for a cluster
+.SH "SYNOPSIS"
+.nf
+uffizzi cluster describe [CLUSTER_NAME] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
+.SH "DESCRIPTION"
+.nf
+Shows metadata for a cluster given a valid cluster NAME
+
+This command can fail for the following reasons:
+    \- The cluster specified does not exist\.
+    \- The cluster specified belongs to a different project\.
+
+For more information on Uffizzi clusters, see:
+https://github\.com/UffizziCloud/uffizzi_cli
+.fi
+.SH "POSITIONAL ARGUMENTS"
+.nf
+[CLUSTER_NAME]
+    NAME for the cluster you want to describe\.
+.fi
+.SH "FLAGS"
+.nf
+\-\-output=pretty\-json
+\-\-output=json
+    Use this option for formatting output\.
+.fi
+.SH "EXAMPLES"
+.nf
+The following command prints metadata for the cluster with NAME
+my\-cluster:
+
+    $ uffizzi cluster describe my\-cluster
+.fi
+

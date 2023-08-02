@@ -1,0 +1,37 @@
+uffizzi-cluster-create - create a cluster
+================================================================
+
+## SYNOPSIS
+    uffizzi cluster create
+
+## DESCRIPTION
+    Creates a new cluster.
+
+    For more information on Uffizzi clusters, see:
+    https://github.com/UffizziCloud/uffizzi_cli
+
+## FLAGS
+    --name=CLUSTER-NAME
+        Set cluster name
+
+    --kubeconfig="/path/to/your/kubeconfig"
+        Path to kubeconfig file
+
+    --manifest="/path/to/your/manifest"
+        Path to manifest file
+
+    --update-current-context
+        Update current-context in kubeconfig file
+
+    --output=pretty-json
+    --output=json
+        Use this option for formatting output.
+
+## EXAMPLES
+    To create a cluster with the auto generated name, run:
+
+        $ uffizzi cluster create
+
+    To create a cluster with name, run:
+
+        $ uffizzi cluster create --name="my-cluster"

@@ -1,0 +1,30 @@
+uffizzi-cluster-describe - show metadata for a cluster
+================================================================
+
+## SYNOPSIS
+    uffizzi cluster describe [CLUSTER_NAME] [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Shows metadata for a cluster given a valid cluster NAME
+
+    This command can fail for the following reasons:
+        - The cluster specified does not exist.
+        - The cluster specified belongs to a different project.
+
+    For more information on Uffizzi clusters, see:
+    https://github.com/UffizziCloud/uffizzi_cli
+
+## POSITIONAL ARGUMENTS
+    [CLUSTER_NAME]
+        NAME for the cluster you want to describe.
+
+## FLAGS
+    --output=pretty-json
+    --output=json
+        Use this option for formatting output.
+
+## EXAMPLES
+    The following command prints metadata for the cluster with NAME
+    my-cluster:
+
+        $ uffizzi cluster describe my-cluster

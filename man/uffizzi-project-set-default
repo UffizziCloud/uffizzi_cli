@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-PROJECT\-SET\-DEFAULT" "" "May 2022" ""
+.TH "UFFIZZI\-PROJECT\-SET\-DEFAULT" "" "February 2023" ""
 .SH "NAME"
 \fBuffizzi\-project\-set\-default\fR \- set the default project for the active account
 .SH "SYNOPSIS"

@@ -14,7 +14,8 @@ class ClusterTest < Minitest::Test
     ENV['GITHUB_OUTPUT'] = '/tmp/.env'
     ENV['GITHUB_ACTIONS'] = 'true'
     Uffizzi.ui.output_format = nil
-    @kubeconfig_path = "/tmp/test/#{rand(10000)}/test-kubeconfig.yaml"
+    tmp_dir_name = (Time.now.utc.to_f * 100_000).to_i
+    @kubeconfig_path = "/tmp/test/#{tmp_dir_name}/test-kubeconfig.yaml"
   end
 
   def teardown
@@ -23,17 +24,86 @@ class ClusterTest < Minitest::Test
     File.delete(@kubeconfig_path) if File.exist?(@kubeconfig_path)
   end
 
-  def test_create_cluster_success
+  def test_create_cluster
     @cluster.options = command_options(name: 'uffizzi-test-cluster', kubeconfig: @kubeconfig_path)
     cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_deploying.json')
-    stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
-
-    File.stubs(:write).returns(100)
 
     @cluster.create
 
+    created_kubeconfig = Psych.safe_load(File.read(@kubeconfig_path))
+    kubeconfig_form_backend = Psych.safe_load(Base64.decode64(cluster_get_body.dig(:cluster, :kubeconfig)))
+
+    assert_match('To update the current context', Uffizzi.ui.last_message)
+    assert_equal(kubeconfig_form_backend, created_kubeconfig)
+    assert_requested(stubbed_uffizzi_cluster_create_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_create_cluster_when_kubeconfig_already_exists
+    @cluster.options = command_options(name: 'uffizzi-test-cluster', kubeconfig: @kubeconfig_path)
+    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_deploying.json')
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
+    exists_kubeconfig = Psych.safe_load(Base64.decode64(cluster_get_body.dig(:cluster, :kubeconfig))).deep_dup
+    exists_kubeconfig['users'][0]['name'] = 'another-user-name'
+    exists_kubeconfig['clusters'][0]['name'] = 'another-cluster-name'
+    exists_kubeconfig['contexts'][0]['name'] = 'another-context-name'
+    exists_kubeconfig['contexts'][0]['context']['cluster'] = exists_kubeconfig['clusters'][0]['name']
+    exists_kubeconfig['contexts'][0]['context']['user'] = exists_kubeconfig['users'][0]['name']
+    exists_kubeconfig['current-context'] = exists_kubeconfig['clusters'][0]['name']
+
+    FileUtils.mkdir_p(File.dirname(@kubeconfig_path))
+    File.write(@kubeconfig_path, exists_kubeconfig.to_yaml)
+
+    @cluster.create
+
+    created_kubeconfig = Psych.safe_load(File.read(@kubeconfig_path))
+    kubeconfig_form_backend = Psych.safe_load(Base64.decode64(cluster_get_body.dig(:cluster, :kubeconfig)))
+
+    assert_equal(exists_kubeconfig['current-context'], created_kubeconfig['current-context'])
+    assert_equal(2, created_kubeconfig['clusters'].count)
+    assert_equal(2, created_kubeconfig['contexts'].count)
+    assert_equal(2, created_kubeconfig['users'].count)
+    assert_equal(exists_kubeconfig['clusters'][0]['name'], created_kubeconfig['clusters'][0]['name'])
+    assert_equal(kubeconfig_form_backend['clusters'][0]['name'], created_kubeconfig['clusters'][1]['name'])
+    assert_requested(stubbed_uffizzi_cluster_create_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_create_cluster_with_flag_update_current_context_when_kubeconfig_already_exists
+    @cluster.options = command_options(name: 'uffizzi-test-cluster', kubeconfig: @kubeconfig_path, 'update-current-context': true)
+    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_deploying.json')
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
+    exists_kubeconfig = Psych.safe_load(Base64.decode64(cluster_get_body.dig(:cluster, :kubeconfig))).deep_dup
+    exists_kubeconfig['users'][0]['name'] = 'another-user-name'
+    exists_kubeconfig['clusters'][0]['name'] = 'another-cluster-name'
+    exists_kubeconfig['contexts'][0]['name'] = 'another-context-name'
+    exists_kubeconfig['contexts'][0]['context']['cluster'] = exists_kubeconfig['clusters'][0]['name']
+    exists_kubeconfig['contexts'][0]['context']['user'] = exists_kubeconfig['users'][0]['name']
+    exists_kubeconfig['current-context'] = exists_kubeconfig['clusters'][0]['name']
+
+    FileUtils.mkdir_p(File.dirname(@kubeconfig_path))
+    File.write(@kubeconfig_path, exists_kubeconfig.to_yaml)
+
+    @cluster.create
+
+    created_kubeconfig = Psych.safe_load(File.read(@kubeconfig_path))
+    kubeconfig_form_backend = Psych.safe_load(Base64.decode64(cluster_get_body.dig(:cluster, :kubeconfig)))
+
+    assert_equal(kubeconfig_form_backend['current-context'], created_kubeconfig['current-context'])
+    assert_equal(2, created_kubeconfig['clusters'].count)
+    assert_equal(2, created_kubeconfig['contexts'].count)
+    assert_equal(2, created_kubeconfig['users'].count)
+    assert_equal(exists_kubeconfig['clusters'][0]['name'], created_kubeconfig['clusters'][0]['name'])
+    assert_equal(kubeconfig_form_backend['clusters'][0]['name'], created_kubeconfig['clusters'][1]['name'])
     assert_requested(stubbed_uffizzi_cluster_create_request)
     assert_requested(stubbed_uffizzi_cluster_get_request)
   end

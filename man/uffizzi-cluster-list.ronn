@@ -1,0 +1,26 @@
+uffizzi-cluster-list - list clusters in a project
+================================================================
+
+## SYNOPSIS
+    uffizzi cluster list [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Lists all clusters for a project, including active,
+    deploying and failed clusters.
+
+    For more information on Uffizzi clusters, see:
+    https://github.com/UffizziCloud/uffizzi_cli
+
+## FLAGS
+    --output=pretty-json
+    --output=json
+        Use this option for formatting output.
+
+## EXAMPLES
+    To list all clusters, run:
+
+        $ uffizzi cluster list
+
+    To list all clusters in json format, run:
+
+        $ uffizzi cluster list --output="pretty-json"

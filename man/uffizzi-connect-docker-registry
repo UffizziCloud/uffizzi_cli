@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CONNECT\-DOCKER\-REGISTRY" "" "August 2022" ""
+.TH "UFFIZZI\-CONNECT\-DOCKER\-REGISTRY" "" "February 2023" ""
 .SH "NAME"
 \fBuffizzi\-connect\-docker\-registry\fR \- grant a Uffizzi user account access to a Docker Container Registry\.
 .SH "SYNOPSIS"

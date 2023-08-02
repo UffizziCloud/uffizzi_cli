@@ -1,0 +1,45 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-CLUSTER\-CREATE" "" "July 2023" ""
+.SH "NAME"
+\fBuffizzi\-cluster\-create\fR \- create a cluster
+.SH "SYNOPSIS"
+.nf
+uffizzi cluster create
+.fi
+.SH "DESCRIPTION"
+.nf
+Creates a new cluster\.
+
+For more information on Uffizzi clusters, see:
+https://github\.com/UffizziCloud/uffizzi_cli
+.fi
+.SH "FLAGS"
+.nf
+\-\-name=CLUSTER\-NAME
+    Set cluster name
+
+\-\-kubeconfig="/path/to/your/kubeconfig"
+    Path to kubeconfig file
+
+\-\-manifest="/path/to/your/manifest"
+    Path to manifest file
+
+\-\-update\-current\-context
+    Update current\-context in kubeconfig file
+
+\-\-output=pretty\-json
+\-\-output=json
+    Use this option for formatting output\.
+.fi
+.SH "EXAMPLES"
+.nf
+To create a cluster with the auto generated name, run:
+
+    $ uffizzi cluster create
+
+To create a cluster with name, run:
+
+    $ uffizzi cluster create \-\-name="my\-cluster"
+.fi
+
