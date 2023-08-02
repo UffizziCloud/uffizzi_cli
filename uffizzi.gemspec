@@ -31,7 +31,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faker'
   spec.add_dependency 'launchy'
   spec.add_dependency 'minitar'
-  spec.add_dependency 'openssl', '~> 3.1'
   spec.add_dependency 'securerandom'
   spec.add_dependency 'sentry-ruby'
   spec.add_dependency 'thor'
