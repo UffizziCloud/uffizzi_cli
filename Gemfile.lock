@@ -7,6 +7,7 @@ PATH
       faker
       launchy
       minitar
+      openssl (~> 3.1)
       securerandom
       sentry-ruby
       thor
@@ -58,6 +59,7 @@ GEM
     nokogiri (1.13.1-x86_64-linux)
       racc (~> 1.4)
     open3 (0.1.1)
+    openssl (3.1.0)
     parallel (1.21.0)
     parser (3.0.2.0)
       ast (~> 2.4.1)
