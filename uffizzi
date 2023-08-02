@@ -4,5 +4,14 @@
 $LOAD_PATH.push(File.expand_path('lib', __dir__))
 
 require 'uffizzi/cli'
-ENV['SSL_CERT_FILE'] = OpenSSL::X509::DEFAULT_CERT_FILE
+require 'open3'
+
+begin
+  File.open(OpenSSL::X509::DEFAULT_CERT_FILE)
+rescue Errno::ENOENT => e
+  actual_cert_path = ENV['SSL_CERT_FILE'] || '/etc/ssl/cert.pem'
+  puts "The file does not exist by path #{OpenSSL::X509::DEFAULT_CERT_FILE}. Creating a link"
+  Open3.pipeline("ln -s #{actual_cert_path} #{OpenSSL::X509::DEFAULT_CERT_FILE}")
+end
+
 Uffizzi::Cli.start
