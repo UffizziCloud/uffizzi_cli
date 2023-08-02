@@ -29,7 +29,6 @@ jobs:
         if: matrix.os == 'macos-12'
         run: |
           brew install squashfs openssl@3
-          brew link openssl --force
       - uses: actions/checkout@v2
       - name: 'Set up Ruby'
         uses: ruby/setup-ruby@v1
@@ -48,7 +47,7 @@ jobs:
           export CPPFLAGS="-I$(brew --prefix)/opt/openssl@3.1/include"
           wget https://github.com/pmq20/ruby-packer/releases/download/darwin-x64/rubyc
           chmod +x ./rubyc
-          ./rubyc --openssl-dir="$(brew --prefix openssl@3)" ./uffizzi --output=${{ env.DARWIN_BIN_PATH }}
+          ./rubyc --openssl-dir=/usr/local/etc/openssl@3 ./uffizzi --output=${{ env.DARWIN_BIN_PATH }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         if: matrix.os == 'ubuntu-20.04'
