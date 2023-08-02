@@ -16,6 +16,10 @@ module Uffizzi
       def ask(message, **args)
         @prompt.ask(message, **args)
       end
+
+      def yes?(message)
+        @prompt.yes?(message)
+      end
     end
   end
 end

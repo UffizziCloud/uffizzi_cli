@@ -172,11 +172,11 @@ class LoginTest < Minitest::Test
     @mock_prompt.promise_question_answer('Project name: ', 'existing-project')
     @mock_prompt.promise_question_answer('Project slug: ', nil)
     @mock_prompt.promise_question_answer('Project desciption: ', 'some desc')
-    @mock_prompt.promise_question_answer('Do you want to try different project params? (y/n) ', 'y')
+    @mock_prompt.promise_question_answer('Do you want to try different project params?', 'y')
     @mock_prompt.promise_question_answer('Project name: ', 'new-project')
     @mock_prompt.promise_question_answer('Project slug: ', nil)
     @mock_prompt.promise_question_answer('Project desciption: ', 'some desc')
-    @mock_prompt.promise_question_answer('Do you want to try different project params? (y/n) ', 'n')
+    @mock_prompt.promise_question_answer('Do you want to try different project params?', 'n')
     Uffizzi::ConfigFile.write_option(:project, nil)
     Uffizzi::ConfigFile.write_option(:account, nil)
 

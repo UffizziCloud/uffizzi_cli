@@ -190,9 +190,9 @@ module Uffizzi
       project_slug = Uffizzi.prompt.ask('Project slug: ', default: default_slug)
       return project_slug if project_slug.match?(/^[a-zA-Z0-9\-_]+\Z/i)
 
-      msg = 'Slug must not content spaces or special characters. Do you want to a different project slug? (y/n) '
-      answer = Uffizzi.prompt.ask(msg, required: true).to_s.downcase
-      return ask_project_slug(project_name) if answer == 'y'
+      question = 'Slug must not content spaces or special characters. Do you want to a different project slug?'
+      answer = Uffizzi.prompt.yes?(question)
+      return ask_project_slug(project_name) if answer
 
       raise Uffizzi::Error.new('Project creation aborted')
     end
@@ -205,10 +205,10 @@ module Uffizzi
       end
 
       Uffizzi.ui.say(errors.join("\n"))
-      question = 'Do you want to try different project params? (y/n) '
-      answer = Uffizzi.prompt.ask(question, required: true).to_s.downcase
+      question = 'Do you want to try different project params?'
+      answer = Uffizzi.prompt.yes?(question)
 
-      return create_new_project(project_params) if answer == 'y'
+      return create_new_project(project_params) if answer
 
       raise Uffizzi::Error.new("Project creation aborted. You can run 'uffizzi config' to set project as a default")
     end

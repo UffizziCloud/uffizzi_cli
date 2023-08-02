@@ -25,6 +25,11 @@ class MockPrompt
     answer.nil? ? params[:default] : answer
   end
 
+  def yes?(question)
+    answer = get_answer(question)
+    answer == 'y'
+  end
+
   def promise_question_answer(question, answer)
     @question_answers << { question: question, answer: answer }
   end
