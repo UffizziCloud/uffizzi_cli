@@ -58,12 +58,9 @@ module Uffizzi
       Uffizzi.ui.say("Configure the default properties that will be used to authenticate with your \
                       \nUffizzi API service and manage previews.\n")
       server = Uffizzi.ui.ask('Server: ', default: Uffizzi.configuration.default_server.to_s)
-      username = Uffizzi.ui.ask('Username: ')
 
       ConfigFile.delete
-
       ConfigFile.write_option(:server, server)
-      ConfigFile.write_option(:username, username)
 
       Uffizzi.ui.say('To login, run: uffizzi login')
     end
