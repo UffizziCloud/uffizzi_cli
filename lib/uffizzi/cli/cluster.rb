@@ -16,6 +16,7 @@ module Uffizzi
     include ApiClient
 
     desc 'list', 'List all clusters'
+    method_option :all, required: false, type: :boolean, aliases: '-a'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def list
       run('list')
@@ -75,8 +76,13 @@ module Uffizzi
     end
 
     def handle_list_command(project_slug)
-      oidc_token = ConfigFile.read_option(:oidc_token)
-      response = get_clusters(ConfigFile.read_option(:server), project_slug, oidc_token: oidc_token)
+      is_all = options[:all]
+      response = if is_all
+        get_account_clusters(ConfigFile.read_option(:server), ConfigFile.read_option(:account, :id))
+      else
+        oidc_token = ConfigFile.read_option(:oidc_token)
+        get_clusters(ConfigFile.read_option(:server), project_slug, oidc_token: oidc_token)
+      end
 
       if ResponseHelper.ok?(response)
         handle_succeed_list_response(response)
@@ -242,11 +248,25 @@ module Uffizzi
       clusters = response[:body][:clusters] || []
       raise Uffizzi::Error.new('The project has no active clusters') if clusters.empty?
 
-      if Uffizzi.ui.output_format.nil?
-        clusters = clusters.map { |cluster| "- #{cluster[:name]}" }.join("\n").strip
+      clusters_data = if Uffizzi.ui.output_format.nil?
+        render_plain_cluster_list(clusters)
+      else
+        clusters.map { |c| c.slice(:name, :project) }
       end
 
-      Uffizzi.ui.say(clusters)
+      Uffizzi.ui.say(clusters_data)
+    end
+
+    def render_plain_cluster_list(clusters)
+      clusters.map do |cluster|
+        project_name = cluster.dig(:project, :name)
+
+        if project_name.present?
+          "- Cluster name: #{cluster[:name].strip} Project name: #{project_name.strip}"
+        else
+          "- #{cluster[:name]}"
+        end
+      end.join("\n")
     end
 
     def handle_succeed_describe(cluster_data)

@@ -121,4 +121,8 @@ module ApiRoutes
   def browser_sign_in_url(server, session_id)
     "#{server}/sign_in?session_id=#{session_id}"
   end
+
+  def account_clusters_uri(server, account_id)
+    "#{server}/api/cli/v1/accounts/#{account_id}/clusters"
+  end
 end

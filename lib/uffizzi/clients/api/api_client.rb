@@ -293,6 +293,13 @@ module ApiClient
     build_response(response)
   end
 
+  def get_account_clusters(server, account_id)
+    uri = account_projects_uri(server, account_id)
+    response = http_client.make_get_request(uri)
+
+    build_response(response)
+  end
+
   private
 
   def http_client
