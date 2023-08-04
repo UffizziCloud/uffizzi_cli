@@ -76,7 +76,7 @@ module Uffizzi
 
     def handle_list_command(project_slug)
       oidc_token = ConfigFile.read_option(:oidc_token)
-      response = get_clusters(ConfigFile.read_option(:server), project_slug, token: oidc_token)
+      response = get_clusters(ConfigFile.read_option(:server), project_slug, oidc_token: oidc_token)
 
       if ResponseHelper.ok?(response)
         handle_succeed_list_response(response)
