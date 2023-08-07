@@ -1,26 +1,27 @@
-uffizzi preview update - update a preview
+uffizzi compose update - update a compose environment (preview)
 ================================================================
 
 ## SYNOPSIS
-    uffizzi preview update [PREVIEW_ID] [COMPOSE_FILE] [UFFIZZI_WIDE_FLAG ...]
+    uffizzi compose update [COMPOSE_ENVIRONMENT_ID] [COMPOSE_FILE] [UFFIZZI_WIDE_FLAG ...]
 
 ## DESCRIPTION
-    Given a preview ID and new compose file, update a preview. Updating a 
-    preview does not change its preview URL. 
+    Given a compose environment (preview) ID and new compose file,
+    update a compose environment (preview). Updating a compose
+    environment (preview) does not change its compose environment (preview) URL.
 
-    This command can fail for the following reasons: 
-        - There is no preview with the given PREVIEW_ID
+    This command can fail for the following reasons:
+        - There is no compose environment (preview) with the given COMPOSE_ENVIRONMENT_ID
         - The COMPOSE_FILE specified is invalid
 
     For more information on Uffizzi previews, see:
     https://docs.uffizzi.com/references/cli/
 
 ## POSITIONAL ARGUMENTS
-    [PREVIEW_ID]
-        The ID of the preview that you want to update.
+    [COMPOSE_ENVIRONMENT_ID]
+        The ID of the compose environment (preview) that you want to update.
 
     [COMPOSE_FILE]
-        The new compose file you want to preview.
+        The new compose file you want to compose environment (preview).
 
 ## FLAGS
     --set-labels=METADATA
@@ -28,23 +29,23 @@ uffizzi preview update - update a preview
         be usefull for filtering deployments.
 
 ## UFFIZZI WIDE FLAGS
-    These flags are available to all commands: --project. Run $ uffizzi 
+    These flags are available to all commands: --project. Run $ uffizzi
     help for details.
 
 ## EXAMPLES
-    The following command updates a preview with ID deployment-67 using
-    compose file docker-compose.alt.yml:
+    The following command updates a compose environment (preview)
+    with ID deployment-67 using compose file docker-compose.alt.yml:
 
-        $ uffizzi preview update deployment-67 docker-compose.alt.yml
+        $ uffizzi compose update deployment-67 docker-compose.alt.yml
 
-    To update a preview with single label, run:
+    To update a compose with single label, run:
 
-        $ uffizzi preview update \
+        $ uffizzi compose update \
         deployment-67 docker-compose.alt.yml \
         --set-labels github.repo=my_repo
 
-    To update a preview with multiple labels, run:
+    To update a compose with multiple labels, run:
 
-        $ uffizzi preview update \
+        $ uffizzi compose update \
         deployment-67 docker-compose.alt.yml \
         --set-labels="github.repo=my_repo github.pull_request.number=23"

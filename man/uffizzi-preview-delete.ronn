@@ -1,28 +1,29 @@
-uffizzi-preview-delete - delete a preview
+uffizzi-compose-delete - delete a compose environment (preview)
 ================================================================
 
 ## SYNOPSIS
-    uffizzi preview delete [PREVIEW_ID] [UFFIZZI_WIDE_FLAG ...] 
+    uffizzi compose delete [PREVIEW_ID] [UFFIZZI_WIDE_FLAG ...]
 
 ## DESCRIPTION
-    Deletes a preview with the given preview ID. 
+    Deletes a compose environment (preview) with
+    the given compose environment (preview) ID.
 
     This command can fail for the following reasons:
-        - The preview specified does not exist.
-        - The preview specified belongs to a different project.
-    
+        - The compose environment (preview) specified does not exist.
+        - The compose environment (preview) specified belongs to a different project.
+
     For more information on Uffizzi previews, see:
     https://docs.uffizzi.com/references/cli/
 
 ## POSITIONAL ARGUMENTS
     [PREVIEW_ID]
-        ID for the preview you want to delete.  
+        ID for the compose environment (preview) you want to delete.
 
 ## UFFIZZI WIDE FLAGS
-    These flags are available to all commands: --project. Run $ uffizzi 
+    These flags are available to all commands: --project. Run $ uffizzi
     help for details.
 
 ## EXAMPLES
-    The following command deletes the preview with ID deployment-213:
+    The following command deletes the compose environment (preview) with ID deployment-213:
 
-        $ uffizzi preview delete deployment-213
+        $ uffizzi compose delete deployment-213

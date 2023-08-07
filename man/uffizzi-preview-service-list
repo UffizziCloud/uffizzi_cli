@@ -2,26 +2,34 @@
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "UFFIZZI\-PREVIEW\-SERVICE\-LIST" "" "August 2023" ""
 .SH "NAME"
-\fBuffizzi\-preview\-service\-list\fR \- list the container services of a given preview
+\fBuffizzi\-preview\-service\-list\fR
+.P
+uffizzi\-compose\-service\-list \- list the container services of a given compose environment (preview) ================================================================
 .SH "SYNOPSIS"
 .nf
-uffizzi preview service list [PREVIEW_ID] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+uffizzi compose service list [COMPOSE_ENVIRONMENT_ID] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
 .fi
 .SH "DESCRIPTION"
 .nf
-Shows a list of the container services that make up a given preview
-deployment\.
+Shows a list of the container services that make up a given
+compose environment (preview) deployment\.
 
 This command can fail for the following reasons:
-    \- There is no preview with the given PREVIEW_ID
+    \- There is no compose environment (preview)
+      with the given COMPOSE_ENVIRONMENT_ID
 
+<<<<<<< HEAD
 For more information on preview services, see:
 https://docs\.uffizzi\.com/references/cli/
+=======
+For more information on compose environment (preview) services, see:
+https://github\.com/UffizziCloud/uffizzi_cli
+>>>>>>> fb27a8b ([265] Rename uffizzi preview to uffizzi compose)
 .fi
 .SH "POSITIONAL ARGUMENTS"
 .nf
-[PREVIEW_ID]
-    The ID of the preview you want to list services for\.
+[COMPOSE_ENVIRONMENT_ID]
+    The ID of the compose environment (preview) you want to list services for\.
 .fi
 .SH "UFFIZZI WIDE FLAGS"
 .nf
@@ -30,9 +38,10 @@ help for details\.
 .fi
 .SH "EXAMPLES"
 .nf
-The following command lists the container services for a preview
-with PREVIEW_ID deployment\-56:
+The following command lists the container services
+for a compose environment (preview) with
+COMPOSE_ENVIRONMENT_ID deployment\-56:
 
-    $ uffizzi preview service list deployment\-56
+    $ uffizzi compose service list deployment\-56
 .fi
 

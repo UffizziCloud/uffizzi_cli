@@ -1,17 +1,17 @@
-uffizzi-preview-create - create a preview
+uffizzi-compose-create - create a compose environment (preview)
 ================================================================
 
 ## SYNOPSIS
-    uffizzi preview create [COMPOSE_FILE] [UFFIZZI_WIDE_FLAG ...] 
+    uffizzi compose create [COMPOSE_FILE] [UFFIZZI_WIDE_FLAG ...]
 
 ## DESCRIPTION
-    Creates a new preview. If no COMPOSE_FILE is specified, the preview 
-    is created with the project's default compose file.
+    Creates a new compose environment (preview). If no COMPOSE_FILE is specified,
+    the compose environment (preview) is created with the project's default compose file.
 
-    This command can fail for the following reasons: 
-        - The project does not have a default compose file set. Run 
-          $ uffizzi compose --help for details.  
-        - The alternate compose file is invalid.  
+    This command can fail for the following reasons:
+        - The project does not have a default compose file set. Run
+          $ uffizzi compose --help for details.
+        - The alternate compose file is invalid.
 
     For more information on Uffizzi previews, see:
     https://docs.uffizzi.com/references/cli/
@@ -20,12 +20,13 @@ uffizzi-preview-create - create a preview
     [COMPOSE_FILE]
         An alternate compose file to the default compose.
 
-        You can pass a compose file to this command to create an ad hoc 
-        preview of an alternate compose configuration. The file passed 
-        via this argument does not replace the default compose file for 
-        the project. Alternate compose files share the same lifecyle as 
-        the previews they create: when the preview is deleted, the 
-        alternate compose is deleted by the Uffizzi API. 
+        You can pass a compose file to this command to create an ad hoc
+        compose environment (preview) of an alternate compose configuration.
+        The file passed via this argument does not replace the default
+        compose file for the project. Alternate compose files share the
+        same lifecyle as the previews they create: when the compose
+        environment (preview) is deleted, the alternate compose
+        is deleted by the Uffizzi API.
 
 ## FLAGS
     --set-labels=METADATA
@@ -33,23 +34,23 @@ uffizzi-preview-create - create a preview
         be usefull for filtering deployments.
 
 ## UFFIZZI WIDE FLAGS
-    These flags are available to all commands: --project. Run $ uffizzi 
+    These flags are available to all commands: --project. Run $ uffizzi
     help for details.
 
 ## EXAMPLES
-    To create a preview with the project's default compose file, run:
+    To create a compose environment (preview) with the project's default compose file, run:
 
-        $ uffizzi preview create
+        $ uffizzi compose create
 
-    To create a preview with an alternate compose file, run:
+    To create a compose environment (preview) with an alternate compose file, run:
 
-        $ uffizzi preview create docker-compose.uffizzi.alt.yml
+        $ uffizzi compose create docker-compose.uffizzi.alt.yml
 
-    To create a preview with single label, run:
+    To create a compose environment (preview) with single label, run:
 
-        $ uffizzi preview create --set-labels github.repo=my_repo
+        $ uffizzi compose create --set-labels github.repo=my_repo
 
-    To create a preview with multiple labels, run:
+    To create a compose environment (preview) with multiple labels, run:
 
-        $ uffizzi preview create \
+        $ uffizzi compose create \
         --set-labels="github.repo=my_repo github.pull_request.number=23"

@@ -1,29 +1,32 @@
-  uffizzi-preview-service-list - list the container services of a given preview
+  uffizzi-compose-service-list - list the container services
+  of a given compose environment (preview)
 ================================================================
 
 ## SYNOPSIS
-    uffizzi preview service list [PREVIEW_ID] [UFFIZZI_WIDE_FLAG ...] 
+    uffizzi compose service list [COMPOSE_ENVIRONMENT_ID] [UFFIZZI_WIDE_FLAG ...]
 
 ## DESCRIPTION
-    Shows a list of the container services that make up a given preview 
-    deployment.
+    Shows a list of the container services that make up a given
+    compose environment (preview) deployment.
 
-    This command can fail for the following reasons: 
-        - There is no preview with the given PREVIEW_ID
+    This command can fail for the following reasons:
+        - There is no compose environment (preview)
+          with the given COMPOSE_ENVIRONMENT_ID
 
     For more information on preview services, see:
     https://docs.uffizzi.com/references/cli/
 
 ## POSITIONAL ARGUMENTS
-    [PREVIEW_ID]
-        The ID of the preview you want to list services for.
+    [COMPOSE_ENVIRONMENT_ID]
+        The ID of the compose environment (preview) you want to list services for.
 
 ## UFFIZZI WIDE FLAGS
-    These flags are available to all commands: --project. Run $ uffizzi 
+    These flags are available to all commands: --project. Run $ uffizzi
     help for details.
 
 ## EXAMPLES
-    The following command lists the container services for a preview 
-    with PREVIEW_ID deployment-56:
+    The following command lists the container services
+    for a compose environment (preview) with
+    COMPOSE_ENVIRONMENT_ID deployment-56:
 
-        $ uffizzi preview service list deployment-56
+        $ uffizzi compose service list deployment-56
