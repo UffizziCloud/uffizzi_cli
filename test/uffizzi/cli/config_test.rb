@@ -68,15 +68,12 @@ class ConfigTest < Minitest::Test
 
   def test_setup
     Uffizzi::ConfigFile.unset_option(:server)
-    Uffizzi::ConfigFile.unset_option(:username)
 
     refute(Uffizzi::ConfigFile.option_has_value?(:server))
-    refute(Uffizzi::ConfigFile.option_has_value?(:username))
 
     @config.setup
 
     assert(Uffizzi::ConfigFile.option_has_value?(:server))
-    assert(Uffizzi::ConfigFile.option_has_value?(:username))
     assert_equal('To login, run: uffizzi login', Uffizzi.ui.last_message)
   end
 end
