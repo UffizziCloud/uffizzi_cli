@@ -86,7 +86,7 @@ class PreviewTest < Minitest::Test
       @preview.list
     end
 
-    assert_equal(error.message, 'Filtering parameters were set in incorrect format.')
+    assert_equal('Filtering parameters were set in incorrect format.', error.message)
     refute_requested(stubbed_uffizzi_preview_list)
   end
 
@@ -204,7 +204,7 @@ class PreviewTest < Minitest::Test
       @preview.create
     end
 
-    assert_equal(error.message, 'Labels were set in incorrect format.')
+    assert_equal('Labels were set in incorrect format.', error.message)
     refute_requested(stubbed_uffizzi_preview_create)
   end
 
@@ -217,7 +217,7 @@ class PreviewTest < Minitest::Test
       @preview.create
     end
 
-    assert_equal(error.message, 'Labels were set in incorrect format.')
+    assert_equal('Labels were set in incorrect format.', error.message)
     refute_requested(stubbed_uffizzi_preview_create)
   end
 
@@ -230,7 +230,7 @@ class PreviewTest < Minitest::Test
       @preview.create
     end
 
-    assert_equal(error.message, 'Labels were set in incorrect format.')
+    assert_equal('Labels were set in incorrect format.', error.message)
     refute_requested(stubbed_uffizzi_preview_create)
   end
 
@@ -580,7 +580,7 @@ class PreviewTest < Minitest::Test
       @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_success.yml')
     end
 
-    assert_equal(error.message, 'Labels were set in incorrect format.')
+    assert_equal('Labels were set in incorrect format.', error.message)
     refute_requested(stubbed_uffizzi_preview_update)
   end
 

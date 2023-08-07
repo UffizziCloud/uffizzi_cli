@@ -5,6 +5,8 @@ require 'test_helper'
 class LoginTest < Minitest::Test
   def setup
     @cli = Uffizzi::Cli.new
+    @mock_prompt = MockPrompt.new
+    Uffizzi.stubs(:prompt).returns(@mock_prompt)
 
     @command_params = {
       username: generate(:email),
@@ -113,5 +115,82 @@ class LoginTest < Minitest::Test
     assert_requested(stubbed_get_access_token)
     assert_requested(stubbed_uffizzi_projects)
     assert(Uffizzi::Token.exists?)
+  end
+
+  def test_browser_login_with_new_project_creation_success
+    account_id = 1
+    access_token_body = json_fixture('files/uffizzi/uffizzi_access_token_success.json')
+    account_body = json_fixture('files/uffizzi/uffizzi_accounts_success.json')
+    projects_body = json_fixture('files/uffizzi/uffizzi_projects_success_two_projects.json')
+    project_body = json_fixture('files/uffizzi/uffizzi_project_success.json')
+
+    stubbed_create_access_token = stub_create_token_request(access_token_body)
+    stubbed_get_access_token = stub_get_token_request(access_token_body)
+    stubbed_uffizzi_projects = stub_uffizzi_account_projects_success(projects_body, account_id)
+    stubbed_uffizzi_project = stub_uffizzi_project_create_success(project_body, account_id)
+    stubbed_uffizzi_accounts = stub_uffizzi_accounts_success(account_body)
+
+    @mock_prompt.promise_question_answer('Select an account:', :first)
+    @mock_prompt.promise_question_answer('Select a project or create a new project:', :last)
+    @mock_prompt.promise_question_answer('Project name: ', 'new-project')
+    @mock_prompt.promise_question_answer('Project slug: ', nil)
+    @mock_prompt.promise_question_answer('Project desciption: ', 'some desc')
+    Uffizzi::ConfigFile.write_option(:project, nil)
+    Uffizzi::ConfigFile.write_option(:account, nil)
+
+    @cli.options = command_options(server: @command_params[:server])
+    @cli.login
+
+    assert_requested(stubbed_create_access_token)
+    assert_requested(stubbed_get_access_token)
+    assert_requested(stubbed_uffizzi_projects)
+    assert_requested(stubbed_uffizzi_project)
+    assert_requested(stubbed_uffizzi_accounts)
+    assert_match('was successfully created', Uffizzi.ui.last_message)
+  end
+
+  def test_browser_login_with_new_project_creation_when_project_already_exists_and_abort_repeat
+    account_id = 1
+    access_token_body = json_fixture('files/uffizzi/uffizzi_access_token_success.json')
+    account_body = json_fixture('files/uffizzi/uffizzi_accounts_success.json')
+    projects_body = json_fixture('files/uffizzi/uffizzi_projects_success_two_projects.json')
+
+    project_creation_error = {
+      errors: {
+        name: ["A project with the name 'existing-project' already exists."],
+      },
+    }
+
+    stubbed_create_access_token = stub_create_token_request(access_token_body)
+    stubbed_get_access_token = stub_get_token_request(access_token_body)
+    stubbed_uffizzi_projects = stub_uffizzi_account_projects_success(projects_body, account_id)
+    stubbed_uffizzi_create_project = stub_uffizzi_project_create_failed(project_creation_error, account_id)
+    stubbed_uffizzi_accounts = stub_uffizzi_accounts_success(account_body)
+
+    @mock_prompt.promise_question_answer('Select an account:', :first)
+    @mock_prompt.promise_question_answer('Select a project or create a new project:', :last)
+    @mock_prompt.promise_question_answer('Project name: ', 'existing-project')
+    @mock_prompt.promise_question_answer('Project slug: ', nil)
+    @mock_prompt.promise_question_answer('Project desciption: ', 'some desc')
+    @mock_prompt.promise_question_answer('Do you want to try different project params?', 'y')
+    @mock_prompt.promise_question_answer('Project name: ', 'new-project')
+    @mock_prompt.promise_question_answer('Project slug: ', nil)
+    @mock_prompt.promise_question_answer('Project desciption: ', 'some desc')
+    @mock_prompt.promise_question_answer('Do you want to try different project params?', 'n')
+    Uffizzi::ConfigFile.write_option(:project, nil)
+    Uffizzi::ConfigFile.write_option(:account, nil)
+
+    @cli.options = command_options(server: @command_params[:server])
+
+    error = assert_raises(Uffizzi::Error) do
+      @cli.login
+    end
+
+    assert_requested(stubbed_create_access_token)
+    assert_requested(stubbed_get_access_token)
+    assert_requested(stubbed_uffizzi_projects)
+    assert_requested(stubbed_uffizzi_create_project, times: 2)
+    assert_requested(stubbed_uffizzi_accounts)
+    assert_match('Project creation aborted', error.message)
   end
 end

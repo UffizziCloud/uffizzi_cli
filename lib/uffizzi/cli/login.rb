@@ -150,24 +150,21 @@ module Uffizzi
     def set_project(account_id)
       projects_response = fetch_account_projects(@server, account_id)
       projects = projects_response[:body][:projects]
-      question = 'Select a project or create a new project:'
       choices = projects.map do |project|
         { name: project[:name], value: project[:slug] }
       end
       all_choices = choices + [{ name: 'Create a new project', value: nil }]
+      question = 'Select a project or create a new project:'
       answer = Uffizzi.prompt.select(question, all_choices)
       return create_new_project unless answer
 
       ConfigFile.write_option(:project, answer)
     end
 
-    def create_new_project
-      project_name = Uffizzi.prompt.ask('Project name: ', required: true)
-      generated_slug = Uffizzi::ProjectHelper.generate_slug(project_name)
-      project_slug = Uffizzi.prompt.ask('Project slug: ', default: generated_slug)
-      raise Uffizzi::Error.new('Slug must not content spaces or special characters') unless project_slug.match?(/^[a-zA-Z0-9\-_]+\Z/i)
-
-      project_description = Uffizzi.prompt.ask('Project desciption: ')
+    def create_new_project(prev_params = {})
+      project_name = Uffizzi.prompt.ask('Project name: ', required: true, default: prev_params.fetch(:name, nil))
+      project_slug = ask_project_slug(project_name, prev_params.fetch(:slug, nil))
+      project_description = Uffizzi.prompt.ask('Project desciption: ', default: prev_params.fetch(:description, nil))
 
       params = {
         project: {
@@ -183,18 +180,37 @@ module Uffizzi
       if ResponseHelper.created?(response)
         handle_create_project_succeess(response)
       else
-        handle_create_project_failed(response)
+        handle_create_project_failed(response, params[:project])
       end
     end
 
-    def handle_create_project_failed(response)
-      name_error = response[:body][:errors][:name].first
-      name_already_exists = name_error && name_error.first == 'Name already exists'
-      message = "Project with name #{project_name} already exists. " \
-      'Please run $ uffizzi config to set it as a default project'
-      raise Uffizzi::Error.new(message) if name_already_exists
+    def ask_project_slug(project_name, prev_slug = nil)
+      generated_slug = Uffizzi::ProjectHelper.generate_slug(project_name)
+      default_slug = prev_slug || generated_slug
+      project_slug = Uffizzi.prompt.ask('Project slug: ', default: default_slug)
+      return project_slug if project_slug.match?(/^[a-zA-Z0-9\-_]+\Z/i)
 
-      ResponseHelper.handle_failed_response(response)
+      question = 'Slug must not content spaces or special characters. Do you want to a different project slug?'
+      answer = Uffizzi.prompt.yes?(question)
+      return ask_project_slug(project_name) if answer
+
+      raise Uffizzi::Error.new('Project creation aborted')
+    end
+
+    def handle_create_project_failed(response, project_params)
+      errors = [:name, :slug].map { |error_key| response.dig(:body, :errors, error_key).to_a.first }.compact
+
+      if errors.blank?
+        return ResponseHelper.handle_failed_response(response)
+      end
+
+      Uffizzi.ui.say(errors.join("\n"))
+      question = 'Do you want to try different project params?'
+      answer = Uffizzi.prompt.yes?(question)
+
+      return create_new_project(project_params) if answer
+
+      raise Uffizzi::Error.new("Project creation aborted. You can run 'uffizzi config' to set project as a default")
     end
 
     def handle_create_project_succeess(response)
