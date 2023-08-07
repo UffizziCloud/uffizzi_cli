@@ -4,6 +4,7 @@ PATH
     uffizzi-cli (2.0.17)
       activesupport
       awesome_print
+      bump
       faker
       launchy
       minitar
@@ -133,7 +134,6 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  bump
   bundler (~> 2.1)
   byebug
   deepsort (~> 0.4.5)
