@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-PREVIEW\-SERVICE\-LOGS" "" "February 2023" ""
+.TH "UFFIZZI\-PREVIEW\-SERVICE\-LOGS" "" "August 2023" ""
 .SH "NAME"
 \fBuffizzi\-preview\-service\-logs\fR \- show the logs for a container service of a preview
 .SH "SYNOPSIS"
