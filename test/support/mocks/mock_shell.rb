@@ -2,6 +2,17 @@
 
 class MockShell
   class ExitError < StandardError; end
+
+  class MockProcessStatus
+    def initialize(success)
+      @success = success
+    end
+
+    def success?
+      @success
+    end
+  end
+
   attr_accessor :messages, :output_format, :stdout_pipe
 
   PRETTY_JSON = 'pretty-json'
@@ -10,6 +21,7 @@ class MockShell
 
   def initialize
     @messages = []
+    @command_responses = []
     @output_enabled = true
     @stdout_pipe = false
   end
@@ -56,7 +68,35 @@ class MockShell
     @output_enabled = true
   end
 
+  def execute(command, *_params)
+    stdout, stderr = get_command_response(command)
+    status = MockProcessStatus.new(stderr.nil?)
+
+    [stdout, stderr, status]
+  end
+
+  def promise_execute(command, stdout: nil, stderr: nil)
+    @command_responses << { command: command, stdout: stdout, stderr: stderr }
+  end
+
   private
+
+  def get_command_response(command)
+    response_index = @command_responses.index do |command_response|
+      case command_response[:command]
+      when Regexp
+        command_response[:command].match?(command)
+      else
+        command_response[:command] == command
+      end
+    end
+
+    stdout = @command_responses[response_index].fetch(:stdout)
+    stderr = @command_responses[response_index].fetch(:stderr)
+    @command_responses.delete_at(response_index)
+
+    [stdout, stderr]
+  end
 
   def format_to_json(data)
     data.to_json

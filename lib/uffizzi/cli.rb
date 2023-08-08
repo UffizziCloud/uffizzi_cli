@@ -71,6 +71,10 @@ module Uffizzi
       Disconnect.new.run(credential_type)
     end
 
+    desc 'install', 'install'
+    require_relative 'cli/install'
+    subcommand 'install', Cli::Install
+
     map preview: :compose
 
     class << self
