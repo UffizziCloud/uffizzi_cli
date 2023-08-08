@@ -5,8 +5,6 @@ require 'test_helper'
 class LoginTest < Minitest::Test
   def setup
     @cli = Uffizzi::Cli.new
-    @mock_prompt = MockPrompt.new
-    Uffizzi.stubs(:prompt).returns(@mock_prompt)
 
     @command_params = {
       username: generate(:email),
