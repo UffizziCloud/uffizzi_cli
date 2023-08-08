@@ -13,7 +13,7 @@ uffizzi-account-set-default - set the default account
       - There is no account with the given account name
 
     For more information on Uffizzi projects, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+    https://docs.uffizzi.com/references/cli/
 
 ## EXAMPLES
     The following sets the default account with account name 

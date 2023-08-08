@@ -8,7 +8,7 @@ uffizzi-cluster-create - create a cluster
     Creates a new cluster.
 
     For more information on Uffizzi clusters, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+    https://docs.uffizzi.com/references/cli/
 
 ## FLAGS
     --name=CLUSTER-NAME

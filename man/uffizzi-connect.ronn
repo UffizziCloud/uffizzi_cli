@@ -8,8 +8,8 @@
 
 Grants a Uffizzi user account access to external services.
 
-For more information on connecting to external services, see:  
-https://github.com/UffizziCloud/uffizzi_cli
+For more information on connecting to external services, see:
+https://docs.uffizzi.com/references/cli/
 
 ## COMMANDS
 

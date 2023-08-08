@@ -12,7 +12,7 @@
         - The user is not authenticated
 
     For more information on preview services, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+    https://docs.uffizzi.com/references/cli/
 
 ## EXAMPLES
     The following command lists the user's accounts:

@@ -9,7 +9,7 @@
     If a user/account do not exist, Uffizzi will create them based on token payload.
 
     For more information on authentication and credential types, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+    https://docs.uffizzi.com/references/cli/
 
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 

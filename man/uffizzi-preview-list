@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-PREVIEW\-LIST" "" "February 2023" ""
+.TH "UFFIZZI\-PREVIEW\-LIST" "" "August 2023" ""
 .SH "NAME"
 \fBuffizzi\-preview\-list\fR \- list previews in a project
 .SH "SYNOPSIS"
@@ -13,7 +13,7 @@ Lists all previews for a project, including active, building,
 deploying and failed previews\.
 
 For more information on Uffizzi previews, see:
-https://github\.com/UffizziCloud/uffizzi_cli
+https://docs\.uffizzi\.com/references/cli/
 .fi
 .SH "FLAGS"
 .nf
