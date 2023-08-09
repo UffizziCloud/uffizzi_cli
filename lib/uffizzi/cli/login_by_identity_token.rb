@@ -14,14 +14,14 @@ module Uffizzi
     end
 
     def run
-      token = @options[:token]
+      oidc_token = @options[:oidc_token]
       github_access_token = @options[:access_token]
       server = @options[:server]
-      params = prepare_request_params(token, github_access_token)
+      params = prepare_request_params(oidc_token, github_access_token)
       response = create_ci_session(server, params)
 
       if ResponseHelper.created?(response)
-        handle_succeed_response(response, server, token)
+        handle_succeed_response(response, server, oidc_token)
       else
         ResponseHelper.handle_failed_response(response)
       end
@@ -29,21 +29,21 @@ module Uffizzi
 
     private
 
-    def prepare_request_params(token, github_access_token)
+    def prepare_request_params(oidc_token, github_access_token)
       {
         user: {
-          token: token,
+          token: oidc_token,
           github_access_token: github_access_token,
         },
       }
     end
 
-    def handle_succeed_response(response, server, token)
+    def handle_succeed_response(response, server, oidc_token)
       ConfigFile.write_option(:server, server)
       ConfigFile.write_option(:cookie, response[:headers])
       ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(response[:body][:account_id]))
       ConfigFile.write_option(:project, response[:body][:project_slug])
-      ConfigFile.write_option(:token, token)
+      ConfigFile.write_option(:oidc_token, oidc_token)
 
       Uffizzi.ui.say('Successful Login by Identity Token')
     end

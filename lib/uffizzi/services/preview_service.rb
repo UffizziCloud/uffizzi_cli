@@ -21,8 +21,8 @@ class PreviewService
 
     def run_containers_deploy(project_slug, deployment)
       deployment_id = deployment[:id]
-      token = Uffizzi::ConfigFile.read_option(:token)
-      params = { id: deployment_id, token: token }
+      oidc_token = Uffizzi::ConfigFile.read_option(:oidc_token)
+      params = { id: deployment_id, token: oidc_token }
 
       response = deploy_containers(server_url, project_slug, deployment_id, params)
 

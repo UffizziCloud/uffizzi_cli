@@ -248,15 +248,15 @@ module ApiClient
     build_response(response)
   end
 
-  def get_clusters(server, project_slug, params = nil)
-    uri = clusters_uri(server, project_slug, params)
+  def get_clusters(server, project_slug, params)
+    uri = clusters_uri(server, project_slug, oidc_token: params[:oidc_token])
     response = http_client.make_get_request(uri)
 
     build_response(response)
   end
 
   def create_cluster(server, project_slug, params)
-    uri = clusters_uri(server, project_slug)
+    uri = clusters_uri(server, project_slug, oidc_token: nil)
     response = http_client.make_post_request(uri, params)
 
     build_response(response)
@@ -272,8 +272,8 @@ module ApiClient
     build_response(response)
   end
 
-  def get_cluster(server, project_slug, cluster_name)
-    uri = cluster_uri(server, project_slug, cluster_name)
+  def get_cluster(server, project_slug, params)
+    uri = cluster_uri(server, project_slug, cluster_name: params[:cluster_name], oidc_token: params[:oidc_token])
     response = http_client.make_get_request(uri)
 
     build_response(response)
@@ -286,8 +286,8 @@ module ApiClient
     build_response(response)
   end
 
-  def delete_cluster(server, project_slug, cluster_name)
-    uri = cluster_uri(server, project_slug, cluster_name)
+  def delete_cluster(server, project_slug, params)
+    uri = cluster_uri(server, project_slug, cluster_name: params[:cluster_name], oidc_token: params[:oidc_token])
     response = http_client.make_delete_request(uri)
 
     build_response(response)

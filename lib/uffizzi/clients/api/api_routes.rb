@@ -98,14 +98,16 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers/#{container_name}/k8s_container_description"
   end
 
-  def clusters_uri(server, project_slug, filter = nil)
-    return "#{server}/api/cli/v1/projects/#{project_slug}/clusters" if filter.nil?
+  def clusters_uri(server, project_slug, oidc_token:)
+    return "#{server}/api/cli/v1/projects/#{project_slug}/clusters" if oidc_token.nil?
 
-    "#{server}/api/cli/v1/projects/#{project_slug}/clusters?q=#{filter.to_json}"
+    "#{server}/api/cli/v1/projects/#{project_slug}/clusters?token=#{oidc_token}"
   end
 
-  def cluster_uri(server, project_slug, cluster_name)
-    "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}"
+  def cluster_uri(server, project_slug, cluster_name:, oidc_token:)
+    return "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}" if oidc_token.nil?
+
+    "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}?token=#{oidc_token}"
   end
 
   def access_token_url(server, code)
