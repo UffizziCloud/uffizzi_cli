@@ -9,7 +9,7 @@ uffizzi-preview-list - list previews in a project
     deploying and failed previews. 
     
     For more information on Uffizzi previews, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+    https://docs.uffizzi.com/references/cli/
 
 ## FLAGS
     --filter=METADATA

@@ -75,7 +75,8 @@ module Uffizzi
     end
 
     def handle_list_command(project_slug)
-      response = get_clusters(ConfigFile.read_option(:server), project_slug)
+      oidc_token = ConfigFile.read_option(:oidc_token)
+      response = get_clusters(ConfigFile.read_option(:server), project_slug, oidc_token: oidc_token)
 
       if ResponseHelper.ok?(response)
         handle_succeed_list_response(response)
@@ -100,7 +101,7 @@ module Uffizzi
 
       spinner = TTY::Spinner.new("[:spinner] Creating cluster #{cluster_name}...", format: :dots)
       spinner.auto_spin
-      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name)
+      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, ConfigFile.read_option(:oidc_token))
 
       if ClusterService.failed?(cluster_data[:state])
         spinner.error
@@ -153,7 +154,11 @@ module Uffizzi
     end
 
     def handle_delete_cluster(project_slug, cluster_name)
-      response = delete_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+      params = {
+        cluster_name: cluster_name,
+        oidc_token: ConfigFile.read_option(:oidc_token),
+      }
+      response = delete_cluster(ConfigFile.read_option(:server), project_slug, params)
 
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say("Cluster #{cluster_name} deleted")
@@ -163,9 +168,8 @@ module Uffizzi
     end
 
     def handle_update_kubeconfig_command(project_slug, command_args)
-      cluster_name = command_args[:cluster_name]
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
-      cluster_data = fetch_cluster_data(project_slug, cluster_name)
+      cluster_data = fetch_cluster_data(project_slug, command_args[:cluster_name])
 
       unless cluster_data[:kubeconfig].present?
         say_error_update_kubeconfig(cluster_data)
@@ -204,14 +208,14 @@ module Uffizzi
 
     def cluster_creation_params(name, manifest_file_path)
       manifest_content = load_manifest_file(manifest_file_path)
-      token = Uffizzi::ConfigFile.read_option(:token)
+      oidc_token = Uffizzi::ConfigFile.read_option(:oidc_token)
 
       {
         cluster: {
           name: name,
           manifest: manifest_content,
         },
-        token: token,
+        token: oidc_token,
       }
     end
 
@@ -318,7 +322,11 @@ module Uffizzi
     end
 
     def fetch_cluster_data(project_slug, cluster_name)
-      response = get_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+      params = {
+        cluster_name: cluster_name,
+        oidc_token: ConfigFile.read_option(:oidc_token),
+      }
+      response = get_cluster(ConfigFile.read_option(:server), project_slug, params)
 
       if ResponseHelper.ok?(response)
         response.dig(:body, :cluster)

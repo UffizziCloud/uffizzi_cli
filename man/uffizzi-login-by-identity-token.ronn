@@ -9,7 +9,7 @@
     If a user/account do not exist, Uffizzi will create them based on token payload.
 
     For more information on authentication and credential types, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+    https://docs.uffizzi.com/references/cli/
 
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
@@ -18,4 +18,4 @@
 ## EXAMPLES
     To login from the CI/CD pipeline, run:
 
-        $ uffizzi uffizzi-login-by-identity-token --server=uffizzi.example.com --token=[$CI_JOB_TOKEN]
+        $ uffizzi uffizzi-login-by-identity-token --server=uffizzi.example.com --oidc-token=[$CI_JOB_TOKEN]

@@ -24,9 +24,13 @@ class ClusterService
       [CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE, CLUSTER_STATE_FAILED].include?(cluster_state)
     end
 
-    def wait_cluster_deploy(project_slug, cluster_name)
+    def wait_cluster_deploy(project_slug, cluster_name, oidc_token)
       loop do
-        response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, cluster_name)
+        params = {
+          cluster_name: cluster_name,
+          oidc_token: oidc_token,
+        }
+        response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, params)
         return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
 
         cluster_data = response.dig(:body, :cluster)

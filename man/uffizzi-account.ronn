@@ -8,16 +8,16 @@
     Manage Uffizzi accounts
 
     For more information on Uffizzi accounts, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+    https://docs.uffizzi.com/references/cli/
 
 ## COMMANDS
     COMMAND is one of the following:
 
      list
-        List all projects in the account.
+        List all accounts associated with the user's credentials
 
      set-default
-        Set the default project in the uffizzi configuration. Also see
+        Set the default account in the uffizzi configuration. Also see
         $ uffizzi config help for details.
 
 Run $ uffizzi account COMMAND --help for more information on a command.

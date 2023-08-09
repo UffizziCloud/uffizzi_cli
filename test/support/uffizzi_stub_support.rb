@@ -177,24 +177,24 @@ module UffizziStubSupport
   end
 
   def stub_uffizzi_create_cluster(body, project_slug)
-    uri = clusters_uri(Uffizzi.configuration.server, project_slug)
+    uri = clusters_uri(Uffizzi.configuration.server, project_slug, oidc_token: nil)
     stub_request(:post, uri).to_return(status: 201, body: body.to_json)
   end
 
   def stub_get_cluster_request(body, project_slug)
-    uri = cluster_uri(Uffizzi.configuration.server, project_slug, nil)
+    uri = cluster_uri(Uffizzi.configuration.server, project_slug, cluster_name: nil, oidc_token: nil)
     uri = %r{#{uri}([A-Za-z0-9\-_]+)}
 
     stub_request(:get, uri).to_return(status: 200, body: body.to_json)
   end
 
   def stub_uffizzi_get_clusters(body, project_slug)
-    uri = clusters_uri(Uffizzi.configuration.server, project_slug)
+    uri = clusters_uri(Uffizzi.configuration.server, project_slug, oidc_token: nil)
     stub_request(:get, uri).to_return(status: 200, body: body.to_json)
   end
 
   def stub_uffizzi_delete_cluster(project_slug)
-    uri = cluster_uri(Uffizzi.configuration.server, project_slug, nil)
+    uri = cluster_uri(Uffizzi.configuration.server, project_slug, cluster_name: nil, oidc_token: nil)
     uri = %r{#{uri}([A-Za-z0-9\-_]+)}
 
     stub_request(:delete, uri).to_return(status: 204)
