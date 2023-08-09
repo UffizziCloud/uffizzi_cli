@@ -12,7 +12,7 @@ uffizzi disconnect COMMAND
 Revokes a Uffizzi user account access to external services
 
 For more information on connecting to external services, see:
-https://github\.com/UffizziCloud/uffizzi_cli
+https://docs\.uffizzi\.com/references/cli/
 .fi
 .SH "COMMANDS"
 .nf

@@ -13,7 +13,7 @@ The uffizzi login command lets you authenticate with Uffizzi from a CI/CD pipeli
 If a user/account do not exist, Uffizzi will create them based on token payload\.
 
 For more information on authentication and credential types, see:
-https://github\.com/UffizziCloud/uffizzi_cli
+https://docs\.uffizzi\.com/references/cli/
 .fi
 .SH "UFFIZZI WIDE FLAGS"
 .nf

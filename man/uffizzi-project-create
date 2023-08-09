@@ -18,7 +18,7 @@ This command can fail for the following reasons:
     \- The project \-\-slug is malformed or used by another project\.
 
 For more information on the uffizzi project command, see:
-https:/github\.com/UffizziCloud/uffizzi_cli
+https:/docs\.uffizzi\.com/references/cli/
 .fi
 .SH "FLAGS"
 .nf

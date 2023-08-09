@@ -13,7 +13,7 @@ Lists all clusters for a project, including active,
 deploying and failed clusters\.
 
 For more information on Uffizzi clusters, see:
-https://github\.com/UffizziCloud/uffizzi_cli
+https://docs\.uffizzi\.com/references/cli/
 .fi
 .SH "FLAGS"
 .nf

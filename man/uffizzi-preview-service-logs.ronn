@@ -12,7 +12,7 @@
         - There is no service with the name SERVICE
 
     For more information on service logs, see:
-    https://github.com/UffizziCloud/uffizzi_cli
+    https://docs.uffizzi.com/references/cli/
 
 ## LOG_TYPE
     LOG_TYPE is one of the following:

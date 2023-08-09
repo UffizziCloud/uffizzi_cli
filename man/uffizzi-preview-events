@@ -15,7 +15,7 @@ This command can fail for the following reasons:
     \- There is no preview with the given PREVIEW_ID
 
 For more information on event logs, see:
-https://github\.com/UffizziCloud/uffizzi_cli
+https://docs\.uffizzi\.com/references/cli/
 .fi
 .SH "POSITIONAL ARGUMENTS"
 .nf

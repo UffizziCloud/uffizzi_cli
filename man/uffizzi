@@ -13,7 +13,7 @@ The uffizzi CLI manages authentication, configuration, and
 interaction with Uffizzi APIs\.
 
 For more information on the uffizzi CLI, see:
-https://github\.com/UffizziCloud/uffizzi_cli
+https://docs\.uffizzi\.com/references/cli/
 .fi
 .SH "GROUP"
 .nf

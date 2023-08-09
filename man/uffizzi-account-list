@@ -15,7 +15,7 @@ This command can fail for the following reasons:
     \- The user is not authenticated
 
 For more information on preview services, see:
-https://github\.com/UffizziCloud/uffizzi_cli
+https://docs\.uffizzi\.com/references/cli/
 .fi
 .SH "EXAMPLES"
 .nf

@@ -8,9 +8,7 @@
 .SH "DESCRIPTION"
 Grants a Uffizzi user account access to external services\.
 .P
-For more information on connecting to external services, see:
-.br
-https://github\.com/UffizziCloud/uffizzi_cli
+For more information on connecting to external services, see: https://docs\.uffizzi\.com/references/cli/
 .SH "COMMANDS"
 COMMAND is one of the following:
 .TP

@@ -26,7 +26,7 @@ This command can fail for the following reasons:
     \- The compose file is invalid\.
 
 For more information on the uffizzi project compose command, see:
-https://github\.com/UffizziCloud/uffizzi_cli
+https://docs\.uffizzi\.com/references/cli/
 
 For more information on the Uffizzi Compose specification, see:
 https://docs\.uffizzi\.com/references/compose\-spec

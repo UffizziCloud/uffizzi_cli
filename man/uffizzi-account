@@ -12,7 +12,7 @@ uffizzi account COMMAND [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
 Manage Uffizzi accounts
 
 For more information on Uffizzi accounts, see:
-https://github\.com/UffizziCloud/uffizzi_cli
+https://docs\.uffizzi\.com/references/cli/
 .fi
 .SH "COMMANDS"
 .nf
