@@ -98,7 +98,7 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers/#{container_name}/k8s_container_description"
   end
 
-  def clusters_uri(server, project_slug, oidc_token:)
+  def project_clusters_uri(server, project_slug, oidc_token:)
     return "#{server}/api/cli/v1/projects/#{project_slug}/clusters" if oidc_token.nil?
 
     "#{server}/api/cli/v1/projects/#{project_slug}/clusters?token=#{oidc_token}"

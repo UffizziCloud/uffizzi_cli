@@ -81,7 +81,7 @@ module Uffizzi
         get_account_clusters(ConfigFile.read_option(:server), ConfigFile.read_option(:account, :id))
       else
         oidc_token = ConfigFile.read_option(:oidc_token)
-        get_clusters(ConfigFile.read_option(:server), project_slug, oidc_token: oidc_token)
+        get_project_clusters(ConfigFile.read_option(:server), project_slug, oidc_token: oidc_token)
       end
 
       if ResponseHelper.ok?(response)

@@ -177,7 +177,7 @@ module UffizziStubSupport
   end
 
   def stub_uffizzi_create_cluster(body, project_slug)
-    uri = clusters_uri(Uffizzi.configuration.server, project_slug, oidc_token: nil)
+    uri = project_clusters_uri(Uffizzi.configuration.server, project_slug, oidc_token: nil)
     stub_request(:post, uri).to_return(status: 201, body: body.to_json)
   end
 
@@ -189,7 +189,7 @@ module UffizziStubSupport
   end
 
   def stub_uffizzi_get_clusters(body, project_slug)
-    uri = clusters_uri(Uffizzi.configuration.server, project_slug, oidc_token: nil)
+    uri = project_clusters_uri(Uffizzi.configuration.server, project_slug, oidc_token: nil)
     stub_request(:get, uri).to_return(status: 200, body: body.to_json)
   end
 
