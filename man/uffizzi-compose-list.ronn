@@ -10,11 +10,11 @@ uffizzi-compose-list - list compose environments (previews) in a project
     environments (previews).
 
     For more information on Uffizzi compose environments (previews), see:
-    https://github.com/UffizziCloud/uffizzi_cli
+    https://docs.uffizzi.com/references/cli/
 
 ## FLAGS
     --filter=METADATA
-        Metadata to filtering list of deployments.
+        Metadata to filter list of deployments.
 
     --output=pretty-json
         Use this option for a more detailed description of listed

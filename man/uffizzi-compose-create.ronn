@@ -7,6 +7,7 @@ uffizzi-compose-create - create a compose environment (preview)
 ## DESCRIPTION
     Creates a new compose environment (preview). If no COMPOSE_FILE is specified,
     the compose environment (preview) is created with the project's default compose file.
+    Run $ uffizzi project compose --help for details.
 
     This command can fail for the following reasons:
         - The project does not have a default compose file set. Run
@@ -31,7 +32,7 @@ uffizzi-compose-create - create a compose environment (preview)
 ## FLAGS
     --set-labels=METADATA
         Metadata of deployment that contains any information which can
-        be usefull for filtering deployments.
+        be useful for filtering deployments.
 
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi

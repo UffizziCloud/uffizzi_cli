@@ -1,10 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-<<<<<<< HEAD
-.TH "UFFIZZI\-PREVIEW" "" "August 2023" ""
-=======
 .TH "UFFIZZI\-COMPOSE" "" "August 2023" ""
->>>>>>> fb27a8b ([265] Rename uffizzi preview to uffizzi compose)
 .SH "NAME"
 \fBuffizzi\-compose\fR \- manage previews
 .SH "SYNOPSIS"
@@ -37,7 +33,7 @@ COMMAND is one of the following:
     Display details of a compose environment (preview)
 
  list
-    List all previews
+    List all compose environments (previews)
 .fi
 .SH "Run \'uffizzi compose COMMAND \-\-help\' for more information on a command\."
 

@@ -32,7 +32,7 @@ https://docs\.uffizzi\.com/references/cli/
 .nf
 \-\-set\-labels=METADATA
     Metadata of deployment that contains any information which can
-    be usefull for filtering deployments\.
+    be useful for filtering deployments\.
 .fi
 .SH "UFFIZZI WIDE FLAGS"
 .nf
