@@ -26,7 +26,7 @@ module Uffizzi
       end
     end
 
-    desc 'list [DEPLOYMENT_ID]', 'List the container services of a given preview'
+    desc 'list [DEPLOYMENT_ID]', 'List the container services of a given compose environment (preview)'
     def list(deployment_name)
       return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
       return Uffizzi.ui.say('This command needs project to be set in config file') unless CommandService.project_set?(options)

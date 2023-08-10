@@ -27,7 +27,7 @@ uffizzi-compose - manage previews
         Display details of a compose environment (preview)
 
      list
-        List all previews
+        List all compose environments (previews)
 
 ##
 Run 'uffizzi compose COMMAND --help' for more information on a command.

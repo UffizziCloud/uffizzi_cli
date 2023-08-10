@@ -24,6 +24,6 @@ help for details\.
 .nf
 To login from the CI/CD pipeline, run:
 
-    $ uffizzi uffizzi\-login\-by\-identity\-token \-\-server=uffizzi\.example\.com \-\-token=[$CI_JOB_TOKEN]
+    $ uffizzi uffizzi\-login\-by\-identity\-token \-\-server=uffizzi\.example\.com \-\-oidc\-token=[$CI_JOB_TOKEN]
 .fi
 
