@@ -1,0 +1,42 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-PREVIEW\-SERVICE\-LIST" "" "August 2023" ""
+.SH "NAME"
+\fBuffizzi\-preview\-service\-list\fR
+.P
+uffizzi\-compose\-service\-list \- list the container services of a given compose environment (preview) ================================================================
+.SH "SYNOPSIS"
+.nf
+uffizzi compose service list [COMPOSE_ENVIRONMENT_ID] [UFFIZZI_WIDE_FLAG \|\.\|\.\|\.]
+.fi
+.SH "DESCRIPTION"
+.nf
+Shows a list of the container services that make up a given
+compose environment (preview) deployment\.
+
+This command can fail for the following reasons:
+    \- There is no compose environment (preview)
+      with the given COMPOSE_ENVIRONMENT_ID
+
+For more information on preview services, see:
+https://docs\.uffizzi\.com/references/cli/
+.fi
+.SH "POSITIONAL ARGUMENTS"
+.nf
+[COMPOSE_ENVIRONMENT_ID]
+    The ID of the compose environment (preview) you want to list services for\.
+.fi
+.SH "UFFIZZI WIDE FLAGS"
+.nf
+These flags are available to all commands: \-\-project\. Run $ uffizzi
+help for details\.
+.fi
+.SH "EXAMPLES"
+.nf
+The following command lists the container services
+for a compose environment (preview) with
+COMPOSE_ENVIRONMENT_ID deployment\-56:
+
+    $ uffizzi compose service list deployment\-56
+.fi
+

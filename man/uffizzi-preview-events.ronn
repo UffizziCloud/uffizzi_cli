@@ -1,0 +1,29 @@
+uffizzi-compose-events - show the deployment event logs for a compose environment (preview)
+================================================================
+
+## SYNOPSIS
+    uffizzi compose events [COMPOSE_ENVIRONMENT_ID] [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Shows the deployment event logs for a given compose environment (preview).
+
+    This command can fail for the following reasons:
+        - There is no compose environment (preview) with
+          the given compose environment (preview) ID
+
+    For more information on event logs, see:
+    https://docs.uffizzi.com/references/cli/
+
+## POSITIONAL ARGUMENTS
+    [COMPOSE_ENVIRONMENT_ID]
+        The ID of the compose environment (preview) that you want to see events for.
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi
+    help for details.
+
+## EXAMPLES
+    The following command shows deployment events for
+    the compose environment (preview) with ID deployment-67:
+
+        $ uffizzi compose events deployment-67
