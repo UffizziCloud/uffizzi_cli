@@ -1,0 +1,49 @@
+uffizzi-compose-list - list compose environments (previews) in a project
+================================================================
+
+## SYNOPSIS
+    uffizzi compose list [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Lists all compose environments (previews) for a project,
+    including active, building, deploying and failed compose
+    environments (previews).
+
+    For more information on Uffizzi compose environments (previews), see:
+    https://docs.uffizzi.com/references/cli/
+
+## FLAGS
+    --filter=METADATA
+        Metadata to filter list of deployments.
+
+    --output=pretty-json
+        Use this option for a more detailed description of listed
+        deployments.
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi
+    help for details.
+
+## EXAMPLES
+    To list all compose environments (previews) in the default project, run:
+
+        $ uffizzi compose list
+
+    To list all compose environments (previews) in a project with name my_project, run:
+
+        $ uffizzi compose list --project="my_project"
+
+    To list all compose environments (previews) in json format, run:
+
+        $ uffizzi compose list --output="pretty-json"
+
+    To list all compose environments (previews) filtered by metadata using single
+    label, run:
+
+        $ uffizzi compose list --filter github.repo=my_repo
+
+    To list all compose environments (previews) filtered by metadata using multiple
+    labels, run:
+
+        $ uffizzi compose list \
+        --filter="github.repo=my_repo github.pull_request.number=23"

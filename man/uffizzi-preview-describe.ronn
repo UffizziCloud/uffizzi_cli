@@ -1,0 +1,29 @@
+uffizzi-compose-describe - show metadata for a compose environment (preview)
+================================================================
+
+## SYNOPSIS
+    uffizzi compose describe [PREVIEW_ID] [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Shows metadata for a project given a valid compose environment (preview) ID.
+
+    This command can fail for the following reasons:
+        - The compose environment (preview) specified does not exist.
+        - The compose environment (preview) specified belongs to a different project.
+
+    For more information on Uffizzi previews, see:
+    https://docs.uffizzi.com/references/cli/
+
+## POSITIONAL ARGUMENTS
+    [PREVIEW_ID]
+        ID for the compose environment (preview) you want to describe.
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi
+    help for details.
+
+## EXAMPLES
+    The following command prints metadata for the compose environment (preview) with ID
+    deployment-213:
+
+        $ uffizzi compose describe deployment-213
