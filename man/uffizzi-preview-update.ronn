@@ -1,0 +1,51 @@
+uffizzi compose update - update a compose environment (preview)
+================================================================
+
+## SYNOPSIS
+    uffizzi compose update [COMPOSE_ENVIRONMENT_ID] [COMPOSE_FILE] [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Given a compose environment (preview) ID and new compose file,
+    update a compose environment (preview). Updating a compose
+    environment (preview) does not change its compose environment (preview) URL.
+
+    This command can fail for the following reasons:
+        - There is no compose environment (preview) with the given COMPOSE_ENVIRONMENT_ID
+        - The COMPOSE_FILE specified is invalid
+
+    For more information on Uffizzi previews, see:
+    https://docs.uffizzi.com/references/cli/
+
+## POSITIONAL ARGUMENTS
+    [COMPOSE_ENVIRONMENT_ID]
+        The ID of the compose environment (preview) that you want to update.
+
+    [COMPOSE_FILE]
+        The new compose file you want to compose environment (preview).
+
+## FLAGS
+    --set-labels=METADATA
+        Metadata of deployment that contains any information which can
+        be useful for filtering deployments.
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi
+    help for details.
+
+## EXAMPLES
+    The following command updates a compose environment (preview)
+    with ID deployment-67 using compose file docker-compose.alt.yml:
+
+        $ uffizzi compose update deployment-67 docker-compose.alt.yml
+
+    To update a compose with single label, run:
+
+        $ uffizzi compose update \
+        deployment-67 docker-compose.alt.yml \
+        --set-labels github.repo=my_repo
+
+    To update a compose with multiple labels, run:
+
+        $ uffizzi compose update \
+        deployment-67 docker-compose.alt.yml \
+        --set-labels="github.repo=my_repo github.pull_request.number=23"
