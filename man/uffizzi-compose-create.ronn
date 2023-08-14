@@ -1,0 +1,57 @@
+uffizzi-compose-create - create a compose environment (preview)
+================================================================
+
+## SYNOPSIS
+    uffizzi compose create [COMPOSE_FILE] [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Creates a new compose environment (preview). If no COMPOSE_FILE is specified,
+    the compose environment (preview) is created with the project's default compose file.
+    Run $ uffizzi project compose --help for details.
+
+    This command can fail for the following reasons:
+        - The project does not have a default compose file set. Run
+          $ uffizzi compose --help for details.
+        - The alternate compose file is invalid.
+
+    For more information on Uffizzi previews, see:
+    https://docs.uffizzi.com/references/cli/
+
+## POSITIONAL ARGUMENTS
+    [COMPOSE_FILE]
+        An alternate compose file to the default compose.
+
+        You can pass a compose file to this command to create an ad hoc
+        compose environment (preview) of an alternate compose configuration.
+        The file passed via this argument does not replace the default
+        compose file for the project. Alternate compose files share the
+        same lifecyle as the previews they create: when the compose
+        environment (preview) is deleted, the alternate compose
+        is deleted by the Uffizzi API.
+
+## FLAGS
+    --set-labels=METADATA
+        Metadata of deployment that contains any information which can
+        be useful for filtering deployments.
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi
+    help for details.
+
+## EXAMPLES
+    To create a compose environment (preview) with the project's default compose file, run:
+
+        $ uffizzi compose create
+
+    To create a compose environment (preview) with an alternate compose file, run:
+
+        $ uffizzi compose create docker-compose.uffizzi.alt.yml
+
+    To create a compose environment (preview) with single label, run:
+
+        $ uffizzi compose create --set-labels github.repo=my_repo
+
+    To create a compose environment (preview) with multiple labels, run:
+
+        $ uffizzi compose create \
+        --set-labels="github.repo=my_repo github.pull_request.number=23"

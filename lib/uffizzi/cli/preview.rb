@@ -10,18 +10,18 @@ module Uffizzi
   class Cli::Preview < Thor
     include ApiClient
 
-    desc 'service', 'Show the preview services info'
+    desc 'service', 'Show the compose environment (preview) services info'
     require_relative 'preview/service'
     subcommand 'service', Uffizzi::Cli::Preview::Service
 
-    desc 'list', 'List all previews'
+    desc 'list', 'List all compose environments (previews)'
     method_option :filter, required: false, type: :string, aliases: '-f'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def list
       run('list')
     end
 
-    desc 'create [COMPOSE_FILE]', 'Create a preview'
+    desc 'create [COMPOSE_FILE]', 'Create a compose environment (preview)'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
     method_option :"set-labels", required: false, type: :string, aliases: '-s'
     method_option :"creation-source", required: false, type: :string
@@ -29,24 +29,24 @@ module Uffizzi
       run('create', file_path: file_path)
     end
 
-    desc 'uffizzi preview update [DEPLOYMENT_ID] [COMPOSE_FILE]', 'Update a preview'
+    desc 'update [DEPLOYMENT_ID] [COMPOSE_FILE]', 'Update a compose environment (preview)'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'github-action']
     method_option :"set-labels", required: false, type: :string, aliases: '-s'
     def update(deployment_name, file_path)
       run('update', deployment_name: deployment_name, file_path: file_path)
     end
 
-    desc 'delete [DEPLOYMENT_ID]', 'Delete a preview'
+    desc 'delete [DEPLOYMENT_ID]', 'Delete a compose environment (preview)'
     def delete(deployment_name)
       run('delete', deployment_name: deployment_name)
     end
 
-    desc 'describe [DEPLOYMENT_ID]', 'Display details of a preview'
+    desc 'describe [DEPLOYMENT_ID]', 'Display details of a compose environment (preview)'
     def describe(deployment_name)
       run('describe', deployment_name: deployment_name)
     end
 
-    desc 'events [DEPLOYMENT_ID]', 'Show the deployment event logs for a preview'
+    desc 'events [DEPLOYMENT_ID]', 'Show the deployment event logs for a compose environment (preview)'
     def events(deployment_name)
       run('events', deployment_name: deployment_name)
     end

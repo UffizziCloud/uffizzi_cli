@@ -52,10 +52,10 @@ module Uffizzi
     require_relative 'cli/config'
     subcommand 'config', Cli::Config
 
-    desc 'preview', 'preview'
+    desc 'compose', 'compose'
     method_option :project, required: false
     require_relative 'cli/preview'
-    subcommand 'preview', Cli::Preview
+    subcommand 'compose', Cli::Preview
 
     desc 'cluster', 'cluster'
     require_relative 'cli/cluster'
@@ -70,6 +70,8 @@ module Uffizzi
       require_relative 'cli/disconnect'
       Disconnect.new.run(credential_type)
     end
+
+    map preview: :compose
 
     class << self
       protected

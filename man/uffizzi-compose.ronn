@@ -1,0 +1,33 @@
+uffizzi-compose - manage previews
+================================================================
+
+## SYNOPSIS
+    uffizzi compose COMMAND [UFFIZZI_WIDE_FLAG ...]
+
+## DESCRIPTION
+    Manage Uffizzi previews
+
+    For more information on Uffizzi previews, see:
+    https://docs.uffizzi.com/references/cli/
+
+## UFFIZZI WIDE FLAGS
+    These flags are available to all commands: --project. Run $ uffizzi
+    help for details.
+
+## COMMANDS
+    COMMAND is one of the following:
+
+     create
+        Create a compose environment (preview)
+
+     delete
+        Delete a compose environment (preview)
+
+     describe
+        Display details of a compose environment (preview)
+
+     list
+        List all compose environments (previews)
+
+##
+Run 'uffizzi compose COMMAND --help' for more information on a command.

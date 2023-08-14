@@ -25,12 +25,12 @@ GROUP is one of the following:
  connect
      Grant a Uffizzi user account access to external services
 
- preview
-     Manage Uffizzi previews and view logs
+ compose
+     Manage Uffizzi compose environments (previews) and view logs
 
  project
      Manage Uffizzi project resources including compose files for
-     specifying preview configurations and secrets
+     specifying compose environment (preview) configurations and secrets
 .fi
 .SH "COMMAND"
 .nf

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (2.0.17)
+    uffizzi-cli (2.0.18)
       activesupport
       awesome_print
       faker
@@ -36,7 +36,7 @@ GEM
     factory_bot (6.2.0)
       activesupport (>= 5.0.0)
     fakefs (1.8.0)
-    faker (3.2.0)
+    faker (3.2.1)
       i18n (>= 1.8.11, < 2)
     hashdiff (1.0.1)
     i18n (1.8.11)
