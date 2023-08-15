@@ -20,22 +20,13 @@ module Uffizzi
     end
 
     def run
-      logout
+      AuthHelper.sign_out if AuthHelper.signed_in?
       return perform_email_login if @options[:email]
 
       perform_browser_login
     end
 
     private
-
-    def logout
-      return unless Uffizzi::AuthHelper.signed_in?
-
-      server = ConfigFile.read_option(:server)
-      destroy_session(server)
-
-      AuthHelper.sign_out
-    end
 
     def perform_email_login
       Uffizzi.ui.say('Login to Uffizzi server.')
