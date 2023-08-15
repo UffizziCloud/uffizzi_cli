@@ -10,6 +10,7 @@ module Uffizzi
       def sign_out
         Uffizzi::ConfigFile.unset_option(:cookie)
         Uffizzi::ConfigFile.unset_option(:account)
+        Uffizzi::ConfigFile.unset_option(:project)
         Uffizzi::Token.delete if Uffizzi::Token.exists?
       end
 

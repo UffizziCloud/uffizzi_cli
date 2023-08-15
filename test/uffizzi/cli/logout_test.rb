@@ -9,8 +9,10 @@ class LogoutTest < Minitest::Test
   end
 
   def test_logout_success
+    Uffizzi::ConfigFile.write_option(:project, 'default')
     assert(Uffizzi::ConfigFile.option_has_value?(:cookie))
     assert(Uffizzi::ConfigFile.option_has_value?(:account))
+    assert(Uffizzi::ConfigFile.option_has_value?(:project))
 
     stubbed_uffizzi_logout = stub_uffizzi_logout
 
@@ -20,6 +22,7 @@ class LogoutTest < Minitest::Test
 
     refute(Uffizzi::ConfigFile.option_has_value?(:cookie))
     refute(Uffizzi::ConfigFile.option_has_value?(:account))
+    refute(Uffizzi::ConfigFile.option_has_value?(:project))
   end
 
   def test_logout_when_not_logged_in
