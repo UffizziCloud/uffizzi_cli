@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'activesupport'
   spec.add_dependency 'awesome_print'
+  spec.add_dependency 'bump'
   spec.add_dependency 'faker'
   spec.add_dependency 'launchy'
   spec.add_dependency 'minitar'
@@ -37,7 +38,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'tty-prompt'
   spec.add_dependency 'tty-spinner'
 
-  spec.add_development_dependency 'bump'
   spec.add_development_dependency 'bundler', '~> 2.1'
   spec.add_development_dependency 'byebug'
   spec.add_development_dependency 'deepsort', '~> 0.4.5'
