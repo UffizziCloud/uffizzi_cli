@@ -10,6 +10,8 @@ require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/kubeconfig_service'
 
+MANUAL = 'manual'
+
 module Uffizzi
   class Cli::Cluster < Thor
     class Error < StandardError; end
@@ -27,6 +29,7 @@ module Uffizzi
     method_option :manifest, type: :string, required: false, aliases: '-m'
     method_option :'update-current-context', type: :boolean, required: false
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
+    method_option :'creation-source', required: false, type: :string
     def create
       run('create')
     end
@@ -88,13 +91,14 @@ module Uffizzi
     def handle_create_command(project_slug)
       Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
       cluster_name = options[:name] || ClusterService.generate_name
+      creation_source = options[:"creation-source"] || MANUAL
 
       unless ClusterService.valid_name?(cluster_name)
         Uffizzi.ui.say_error_and_exit("Cluster name: #{cluster_name} is not valid.")
       end
 
       manifest_file_path = options[:manifest]
-      params = cluster_creation_params(cluster_name, manifest_file_path)
+      params = cluster_creation_params(cluster_name, creation_source, manifest_file_path)
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
 
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
@@ -206,7 +210,7 @@ module Uffizzi
       end
     end
 
-    def cluster_creation_params(name, manifest_file_path)
+    def cluster_creation_params(name, creation_source, manifest_file_path)
       manifest_content = load_manifest_file(manifest_file_path)
       oidc_token = Uffizzi::ConfigFile.read_option(:oidc_token)
 
@@ -214,6 +218,7 @@ module Uffizzi
         cluster: {
           name: name,
           manifest: manifest_content,
+          creation_source: creation_source,
         },
         token: oidc_token,
       }
