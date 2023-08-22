@@ -2,7 +2,6 @@
 
 require 'net/http'
 require 'json'
-require 'bump'
 
 module Uffizzi
   class HttpClient
@@ -75,9 +74,8 @@ module Uffizzi
     def get_headers(access_token)
       content_type_headers = { 'Content-Type' => 'application/json' }
       auth_headers = access_token ? { 'Authorization' => "Bearer #{access_token}" } : {}
-      cli_version = { 'x-uffizzi-cli-version' => Bump::Bump.current }
 
-      content_type_headers.merge(auth_headers).merge(cli_version)
+      content_type_headers.merge(auth_headers)
     end
   end
 end
