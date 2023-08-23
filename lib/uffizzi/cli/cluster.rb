@@ -233,7 +233,7 @@ module Uffizzi
     end
 
     def handle_interrupt_creation(cluster_name, server, project_slug)
-      deletion_response = delete_cluster(server, project_slug, cluster_name)
+      deletion_response = delete_cluster(server, project_slug, cluster_name: cluster_name)
       deletion_message = if ResponseHelper.no_content?(deletion_response)
         "The cluster #{cluster_name} has been disabled."
       else
