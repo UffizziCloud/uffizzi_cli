@@ -1,0 +1,19 @@
+on:
+  workflow_call:
+    inputs:
+      linux-bin-path:
+        required: true
+        type: string
+      darwin-bin-path:
+        required: true
+        type: string
+jobs:
+  make-binary:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, macos-12]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: 'Debug'
+        run: echo "${{ inputs.linux-bin-path  }}"
