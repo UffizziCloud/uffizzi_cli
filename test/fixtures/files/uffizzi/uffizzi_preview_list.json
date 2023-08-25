@@ -2,20 +2,10 @@
   "deployments":[
     {
       "id":158,
-      "kind":"standard",
       "project_id":2,
-      "created_at":"2022-02-22T10:09:36.967Z",
-      "updated_at":"2022-02-22T10:09:43.184Z",
       "state":"active",
       "preview_url":"",
       "proxy_preview_url":"",
-      "tag":"latest",
-      "branch":null,
-      "commit":"",
-      "image_id":"nginx",
-      "ingress_container_ready":false,
-      "ingress_container_state":"pending",
-      "creation_source":"compose_file_manual",
       "containers":[
         {
           "id":266,
