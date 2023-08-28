@@ -68,7 +68,7 @@ module Uffizzi
       token = response[:body][:access_token]
       Uffizzi::Token.delete
       Uffizzi::Token.write(token)
-      Uffizzi.ui.say('Login successfull')
+      Uffizzi.ui.say('Login successful')
 
       set_current_account_and_project
     end
@@ -84,7 +84,7 @@ module Uffizzi
       ConfigFile.write_option(:server, @server)
       ConfigFile.write_option(:username, username)
       ConfigFile.write_option(:cookie, response[:headers])
-      Uffizzi.ui.say('Login successfull')
+      Uffizzi.ui.say('Login successful')
 
       if ENV.fetch('CI_PIPELINE_RUN', false)
         account = response[:body][:user][:default_account]
