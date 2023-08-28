@@ -1,0 +1,21 @@
+{
+  "clusters":[
+  {
+    "name":"uffizzi-test-cluster-1",
+    "project": {
+      "name": "Project 1"
+    }
+  },
+  {
+    "name":"uffizzi-test-cluster-2",
+    "project": {
+      "name": "Project 1"
+    }
+  },
+  {
+    "name":"uffizzi-test-cluster-3",
+    "project": {
+      "name": "Project Second"
+    }
+  }]
+}

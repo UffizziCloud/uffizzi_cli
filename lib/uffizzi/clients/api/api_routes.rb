@@ -98,7 +98,7 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/deployments/#{deployment_id}/containers/#{container_name}/k8s_container_description"
   end
 
-  def clusters_uri(server, project_slug, oidc_token:)
+  def project_clusters_uri(server, project_slug, oidc_token:)
     return "#{server}/api/cli/v1/projects/#{project_slug}/clusters" if oidc_token.nil?
 
     "#{server}/api/cli/v1/projects/#{project_slug}/clusters?token=#{oidc_token}"
@@ -120,5 +120,9 @@ module ApiRoutes
 
   def browser_sign_in_url(server, session_id)
     "#{server}/sign_in?session_id=#{session_id}"
+  end
+
+  def account_clusters_uri(server, account_id)
+    "#{server}/api/cli/v1/accounts/#{account_id}/clusters"
   end
 end
