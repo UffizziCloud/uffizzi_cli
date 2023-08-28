@@ -41,13 +41,23 @@ class KubeconfigService
     end
 
     def get_first_context(kubeconfig)
-      kubeconfig.fetch('contexts', [])[0]
+      get_cluster_contexts(kubeconfig)[0]
     end
 
     def get_current_cluster_name(kubeconfig)
-      kubeconfig['contexts']
+      get_cluster_contexts(kubeconfig)
         .detect { |c| c['name'] == get_current_context(kubeconfig) }
         .dig('context', 'cluster')
+    end
+
+    def get_cluster_contexts(kubeconfig)
+      kubeconfig.fetch('contexts', [])
+    end
+
+    def find_cluster_contexts_by_name(kubeconfig, context_name)
+      return if context_name.nil?
+
+      get_cluster_contexts(kubeconfig).detect { |c| c['name'] == context_name }
     end
 
     def update_current_context(kubeconfig, current_context)
@@ -57,9 +67,8 @@ class KubeconfigService
       new_kubeconfig
     end
 
-    def save_to_filepath(filepath, kubeconfig)
-      real_file_path = File.expand_path(filepath)
-      target_kubeconfig = File.exist?(real_file_path) ? Psych.safe_load(File.read(real_file_path)) : nil
+    def save_to_filepath(filepath, kubeconfig = nil)
+      target_kubeconfig = read_kubeconfig(filepath)
 
       if target_kubeconfig.present? && !valid_kubeconfig?(target_kubeconfig)
         raise InvalidKubeconfigError.new(filepath)
@@ -68,13 +77,29 @@ class KubeconfigService
       new_kubeconfig = block_given? ? yield(target_kubeconfig) : kubeconfig
       return if new_kubeconfig.nil?
 
-      dir_path = File.dirname(real_file_path)
-      FileUtils.mkdir_p(dir_path) unless File.directory?(dir_path)
-      File.write(real_file_path, new_kubeconfig.to_yaml)
+      write_kubeconfig(filepath, new_kubeconfig)
     end
 
     def default_path
       kubeconfig_env_path || Uffizzi.configuration.default_kubeconfig_path
+    end
+
+    def read_kubeconfig(filepath)
+      real_file_path = File.expand_path(filepath)
+      kubeconfig = File.exist?(real_file_path) ? Psych.safe_load(File.read(real_file_path)) : nil
+
+      if kubeconfig.present? && !valid_kubeconfig?(kubeconfig)
+        raise InvalidKubeconfigError.new(filepath)
+      end
+
+      kubeconfig
+    end
+
+    def write_kubeconfig(filepath, kubeconfig)
+      real_file_path = File.expand_path(filepath)
+      dir_path = File.dirname(real_file_path)
+      FileUtils.mkdir_p(dir_path) unless File.directory?(dir_path)
+      File.write(real_file_path, kubeconfig.to_yaml)
     end
 
     private
