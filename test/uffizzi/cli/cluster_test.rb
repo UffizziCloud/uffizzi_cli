@@ -117,6 +117,15 @@ class ClusterTest < Minitest::Test
     assert_requested(stubbed_uffizzi_cluster_get_request)
   end
 
+  def test_list_clusters_with_all_flag
+    clusters_get_body = json_fixture('files/uffizzi/uffizzi_clusters_list_with_project_name.json')
+    stubbed_uffizzi_cluster_get_request = stub_uffizzi_get_clusters(clusters_get_body, @project_slug)
+
+    @cluster.list
+
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
   def test_update_kubeconfig_if_kubeconfig_exists_with_another_cluster
     @cluster.options = command_options(kubeconfig: @kubeconfig_path)
 
