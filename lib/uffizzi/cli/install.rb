@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'byebug'
 require 'uffizzi'
 require 'uffizzi/config_file'
 
@@ -9,39 +10,40 @@ module Uffizzi
     HELM_DEPLOYED_STATUS = 'deployed'
     CHART_NAME = 'uffizzi-app'
     VALUES_FILE_NAME = 'helm_values.yaml'
+    DEFAULT_ISSUER = 'letsencrypt'
+    DEFAULT_NAMESPACE = 'default'
 
-    desc 'by-wizard [NAMESPACE]', 'Install uffizzi to cluster'
-    def by_wizard(namespace)
-      run_installation do
-        ask_installation_params(namespace)
-      end
-    end
-
-    desc 'by-options [NAMESPACE]', 'Install uffizzi to cluster'
-    method_option :domain, required: true, type: :string, aliases: '-d'
-    method_option :'user-email', required: false, type: :string, aliases: '-e'
+    desc 'application', 'Install uffizzi to cluster'
+    method_option :namespace, required: false, type: :string
+    method_option :domain, required: false, type: :string
+    method_option :'user-email', required: false, type: :string
     method_option :'acme-email', required: false, type: :string
     method_option :'user-password', required: false, type: :string
     method_option :'controller-password', required: false, type: :string
-    method_option :issuer, type: :string, enum: ['letsencrypt', 'zerossl'], default: 'letsencrypt'
+    method_option :issuer, type: :string, enum: ['letsencrypt', 'zerossl']
     method_option :'wildcard-cert-path', required: false, type: :string
     method_option :'wildcard-key-path', required: false, type: :string
     method_option :'without-wildcard-tls', required: false, type: :boolean
-    def by_options(namespace)
+    def application
       run_installation do
-        validate_installation_options(namespace, options)
+        if options.present?
+          validate_installation_options
+        else
+          ask_installation_params
+        end
       end
     end
 
-    desc 'add-wildcard-tls [NAMESPACE]', 'Add wildcard tls from files'
-    method_option :cert, required: true, type: :string, aliases: '-c'
-    method_option :key, required: true, type: :string, aliases: '-k'
-    method_option :domain, required: true, type: :string, aliases: '-d'
-    def add_wildcard_tls(namespace)
+    desc 'wildcard-tls', 'Add wildcard tls from files'
+    method_option :domain, required: true, type: :string
+    method_option :cert, required: true, type: :string
+    method_option :key, required: true, type: :string
+    method_option :namespace, required: false, type: :string
+    def add_wildcard_tls
       kubectl_exists?
 
       params = {
-        namespace: namespace,
+        namespace: options[:namespace],
         domain: options[:domain],
         wildcard_cert_path: options[:cert],
         wildcard_key_path: options[:key],
@@ -111,6 +113,8 @@ module Uffizzi
     end
 
     def helm_install(namespace)
+      Uffizzi.ui.say('Start helm release installation')
+
       release_name = namespace
       cmd = "helm install #{release_name} #{HELM_REPO_NAME}/#{CHART_NAME}" \
         " --values #{helm_values_file_path}" \
@@ -145,25 +149,19 @@ module Uffizzi
         return { wildcard_cert_path: cert_path, wildcard_key_path: key_path }
       end
 
-      add_later = Uffizzi.prompt.yes?('Do you want to add wildcard certificate later?')
+      Uffizzi.ui.say('Uffizzi does not work properly without a wildcard certificate.')
+      Uffizzi.ui.say('You can add wildcard cert later with command:')
+      Uffizzi.ui.say('uffizzi install wildcard-tls --domain your.domain.com --cert /path/to/cert --key /path/to/key')
 
-      if add_later
-        Uffizzi.ui.say('You can set command "uffizzi install add-wildcard-cert [NAMESPACE]'\
-                       ' -d your.domain.com -c /path/to/cert -k /path/to/key"')
-
-        { wildcard_cert_path: nil, wildcard_key_path: nil }
-      else
-        Uffizzi.ui.say('Sorry, but uffizzi can not work correctly without wildcard certificate')
-        exit(0)
-      end
+      { wildcard_cert_path: nil, wildcard_key_path: nil }
     end
 
-    def ask_installation_params(namespace)
+    def ask_installation_params
       wildcard_cert_paths = ask_wildcard_cert
+      namespace = Uffizzi.prompt.ask('Namespace: ', required: true, default: DEFAULT_NAMESPACE)
       domain = Uffizzi.prompt.ask('Domain: ', required: true, default: 'example.com')
       user_email = Uffizzi.prompt.ask('User email: ', required: true, default: "admin@#{domain}")
       user_password = Uffizzi.prompt.ask('User password: ', required: true, default: generate_password)
-      controller_password = Uffizzi.prompt.ask('Controller password: ', required: true, default: generate_password)
       cert_email = Uffizzi.prompt.ask('Email address for ACME registration: ', required: true, default: user_email)
       cluster_issuers = [
         { name: 'Letsencrypt', value: 'letsencrypt' },
@@ -176,21 +174,21 @@ module Uffizzi
         domain: domain,
         user_email: user_email,
         user_password: user_password,
-        controller_password: controller_password,
+        controller_password: generate_password,
         cert_email: cert_email,
         cluster_issuer: cluster_issuer,
       }.merge(wildcard_cert_paths)
     end
 
-    def validate_installation_options(namespace, options)
+    def validate_installation_options
       base_params = {
-        namespace: namespace,
+        namespace: options[:namespace] || DEFAULT_NAMESPACE,
         domain: options[:domain],
         user_email: options[:'user-email'] || "admin@#{options[:domain]}",
         user_password: options[:'user-password'] || generate_password,
         controller_password: options[:'controller-password'] || generate_password,
         cert_email: options[:'acme-email'] || options[:'user-email'],
-        cluster_issuer: options[:issuer],
+        cluster_issuer: options[:issuer] || DEFAULT_ISSUER,
         wildcard_cert_path: nil,
         wildcard_key_path: nil,
       }
@@ -200,7 +198,7 @@ module Uffizzi
       empty_key = [:'wildcard-cert-path', :'wildcard-key-path'].detect { |k| options[k].nil? }
 
       if empty_key.present?
-        return Uffizzi.ui.say_error_and_exit("#{empty_key} is required or use the flag without-wildcard-tls")
+        return Uffizzi.ui.say_error_and_exit("#{empty_key} is required or use the flag --without-wildcard-tls")
       end
 
       wildcard_params = {
