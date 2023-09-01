@@ -16,6 +16,7 @@ class InstallTest < Minitest::Test
   def test_install_by_wizard
     @mock_prompt.promise_question_answer('Uffizzi use a wildcard tls certificate. Do you have it?', 'n')
     @mock_prompt.promise_question_answer('Do you want to add wildcard certificate later?', 'y')
+    @mock_prompt.promise_question_answer('Namespace: ', 'uffizzi')
     @mock_prompt.promise_question_answer('Domain: ', 'my-domain.com')
     @mock_prompt.promise_question_answer('User email: ', 'admin@my-domain.com')
     @mock_prompt.promise_question_answer('User password: ', 'password')
@@ -30,7 +31,7 @@ class InstallTest < Minitest::Test
     @mock_shell.promise_execute(/helm list/, stdout: [].to_json)
     @mock_shell.promise_execute(/helm install/, stdout: { info: { status: 'deployed' } }.to_json)
 
-    @install.by_wizard('uffizzi')
+    @install.application
 
     last_message = Uffizzi.ui.last_message
     assert_match('deployed', last_message)
@@ -45,7 +46,7 @@ class InstallTest < Minitest::Test
     @mock_shell.promise_execute(/helm install/, stdout: { info: { status: 'deployed' } }.to_json)
 
     @install.options = command_options(domain: 'my-domain.com', 'without-wildcard-tls' => true)
-    @install.by_options('uffizzi')
+    @install.application
 
     last_message = Uffizzi.ui.last_message
     assert_match('deployed', last_message)
