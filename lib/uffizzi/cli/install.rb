@@ -12,21 +12,24 @@ module Uffizzi
     VALUES_FILE_NAME = 'helm_values.yaml'
     DEFAULT_ISSUER = 'letsencrypt'
     DEFAULT_NAMESPACE = 'default'
+    DEFAULT_APP_PREFIX = 'uffizzi'
 
     desc 'application', 'Install uffizzi to cluster'
-    method_option :namespace, required: false, type: :string
-    method_option :domain, required: false, type: :string
-    method_option :'user-email', required: false, type: :string
-    method_option :'acme-email', required: false, type: :string
-    method_option :'user-password', required: false, type: :string
-    method_option :'controller-password', required: false, type: :string
+    method_option :namespace, type: :string
+    method_option :domain, type: :string
+    method_option :'user-email', type: :string
+    method_option :'acme-email', type: :string
+    method_option :'user-password', type: :string
+    method_option :'controller-password', type: :string
     method_option :issuer, type: :string, enum: ['letsencrypt', 'zerossl']
-    method_option :'wildcard-cert-path', required: false, type: :string
-    method_option :'wildcard-key-path', required: false, type: :string
-    method_option :'without-wildcard-tls', required: false, type: :boolean
+    method_option :'wildcard-cert-path', type: :string
+    method_option :'wildcard-key-path', type: :string
+    method_option :'without-wildcard-tls', type: :boolean
+    method_option :repo, type: :string
+    method_option :'print-values', type: :boolean
     def application
       run_installation do
-        if options.present?
+        if options.except(:repo, :'print-values').present?
           validate_installation_options
         else
           ask_installation_params
@@ -35,34 +38,56 @@ module Uffizzi
     end
 
     desc 'wildcard-tls', 'Add wildcard tls from files'
-    method_option :domain, required: true, type: :string
-    method_option :cert, required: true, type: :string
-    method_option :key, required: true, type: :string
-    method_option :namespace, required: false, type: :string
-    def add_wildcard_tls
+    method_option :domain, type: :string
+    method_option :cert, type: :string
+    method_option :key, type: :string
+    method_option :namespace, type: :string
+    def wildcard_tls
       kubectl_exists?
 
-      params = {
-        namespace: options[:namespace],
-        domain: options[:domain],
-        wildcard_cert_path: options[:cert],
-        wildcard_key_path: options[:key],
-      }
+      params = if options.present? && wildcard_tls_options_valid?
+        {
+          namespace: options[:namespace] || DEFAULT_NAMESPACE,
+          domain: options[:domain],
+          wildcard_cert_path: options[:cert],
+          wildcard_key_path: options[:key],
+        }
+      else
+        namespace = Uffizzi.prompt.ask('Namespace: ', required: true, default: DEFAULT_NAMESPACE)
+        domain = Uffizzi.prompt.ask('Domain: ', required: true, default: 'example.com')
+        wildcard_cert_paths = ask_wildcard_cert(has_user_wildcard_cert: true)
+
+        { namespace: namespace, domain: domain }.merge(wildcard_cert_paths)
+      end
 
       kubectl_add_wildcard_tls(params)
     end
 
     private
 
+    def wildcard_tls_options_valid?
+      required_options = [:domain, :cert, :key]
+      missing_options = required_options - options.symbolize_keys.keys
+
+      return true if missing_options.empty?
+
+      rendered_missing_options = missing_options.map { |o| "'--#{o}'" }.join(', ')
+
+      Uffizzi.ui.say_error_and_exit("No value provided for required options #{rendered_missing_options}")
+    end
+
     def run_installation
       kubectl_exists?
       helm_exists?
       params = yield
       helm_values = build_helm_values(params)
+      return Uffizzi.ui.say(helm_values.to_yaml) if options[:'print-values']
+
       create_helm_values_file(helm_values)
-      helm_set_repo
+      helm_set_repo unless options[:repo]
       helm_set_release(params.fetch(:namespace))
       kubectl_add_wildcard_tls(params) if params[:wildcard_cert_path] && params[:wildcard_key_path]
+      delete_helm_values_file
     end
 
     def kubectl_exists?
@@ -116,7 +141,8 @@ module Uffizzi
       Uffizzi.ui.say('Start helm release installation')
 
       release_name = namespace
-      cmd = "helm install #{release_name} #{HELM_REPO_NAME}/#{CHART_NAME}" \
+      repo = options[:repo] || "#{HELM_REPO_NAME}/#{CHART_NAME}"
+      cmd = "helm install #{release_name} #{repo}" \
         " --values #{helm_values_file_path}" \
         " --namespace #{namespace}" \
         ' --create-namespace' \
@@ -139,8 +165,8 @@ module Uffizzi
       execute_command(cmd)
     end
 
-    def ask_wildcard_cert
-      has_user_wildcard_cert = Uffizzi.prompt.yes?('Uffizzi use a wildcard tls certificate. Do you have it?')
+    def ask_wildcard_cert(has_user_wildcard_cert: nil)
+      has_user_wildcard_cert ||= Uffizzi.prompt.yes?('Uffizzi use a wildcard tls certificate. Do you have it?')
 
       if has_user_wildcard_cert
         cert_path = Uffizzi.prompt.ask('Path to cert: ', required: true)
@@ -153,7 +179,7 @@ module Uffizzi
       Uffizzi.ui.say('You can add wildcard cert later with command:')
       Uffizzi.ui.say('uffizzi install wildcard-tls --domain your.domain.com --cert /path/to/cert --key /path/to/key')
 
-      { wildcard_cert_path: nil, wildcard_key_path: nil }
+      {}
     end
 
     def ask_installation_params
@@ -181,7 +207,21 @@ module Uffizzi
     end
 
     def validate_installation_options
-      base_params = {
+      installation_options = build_installation_options
+
+      if options[:'without-wildcard-tls']
+        return installation_options.except(:wildcard_cert_path, :wildcard_key_path)
+      end
+
+      empty_key = [:'wildcard-cert-path', :'wildcard-key-path'].detect { |k| options[k].nil? }
+
+      if empty_key.present?
+        Uffizzi.ui.say_error_and_exit("#{empty_key} is required or use the flag --without-wildcard-tls")
+      end
+    end
+
+    def build_installation_options
+      {
         namespace: options[:namespace] || DEFAULT_NAMESPACE,
         domain: options[:domain],
         user_email: options[:'user-email'] || "admin@#{options[:domain]}",
@@ -189,30 +229,15 @@ module Uffizzi
         controller_password: options[:'controller-password'] || generate_password,
         cert_email: options[:'acme-email'] || options[:'user-email'],
         cluster_issuer: options[:issuer] || DEFAULT_ISSUER,
-        wildcard_cert_path: nil,
-        wildcard_key_path: nil,
-      }
-
-      return base_params if options[:'without-wildcard-tls']
-
-      empty_key = [:'wildcard-cert-path', :'wildcard-key-path'].detect { |k| options[k].nil? }
-
-      if empty_key.present?
-        return Uffizzi.ui.say_error_and_exit("#{empty_key} is required or use the flag --without-wildcard-tls")
-      end
-
-      wildcard_params = {
         wildcard_cert_path: options[:'wildcard-cert-path'],
         wildcard_key_path: options[:'wildcard-key-path'],
       }
-
-      base_params.merge(wildcard_params)
     end
 
     def build_helm_values(params)
       domain = params.fetch(:domain)
       namespace = params.fetch(:namespace)
-      app_host = ['app', domain].join('.')
+      app_host = [DEFAULT_APP_PREFIX, domain].join('.')
 
       {
         app_url: "https://#{app_host}",
@@ -232,7 +257,7 @@ module Uffizzi
         },
         'uffizzi-controller' => {
           ingress: {
-            hostname: "controller.#{domain}",
+            disabled: true,
           },
           clusterIssuer: params.fetch(:cluster_issuer),
           certEmail: params.fetch(:cert_email),
@@ -262,6 +287,10 @@ module Uffizzi
     def create_helm_values_file(values)
       FileUtils.mkdir_p(helm_values_dir_path) unless File.directory?(helm_values_dir_path)
       File.write(helm_values_file_path, values.to_yaml)
+    end
+
+    def delete_helm_values_file
+      File.delete(helm_values_file_path) if File.exist?(helm_values_file_path)
     end
 
     def helm_values_file_path
