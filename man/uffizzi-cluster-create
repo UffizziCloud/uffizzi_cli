@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CLUSTER\-CREATE" "" "August 2023" ""
+.TH "UFFIZZI\-CLUSTER\-CREATE" "" "September 2023" ""
 .SH "NAME"
 \fBuffizzi\-cluster\-create\fR \- create a cluster
 .SH "SYNOPSIS"
@@ -41,5 +41,9 @@ To create a cluster with the auto generated name, run:
 To create a cluster with name, run:
 
     $ uffizzi cluster create \-\-name="my\-cluster"
+
+To create a cluster from a manifests directory, run:
+
+    $ uffizzi cluster create \-\-name="my\-cluster" \-\-manifest=manifests/
 .fi
 
