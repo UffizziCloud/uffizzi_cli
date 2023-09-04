@@ -35,3 +35,7 @@ uffizzi-cluster-create - create a cluster
     To create a cluster with name, run:
 
         $ uffizzi cluster create --name="my-cluster"
+
+    To create a cluster from a manifests directory, run:
+
+        $ uffizzi cluster create --name="my-cluster" --manifest=manifests/
