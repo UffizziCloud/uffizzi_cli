@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI" "" "August 2023" ""
+.TH "UFFIZZI" "" "September 2023" ""
 .SH "NAME"
 \fBuffizzi\fR \- manage Uffizzi resources
 .SH "SYNOPSIS"
@@ -18,6 +18,8 @@ https://docs\.uffizzi\.com/references/cli/
 .SH "GROUP"
 .nf
 GROUP is one of the following:
+ cluster
+     Manage virtual clusters
 
  config
      Configure the uffizzi CLI

@@ -13,6 +13,8 @@ uffizzi - manage Uffizzi resources
 
 ## GROUP
     GROUP is one of the following:
+     cluster
+         Manage virtual clusters
 
      config
          Configure the uffizzi CLI
