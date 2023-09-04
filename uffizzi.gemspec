@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'activesupport'
   spec.add_dependency 'awesome_print'
+  spec.add_dependency 'bootsnap'
   spec.add_dependency 'faker'
   spec.add_dependency 'launchy'
   spec.add_dependency 'minitar'
