@@ -54,6 +54,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-minitest'
   spec.add_development_dependency 'rubocop-rake'
-  spec.add_development_dependency 'ruby-prof'
   spec.add_development_dependency 'webmock'
 end

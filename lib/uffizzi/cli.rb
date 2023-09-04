@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'uffizzi'
-require 'ruby-prof'
 
 module Uffizzi
   class Cli < Thor
@@ -23,11 +22,7 @@ module Uffizzi
     method_option :email, required: false, aliases: '-e'
     def login
       require_relative 'cli/login'
-      RubyProf.start
       Login.new(options).run
-      result = RubyProf.stop
-      printer = RubyProf::FlatPrinter.new(result)
-      printer.print(STDOUT)
     end
 
     desc 'login_by_identity_token [OPTIONS]', 'Login or register to Uffizzi to view and manage your previews'

@@ -9,7 +9,6 @@ require 'uffizzi/services/preview_service'
 require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/kubeconfig_service'
-require 'ruby-prof'
 
 MANUAL = 'manual'
 
@@ -22,11 +21,7 @@ module Uffizzi
     method_option :all, required: false, type: :boolean, aliases: '-a'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def list
-      RubyProf.start
       run('list')
-      result = RubyProf.stop
-      printer = RubyProf::FlatPrinter.new(result)
-      printer.print(STDOUT)
     end
 
     desc 'create', 'Create a cluster'
