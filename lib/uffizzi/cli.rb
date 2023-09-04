@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'uffizzi'
+require 'ruby-prof'
 
 module Uffizzi
   class Cli < Thor
@@ -22,7 +23,11 @@ module Uffizzi
     method_option :email, required: false, aliases: '-e'
     def login
       require_relative 'cli/login'
+      RubyProf.start
       Login.new(options).run
+      result = RubyProf.stop
+      printer = RubyProf::FlatPrinter.new(result)
+      printer.print(STDOUT)
     end
 
     desc 'login_by_identity_token [OPTIONS]', 'Login or register to Uffizzi to view and manage your previews'
@@ -78,6 +83,7 @@ module Uffizzi
 
       require_relative 'cli/common'
       def dispatch(meth, given_args, given_opts, config)
+        puts "dispatch"
         args, opts = Thor::Options.split(given_args)
         return Common.show_manual(filename(args)) if show_help?(args, opts)
 

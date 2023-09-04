@@ -2,6 +2,7 @@
 
 require 'uffizzi'
 require 'uffizzi/clients/api/api_client'
+require 'ruby-prof'
 
 module Uffizzi
   class Cli::Config < Thor

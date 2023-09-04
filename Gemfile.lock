@@ -98,6 +98,7 @@ GEM
       rubocop (>= 0.90, < 2.0)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
+    ruby-prof (1.6.3)
     ruby-progressbar (1.11.0)
     securerandom (0.2.2)
     sentry-ruby (5.10.0)
@@ -150,6 +151,7 @@ DEPENDENCIES
   rubocop
   rubocop-minitest
   rubocop-rake
+  ruby-prof
   uffizzi-cli!
   webmock
 
