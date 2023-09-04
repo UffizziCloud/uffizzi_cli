@@ -29,12 +29,12 @@ class InstallTest < Minitest::Test
     @mock_shell.promise_execute(/helm search repo/, stdout: [].to_json)
     @mock_shell.promise_execute(/helm repo add/, stdout: 'ok')
     @mock_shell.promise_execute(/helm list/, stdout: [].to_json)
-    @mock_shell.promise_execute(/helm install/, stdout: { info: { status: 'deployed' } }.to_json)
+    @mock_shell.promise_execute(/helm upgrade/, stdout: { info: { status: 'deployed' } }.to_json)
 
     @install.application
 
     last_message = Uffizzi.ui.last_message
-    assert_match('deployed', last_message)
+    assert_match('The uffizzi application url is', last_message)
   end
 
   def test_install_by_options
@@ -42,13 +42,12 @@ class InstallTest < Minitest::Test
     @mock_shell.promise_execute(/helm version/, stdout: '3.00')
     @mock_shell.promise_execute(/helm search repo/, stdout: [].to_json)
     @mock_shell.promise_execute(/helm repo add/, stdout: 'ok')
-    @mock_shell.promise_execute(/helm list/, stdout: [].to_json)
-    @mock_shell.promise_execute(/helm install/, stdout: { info: { status: 'deployed' } }.to_json)
+    @mock_shell.promise_execute(/helm upgrade/, stdout: { info: { status: 'deployed' } }.to_json)
 
     @install.options = command_options(domain: 'my-domain.com', 'without-wildcard-tls' => true)
     @install.application
 
     last_message = Uffizzi.ui.last_message
-    assert_match('deployed', last_message)
+    assert_match('The uffizzi application url is', last_message)
   end
 end
