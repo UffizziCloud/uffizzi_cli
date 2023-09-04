@@ -10,6 +10,8 @@ services:
       - ~/.ssh:/root/.ssh
       - ~/.bash_history:/root/.bash_history
       - ~/.config/uffizzi:/root/.config/uffizzi
+      - ~/test/uffizzi_app/charts/uffizzi-app:/gem/tmp/charts/uffizzi_app
+      - ~/test/uffizzi_controller_os/charts/uffizzi-controller:/gem/tmp/charts/uffizzi-controller
       - bundle_cache:/bundle_cache
     environment:
       - BUNDLE_PATH=/bundle_cache

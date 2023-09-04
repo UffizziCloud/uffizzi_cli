@@ -1,0 +1,67 @@
+uffizzi install - install the Uffizzi application to cluster
+================================================================
+
+## SYNOPSIS
+    uffizzi install COMMAND
+
+## DESCRIPTION
+    The uffizzi install command lets you deploy uffizzi application to your kubecrnetes cluster.
+    If COMMAND is not specified, uffizzi install start installation.
+    if OPTIONS not specified, uffizzi show installation wizard.
+
+    For more information on configuration options, see:
+    https://docs.uffizzi.com/references/cli/
+
+## COMMANDS
+    COMMAND is one of the following:
+
+     wildcard_tls OPTION
+        Add the wildcard tls certificate to installed uffizzi application.
+
+## OPTIONS
+     OPTION is one of the following:
+
+     namespace
+        The namespace of the kubecrnetes cluster where application will be deployed.
+        Default is uffizzi.
+
+     domain
+        The domain that will be used for access the web API.
+
+     issuer
+        The cluster issuer that will be used for generate tls certificates.
+        Default is letsencrypt.
+
+     user-email
+        The login that will be used for access to web API.
+
+     user-password
+        The password that will be used for access to web API.
+
+     acme-email
+       Email address for ACME registration
+
+     wildcard-cert-path
+       Path to wildcard certificate.
+
+     wildcard-key-path
+       Path to wildcard certificate key.
+
+     without-wildcard-tls
+       Set this flag and we can install application without wildcard certificate.
+
+     print-values
+       Show builded vales for helm installation.
+       The installation will not be executed.
+
+     repo
+       The repository that will be used for helm install
+
+## EXAMPLES
+    To install the uffizzi command, run:
+
+        $ uffizzi install
+
+    To install the wildcard_tls command, run:
+
+        $ uffizzi install wildcard_tls
