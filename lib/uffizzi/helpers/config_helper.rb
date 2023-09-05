@@ -40,11 +40,11 @@ module Uffizzi
       end
 
       def set_previous_current_context_by_path(path, current_context)
-        current_contexts = delete_previous_current_context_by_path(path)
+        current_contexts = previous_current_contexts_without(path)
         current_contexts << { current_context: current_context, kubeconfig_path: path }
       end
 
-      def delete_previous_current_context_by_path(path)
+      def previous_current_contexts_without(path)
         cluster_previous_current_contexts.reject { |c| c[:kubeconfig_path] == path }
       end
 
