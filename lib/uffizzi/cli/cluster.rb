@@ -9,7 +9,7 @@ require 'uffizzi/services/preview_service'
 require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/kubeconfig_service'
-require 'uffizzi/command_handlers/cluster/disconnect_handler'
+require 'uffizzi/services/cluster/disconnect_service'
 
 MANUAL = 'manual'
 
@@ -83,7 +83,7 @@ module Uffizzi
       when 'update-kubeconfig'
         handle_update_kubeconfig_command(project_slug, command_args)
       when 'disconnect'
-        ClusterDisconnectHandler.handle(options)
+        ClusterDisconnectService.handle(options)
       end
     end
 

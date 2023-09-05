@@ -4,7 +4,7 @@ require 'uffizzi/helpers/config_helper'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/kubeconfig_service'
 
-class ClusterDisconnectHandler
+class ClusterDisconnectService
   class << self
     def handle(options)
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
