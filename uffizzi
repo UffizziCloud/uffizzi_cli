@@ -4,8 +4,15 @@
 formula_name = 'uffizzi'
 command = "brew --prefix #{formula_name}"
 result = IO.popen(command) { |io| io.read.chomp }
+puts '1---------'
+puts ENV['GEM_HOME']
+puts '2---------'
+puts ENV['GEM_PATH']
+
 if $?.success?
   libexec_path = File.join(result, 'libexec')
+  ENV['GEM_HOME'] = libexec_path
+  puts ENV['GEM_PATH'] = libexec_path
   puts "Путь к libexec для формулы #{formula_name}: #{libexec_path}"
 else
   puts "Не удалось выполнить команду '#{command}'"
