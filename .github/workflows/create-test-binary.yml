@@ -15,8 +15,6 @@ jobs:
   #     darwin-bin-path: uffizzi-darwin
   create_release:
     runs-on: ubuntu-latest
-    needs:
-      - make
     steps:
       # - name: Download Linux Bin
       #   uses: actions/download-artifact@master
