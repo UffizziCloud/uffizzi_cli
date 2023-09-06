@@ -8,9 +8,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-binary:
-    uses: ./.github/workflows/make-binary.yml
-    with:
-      linux-bin-path: uffizzi-linux
-      darwin-bin-path: uffizzi-darwin
+  # build-binary:
+  #   uses: ./.github/workflows/make-binary.yml
+  #   with:
+  #     linux-bin-path: uffizzi-linux
+  #     darwin-bin-path: uffizzi-darwin
+  create_release:
+    runs-on: ubuntu-latest
+    needs:
+      - make
+    steps:
+      # - name: Download Linux Bin
+      #   uses: actions/download-artifact@master
+      #   with:
+      #     name: ${{ env.LINUX_BIN_PATH }}
+      # - name: Download Macos Bin
+      #   uses: actions/download-artifact@master
+      #   with:
+      #     name: ${{ env.DARWIN_BIN_PATH }}
+      - name: Generate release notes
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: true
 

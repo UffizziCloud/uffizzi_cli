@@ -78,7 +78,6 @@ module Uffizzi
 
       require_relative 'cli/common'
       def dispatch(meth, given_args, given_opts, config)
-        puts "dispatch"
         args, opts = Thor::Options.split(given_args)
         return Common.show_manual(filename(args)) if show_help?(args, opts)
 
