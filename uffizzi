@@ -1,6 +1,16 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+formula_name = 'uffizzi'
+command = "brew --prefix #{formula_name}"
+result = IO.popen(command) { |io| io.read.chomp }
+if $?.success?
+  libexec_path = File.join(result, 'libexec')
+  puts "Путь к libexec для формулы #{formula_name}: #{libexec_path}"
+else
+  puts "Не удалось выполнить команду '#{command}'"
+end
+
 $LOAD_PATH.push(File.expand_path('lib', __dir__))
 
 require 'uffizzi/cli'
