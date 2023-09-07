@@ -1,0 +1,40 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-CLUSTER\-DISCONNECT" "" "September 2023" ""
+.SH "NAME"
+\fBuffizzi\-cluster\-disconnect\fR \- disconnect from current cluster
+.SH "SYNOPSIS"
+.nf
+uffizzi cluster disconnect
+.fi
+.SH "DESCRIPTION"
+.nf
+Switch current context to origin\.
+
+For more information on Uffizzi clusters, see:
+https://docs\.uffizzi\.com/references/cli/
+.fi
+.SH "FLAGS"
+.nf
+\-\-ask
+    Show list available contexts for kubeconfig
+
+\-\-kubeconfig="/path/to/your/kubeconfig"
+    Path to kubeconfig file
+.fi
+.SH "EXAMPLES"
+.nf
+To disconnect from current cluster context to origin context, run:
+
+    $ uffizzi cluster disconnect
+
+To disconnect from current cluster context to origin context
+and set new origin current context, run:
+
+    $ uffizzi cluster disconnect \-\-ask
+
+To disconnect from current cluster context to origin context for current kubeconfig, run:
+
+    $ uffizzi cluster disconnect \-\-kubeconfig="/path/to/your/kubeconfig"
+.fi
+

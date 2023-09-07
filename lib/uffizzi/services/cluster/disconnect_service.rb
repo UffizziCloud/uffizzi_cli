@@ -8,6 +8,8 @@ class ClusterDisconnectService
   class << self
     def handle(options)
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
+      is_ask_origin_current_context = options[:ask]
+
       prev_current_context = Uffizzi::ConfigHelper.previous_current_context_by_path(kubeconfig_path)&.fetch(:current_context, nil)
       kubeconfig = KubeconfigService.read_kubeconfig(kubeconfig_path)
 
@@ -23,16 +25,24 @@ class ClusterDisconnectService
       end
 
       if KubeconfigService.find_cluster_contexts_by_name(kubeconfig, prev_current_context).present? &&
-          prev_current_context != current_context
-        return update_current_context_by_filepath(kubeconfig_path, prev_current_context)
+          prev_current_context != current_context &&
+          !is_ask_origin_current_context
+        update_current_context_by_filepath(kubeconfig_path, prev_current_context)
+        say_success(prev_current_context, kubeconfig_path)
+        return
       end
 
       new_current_context = ask_context(contexts, current_context)
       update_current_context_by_filepath(kubeconfig_path, new_current_context)
       set_previous_current_context_to_config(kubeconfig_path, new_current_context)
+      say_success(new_current_context, kubeconfig_path)
     end
 
     private
+
+    def say_success(current_context, kubeconfig_path)
+      Uffizzi.ui.say("Now your current context is '#{current_context}' for kubeconfig path '#{kubeconfig_path}'")
+    end
 
     def update_current_context_by_filepath(filepath, current_context)
       KubeconfigService.save_to_filepath(filepath) do |kubeconfig|
@@ -51,7 +61,7 @@ class ClusterDisconnectService
         .reject { |c| c[:value] == current_context }
 
       if context_names.empty?
-        return Uffizzi.say_error_and_exit('No other contexts')
+        return Uffizzi.ui.say_error_and_exit('No other contexts')
       end
 
       question = 'Select origin context to switch on:'

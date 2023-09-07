@@ -443,4 +443,28 @@ class ClusterTest < Minitest::Test
     assert_equal(2, kubeconfig_after_disconnect['contexts'].count)
     assert_equal(prev_current_context, kubeconfig_after_disconnect['current-context'])
   end
+
+  def test_disconnect_cluster_with_previous_current_context_should_ask_question
+    clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    kubeconfig = Psych.safe_load(Base64.decode64(clusters_get_body[:cluster][:kubeconfig]))
+    prev_current_context = 'prev-context'
+    kubeconfig['clusters'] << { 'name' => prev_current_context }
+    kubeconfig['contexts'] << { 'name' => prev_current_context }
+    clusters_config = [{ current_context: prev_current_context, kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path }]
+
+    FileUtils.mkdir_p(File.dirname(Uffizzi.configuration.default_kubeconfig_path))
+    File.write(Uffizzi.configuration.default_kubeconfig_path, kubeconfig.to_yaml)
+    Uffizzi::ConfigFile.write_option(:previous_current_contexts, clusters_config)
+
+    @mock_prompt.promise_question_answer('Select origin context to switch on:', :first)
+
+    @cluster.options = command_options(ask: true)
+    @cluster.disconnect
+
+    kubeconfig_after_disconnect = Psych.safe_load(File.read(Uffizzi.configuration.default_kubeconfig_path))
+
+    assert_equal(2, kubeconfig_after_disconnect['clusters'].count)
+    assert_equal(2, kubeconfig_after_disconnect['contexts'].count)
+    assert_equal(prev_current_context, kubeconfig_after_disconnect['current-context'])
+  end
 end
