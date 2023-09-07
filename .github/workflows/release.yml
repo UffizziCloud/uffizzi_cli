@@ -12,7 +12,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  make:
+  code-quality:
+    name: Test and Lint
+    uses: ./.github/workflows/code-quality.yml
+  gem-release:
+    needs:
+      - code-quality
+    uses: ./.github/workflows/gem-release.yml
+  make-binary:
+    needs:
+      - code-quality
     strategy:
       matrix:
         os: [ubuntu-20.04, macos-12]
