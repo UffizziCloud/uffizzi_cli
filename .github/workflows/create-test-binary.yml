@@ -15,4 +15,5 @@ jobs:
   #     darwin-bin-path: uffizzi-darwin
   gem-release:
     uses: ./.github/workflows/gem-release.yml
+    secrets: inherit
 
