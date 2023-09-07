@@ -12,4 +12,4 @@ jobs:
       - name: Release Ruby Gem
         run: make release_gem
         env:
-          RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
+          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
