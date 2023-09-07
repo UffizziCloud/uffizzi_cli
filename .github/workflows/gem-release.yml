@@ -1,0 +1,16 @@
+name: Uffizzi CLI Rubygems Release
+on:
+  workflow_call:
+
+jobs:
+  gem-release:
+    name: Build and publish image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Release Ruby Gem
+        uses: cadwallion/publish-rubygems-action@master
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
