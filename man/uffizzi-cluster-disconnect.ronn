@@ -1,0 +1,32 @@
+uffizzi-cluster-disconnect - disconnect from current cluster context
+====================================================================
+
+## SYNOPSIS
+    uffizzi cluster disconnect
+
+## DESCRIPTION
+    Switch current context to origin.
+
+    For more information on Uffizzi clusters, see:
+    https://docs.uffizzi.com/references/cli/
+
+## FLAGS
+    --ask
+        Show list available contexts for kubeconfig and set new origin current context
+
+    --kubeconfig="/path/to/your/kubeconfig"
+        Path to kubeconfig file
+
+## EXAMPLES
+    To disconnect from current cluster context to origin context, run:
+
+        $ uffizzi cluster disconnect
+
+    To disconnect from current cluster context to origin context
+    and set new origin current context, run:
+
+        $ uffizzi cluster disconnect --ask
+
+    To disconnect from current cluster context to origin context for current kubeconfig, run:
+
+        $ uffizzi cluster disconnect --kubeconfig="/path/to/your/kubeconfig"

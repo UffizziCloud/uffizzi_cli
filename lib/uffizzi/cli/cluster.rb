@@ -56,7 +56,8 @@ module Uffizzi
       run('update-kubeconfig', cluster_name: name)
     end
 
-    method_option :kubeconfig, type: :string, required: false, aliases: '-k'
+    method_option :kubeconfig, type: :string, aliases: '-k'
+    method_option :ask, type: :boolean
     desc 'disconnect', 'Switch back to original kubeconfig current context'
     def disconnect
       run('disconnect')
