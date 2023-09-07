@@ -19,6 +19,7 @@ jobs:
     needs:
       - code-quality
     uses: ./.github/workflows/gem-release.yml
+    secrets: inherit
   make-binary:
     needs:
       - code-quality
