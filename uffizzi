@@ -9,7 +9,7 @@ puts ENV['GEM_HOME']
 puts '2---------'
 puts ENV['GEM_PATH']
 puts '3------------'
-puts resulr
+puts result
 
 if $?.success?
   libexec_path = File.join(result, 'libexec')
