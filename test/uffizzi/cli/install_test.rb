@@ -14,15 +14,11 @@ class InstallTest < Minitest::Test
   end
 
   def test_install_by_wizard
-    @mock_prompt.promise_question_answer('Uffizzi use a wildcard tls certificate. Do you have it?', 'n')
-    @mock_prompt.promise_question_answer('Do you want to add wildcard certificate later?', 'y')
     @mock_prompt.promise_question_answer('Namespace: ', 'uffizzi')
-    @mock_prompt.promise_question_answer('Domain: ', 'my-domain.com')
-    @mock_prompt.promise_question_answer('User email: ', 'admin@my-domain.com')
-    @mock_prompt.promise_question_answer('User password: ', 'password')
-    @mock_prompt.promise_question_answer('Controller password: ', 'password')
-    @mock_prompt.promise_question_answer('Email address for ACME registration: ', 'admin@my-domain.com')
-    @mock_prompt.promise_question_answer('Cluster issuer', :first)
+    @mock_prompt.promise_question_answer('Root domain: ', 'my-domain.com')
+    @mock_prompt.promise_question_answer('First user email: ', 'admin@my-domain.com')
+    @mock_prompt.promise_question_answer('First user password: ', 'password')
+    @mock_prompt.promise_question_answer('Uffizzi use a wildcard tls certificate. Do you have it?', 'n')
 
     @mock_shell.promise_execute(/kubectl version/, stdout: '1.23.00')
     @mock_shell.promise_execute(/helm version/, stdout: '3.00')
@@ -30,11 +26,12 @@ class InstallTest < Minitest::Test
     @mock_shell.promise_execute(/helm repo add/, stdout: 'ok')
     @mock_shell.promise_execute(/helm list/, stdout: [].to_json)
     @mock_shell.promise_execute(/helm upgrade/, stdout: { info: { status: 'deployed' } }.to_json)
+    @mock_shell.promise_execute(/kubectl get ingress/, stdout: { status: { loadBalancer: { ingress: [{ ip: '34.31.68.232' }] } } }.to_json)
 
     @install.application
 
     last_message = Uffizzi.ui.last_message
-    assert_match('The uffizzi application url is', last_message)
+    assert_match('Create a DNS A record for domain', last_message)
   end
 
   def test_install_by_options
@@ -43,11 +40,12 @@ class InstallTest < Minitest::Test
     @mock_shell.promise_execute(/helm search repo/, stdout: [].to_json)
     @mock_shell.promise_execute(/helm repo add/, stdout: 'ok')
     @mock_shell.promise_execute(/helm upgrade/, stdout: { info: { status: 'deployed' } }.to_json)
+    @mock_shell.promise_execute(/kubectl get ingress/, stdout: { status: { loadBalancer: { ingress: [{ ip: '34.31.68.232' }] } } }.to_json)
 
     @install.options = command_options(domain: 'my-domain.com', 'without-wildcard-tls' => true)
     @install.application
 
     last_message = Uffizzi.ui.last_message
-    assert_match('The uffizzi application url is', last_message)
+    assert_match('Create a DNS A record for domain', last_message)
   end
 end

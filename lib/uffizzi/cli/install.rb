@@ -9,15 +9,14 @@ module Uffizzi
     HELM_DEPLOYED_STATUS = 'deployed'
     CHART_NAME = 'uffizzi-app'
     VALUES_FILE_NAME = 'helm_values.yaml'
-    DEFAULT_ISSUER = 'letsencrypt'
     DEFAULT_NAMESPACE = 'uffizzi'
     DEFAULT_APP_PREFIX = 'uffizzi'
+    DEFAULT_CLUSTER_ISSUER = 'letsencrypt'
 
     desc 'application', 'Install uffizzi to cluster'
     method_option :namespace, type: :string
     method_option :domain, type: :string
     method_option :'user-email', type: :string
-    method_option :'acme-email', type: :string
     method_option :'user-password', type: :string
     method_option :issuer, type: :string, enum: ['letsencrypt', 'zerossl']
     method_option :'wildcard-cert-path', type: :string
@@ -53,7 +52,7 @@ module Uffizzi
         }
       else
         namespace = Uffizzi.prompt.ask('Namespace: ', required: true, default: DEFAULT_NAMESPACE)
-        domain = Uffizzi.prompt.ask('Domain: ', required: true, default: 'example.com')
+        domain = Uffizzi.prompt.ask('Root Domain: ', required: true, default: 'example.com')
         wildcard_cert_paths = ask_wildcard_cert(has_user_wildcard_cert: true, domain: domain)
 
         { namespace: namespace, domain: domain }.merge(wildcard_cert_paths)
@@ -89,14 +88,36 @@ module Uffizzi
       helm_values = build_helm_values(params)
       return Uffizzi.ui.say(helm_values.to_yaml) if options[:'print-values']
 
+      namespace = params[:namespace]
+      release_name = params[:namespace]
+
       create_helm_values_file(helm_values)
       helm_set_repo unless options[:repo]
-      helm_install(release_name: params[:namespace], namespace: params[:namespace], repo: options[:repo])
+      helm_install(release_name: release_name, namespace: namespace, repo: options[:repo])
       kubectl_add_wildcard_tls(params) if params[:wildcard_cert_path] && params[:wildcard_key_path]
       delete_helm_values_file
 
+      ingress_ip = get_web_ingress_ip_address(release_name, namespace)
+
       Uffizzi.ui.say('Helm release is deployed')
-      Uffizzi.ui.say("The uffizzi application url is https://#{DEFAULT_APP_PREFIX}.#{params[:domain]}")
+      Uffizzi.ui.say("The uffizzi application url is 'https://#{DEFAULT_APP_PREFIX}.#{params[:domain]}'")
+      Uffizzi.ui.say("Create a DNS A record for domain '*.#{params[:domain]}' with value '#{ingress_ip}'")
+    end
+
+    def get_web_ingress_ip_address(release_name, namespace)
+      Uffizzi.ui.say('Getting an ingress ip address...')
+
+      10.times do
+        web_ingress = kubectl_get_web_ingress(release_name, namespace)
+        ingresses = web_ingress.dig('status', 'loadBalancer', 'ingress') || []
+        ip_address = ingresses.first&.fetch('ip', nil)
+
+        return ip_address if ip_address.present?
+
+        sleep(1)
+      end
+
+      Uffizzi.ui.say_error_and_exit('We can`t get the uffizzi ingress ip address')
     end
 
     def kubectl_exists?
@@ -163,34 +184,38 @@ module Uffizzi
       execute_command(cmd)
     end
 
+    def kubectl_get_web_ingress(release_name, namespace)
+      cmd = "kubectl get ingress/#{release_name}-web-ingress -n #{namespace} -o json"
+
+      res = execute_command(cmd, say: false)
+      JSON.parse(res)
+    end
+
     def ask_wildcard_cert(has_user_wildcard_cert: nil, domain: nil)
       has_user_wildcard_cert ||= Uffizzi.prompt.yes?('Uffizzi use a wildcard tls certificate. Do you have it?')
 
-      if has_user_wildcard_cert
-        cert_path = Uffizzi.prompt.ask('Path to cert: ', required: true)
-        key_path = Uffizzi.prompt.ask('Path to key: ', required: true)
+      if !has_user_wildcard_cert
+        Uffizzi.ui.say('Uffizzi does not work properly without a wildcard certificate.')
+        Uffizzi.ui.say('You can add wildcard cert later with command:')
+        Uffizzi.ui.say("uffizzi install wildcard-tls --domain #{domain} --cert /path/to/cert --key /path/to/key")
 
-        return { wildcard_cert_path: cert_path, wildcard_key_path: key_path }
+        return {}
       end
 
-      Uffizzi.ui.say('Uffizzi does not work properly without a wildcard certificate.')
-      Uffizzi.ui.say('You can add wildcard cert later with command:')
-      Uffizzi.ui.say("uffizzi install wildcard-tls --domain #{domain} --cert /path/to/cert --key /path/to/key")
+      cert_path = Uffizzi.prompt.ask('Path to cert: ', required: true)
+      Uffizzi.ui.say_error_and_exit("File '#{cert_path}' does not exists") unless File.exist?(cert_path)
 
-      {}
+      key_path = Uffizzi.prompt.ask('Path to key: ', required: true)
+      Uffizzi.ui.say_error_and_exit("File '#{key_path}' does not exists") unless File.exist?(key_path)
+
+      { wildcard_cert_path: cert_path, wildcard_key_path: key_path }
     end
 
     def ask_installation_params
       namespace = Uffizzi.prompt.ask('Namespace: ', required: true, default: DEFAULT_NAMESPACE)
-      domain = Uffizzi.prompt.ask('Domain: ', required: true, default: 'example.com')
-      user_email = Uffizzi.prompt.ask('User email: ', required: true, default: "admin@#{domain}")
-      user_password = Uffizzi.prompt.ask('User password: ', required: true, default: generate_password)
-      cert_email = Uffizzi.prompt.ask('Email address for ACME registration: ', required: true, default: user_email)
-      cluster_issuers = [
-        { name: 'Letsencrypt', value: 'letsencrypt' },
-        { name: 'ZeroSSL', value: 'zerossl' },
-      ]
-      cluster_issuer = Uffizzi.prompt.select('Cluster issuer', cluster_issuers)
+      domain = Uffizzi.prompt.ask('Root domain: ', required: true, default: 'example.com')
+      user_email = Uffizzi.prompt.ask('First user email: ', required: true, default: "admin@#{domain}")
+      user_password = Uffizzi.prompt.ask('First user password: ', required: true, default: generate_password)
       wildcard_cert_paths = ask_wildcard_cert(domain: domain)
 
       {
@@ -199,8 +224,8 @@ module Uffizzi
         user_email: user_email,
         user_password: user_password,
         controller_password: generate_password,
-        cert_email: cert_email,
-        cluster_issuer: cluster_issuer,
+        cert_email: user_email,
+        cluster_issuer: DEFAULT_CLUSTER_ISSUER,
       }.merge(wildcard_cert_paths)
     end
 
@@ -225,8 +250,8 @@ module Uffizzi
         user_email: options[:'user-email'] || "admin@#{options[:domain]}",
         user_password: options[:'user-password'] || generate_password,
         controller_password: generate_password,
-        cert_email: options[:'acme-email'] || options[:'user-email'],
-        cluster_issuer: options[:issuer] || DEFAULT_ISSUER,
+        cert_email: options[:'user-email'],
+        cluster_issuer: options[:issuer] || DEFAULT_CLUSTER_ISSUER,
         wildcard_cert_path: options[:'wildcard-cert-path'],
         wildcard_key_path: options[:'wildcard-key-path'],
       }
