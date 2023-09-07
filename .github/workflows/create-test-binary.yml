@@ -8,9 +8,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-binary:
-    uses: ./.github/workflows/make-binary.yml
-    with:
-      linux-bin-path: uffizzi-linux
-      darwin-bin-path: uffizzi-darwin
+  # build-binary:
+  #   uses: ./.github/workflows/make-binary.yml
+  #   with:
+  #     linux-bin-path: uffizzi-linux
+  #     darwin-bin-path: uffizzi-darwin
+  gem-release:
+    needs:
+      - code-quality
+    uses: ./.github/workflows/gem-release.yml
 
