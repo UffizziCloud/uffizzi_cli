@@ -14,7 +14,5 @@ jobs:
   #     linux-bin-path: uffizzi-linux
   #     darwin-bin-path: uffizzi-darwin
   gem-release:
-    needs:
-      - code-quality
     uses: ./.github/workflows/gem-release.yml
 
