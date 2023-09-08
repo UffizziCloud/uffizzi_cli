@@ -5,10 +5,23 @@
     uffizzi login [UFFIZZI_WIDE_FLAG ...]
 
 ## DESCRIPTION
-    The uffizzi login command lets you authenticate with Uffizzi. 
+    The uffizzi login command lets you authenticate with Uffizzi.
 
     For more information on authentication and credential types, see:
     https://docs.uffizzi.com/references/cli/
+
+## FLAGS
+    --email
+       Login using an email and a password
+
+## OPTIONS
+     OPTION is one of the following: 
+
+    --server
+       Login with an alternative server.
+
+    --username
+       Login with a username different from the one in the config
 
 ## UFFIZZI WIDE FLAGS
     These flags are available to all commands: --project. Run $ uffizzi 
