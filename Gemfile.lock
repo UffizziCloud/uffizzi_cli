@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi-cli (2.0.32)
+    uffizzi (2.0.33)
       activesupport
       awesome_print
       faker
@@ -100,7 +100,7 @@ GEM
       rubocop (~> 1.0)
     ruby-progressbar (1.11.0)
     securerandom (0.2.2)
-    sentry-ruby (5.10.0)
+    sentry-ruby (5.11.0)
       concurrent-ruby (~> 1.0, >= 1.0.2)
     thor (1.2.2)
     tty-color (0.6.0)
@@ -150,7 +150,7 @@ DEPENDENCIES
   rubocop
   rubocop-minitest
   rubocop-rake
-  uffizzi-cli!
+  uffizzi!
   webmock
 
 BUNDLED WITH

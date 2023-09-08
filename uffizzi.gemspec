@@ -4,13 +4,13 @@ $LOAD_PATH.push File.expand_path('lib', __dir__)
 require 'uffizzi/version'
 
 Gem::Specification.new do |spec|
-  spec.name = 'uffizzi-cli'
+  spec.name = 'uffizzi'
   spec.version = Uffizzi::VERSION
   spec.authors = ['Josh Thurman', 'Grayson Adkins']
   spec.email = ['info@uffizzi.com']
 
-  spec.summary = 'uffizzi-cli'
-  spec.description = 'uffizzi-cli'
+  spec.summary = 'uffizzi'
+  spec.description = 'uffizzi'
   spec.homepage = 'https://uffizzi.com'
   spec.license = 'Apache-2.0'
 

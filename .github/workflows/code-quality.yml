@@ -37,5 +37,5 @@ jobs:
         with:
           tags: uffizzi/cli:test-install
           platforms: linux/amd64
-      - name: Display uffizzi-cli version
+      - name: Display uffizzi version
         run: docker run --rm uffizzi/cli:test-install version
