@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    uffizzi (2.0.33)
+    uffizzi-cli (2.0.34)
       activesupport
       awesome_print
       faker
@@ -150,7 +150,7 @@ DEPENDENCIES
   rubocop
   rubocop-minitest
   rubocop-rake
-  uffizzi!
+  uffizzi-cli!
   webmock
 
 BUNDLED WITH
