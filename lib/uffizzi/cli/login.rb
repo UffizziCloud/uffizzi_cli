@@ -21,7 +21,7 @@ module Uffizzi
 
     def run
       AuthHelper.sign_out if AuthHelper.signed_in?
-      return perform_email_login if @options[:email]
+      return perform_email_login unless @options[:email].nil?
 
       perform_browser_login
     end
@@ -45,7 +45,7 @@ module Uffizzi
     def perform_browser_login
       session_id = SecureRandom.uuid
       response = create_access_token(@server, session_id)
-      return handle_failed_response(response) unless ResponseHelper.created?(response)
+      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
 
       url = browser_sign_in_url(@server, session_id)
       open_browser(url)
@@ -68,7 +68,7 @@ module Uffizzi
       token = response[:body][:access_token]
       Uffizzi::Token.delete
       Uffizzi::Token.write(token)
-      Uffizzi.ui.say('Login successfull')
+      Uffizzi.ui.say('Login successful')
 
       set_current_account_and_project
     end
@@ -84,7 +84,7 @@ module Uffizzi
       ConfigFile.write_option(:server, @server)
       ConfigFile.write_option(:username, username)
       ConfigFile.write_option(:cookie, response[:headers])
-      Uffizzi.ui.say('Login successfull')
+      Uffizzi.ui.say('Login successful')
 
       if ENV.fetch('CI_PIPELINE_RUN', false)
         account = response[:body][:user][:default_account]

@@ -22,6 +22,7 @@ uffizzi-cluster-create - create a cluster
 
     --update-current-context
         Update current-context in kubeconfig file
+        Default is true
 
     --output=pretty-json
     --output=json

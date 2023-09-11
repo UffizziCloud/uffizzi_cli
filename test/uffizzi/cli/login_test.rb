@@ -49,8 +49,7 @@ class LoginTest < Minitest::Test
     Uffizzi::ConfigFile.write_option(:project, 'project_slug_1')
     Uffizzi::ConfigFile.write_option(:account, { 'id' => 1, 'name' => 'uffizzi' })
 
-    @cli.options = command_options(email: true)
-
+    @cli.options = command_options(email: '')
     @cli.login
 
     assert_requested(stubbed_uffizzi_login)

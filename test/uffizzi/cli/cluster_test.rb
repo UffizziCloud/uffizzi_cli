@@ -271,7 +271,6 @@ class ClusterTest < Minitest::Test
   end
 
   def test_delete_cluster_with_flag_delete_config_and_single_cluster_in_kubeconfig
-    @cluster.options = command_options('delete-config' => true)
     clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
     kubeconfig = Psych.safe_load(Base64.decode64(clusters_get_body[:cluster][:kubeconfig]))
     clusters_config = [{ id: clusters_get_body[:cluster][:id], kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path }]
@@ -283,6 +282,7 @@ class ClusterTest < Minitest::Test
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
 
+    @cluster.options = command_options('delete-config': true)
     @cluster.delete('cluster-name')
 
     kubeconfig_after_exclude = Psych.safe_load(File.read(Uffizzi.configuration.default_kubeconfig_path))
@@ -296,7 +296,6 @@ class ClusterTest < Minitest::Test
   end
 
   def test_delete_cluster_with_flag_delete_config_and_multiply_clusters_in_kubeconfig
-    @cluster.options = command_options('delete-config' => true)
     clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
     kubeconfig = Psych.safe_load(Base64.decode64(clusters_get_body[:cluster][:kubeconfig]))
     clusters_config = [{ id: clusters_get_body[:cluster][:id], kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path }]
@@ -321,6 +320,7 @@ class ClusterTest < Minitest::Test
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
 
+    @cluster.options = command_options('delete-config': true)
     @cluster.delete('cluster-name')
 
     kubeconfig_after_exclude = Psych.safe_load(File.read(Uffizzi.configuration.default_kubeconfig_path))
@@ -334,7 +334,6 @@ class ClusterTest < Minitest::Test
   end
 
   def test_delete_cluster_with_flag_delete_config_and_kubeconfig_file_not_exists
-    @cluster.options = command_options('delete-config' => true)
     clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
     clusters_config = [{ id: clusters_get_body[:cluster][:id], kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path }]
 
@@ -343,6 +342,7 @@ class ClusterTest < Minitest::Test
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
 
+    @cluster.options = command_options('delete-config': true)
     @cluster.delete('cluster-name')
 
     assert_match('Warning', Uffizzi.ui.last_message)
@@ -352,7 +352,6 @@ class ClusterTest < Minitest::Test
   end
 
   def test_delete_cluster_with_flag_delete_config_and_kubeconfig_file_has_empty_clusters
-    @cluster.options = command_options('delete-config' => true)
     clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
     clusters_config = [{ id: clusters_get_body[:cluster][:id], kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path }]
     kubeconfig = Psych.safe_load(Base64.decode64(clusters_get_body[:cluster][:kubeconfig]))
@@ -367,6 +366,7 @@ class ClusterTest < Minitest::Test
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
 
+    @cluster.options = command_options('delete-config': true)
     @cluster.delete('cluster-name')
 
     kubeconfig_after_exclude = Psych.safe_load(File.read(Uffizzi.configuration.default_kubeconfig_path))
