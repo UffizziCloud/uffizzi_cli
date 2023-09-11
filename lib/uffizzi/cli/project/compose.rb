@@ -79,6 +79,8 @@ module Uffizzi
         else
           ResponseHelper.handle_invalid_compose_response(response)
         end
+      elsif ResponseHelper.not_found?(response)
+        Uffizzi.ui.say('The project does not have a compose file set.')
       else
         ResponseHelper.handle_failed_response(response)
       end

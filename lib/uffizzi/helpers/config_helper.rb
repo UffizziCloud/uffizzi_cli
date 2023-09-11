@@ -39,10 +39,27 @@ module Uffizzi
         clusters.detect { |c| c[:id] == id }
       end
 
+      def set_previous_current_context_by_path(path, current_context)
+        current_contexts = previous_current_contexts_without(path)
+        current_contexts << { current_context: current_context, kubeconfig_path: path }
+      end
+
+      def previous_current_contexts_without(path)
+        cluster_previous_current_contexts.reject { |c| c[:kubeconfig_path] == path }
+      end
+
+      def previous_current_context_by_path(path)
+        cluster_previous_current_contexts.detect { |c| c[:kubeconfig_path] == path }
+      end
+
       private
 
       def clusters
         read_option_from_config(:clusters) || []
+      end
+
+      def cluster_previous_current_contexts
+        read_option_from_config(:previous_current_contexts) || []
       end
     end
   end

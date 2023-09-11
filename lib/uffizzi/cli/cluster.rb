@@ -9,6 +9,7 @@ require 'uffizzi/services/preview_service'
 require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/kubeconfig_service'
+require 'uffizzi/services/cluster/disconnect_service'
 
 MANUAL = 'manual'
 
@@ -42,7 +43,7 @@ module Uffizzi
     end
 
     desc 'delete [NAME]', 'Delete a cluster'
-    method_option :'delete-config', required: false, type: :boolean, aliases: '-dc'
+    method_option :'delete-config', required: false, type: :boolean, aliases: '-c'
     def delete(name)
       run('delete', cluster_name: name)
     end
@@ -53,6 +54,13 @@ module Uffizzi
     desc 'update-kubeconfig', 'Udpate your kubeconfig'
     def update_kubeconfig(name)
       run('update-kubeconfig', cluster_name: name)
+    end
+
+    method_option :kubeconfig, type: :string, aliases: '-k'
+    method_option :ask, type: :boolean
+    desc 'disconnect', 'Switch back to original kubeconfig current context'
+    def disconnect
+      run('disconnect')
     end
 
     private
@@ -75,6 +83,8 @@ module Uffizzi
         handle_delete_command(project_slug, command_args)
       when 'update-kubeconfig'
         handle_update_kubeconfig_command(project_slug, command_args)
+      when 'disconnect'
+        ClusterDisconnectService.handle(options)
       end
     end
 
@@ -191,8 +201,14 @@ module Uffizzi
 
       KubeconfigService.save_to_filepath(kubeconfig_path, parsed_kubeconfig) do |kubeconfig_by_path|
         merged_kubeconfig = KubeconfigService.merge(kubeconfig_by_path, parsed_kubeconfig)
-        current_context = KubeconfigService.get_current_context(parsed_kubeconfig)
-        KubeconfigService.update_current_context(merged_kubeconfig, current_context)
+        new_current_context = KubeconfigService.get_current_context(parsed_kubeconfig)
+        new_kubeconfig = KubeconfigService.update_current_context(merged_kubeconfig, new_current_context)
+
+        next new_kubeconfig if kubeconfig_by_path.nil?
+
+        previous_current_context = KubeconfigService.get_current_context(kubeconfig_by_path)
+        save_previous_current_context(kubeconfig_path, previous_current_context)
+        new_kubeconfig
       end
 
       update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
@@ -319,8 +335,14 @@ module Uffizzi
         merged_kubeconfig = KubeconfigService.merge(kubeconfig_by_path, kubeconfig)
 
         if is_update_current_context
-          current_context = KubeconfigService.get_current_context(kubeconfig)
-          KubeconfigService.update_current_context(merged_kubeconfig, current_context)
+          new_current_context = KubeconfigService.get_current_context(kubeconfig)
+          new_kubeconfig = KubeconfigService.update_current_context(merged_kubeconfig, new_current_context)
+
+          next new_kubeconfig if kubeconfig_by_path.nil?
+
+          previous_current_context = KubeconfigService.get_current_context(kubeconfig_by_path)
+          save_previous_current_context(kubeconfig_path, previous_current_context)
+          new_kubeconfig
         else
           merged_kubeconfig
         end
@@ -358,6 +380,13 @@ module Uffizzi
       else
         ResponseHelper.handle_failed_response(response)
       end
+    end
+
+    def save_previous_current_context(kubeconfig_path, current_context)
+      return if kubeconfig_path.nil? || ConfigHelper.previous_current_context_by_path(kubeconfig_path).present?
+
+      previous_current_contexts = Uffizzi::ConfigHelper.set_previous_current_context_by_path(kubeconfig_path, current_context)
+      ConfigFile.write_option(:previous_current_contexts, previous_current_contexts)
     end
   end
 end
