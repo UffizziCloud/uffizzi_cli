@@ -18,6 +18,11 @@ uffizzi-cluster-delete - delete a cluster
     [CLUSTER_NAME]
         Name for the cluster you want to delete.
 
+## FLAGS
+    --delete-config=false
+        Delete cluster from kubeconfig.
+        Default is true.
+
 ## EXAMPLES
     The following command deletes the cluster with CLUSTER_NAME my-cluster:
 

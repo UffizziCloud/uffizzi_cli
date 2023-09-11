@@ -19,7 +19,7 @@ module Uffizzi
     desc 'login [OPTIONS]', 'Login to Uffizzi to view and manage your previews'
     method_option :server, required: false, aliases: '-s'
     method_option :username, required: false, aliases: '-u'
-    method_option :email, required: false, aliases: '-e'
+    method_option :email, required: false, aliases: '-e', lazy_default: ''
     def login
       require_relative 'cli/login'
       Login.new(options).run
@@ -121,7 +121,7 @@ module Uffizzi
         when Thor::Error
           raise exception
         when Interrupt
-          raise Uffizzi::CliError.new('The command was interrupted')
+          nil
         when StandardError
           raise Uffizzi::CliError.new(exception.message)
         else

@@ -25,15 +25,14 @@ module Uffizzi
       run('list')
     end
 
-    desc 'create', 'Create a cluster'
-    method_option :name, type: :string, required: false, aliases: '-n'
+    desc 'create [NAME]', 'Create a cluster'
     method_option :kubeconfig, type: :string, required: false, aliases: '-k'
     method_option :manifest, type: :string, required: false, aliases: '-m'
-    method_option :'update-current-context', type: :boolean, required: false
+    method_option :'update-current-context', type: :boolean, required: false, default: true
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     method_option :'creation-source', required: false, type: :string
-    def create
-      run('create')
+    def create(name = nil)
+      run('create', { name: name })
     end
 
     desc 'describe [NAME]', 'Describe a cluster'
@@ -43,7 +42,7 @@ module Uffizzi
     end
 
     desc 'delete [NAME]', 'Delete a cluster'
-    method_option :'delete-config', required: false, type: :boolean, aliases: '-c'
+    method_option :'delete-config', required: false, type: :boolean, default: true
     def delete(name)
       run('delete', cluster_name: name)
     end
@@ -76,7 +75,7 @@ module Uffizzi
       when 'list'
         handle_list_command(project_slug)
       when 'create'
-        handle_create_command(project_slug)
+        handle_create_command(project_slug, command_args)
       when 'describe'
         handle_describe_command(project_slug, command_args)
       when 'delete'
@@ -104,9 +103,9 @@ module Uffizzi
       end
     end
 
-    def handle_create_command(project_slug)
+    def handle_create_command(project_slug, command_args)
       Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
-      cluster_name = options[:name] || ClusterService.generate_name
+      cluster_name = command_args[:name] || ClusterService.generate_name
       creation_source = options[:"creation-source"] || MANUAL
 
       unless ClusterService.valid_name?(cluster_name)
