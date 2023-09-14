@@ -5,20 +5,18 @@
 \fBuffizzi\-cluster\-create\fR \- create a cluster
 .SH "SYNOPSIS"
 .nf
-uffizzi cluster create
+uffizzi cluster create [CLUSTER_NAME]
 .fi
 .SH "DESCRIPTION"
 .nf
-Creates a new cluster\.
+Creates a new cluster\. If no CLUSTER_NAME is specified,
+the cluster is created with the auto generated name\.
 
 For more information on Uffizzi clusters, see:
 https://docs\.uffizzi\.com/references/cli/
 .fi
 .SH "FLAGS"
 .nf
-\-\-name=CLUSTER\-NAME
-    Set cluster name
-
 \-\-kubeconfig="/path/to/your/kubeconfig"
     Path to kubeconfig file
 
@@ -27,6 +25,7 @@ https://docs\.uffizzi\.com/references/cli/
 
 \-\-update\-current\-context
     Update current\-context in kubeconfig file
+    Default is true
 
 \-\-output=pretty\-json
 \-\-output=json
@@ -40,10 +39,10 @@ To create a cluster with the auto generated name, run:
 
 To create a cluster with name, run:
 
-    $ uffizzi cluster create \-\-name="my\-cluster"
+    $ uffizzi cluster create my\-cluster
 
 To create a cluster from a manifests directory, run:
 
-    $ uffizzi cluster create \-\-name="my\-cluster" \-\-manifest=manifests/
+    $ uffizzi cluster create my\-cluster \-\-manifest=manifests/
 .fi
 
