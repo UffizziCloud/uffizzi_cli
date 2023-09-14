@@ -37,9 +37,11 @@ class ClusterTest < Minitest::Test
 
     created_kubeconfig = Psych.safe_load(File.read(@kubeconfig_path))
     kubeconfig_form_backend = Psych.safe_load(Base64.decode64(cluster_get_body.dig(:cluster, :kubeconfig)))
+    cluster_from_config = Uffizzi::ConfigFile.read_option(:clusters)
 
     assert_match('To update the current context', Uffizzi.ui.last_message)
     assert_equal(kubeconfig_form_backend, created_kubeconfig)
+    assert_equal(@kubeconfig_path, cluster_from_config.first[:kubeconfig_path])
     assert_requested(stubbed_uffizzi_cluster_create_request)
     assert_requested(stubbed_uffizzi_cluster_get_request)
   end

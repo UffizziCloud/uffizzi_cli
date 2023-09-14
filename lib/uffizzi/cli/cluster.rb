@@ -149,7 +149,7 @@ module Uffizzi
       kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
 
       handle_delete_cluster(project_slug, cluster_name)
-      exclude_kubeconfig(cluster_data[:id], kubeconfig)
+      exclude_kubeconfig(cluster_data[:id], kubeconfig) if kubeconfig.present?
     end
 
     def exclude_kubeconfig(cluster_id, kubeconfig)
@@ -307,7 +307,7 @@ module Uffizzi
     end
 
     def handle_succeed_create_response(cluster_data)
-      kubeconfig_path = options[:kubeconfig]
+      kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
       is_update_current_context = options[:'update-current-context']
       parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
       rendered_cluster_data = render_cluster_data(cluster_data)
@@ -364,6 +364,8 @@ module Uffizzi
     end
 
     def parse_kubeconfig(kubeconfig)
+      return if kubeconfig.nil?
+
       Psych.safe_load(Base64.decode64(kubeconfig))
     end
 
