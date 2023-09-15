@@ -8,6 +8,8 @@ module Uffizzi
       end
 
       def sign_out
+        return unless Uffizzi::ConfigFile.exists?
+
         Uffizzi::ConfigFile.unset_option(:cookie)
         Uffizzi::ConfigFile.unset_option(:account)
         Uffizzi::ConfigFile.unset_option(:project)
