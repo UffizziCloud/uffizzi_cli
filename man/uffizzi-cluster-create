@@ -17,6 +17,10 @@ https://docs\.uffizzi\.com/references/cli/
 .fi
 .SH "FLAGS"
 .nf
+\-\- name
+    Option is deprecated and will be removed in the newer versions\.
+    Please use a positional argument instead: uffizzi cluster create my\-awesome\-name\.
+
 \-\-kubeconfig="/path/to/your/kubeconfig"
     Path to kubeconfig file
 
