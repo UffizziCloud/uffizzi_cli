@@ -26,6 +26,7 @@ module Uffizzi
     end
 
     desc 'create [NAME]', 'Create a cluster'
+    method_option :name, type: :string, required: false, aliases: '-n'
     method_option :kubeconfig, type: :string, required: false, aliases: '-k'
     method_option :manifest, type: :string, required: false, aliases: '-m'
     method_option :'update-current-context', type: :boolean, required: false, default: true
@@ -103,9 +104,17 @@ module Uffizzi
       end
     end
 
+    # rubocop:disable Metrics/PerceivedComplexity
     def handle_create_command(project_slug, command_args)
       Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
-      cluster_name = command_args[:name] || ClusterService.generate_name
+
+      if options[:name]
+        msg = 'DEPRECATION WARNING: The --name option is deprecated and will be removed in the newer versions.' \
+              ' Please use a positional argument instead: uffizzi cluster create my-awesome-name'
+        Uffizzi.ui.say(msg)
+      end
+
+      cluster_name = command_args[:name] || options[:name] || ClusterService.generate_name
       creation_source = options[:"creation-source"] || MANUAL
 
       unless ClusterService.valid_name?(cluster_name)
@@ -132,6 +141,7 @@ module Uffizzi
     rescue SystemExit, Interrupt, SocketError
       handle_interrupt_creation(cluster_name, ConfigFile.read_option(:server), project_slug)
     end
+    # rubocop:enable Metrics/PerceivedComplexity
 
     def handle_describe_command(project_slug, command_args)
       cluster_data = fetch_cluster_data(project_slug, command_args[:cluster_name])
