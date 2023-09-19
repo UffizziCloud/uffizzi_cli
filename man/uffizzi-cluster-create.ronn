@@ -2,17 +2,19 @@ uffizzi-cluster-create - create a cluster
 ================================================================
 
 ## SYNOPSIS
-    uffizzi cluster create
+    uffizzi cluster create [CLUSTER_NAME]
 
 ## DESCRIPTION
-    Creates a new cluster.
+    Creates a new cluster. If no CLUSTER_NAME is specified,
+    the cluster is created with the auto generated name.
 
     For more information on Uffizzi clusters, see:
     https://docs.uffizzi.com/references/cli/
 
 ## FLAGS
-    --name=CLUSTER-NAME
-        Set cluster name
+    --name
+        Option is deprecated and will be removed in the newer versions.
+        Please use a positional argument instead: uffizzi cluster create my-awesome-name.
 
     --kubeconfig="/path/to/your/kubeconfig"
         Path to kubeconfig file
@@ -22,6 +24,7 @@ uffizzi-cluster-create - create a cluster
 
     --update-current-context
         Update current-context in kubeconfig file
+        Default is true
 
     --output=pretty-json
     --output=json
@@ -34,8 +37,8 @@ uffizzi-cluster-create - create a cluster
 
     To create a cluster with name, run:
 
-        $ uffizzi cluster create --name="my-cluster"
+        $ uffizzi cluster create my-cluster
 
     To create a cluster from a manifests directory, run:
 
-        $ uffizzi cluster create --name="my-cluster" --manifest=manifests/
+        $ uffizzi cluster create my-cluster --manifest=manifests/

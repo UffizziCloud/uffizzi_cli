@@ -2,7 +2,7 @@
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "UFFIZZI\-CLUSTER\-DISCONNECT" "" "September 2023" ""
 .SH "NAME"
-\fBuffizzi\-cluster\-disconnect\fR \- disconnect from current cluster
+\fBuffizzi\-cluster\-disconnect\fR \- disconnect from current cluster context
 .SH "SYNOPSIS"
 .nf
 uffizzi cluster disconnect
@@ -17,7 +17,7 @@ https://docs\.uffizzi\.com/references/cli/
 .SH "FLAGS"
 .nf
 \-\-ask
-    Show list available contexts for kubeconfig
+    Show list available contexts for kubeconfig and set new origin current context
 
 \-\-kubeconfig="/path/to/your/kubeconfig"
     Path to kubeconfig file

@@ -53,6 +53,9 @@ class Minitest::Test
     if File.exist?(Uffizzi.configuration.default_kubeconfig_path)
       File.delete(Uffizzi.configuration.default_kubeconfig_path)
     end
+
+    File.delete(TEST_CONFIG_PATH) if File.exist?(TEST_CONFIG_PATH)
+    File.delete(TEST_TOKEN_PATH) if File.exist?(TEST_TOKEN_PATH)
   end
 
   def command_options(options)

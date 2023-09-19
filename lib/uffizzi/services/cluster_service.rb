@@ -8,6 +8,7 @@ class ClusterService
   CLUSTER_STATE_DEPLOYED = 'deployed'
   CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE = 'failed_deploy_namespace'
   CLUSTER_STATE_FAILED = 'failed'
+  CLUSTER_NAME_MAX_LENGTH = 15
 
   class << self
     include ApiClient
@@ -42,7 +43,7 @@ class ClusterService
     end
 
     def generate_name
-      name = [Faker::Name.first_name, Faker::Name.last_name].map(&:downcase).join('-')
+      name = Faker::Internet.domain_word[0..CLUSTER_NAME_MAX_LENGTH]
 
       return name if valid_name?(name)
 

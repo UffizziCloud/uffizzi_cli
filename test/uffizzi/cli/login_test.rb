@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'byebug'
 require 'test_helper'
 
 class LoginTest < Minitest::Test
@@ -22,9 +23,7 @@ class LoginTest < Minitest::Test
     stubbed_uffizzi_accounts_request = stub_uffizzi_accounts_success(accounts_body)
     ENV.stubs(:fetch).returns(true)
 
-    refute(Uffizzi::ConfigFile.option_exists?(:server))
-    refute(Uffizzi::ConfigFile.option_exists?(:username))
-    refute(Uffizzi::ConfigFile.option_exists?(:account))
+    refute(File.exist?(Uffizzi::ConfigFile.config_path))
 
     @cli.options = command_options(username: @command_params[:username], server: @command_params[:server], email: true)
 
@@ -49,8 +48,7 @@ class LoginTest < Minitest::Test
     Uffizzi::ConfigFile.write_option(:project, 'project_slug_1')
     Uffizzi::ConfigFile.write_option(:account, { 'id' => 1, 'name' => 'uffizzi' })
 
-    @cli.options = command_options(email: true)
-
+    @cli.options = command_options(email: '')
     @cli.login
 
     assert_requested(stubbed_uffizzi_login)
@@ -67,8 +65,7 @@ class LoginTest < Minitest::Test
     projects_body = json_fixture('files/uffizzi/uffizzi_projects_success_two_projects.json')
     stubbed_uffizzi_projects = stub_uffizzi_account_projects_success(projects_body, account_id)
 
-    refute(Uffizzi::ConfigFile.option_exists?(:server))
-    refute(Uffizzi::ConfigFile.option_exists?(:username))
+    refute(File.exist?(Uffizzi::ConfigFile.config_path))
     Uffizzi::ConfigFile.write_option(:project, 'project_slug_1')
     Uffizzi::ConfigFile.write_option(:account, { 'id' => 1, 'name' => 'uffizzi' })
 
@@ -86,15 +83,14 @@ class LoginTest < Minitest::Test
     projects_body = json_fixture('files/uffizzi/uffizzi_projects_success_two_projects.json')
     stubbed_uffizzi_projects = stub_uffizzi_projects_success(projects_body)
 
-    @cli.options = command_options(username: @command_params[:username], server: @command_params[:server], email: true)
+    @cli.options = command_options(username: @command_params[:username], server: @command_params[:server], email: 'wrong@email.com')
 
     assert_raises(Uffizzi::ServerResponseError) do
       @cli.login
     end
 
     assert_requested(stubbed_uffizzi_login)
-    refute(Uffizzi::ConfigFile.option_exists?(:server))
-    refute(Uffizzi::ConfigFile.option_exists?(:username))
+    refute(File.exist?(Uffizzi::ConfigFile.config_path))
     refute_requested(stubbed_uffizzi_projects)
   end
 

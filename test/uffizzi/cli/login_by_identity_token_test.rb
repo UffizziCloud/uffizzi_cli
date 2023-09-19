@@ -12,8 +12,7 @@ class LoginByIdentityTokenTest < Minitest::Test
     body = json_fixture('files/uffizzi/uffizzi_login_by_jwt_success.json')
     stubbed_uffizzi_login = stub_uffizzi_login_by_identity_token_success(body)
 
-    refute(Uffizzi::ConfigFile.option_exists?(:server))
-    refute(Uffizzi::ConfigFile.option_exists?(:username))
+    refute(File.exist?(Uffizzi::ConfigFile.config_path))
 
     @cli.login_by_identity_token
 
@@ -31,7 +30,6 @@ class LoginByIdentityTokenTest < Minitest::Test
     end
 
     assert_requested(stubbed_uffizzi_login)
-    refute(Uffizzi::ConfigFile.option_exists?(:account))
-    refute(Uffizzi::ConfigFile.option_exists?(:project))
+    refute(File.exist?(Uffizzi::ConfigFile.config_path))
   end
 end

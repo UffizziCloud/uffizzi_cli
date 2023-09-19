@@ -25,15 +25,15 @@ module Uffizzi
       run('list')
     end
 
-    desc 'create', 'Create a cluster'
+    desc 'create [NAME]', 'Create a cluster'
     method_option :name, type: :string, required: false, aliases: '-n'
     method_option :kubeconfig, type: :string, required: false, aliases: '-k'
     method_option :manifest, type: :string, required: false, aliases: '-m'
-    method_option :'update-current-context', type: :boolean, required: false
+    method_option :'update-current-context', type: :boolean, required: false, default: true
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     method_option :'creation-source', required: false, type: :string
-    def create
-      run('create')
+    def create(name = nil)
+      run('create', { name: name })
     end
 
     desc 'describe [NAME]', 'Describe a cluster'
@@ -43,7 +43,7 @@ module Uffizzi
     end
 
     desc 'delete [NAME]', 'Delete a cluster'
-    method_option :'delete-config', required: false, type: :boolean, aliases: '-c'
+    method_option :'delete-config', required: false, type: :boolean, default: true
     def delete(name)
       run('delete', cluster_name: name)
     end
@@ -76,7 +76,7 @@ module Uffizzi
       when 'list'
         handle_list_command(project_slug)
       when 'create'
-        handle_create_command(project_slug)
+        handle_create_command(project_slug, command_args)
       when 'describe'
         handle_describe_command(project_slug, command_args)
       when 'delete'
@@ -104,9 +104,17 @@ module Uffizzi
       end
     end
 
-    def handle_create_command(project_slug)
+    # rubocop:disable Metrics/PerceivedComplexity
+    def handle_create_command(project_slug, command_args)
       Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
-      cluster_name = options[:name] || ClusterService.generate_name
+
+      if options[:name]
+        msg = 'DEPRECATION WARNING: The --name option is deprecated and will be removed in the newer versions.' \
+              ' Please use a positional argument instead: uffizzi cluster create my-awesome-name'
+        Uffizzi.ui.say(msg)
+      end
+
+      cluster_name = command_args[:name] || options[:name] || ClusterService.generate_name
       creation_source = options[:"creation-source"] || MANUAL
 
       unless ClusterService.valid_name?(cluster_name)
@@ -133,6 +141,7 @@ module Uffizzi
     rescue SystemExit, Interrupt, SocketError
       handle_interrupt_creation(cluster_name, ConfigFile.read_option(:server), project_slug)
     end
+    # rubocop:enable Metrics/PerceivedComplexity
 
     def handle_describe_command(project_slug, command_args)
       cluster_data = fetch_cluster_data(project_slug, command_args[:cluster_name])
@@ -150,7 +159,7 @@ module Uffizzi
       kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
 
       handle_delete_cluster(project_slug, cluster_name)
-      exclude_kubeconfig(cluster_data[:id], kubeconfig)
+      exclude_kubeconfig(cluster_data[:id], kubeconfig) if kubeconfig.present?
     end
 
     def exclude_kubeconfig(cluster_id, kubeconfig)
@@ -308,7 +317,7 @@ module Uffizzi
     end
 
     def handle_succeed_create_response(cluster_data)
-      kubeconfig_path = options[:kubeconfig]
+      kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
       is_update_current_context = options[:'update-current-context']
       parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
       rendered_cluster_data = render_cluster_data(cluster_data)
@@ -365,6 +374,8 @@ module Uffizzi
     end
 
     def parse_kubeconfig(kubeconfig)
+      return if kubeconfig.nil?
+
       Psych.safe_load(Base64.decode64(kubeconfig))
     end
 
