@@ -1,0 +1,29 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-DEV\-START" "" "September 2023" ""
+.SH "NAME"
+\fBuffizzi\-dev\-start\fR \- start development environment
+.SH "SYNOPSIS"
+.nf
+uffizzi dev start [SKAFFOLD_CONFIG_FILE_PATH]
+.fi
+.SH "DESCRIPTION"
+.nf
+Creates a new cluster and start skaffold\. If no SKAFFOLD_CONFIG_FILE_PATH is specified,
+the default path will be used\.
+Default SKAFFOLD_CONFIG_FILE_PATH is \'skaffold\.yaml\'
+
+For more information on Uffizzi clusters, see:
+https://docs\.uffizzi\.com/references/cli/
+.fi
+.SH "EXAMPLES"
+.nf
+To start development environment, run:
+
+    $ uffizzi dev start
+
+To start development environment with custom skaffold\.yaml file, run:
+
+    $ uffizzi cluster create /path/to/skaffold\.yaml
+.fi
+

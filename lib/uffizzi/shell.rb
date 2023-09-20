@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'awesome_print'
+require 'open3'
 
 module Uffizzi
   module UI
@@ -52,6 +53,14 @@ module Uffizzi
 
       def stdout_pipe?
         $stdout.stat.pipe?
+      end
+
+      def popen2e(command, &block)
+        Open3.popen2e(command, &block)
+      end
+
+      def capture3(command)
+        Open3.capture3(command)
       end
 
       private

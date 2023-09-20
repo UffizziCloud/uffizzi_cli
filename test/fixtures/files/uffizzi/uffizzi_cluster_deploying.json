@@ -1,5 +1,6 @@
 {
   "cluster": {
+    "id": 1,
     "name": "uffizzi-test-cluster",
     "state": "deploying",
     "kubeconfig": "",

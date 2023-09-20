@@ -71,6 +71,10 @@ module Uffizzi
       Disconnect.new.run(credential_type)
     end
 
+    desc 'dev', 'dev'
+    require_relative 'cli/dev'
+    subcommand 'dev', Cli::Dev
+
     map preview: :compose
 
     class << self
