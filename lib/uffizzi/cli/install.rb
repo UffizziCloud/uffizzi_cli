@@ -19,15 +19,12 @@ module Uffizzi
     method_option :'user-email', type: :string
     method_option :'user-password', type: :string
     method_option :issuer, type: :string, enum: ['letsencrypt', 'zerossl']
-    method_option :'wildcard-cert-path', type: :string
-    method_option :'wildcard-key-path', type: :string
-    method_option :'without-wildcard-tls', type: :boolean
     method_option :repo, type: :string
     method_option :'print-values', type: :boolean
     def application
       run_installation do
         if options.except(:repo, :'print-values').present?
-          validate_installation_options
+          build_installation_options
         else
           ask_installation_params
         end
@@ -94,7 +91,6 @@ module Uffizzi
       create_helm_values_file(helm_values)
       helm_set_repo unless options[:repo]
       helm_install(release_name: release_name, namespace: namespace, repo: options[:repo])
-      kubectl_add_wildcard_tls(params) if params[:wildcard_cert_path] && params[:wildcard_key_path]
       delete_helm_values_file
 
       ingress_ip = get_web_ingress_ip_address(release_name, namespace)
@@ -229,20 +225,6 @@ module Uffizzi
       }.merge(wildcard_cert_paths)
     end
 
-    def validate_installation_options
-      installation_options = build_installation_options
-
-      if options[:'without-wildcard-tls']
-        return installation_options.except(:wildcard_cert_path, :wildcard_key_path)
-      end
-
-      empty_key = [:'wildcard-cert-path', :'wildcard-key-path'].detect { |k| options[k].nil? }
-
-      if empty_key.present?
-        Uffizzi.ui.say_error_and_exit("#{empty_key} is required or use the flag --without-wildcard-tls")
-      end
-    end
-
     def build_installation_options
       {
         namespace: options[:namespace] || DEFAULT_NAMESPACE,
@@ -252,15 +234,12 @@ module Uffizzi
         controller_password: generate_password,
         cert_email: options[:'user-email'],
         cluster_issuer: options[:issuer] || DEFAULT_CLUSTER_ISSUER,
-        wildcard_cert_path: options[:'wildcard-cert-path'],
-        wildcard_key_path: options[:'wildcard-key-path'],
       }
     end
 
     def build_helm_values(params)
       domain = params.fetch(:domain)
       namespace = params.fetch(:namespace)
-      tls_per_deployment_enabled = params.slice(:wildcard_cert_pathm, :wildcard_key_path).compact.empty?
       app_host = [DEFAULT_APP_PREFIX, domain].join('.')
 
       {
@@ -284,10 +263,13 @@ module Uffizzi
             disabled: true,
           },
           clusterIssuer: params.fetch(:cluster_issuer),
-          tlsPerDeploymentEnabled: tls_per_deployment_enabled.to_s,
+          tlsPerDeploymentEnabled: true.to_s,
           certEmail: params.fetch(:cert_email),
           'ingress-nginx' => {
             controller: {
+              ingressClassResource: {
+                default: true,
+              },
               extraArgs: {
                 'default-ssl-certificate' => "#{namespace}/wildcard.#{domain}",
               },
@@ -298,7 +280,7 @@ module Uffizzi
     end
 
     def execute_command(command, say: true)
-      stdout_str, stderr_str, status = Uffizzi.ui.execute(command)
+      stdout_str, stderr_str, status = Uffizzi.ui.capture3(command)
 
       return yield(stdout_str, stderr_str) if block_given?
 
