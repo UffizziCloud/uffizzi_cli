@@ -9,8 +9,6 @@ class ClusterDisconnectService
     def handle(options)
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
       is_ask_origin_current_context = options[:ask]
-
-      prev_current_context = Uffizzi::ConfigHelper.previous_current_context_by_path(kubeconfig_path)&.fetch(:current_context, nil)
       kubeconfig = KubeconfigService.read_kubeconfig(kubeconfig_path)
 
       if kubeconfig.nil?
@@ -18,11 +16,13 @@ class ClusterDisconnectService
       end
 
       contexts = KubeconfigService.get_cluster_contexts(kubeconfig)
-      current_context = KubeconfigService.get_current_context(kubeconfig)
 
       if contexts.empty?
         return Uffizzi.ui.say("No contexts by kubeconfig path #{kubeconfig_path}")
       end
+
+      prev_current_context = Uffizzi::ConfigHelper.previous_current_context_by_path(kubeconfig_path)&.fetch(:current_context, nil)
+      current_context = KubeconfigService.get_current_context(kubeconfig)
 
       if KubeconfigService.find_cluster_contexts_by_name(kubeconfig, prev_current_context).present? &&
           prev_current_context != current_context &&

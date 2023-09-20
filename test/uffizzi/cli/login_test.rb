@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'byebug'
 require 'test_helper'
 
 class LoginTest < Minitest::Test
