@@ -87,9 +87,9 @@ Once the tag is pushed, the GHA workflows will release a gem and create new bina
 Uffizzi supports a [Homebrew tap package] (https://github.com/UffizziCloud/homebrew-tap) and it needs to be updated after each release.
 1. Go to the [latest release] (https://github.com/UffizziCloud/uffizzi_cli/releases/latest).
 2. Copy the link to the source code archive (tar.gz).
-3. Run `brew create [link copied in the previous step]` - this will open Formula file with the sha and the source code url
-4. Copy over the the [Formula](https://github.com/UffizziCloud/homebrew-tap/blob/main/Formula/uffizzi.rb) from the master, leaving the sha and the url as it is.
-5. Update the `resource "uffizzi-cli"` to the latest gem and any new dependencies.
-6. Run `HOMEBREW_NO_INSTALL_FROM_API=1 brew install --build-from-source --verbose --debug foo` and manually test the new uffizzi version (make sure that all other homebrew uffizzi versions are uninstalled)
-7. Run `brew audit --strict --online` to check if the Formula adheres to Homebrew style.
-8. If tests and audit pass, create a PR into master.
+3. Run `brew create [link copied in the previous step]` - this will create a new Formula file with the sha and the source code url.
+4. Copy over the contents of the existing [Formula](https://github.com/UffizziCloud/homebrew-tap/blob/main/Formula/uffizzi.rb) from the master, replacing the sha and the url for the ones from the newly created Formula.
+5. Update the `resource "uffizzi-cli"` to the latest gem and add new dependencies if needed.
+6. Run `HOMEBREW_NO_INSTALL_FROM_API=1 brew install --build-from-source --verbose --debug uffizzi` and manually test the new uffizzi version (make sure that all other homebrew uffizzi versions are uninstalled).
+7. Run `brew audit --strict --online` to check if the Formula adheres to the Homebrew style.
+8. If tests and audit pass, create a PR into master in the UffizziCloud/homebrew-tap [repository] (https://github.com/UffizziCloud/homebrew-tap) with the new Formula.
