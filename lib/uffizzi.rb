@@ -36,5 +36,9 @@ module Uffizzi
     def root
       @root ||= Pathname.new(File.expand_path('..', __dir__))
     end
+
+    def process
+      @process ||= Process
+    end
   end
 end
