@@ -2,6 +2,7 @@
 
 require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
+require 'uffizzi/services/dev_service'
 require 'uffizzi/services/kubeconfig_service'
 
 module Uffizzi
@@ -9,17 +10,38 @@ module Uffizzi
     include ApiClient
 
     desc 'start [CONFIG]', 'Start dev environment'
+    method_option :detach, type: :boolean, aliases: :d
     def start(config_path = 'skaffold.yaml')
       check_skaffold_existence
       check_login
+      DevService.check_running_daemon if options[:detach]
       cluster_id, cluster_name = start_create_cluster
       kubeconfig = wait_cluster_creation(cluster_name)
-      launch_scaffold(config_path)
+
+      if options[:detach]
+        launch_demonise_skaffold(config_path)
+      else
+        launch_scaffold(config_path)
+      end
     ensure
       if defined?(cluster_name).present? && defined?(cluster_id).present?
         kubeconfig = defined?(kubeconfig).present? ? kubeconfig : nil
         handle_delete_cluster(cluster_id, cluster_name, kubeconfig)
       end
+    end
+
+    desc 'stop', 'Stop dev environment'
+    def stop
+      return Uffizzi.ui.say('Uffizzi dev is not running') unless File.exist?(DevService.pid_path)
+
+      pid = File.read(DevService.pid_path).to_i
+      File.delete(DevService.pid_path)
+
+      Uffizzi.process.kill('QUIT', pid)
+      Uffizzi.ui.say('Uffizzi dev was stopped')
+    rescue Errno::ESRCH
+      Uffizzi.ui.say('Uffizzi dev is not running')
+      File.delete(DevService.pid_path)
     end
 
     private
@@ -99,6 +121,8 @@ module Uffizzi
     end
 
     def handle_delete_cluster(cluster_id, cluster_name, kubeconfig)
+      return if cluster_id.nil? || cluster_name.nil?
+
       exclude_kubeconfig(cluster_id, kubeconfig) if kubeconfig.present?
 
       params = {
@@ -149,12 +173,27 @@ module Uffizzi
       Psych.safe_load(Base64.decode64(kubeconfig))
     end
 
+    def launch_demonise_skaffold(config_path)
+      DevService.check_running_daemon
+      File.delete(DevService.logs_path) if File.exist?(DevService.logs_path)
+
+      Uffizzi.process.daemon
+      File.write(DevService.pid_path, Uffizzi.process.pid)
+      DevService.start_check_pid_file_existence
+
+      at_exit do
+        File.delete(DevService.pid_path) if File.exist?(DevService.pid_path)
+      end
+
+      DevService.start_demonised_skaffold(config_path)
+    end
+
     def launch_scaffold(config_path)
       Uffizzi.ui.say('Start skaffold')
       cmd = "skaffold dev --filename='#{config_path}'"
 
       Uffizzi.ui.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
-        stdout_and_stderr.each { |l| puts l }
+        stdout_and_stderr.each { |l| Uffizzi.ui.say(l) }
         wait_thr.value
       end
     end

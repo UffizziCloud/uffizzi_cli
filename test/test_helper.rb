@@ -20,6 +20,7 @@ require 'uffizzi/cli'
 require 'uffizzi/config_file'
 require 'uffizzi/shell'
 require 'uffizzi/error'
+require 'uffizzi/services/dev_service'
 include AuthSupport
 include FixtureSupport
 include UffizziStubSupport
@@ -34,16 +35,23 @@ FactoryBot.find_definitions
 class Minitest::Test
   TEST_CONFIG_PATH = 'tmp/config_default.json'
   TEST_TOKEN_PATH = 'tmp/token_default.json'
+  TEST_PID_PATH = 'tmp/dev.pid'
+  TEST_DEV_LOGS_PATH = 'tmp/dev-logs.txt'
 
   def before_setup
     super
 
     @mock_prompt = MockPrompt.new
     @mock_shell = MockShell.new
+    @mock_process = MockProcess.new
     Uffizzi.stubs(:ui).returns(@mock_shell)
     Uffizzi.stubs(:prompt).returns(@mock_prompt)
+    Uffizzi.stubs(:process).returns(@mock_process)
     Uffizzi::ConfigFile.stubs(:config_path).returns(TEST_CONFIG_PATH)
     Uffizzi::Token.stubs(:token_path).returns(TEST_TOKEN_PATH)
+    Uffizzi::ConfigFile.stubs(:config_path).returns(TEST_CONFIG_PATH)
+    DevService.stubs(:pid_path).returns(TEST_PID_PATH)
+    DevService.stubs(:logs_path).returns(TEST_DEV_LOGS_PATH)
   end
 
   def before_teardown
@@ -58,6 +66,8 @@ class Minitest::Test
 
     File.delete(TEST_CONFIG_PATH) if File.exist?(TEST_CONFIG_PATH)
     File.delete(TEST_TOKEN_PATH) if File.exist?(TEST_TOKEN_PATH)
+    File.delete(TEST_PID_PATH) if File.exist?(TEST_PID_PATH)
+    File.delete(TEST_DEV_LOGS_PATH) if File.exist?(TEST_DEV_LOGS_PATH)
   end
 
   def command_options(options)

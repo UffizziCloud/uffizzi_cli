@@ -1,0 +1,33 @@
+uffizzi-dev-stop - stop a development environment
+================================================================
+
+## SYNOPSIS
+    uffizzi dev stop
+
+## DESCRIPTION
+    Stops a dev environment and deletes the backing
+    Uffizzi cluster resources, including any persistent
+    volumes, and the namespace itself. The Uffizzi
+    cluster config is deleted from the kubeconfig file.
+
+    This command watches for file changes in a given local
+    project directory, as specified in your configuration file.
+    It then serializes those changes and redeploys them onto
+    a Uffizzi cluster.
+
+    The command looks for a configuration at the specified
+    path CONFIG_FILE. Skaffold configurations are currently
+    supported. For help creating a skaffold.yaml file, see:
+    https://skaffold.dev/docs/init/
+
+    For more information on Uffizzi clusters, see:
+    https://docs.uffizzi.com/references/cli/
+
+## FLAGS
+     --help, -h
+        Show this message and exit.
+
+## EXAMPLES
+    To stop a dev environment, run:
+
+        $ uffizzi dev stop
