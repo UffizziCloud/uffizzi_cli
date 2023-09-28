@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'byebug'
+require 'pty'
+require 'expect'
 require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/kubeconfig_service'
@@ -8,13 +11,21 @@ module Uffizzi
   class Cli::Dev < Thor
     include ApiClient
 
+    DEFAULT_REGISTRY_REPO = 'registry.uffizzi.com'
+
     desc 'start [CONFIG]', 'Start dev environment'
+    method_option :name, type: :string
+    method_option :'default-repo', type: :string
+    method_option :kubeconfig, type: :string
     def start(config_path = 'skaffold.yaml')
+      kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
+
       check_skaffold_existence
+      check_skaffold_config_existence(config_path)
       check_login
       cluster_id, cluster_name = start_create_cluster
-      kubeconfig = wait_cluster_creation(cluster_name)
-      launch_scaffold(config_path)
+      kubeconfig = wait_cluster_creation(cluster_name, kubeconfig_path: kubeconfig_path)
+      launch_scaffold(config_path, kubeconfig_path: kubeconfig_path)
     ensure
       if defined?(cluster_name).present? && defined?(cluster_id).present?
         kubeconfig = defined?(kubeconfig).present? ? kubeconfig : nil
@@ -30,8 +41,13 @@ module Uffizzi
     end
 
     def start_create_cluster
-      cluster_name = ClusterService.generate_name
-      creation_source = MANUAL
+      cluster_name = options[:name] || ClusterService.generate_name
+
+      unless ClusterService.valid_name?(cluster_name)
+        Uffizzi.ui.say_error_and_exit("Name: #{cluster_name} is not valid.")
+      end
+
+      creation_source = ClusterService::MANUAL
       params = cluster_creation_params(cluster_name, creation_source)
       Uffizzi.ui.say('Start creating a cluster')
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
@@ -43,7 +59,7 @@ module Uffizzi
       [cluster_id, cluster_name]
     end
 
-    def wait_cluster_creation(cluster_name)
+    def wait_cluster_creation(cluster_name, kubeconfig_path:)
       Uffizzi.ui.say('Checking the cluster status...')
       cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, ConfigFile.read_option(:oidc_token))
 
@@ -51,12 +67,11 @@ module Uffizzi
         Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")
       end
 
-      handle_succeed_cluster_creation(cluster_data)
+      handle_succeed_cluster_creation(cluster_data, kubeconfig_path: kubeconfig_path)
       parse_kubeconfig(cluster_data[:kubeconfig])
     end
 
-    def handle_succeed_cluster_creation(cluster_data)
-      kubeconfig_path = KubeconfigService.default_path
+    def handle_succeed_cluster_creation(cluster_data, kubeconfig_path:)
       parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
 
       Uffizzi.ui.say("Cluster with name: #{cluster_data[:name]} was created.")
@@ -149,11 +164,12 @@ module Uffizzi
       Psych.safe_load(Base64.decode64(kubeconfig))
     end
 
-    def launch_scaffold(config_path)
+    def launch_scaffold(config_path, kubeconfig_path:)
       Uffizzi.ui.say('Start skaffold')
-      cmd = "skaffold dev --filename='#{config_path}'"
+      cmd = ['skaffold dev', "--filename='#{config_path}'" "--default-repo='#{default_registry_repo}'", "--kubeconfig='#{kubeconfig_path}'"]
+      cmd_str = cmd.join(' ')
 
-      Uffizzi.ui.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
+      Uffizzi.ui.popen2e(cmd_str) do |_stdin, stdout_and_stderr, wait_thr|
         stdout_and_stderr.each { |l| puts l }
         wait_thr.value
       end
@@ -172,6 +188,41 @@ module Uffizzi
 
     def project_slug
       @project_slug ||= ConfigFile.read_option(:project)
+    end
+
+    def default_registry_repo
+      options[:'default-repo'] || DEFAULT_REGISTRY_REPO
+    end
+
+    def check_skaffold_config_existence(config_path)
+      return if File.exist?(config_path)
+
+      cmd = 'skaffold init'
+
+      # Uffizzi.ui.popen2e(cmd) do |stdin, stdout, wait_thr|
+      #   stdin.sync
+      #   stdout.sync
+
+      #   puts stdout
+      #   lines = []
+      #   stdout.each_line do |line|
+      #     lines << line
+      #   end
+      #   # byebug
+      #   puts lines.join
+      #   wait_thr.value
+      # end
+
+      PTY.spawn(cmd) do |reader, writer, pid|
+        # puts reader.expect(/skaffold.yaml\?/)
+        puts reader.expect(/Do you want to write this configuration to skaffold.yaml\? \(/)
+        writer.puts("y\r")
+        # reader.each { |l| puts l }
+        # writer.printf("Y\n")
+        # puts reader.expect(/Do you want to continue \[Y\/n\]\? /)
+        # writer.printf("Y\n")
+        Process.wait(pid)
+      end
     end
   end
 end
