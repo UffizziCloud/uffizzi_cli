@@ -1,0 +1,22 @@
+uffizzi-dev-start - start development environment
+================================================================
+
+## SYNOPSIS
+    uffizzi dev start [SKAFFOLD_CONFIG_FILE_PATH]
+
+## DESCRIPTION
+    Creates a new cluster and start skaffold. If no SKAFFOLD_CONFIG_FILE_PATH is specified,
+    the default path will be used.
+    Default SKAFFOLD_CONFIG_FILE_PATH is 'skaffold.yaml'
+
+    For more information on Uffizzi clusters, see:
+    https://docs.uffizzi.com/references/cli/
+
+## EXAMPLES
+    To start development environment, run:
+
+        $ uffizzi dev start
+
+    To start development environment with custom skaffold.yaml file, run:
+
+        $ uffizzi cluster create /path/to/skaffold.yaml
