@@ -61,6 +61,16 @@ module Uffizzi
       run('disconnect')
     end
 
+    desc 'sleep', 'Scales a Uffizzi cluster down to zero resource utilization'
+    def sleep(name)
+      run('sleep', cluster_name: name)
+    end
+
+    desc 'wake', 'Scales up a Uffizzi cluster to its original resource'
+    def wake(name)
+      run('wake', cluster_name: name)
+    end
+
     private
 
     def run(command, command_args = {})
@@ -83,6 +93,10 @@ module Uffizzi
         handle_update_kubeconfig_command(project_slug, command_args)
       when 'disconnect'
         ClusterDisconnectService.handle(options)
+      when 'sleep'
+        handle_sleep_command(project_slug, command_args)
+      when 'wake'
+        handle_wake_command(project_slug, command_args)
       end
     end
 
@@ -223,6 +237,28 @@ module Uffizzi
       return if options[:quiet]
 
       Uffizzi.ui.say("Kubeconfig was updated by the path: #{kubeconfig_path}")
+    end
+
+    def handle_sleep_command(project_slug, command_args)
+      cluster_name = command_args[:cluster_name]
+      response = scale_down_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+
+      if ResponseHelper.ok?(response)
+        Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled down")
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
+    end
+
+    def handle_wake_command(project_slug, command_args)
+      cluster_name = command_args[:cluster_name]
+      response = scale_up_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+
+      if ResponseHelper.ok?(response)
+        Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled up")
+      else
+        ResponseHelper.handle_failed_response(response)
+      end
     end
 
     def say_error_update_kubeconfig(cluster_data)

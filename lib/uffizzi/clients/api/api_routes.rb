@@ -110,6 +110,14 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}?token=#{oidc_token}"
   end
 
+  def scale_up_cluster_uri(server, project_slug, cluster_name)
+    "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}/scale_up"
+  end
+
+  def scale_down_cluster_uri(server, project_slug, cluster_name)
+    "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}/scale_down"
+  end
+
   def access_token_url(server, code)
     "#{server}/api/cli/v1/access_tokens/#{code}"
   end

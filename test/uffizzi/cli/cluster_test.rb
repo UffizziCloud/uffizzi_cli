@@ -469,4 +469,34 @@ class ClusterTest < Minitest::Test
     assert_equal(2, kubeconfig_after_disconnect['contexts'].count)
     assert_equal(prev_current_context, kubeconfig_after_disconnect['current-context'])
   end
+
+  def test_scale_down_cluster
+    respond_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    cluster_name = 'cluster-name'
+
+    stubbed_uffizzi_cluster_scale_down_request = stub_uffizzi_scale_down_cluster(
+      respond_body,
+      @project_slug,
+      cluster_name: cluster_name,
+    )
+
+    @cluster.sleep(cluster_name)
+
+    assert_requested(stubbed_uffizzi_cluster_scale_down_request)
+  end
+
+  def test_scale_up_cluster
+    respond_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    cluster_name = 'cluster-name'
+
+    stubbed_uffizzi_cluster_scale_up_request = stub_uffizzi_scale_up_cluster(
+      respond_body,
+      @project_slug,
+      cluster_name: cluster_name,
+    )
+
+    @cluster.wake(cluster_name)
+
+    assert_requested(stubbed_uffizzi_cluster_scale_up_request)
+  end
 end
