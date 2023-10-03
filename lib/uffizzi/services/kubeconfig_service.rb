@@ -81,7 +81,9 @@ class KubeconfigService
     end
 
     def default_path
-      kubeconfig_env_path || Uffizzi.configuration.default_kubeconfig_path
+      path = kubeconfig_env_path || Uffizzi.configuration.default_kubeconfig_path
+
+      File.expand_path(path)
     end
 
     def read_kubeconfig(filepath)

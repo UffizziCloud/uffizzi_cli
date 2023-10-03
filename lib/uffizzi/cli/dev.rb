@@ -11,17 +11,20 @@ module Uffizzi
 
     desc 'start [CONFIG]', 'Start dev environment'
     method_option :detach, type: :boolean, aliases: :d
+    method_option :'default-repo', type: :string
+    method_option :kubeconfig, type: :string
     def start(config_path = 'skaffold.yaml')
-      check_skaffold_existence
-      check_login
+      DevService.check_skaffold_existence
       DevService.check_running_daemon if options[:detach]
+      DevService.check_skaffold_config_existence(config_path)
+      check_login
       cluster_id, cluster_name = start_create_cluster
       kubeconfig = wait_cluster_creation(cluster_name)
 
       if options[:detach]
         launch_demonise_skaffold(config_path)
       else
-        launch_scaffold(config_path)
+        DevService.start_basic_skaffold(config_path, options)
       end
     ensure
       if defined?(cluster_name).present? && defined?(cluster_id).present?
@@ -53,7 +56,7 @@ module Uffizzi
 
     def start_create_cluster
       cluster_name = ClusterService.generate_name
-      creation_source = MANUAL
+      creation_source = ClusterService::MANUAL_CREATION_SOURCE
       params = cluster_creation_params(cluster_name, creation_source)
       Uffizzi.ui.say('Start creating a cluster')
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
@@ -78,7 +81,7 @@ module Uffizzi
     end
 
     def handle_succeed_cluster_creation(cluster_data)
-      kubeconfig_path = KubeconfigService.default_path
+      kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
       parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
 
       Uffizzi.ui.say("Cluster with name: #{cluster_data[:name]} was created.")
@@ -185,28 +188,7 @@ module Uffizzi
         File.delete(DevService.pid_path) if File.exist?(DevService.pid_path)
       end
 
-      DevService.start_demonised_skaffold(config_path)
-    end
-
-    def launch_scaffold(config_path)
-      Uffizzi.ui.say('Start skaffold')
-      cmd = "skaffold dev --filename='#{config_path}'"
-
-      Uffizzi.ui.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
-        stdout_and_stderr.each { |l| Uffizzi.ui.say(l) }
-        wait_thr.value
-      end
-    end
-
-    def check_skaffold_existence
-      cmd = 'skaffold version'
-      stdout_str, stderr_str = Uffizzi.ui.capture3(cmd)
-
-      return if stdout_str.present? && stderr_str.blank?
-
-      Uffizzi.ui.say_error_and_exit(stderr_str)
-    rescue StandardError => e
-      Uffizzi.ui.say_error_and_exit(e.message)
+      DevService.start_demonised_skaffold(config_path, options)
     end
 
     def project_slug

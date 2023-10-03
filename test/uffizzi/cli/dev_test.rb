@@ -15,6 +15,9 @@ class DevTest < Minitest::Test
     @project_slug = Uffizzi::ConfigFile.read_option(:project)
     tmp_dir_name = (Time.now.utc.to_f * 100_000).to_i
     @kubeconfig_path = "/tmp/test/#{tmp_dir_name}/test-kubeconfig.yaml"
+    @skaffold_file_path = "/tmp/test/#{tmp_dir_name}/skaffold.yaml"
+    FileUtils.mkdir_p(File.dirname(@skaffold_file_path))
+    File.write(@skaffold_file_path, '')
   end
 
   def test_start_dev
@@ -26,7 +29,7 @@ class DevTest < Minitest::Test
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
     @mock_shell.promise_execute(/skaffold dev --filename/, stdout: 'Good')
 
-    @dev.start
+    @dev.start(@skaffold_file_path)
 
     cluster_from_config = Uffizzi::ConfigFile.read_option(:clusters)
 
@@ -58,7 +61,7 @@ class DevTest < Minitest::Test
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
     @mock_shell.promise_execute(/skaffold dev --filename/, stdout: 'Good')
 
-    @dev.start
+    @dev.start(@skaffold_file_path)
 
     cluster_from_config = Uffizzi::ConfigFile.read_option(:clusters)
     current_kubeconfig = Psych.safe_load(File.read(@kubeconfig_path))
@@ -81,7 +84,7 @@ class DevTest < Minitest::Test
     @mock_shell.promise_execute(/skaffold dev --filename/, stdout: 'Good')
     @dev.options = command_options(detach: true)
 
-    @dev.start
+    @dev.start(@skaffold_file_path)
 
     cluster_from_config = Uffizzi::ConfigFile.read_option(:clusters)
 
@@ -100,9 +103,20 @@ class DevTest < Minitest::Test
     @mock_process.pid = 1000
 
     error = assert_raises(MockShell::ExitError) do
-      @dev.start
+      @dev.start(@skaffold_file_path)
     end
 
     assert_match('You already start uffizzi', error.message)
+  end
+
+  def test_start_dev_without_skaffold_config
+    File.delete(@skaffold_file_path)
+    @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
+
+    error = assert_raises(MockShell::ExitError) do
+      @dev.start(@skaffold_file_path)
+    end
+
+    assert_match('Please provide a valid config', error.message)
   end
 end
