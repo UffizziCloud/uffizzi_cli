@@ -119,4 +119,28 @@ class DevTest < Minitest::Test
 
     assert_match('Please provide a valid config', error.message)
   end
+
+  def test_start_dev_with_kubeconfig_and_default_repo_flags
+    default_repo = 'ttl.sh'
+    kubeconfig_path = '/tmp/some_path'
+    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_deploying.json')
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+    stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
+    @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
+    skaffold_dev_regex = /skaffold dev --filename='.*' --default-repo='#{default_repo}' --kubeconfig='#{kubeconfig_path}'/
+    @mock_shell.promise_execute(skaffold_dev_regex, stdout: 'Good')
+
+    @dev.options = command_options('default-repo': default_repo, kubeconfig: kubeconfig_path)
+    @dev.start(@skaffold_file_path)
+
+    cluster_from_config = Uffizzi::ConfigFile.read_option(:clusters)
+
+    assert_match('deleted', Uffizzi.ui.last_message)
+    assert_nil(cluster_from_config)
+    assert_requested(stubbed_uffizzi_cluster_create_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+    assert_requested(stubbed_uffizzi_cluster_delete_request)
+  end
 end
