@@ -177,18 +177,18 @@ module Uffizzi
     end
 
     def launch_demonise_skaffold(config_path)
-      DevService.check_running_daemon
-      File.delete(DevService.logs_path) if File.exist?(DevService.logs_path)
-
-      Uffizzi.process.daemon
-      File.write(DevService.pid_path, Uffizzi.process.pid)
-      DevService.start_check_pid_file_existence
+      Uffizzi.process.daemon(true)
 
       at_exit do
         File.delete(DevService.pid_path) if File.exist?(DevService.pid_path)
       end
 
+      File.delete(DevService.logs_path) if File.exist?(DevService.logs_path)
+      File.write(DevService.pid_path, Uffizzi.process.pid)
+      DevService.start_check_pid_file_existence
       DevService.start_demonised_skaffold(config_path, options)
+    rescue StandardError => e
+      File.open(DevService.logs_path, 'a') { |f| f.puts(e.message) }
     end
 
     def project_slug
