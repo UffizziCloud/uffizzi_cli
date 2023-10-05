@@ -259,7 +259,7 @@ module Uffizzi
       spinner.auto_spin
       cluster_data = ClusterService.wait_cluster_scale_up(project_slug, cluster_name)
 
-      if ClusterService.failed?(cluster_data[:state])
+      if ClusterService.failed_scaling_up?(cluster_data[:state])
         spinner.error
         Uffizzi.ui.say_error_and_exit("Failed to wake up cluster #{cluster_name}.")
       end
