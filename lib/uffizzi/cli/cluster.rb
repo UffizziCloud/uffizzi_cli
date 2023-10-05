@@ -23,7 +23,7 @@ module Uffizzi
       run('list')
     end
 
-    desc 'create [NAME]', 'Create a cluster'
+    desc 'create [CLUSTER_NAME]', 'Create a cluster'
     method_option :name, type: :string, required: false, aliases: '-n'
     method_option :kubeconfig, type: :string, required: false, aliases: '-k'
     method_option :manifest, type: :string, required: false, aliases: '-m'
@@ -34,13 +34,13 @@ module Uffizzi
       run('create', { name: name })
     end
 
-    desc 'describe [NAME]', 'Describe a cluster'
+    desc 'describe [CLUSTER_NAME]', 'Describe a cluster'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def describe(name)
       run('describe', cluster_name: name)
     end
 
-    desc 'delete [NAME]', 'Delete a cluster'
+    desc 'delete [CLUSTER_NAME]', 'Delete a cluster'
     method_option :'delete-config', required: false, type: :boolean, default: true
     def delete(name)
       run('delete', cluster_name: name)
@@ -61,12 +61,12 @@ module Uffizzi
       run('disconnect')
     end
 
-    desc 'sleep', 'Scales a Uffizzi cluster down to zero resource utilization'
+    desc 'sleep [CLUSTER_NAME]', 'Scales a Uffizzi cluster down to zero resource utilization'
     def sleep(name)
       run('sleep', cluster_name: name)
     end
 
-    desc 'wake', 'Scales up a Uffizzi cluster to its original resource'
+    desc 'wake [CLUSTER_NAME]', 'Scales up a Uffizzi cluster to its original resource'
     def wake(name)
       run('wake', cluster_name: name)
     end
@@ -145,7 +145,7 @@ module Uffizzi
 
       if ClusterService.failed?(cluster_data[:state])
         spinner.error
-        Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")
+        Uffizzi.ui.say_error_and_exit("Cluster #{cluster_name} failed to be created.")
       end
 
       spinner.success
@@ -253,12 +253,19 @@ module Uffizzi
     def handle_wake_command(project_slug, command_args)
       cluster_name = command_args[:cluster_name]
       response = scale_up_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
 
-      if ResponseHelper.ok?(response)
-        Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled up")
-      else
-        ResponseHelper.handle_failed_response(response)
+      spinner = TTY::Spinner.new("[:spinner] Waking up cluster #{cluster_name}...", format: :dots)
+      spinner.auto_spin
+      cluster_data = ClusterService.wait_cluster_scale_up(project_slug, cluster_name)
+
+      if ClusterService.failed?(cluster_data[:state])
+        spinner.error
+        Uffizzi.ui.say_error_and_exit("Failed to wake up cluster #{cluster_name}.")
       end
+
+      spinner.success
+      Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled up")
     end
 
     def say_error_update_kubeconfig(cluster_data)

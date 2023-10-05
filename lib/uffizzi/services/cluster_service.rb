@@ -6,6 +6,7 @@ class ClusterService
   CLUSTER_STATE_DEPLOYING_NAMESPACE = 'deploying_namespace'
   CLUSTER_STATE_DEPLOYING = 'deploying'
   CLUSTER_STATE_DEPLOYED = 'deployed'
+  CLUSTER_STATE_SCALED_DOWN = 'scaled_down'
   CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE = 'failed_deploy_namespace'
   CLUSTER_STATE_FAILED = 'failed'
   CLUSTER_NAME_MAX_LENGTH = 15
@@ -26,6 +27,10 @@ class ClusterService
       [CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE, CLUSTER_STATE_FAILED].include?(cluster_state)
     end
 
+    def asleep?(cluster_state)
+      cluster_state === CLUSTER_STATE_SCALED_DOWN
+    end
+
     def wait_cluster_deploy(project_slug, cluster_name, oidc_token)
       loop do
         params = {
@@ -38,6 +43,22 @@ class ClusterService
         cluster_data = response.dig(:body, :cluster)
 
         return cluster_data unless deploying?(cluster_data[:state])
+
+        sleep(5)
+      end
+    end
+
+    def wait_cluster_scale_up(project_slug, cluster_name)
+      loop do
+        params = {
+          cluster_name: cluster_name,
+        }
+        response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, params)
+        return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
+
+        cluster_data = response.dig(:body, :cluster)
+
+        return cluster_data unless asleep?(cluster_data[:state])
 
         sleep(5)
       end
