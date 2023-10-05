@@ -4,6 +4,7 @@ NEXT_PATCH=$(shell docker-compose run --rm gem bash -c "bundle exec bump show-ne
 NEXT_MINOR=$(shell docker-compose run --rm gem bash -c "bundle exec bump show-next minor")
 NEXT_MAJOR=$(shell docker-compose run --rm gem bash -c "bundle exec bump show-next major")
 TAG_FULL_VERSION=v${VERSION}
+CURRENT_LOCAL_GEM_NAME := $(shell ls | sort -r | grep 'uffizzi-cli-.*\.gem' | head -1)
 
 release_gem:
 	mkdir -p ${HOME}/.gem
@@ -52,5 +53,18 @@ lint:
 
 run_single_test:
 	docker-compose run --rm gem bash -c 'bundle exec rake test TEST=$(TEST_PATH) TESTOPTS="--name=${TEST_NAME}"'
+
+gem_build:
+	gem build uffizzi.gemspec
+
+gem_install:
+	gem install $(CURRENT_LOCAL_GEM_NAME)
+
+gem_build_install:
+	make gem_build
+	make gem_install
+
+gem_uninstall:
+	gem uninstall uffizzi-cli
 
 .PHONY: test
