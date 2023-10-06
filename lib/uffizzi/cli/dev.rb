@@ -21,6 +21,7 @@ module Uffizzi
       DevService.check_skaffold_config_existence(config_path)
       cluster_id, cluster_name = start_create_cluster
       kubeconfig = wait_cluster_creation(cluster_name)
+      save_config_dev_environment(cluster_name, config_path)
 
       if options[:quiet]
         launch_demonise_skaffold(config_path)
@@ -31,6 +32,7 @@ module Uffizzi
       if defined?(cluster_name).present? && defined?(cluster_id).present?
         kubeconfig = defined?(kubeconfig).present? ? kubeconfig : nil
         handle_delete_cluster(cluster_id, cluster_name, kubeconfig)
+        delete_config_dev_environment(cluster_name)
       end
     end
 
@@ -48,6 +50,26 @@ module Uffizzi
       File.delete(DevService.pid_path)
     end
 
+    desc 'describe [NAME]', 'Describe dev environment'
+    def describe(name = nil)
+      check_login
+      dev_environment = get_dev_environment(name)
+
+      if dev_environment.nil? && name.present?
+        return Uffizzi.ui.say("No running dev environment by name: #{name}")
+      elsif dev_environment.nil?
+        return Uffizzi.ui.say('No running dev environments')
+      end
+
+      cluster_name = dev_environment[:name]
+      cluster_data = ClusterService.fetch_cluster_data(cluster_name, **cluster_api_connection_params)
+      cluster_render_data = ClusterService.build_render_data(cluster_data)
+      dev_environment_render_data = cluster_render_data.merge(config_path: dev_environment[:config_path])
+      rendered_data = dev_environment_render_data.map { |k, v| "- #{k.to_s.upcase}: #{v}" }.join("\n").strip
+
+      Uffizzi.ui.say(rendered_data)
+    end
+
     private
 
     def start_create_cluster
@@ -57,7 +79,7 @@ module Uffizzi
         k8s_version: options[:"k8s-version"],
       )
       Uffizzi.ui.say('Start creating a cluster')
-      response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
+      response = create_cluster(server, project_slug, params)
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
 
       cluster_id = response.dig(:body, :cluster, :id)
@@ -68,7 +90,7 @@ module Uffizzi
 
     def wait_cluster_creation(cluster_name)
       Uffizzi.ui.say('Checking the cluster status...')
-      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, ConfigFile.read_option(:oidc_token))
+      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, oidc_token)
 
       if ClusterService.failed?(cluster_data[:state])
         Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")
@@ -109,9 +131,7 @@ module Uffizzi
       ConfigFile.write_option(:clusters, clusters_config)
     end
 
-    def cluster_creation_params(name:, creation_source:, k8s_version:)
-      oidc_token = Uffizzi::ConfigFile.read_option(:oidc_token)
-
+    def cluster_creation_params(name, creation_source)
       {
         cluster: {
           name: name,
@@ -130,9 +150,9 @@ module Uffizzi
 
       params = {
         cluster_name: cluster_name,
-        oidc_token: ConfigFile.read_option(:oidc_token),
+        oidc_token: oidc_token,
       }
-      response = delete_cluster(ConfigFile.read_option(:server), project_slug, params)
+      response = delete_cluster(server, project_slug, params)
 
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say("Cluster #{cluster_name} deleted")
@@ -191,8 +211,53 @@ module Uffizzi
       File.open(DevService.logs_path, 'a') { |f| f.puts(e.message) }
     end
 
+    def save_config_dev_environment(cluster_name, config_path)
+      params = options.merge(config_path: File.expand_path(config_path))
+      dev_environments = Uffizzi::ConfigHelper.set_dev_environment(cluster_name, params)
+      ConfigFile.write_option(:dev_environments, dev_environments)
+    end
+
+    def delete_config_dev_environment(cluster_name)
+      dev_environments = Uffizzi::ConfigHelper.dev_environments_without(cluster_name)
+      ConfigFile.write_option(:dev_environments, dev_environments)
+    end
+
+    def get_dev_environment(name)
+      dev_environments = ConfigHelper.dev_environments
+
+      if name.present?
+        ConfigHelper.dev_environments_by_name(name)
+      elsif dev_environments.count == 1
+        dev_environments.last
+      elsif dev_environments.count > 1
+        choices = dev_environments.map do |dev_env|
+          { name: dev_env[:config_path], value: dev_env[:name] }
+        end
+
+        question = 'You have several dev environments, select one for describe:'
+        answer = Uffizzi.prompt.select(question, choices)
+        ConfigHelper.dev_environments_by_name(answer)
+      end
+    end
+
+    def cluster_api_connection_params
+      {
+        server: server,
+        project_slug: project_slug,
+        oidc_token: oidc_token,
+      }
+    end
+
     def project_slug
       @project_slug ||= ConfigFile.read_option(:project)
+    end
+
+    def oidc_token
+      @oidc_token ||= ConfigFile.read_option(:oidc_token)
+    end
+
+    def server
+      @server ||= ConfigFile.read_option(:server)
     end
   end
 end

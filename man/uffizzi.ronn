@@ -29,6 +29,9 @@ uffizzi - manage Uffizzi resources
          Manage Uffizzi project resources including compose files for
          specifying compose environment (preview) configurations and secrets
 
+     dev
+         Creates a Uffizzi cluster preconfigured for development workflows
+
 ## COMMAND
     COMMAND is one of the following:
 

@@ -1,0 +1,27 @@
+$ uffizzi dev describe -h
+uffizzi-dev-describe - show metadata for a dev environment
+================================================================
+
+## SYNOPSIS
+    uffizzi dev describe <NAME>
+
+## DESCRIPTION
+    Shows metadata for a dev environment
+
+    This command can fail for the following reasons:
+        - The dev environment specified does not exist.
+        - The dev environment specified belongs to a different project.
+
+    For more information on Uffizzi clusters, see:
+    https://docs.uffizzi.com/references/cli/
+
+## POSITIONAL ARGUMENTS
+    [NAME]
+        NAME for the dev environment you want to describe.
+        This is an optional argument.
+
+## EXAMPLES
+    The following command prints metadata for the dev
+    environment:
+
+        $ uffizzi dev describe

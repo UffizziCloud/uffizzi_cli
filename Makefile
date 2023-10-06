@@ -67,4 +67,10 @@ gem_build_install:
 gem_uninstall:
 	gem uninstall uffizzi-cli
 
+brew_add_tap:
+	brew tap UffizziCloud/tap
+
+brew_tap_install:
+	brew install uffizzicloud/tap/uffizzi
+
 .PHONY: test

@@ -52,6 +52,23 @@ module Uffizzi
         cluster_previous_current_contexts.detect { |c| c[:kubeconfig_path] == path }
       end
 
+      def set_dev_environment(name, params = {})
+        current_dev_environments = dev_environments_without(name)
+        current_dev_environments << { name: name }.merge(params)
+      end
+
+      def dev_environments_without(name)
+        dev_environments.reject { |c| c[:name] == name }
+      end
+
+      def dev_environments_by_name(name)
+        dev_environments.detect { |c| c[:name] == name }
+      end
+
+      def dev_environments
+        read_option_from_config(:dev_environments) || []
+      end
+
       private
 
       def clusters
