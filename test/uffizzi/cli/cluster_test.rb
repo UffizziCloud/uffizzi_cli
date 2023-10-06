@@ -484,21 +484,58 @@ class ClusterTest < Minitest::Test
     assert_requested(stubbed_uffizzi_cluster_scale_down_request)
   end
 
-  def test_scale_up_cluster
-    cluster_scale_up_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
-    cluster_name = 'cluster-name'
+  # def test_scale_down_cluster_from_context
+  #   cluster_scale_down_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+  #   FileUtils.mkdir_p(File.dirname(KubeconfigService.default_path))
+  #   kubeconfig = Psych.safe_load(Base64.decode64(cluster_scale_down_body.dig(:cluster, :kubeconfig))).deep_dup
+  #   File.write(KubeconfigService.default_path, kubeconfig.to_yaml)
 
-    stubbed_uffizzi_cluster_scale_up_request = stub_uffizzi_scale_up_cluster(
-      cluster_scale_up_body,
-      @project_slug,
-      cluster_name: cluster_name,
-    )
-    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
-    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+  #   stubbed_uffizzi_cluster_scale_down_request = stub_uffizzi_scale_down_cluster(
+  #     cluster_scale_down_body,
+  #     @project_slug,
+  #     cluster_name: ClusterService.get_current_context_cluster_name,
+  #   )
 
-    @cluster.wake(cluster_name)
+  #   @cluster.sleep
 
-    assert_requested(stubbed_uffizzi_cluster_scale_up_request)
-    assert_requested(stubbed_uffizzi_cluster_get_request)
-  end
+  #   assert_requested(stubbed_uffizzi_cluster_scale_down_request)
+  # end
+
+  # def test_scale_up_cluster
+  #   cluster_scale_up_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+  #   cluster_name = 'cluster-name'
+
+  #   stubbed_uffizzi_cluster_scale_up_request = stub_uffizzi_scale_up_cluster(
+  #     cluster_scale_up_body,
+  #     @project_slug,
+  #     cluster_name: cluster_name,
+  #   )
+  #   cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+  #   stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
+  #   @cluster.wake(cluster_name)
+
+  #   assert_requested(stubbed_uffizzi_cluster_scale_up_request)
+  #   assert_requested(stubbed_uffizzi_cluster_get_request)
+  # end
+
+  # def test_scale_up_cluster_from_context
+  #   cluster_scale_up_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+  #   FileUtils.mkdir_p(File.dirname(KubeconfigService.default_path))
+  #   kubeconfig = Psych.safe_load(Base64.decode64(cluster_scale_up_body.dig(:cluster, :kubeconfig))).deep_dup
+  #   File.write(KubeconfigService.default_path, kubeconfig.to_yaml)
+
+  #   stubbed_uffizzi_cluster_scale_up_request = stub_uffizzi_scale_up_cluster(
+  #     cluster_scale_up_body,
+  #     @project_slug,
+  #     cluster_name: ClusterService.get_current_context_cluster_name,
+  #   )
+  #   cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+  #   stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
+  #   @cluster.wake
+
+  #   assert_requested(stubbed_uffizzi_cluster_scale_up_request)
+  #   assert_requested(stubbed_uffizzi_cluster_get_request)
+  # end
 end

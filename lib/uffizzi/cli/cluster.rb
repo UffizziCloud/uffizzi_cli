@@ -62,12 +62,12 @@ module Uffizzi
     end
 
     desc 'sleep [CLUSTER_NAME]', 'Scales a Uffizzi cluster down to zero resource utilization'
-    def sleep(name)
+    def sleep(name = nil)
       run('sleep', cluster_name: name)
     end
 
     desc 'wake [CLUSTER_NAME]', 'Scales up a Uffizzi cluster to its original resource'
-    def wake(name)
+    def wake(name = nil)
       run('wake', cluster_name: name)
     end
 
@@ -240,7 +240,9 @@ module Uffizzi
     end
 
     def handle_sleep_command(project_slug, command_args)
-      cluster_name = command_args[:cluster_name]
+      cluster_name = command_args[:cluster_name] || ClusterService.get_current_context_cluster_name
+      return handle_missing_cluster_name_error if cluster_name.nil?
+
       response = scale_down_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
 
       if ResponseHelper.ok?(response)
@@ -251,7 +253,9 @@ module Uffizzi
     end
 
     def handle_wake_command(project_slug, command_args)
-      cluster_name = command_args[:cluster_name]
+      cluster_name = command_args[:cluster_name] || ClusterService.get_current_context_cluster_name
+      return handle_missing_cluster_name_error if cluster_name.nil?
+
       response = scale_up_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
 
@@ -439,6 +443,12 @@ module Uffizzi
 
       previous_current_contexts = Uffizzi::ConfigHelper.set_previous_current_context_by_path(kubeconfig_path, current_context)
       ConfigFile.write_option(:previous_current_contexts, previous_current_contexts)
+    end
+
+    def handle_missing_cluster_name_error
+      Uffizzi.ui.say("No kubeconfig found at #{KubeconfigService.default_path}")
+      Uffizzi.ui.say('Please update the current context or provide a cluster name.')
+      Uffizzi.ui.say('$uffizzi cluster sleep my-cluster')
     end
   end
 end
