@@ -15,7 +15,7 @@ class DevService
       File.delete(pid_path) if pid.blank?
       Uffizzi.process.kill(0, pid.to_i)
 
-      Uffizzi.ui.say_error_and_exit("You already start uffizzi dev as daemon. To stop process do 'uffizzi dev stop'")
+      Uffizzi.ui.say_error_and_exit("You have already started uffizzi dev as daemon. To stop the process do 'uffizzi dev stop'")
     rescue Errno::ESRCH
       File.delete(pid_path)
     end

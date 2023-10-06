@@ -42,7 +42,7 @@ uffizzi-dev-start - start a development environment
         "registry.uffizzi.com". See `uffizzi connect -h` for
         adding private registry credentials.
 
-     --detach, -d
+     --quiet, -q
         Run the development process in detached mode (i.e., in
         the background). Without this option, logs are streamed
         to the terminal in the foreground. Run 'uffizzi dev stop`
@@ -67,10 +67,10 @@ uffizzi-dev-start - start a development environment
 
         $ uffizzi dev start ~/foo/skaffold.yaml
 
-    To start a dev environment in detached mode,
+    To start a dev environment in quiet  mode,
     run:
 
-        $ uffizzi dev start --detach
+        $ uffizzi dev start --quiet
 
     To push your build artifacts to a private Docker Hub repo
     called 'acme/foo', first add your Docker Hub credentials:
