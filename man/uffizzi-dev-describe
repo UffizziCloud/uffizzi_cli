@@ -1,0 +1,36 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-DEV\-DESCRIBE" "" "October 2023" ""
+.SH "NAME"
+\fBuffizzi\-dev\-describe\fR
+.P
+$ uffizzi dev describe \-h uffizzi\-dev\-describe \- show metadata for a dev environment ================================================================
+.SH "SYNOPSIS"
+.nf
+uffizzi dev describe <NAME>
+.fi
+.SH "DESCRIPTION"
+.nf
+Shows metadata for a dev environment
+
+This command can fail for the following reasons:
+    \- The dev environment specified does not exist\.
+    \- The dev environment specified belongs to a different project\.
+
+For more information on Uffizzi clusters, see:
+https://docs\.uffizzi\.com/references/cli/
+.fi
+.SH "POSITIONAL ARGUMENTS"
+.nf
+[NAME]
+    NAME for the dev environment you want to describe\.
+    This is an optional argument\.
+.fi
+.SH "EXAMPLES"
+.nf
+The following command prints metadata for the dev
+environment:
+
+    $ uffizzi dev describe
+.fi
+

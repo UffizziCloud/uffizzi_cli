@@ -143,4 +143,80 @@ class DevTest < Minitest::Test
     assert_requested(stubbed_uffizzi_cluster_get_request)
     assert_requested(stubbed_uffizzi_cluster_delete_request)
   end
+
+  def test_describe_dev_by_name
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
+    config_path1 = '/skaffold.yaml'
+    config_path2 = '/skaffold_2.yaml'
+    cluster_name1 = cluster_get_body.dig(:cluster, :name)
+    cluster_name2 = 'cluster-2'
+    dev_environments = [
+      { name: cluster_name1, config_path: config_path1 },
+      { name: cluster_name2, config_path: config_path2 },
+    ]
+
+    Uffizzi::ConfigFile.write_option(:dev_environments, dev_environments)
+
+    @dev.describe(cluster_name1)
+
+    assert_match("- CONFIG_PATH: #{config_path1}", Uffizzi.ui.last_message)
+    assert_match("- NAME: #{cluster_name1}", Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_describe_single_dev
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
+    config_path = '/skaffold.yaml'
+    cluster_name = cluster_get_body.dig(:cluster, :name)
+    dev_environments = [{ name: cluster_name, config_path: config_path }]
+    Uffizzi::ConfigFile.write_option(:dev_environments, dev_environments)
+
+    @dev.describe
+
+    assert_match("- CONFIG_PATH: #{config_path}", Uffizzi.ui.last_message)
+    assert_match("- NAME: #{cluster_name}", Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_describe_multiple_dev
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
+    config_path1 = '/skaffold.yaml'
+    config_path2 = '/skaffold_2.yaml'
+    cluster_name1 = cluster_get_body.dig(:cluster, :name)
+    cluster_name2 = 'cluster-2'
+    dev_environments = [
+      { name: cluster_name1, config_path: config_path1 },
+      { name: cluster_name2, config_path: config_path2 },
+    ]
+
+    @mock_prompt.promise_question_answer(/You have several dev environments/, :first)
+
+    Uffizzi::ConfigFile.write_option(:dev_environments, dev_environments)
+
+    @dev.describe
+
+    assert_match("- CONFIG_PATH: #{config_path1}", Uffizzi.ui.last_message)
+    assert_match("- NAME: #{cluster_name1}", Uffizzi.ui.last_message)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_describe_zero_dev
+    @dev.describe
+
+    assert_match('No running dev environments', Uffizzi.ui.last_message)
+  end
+
+  def test_describe_dev_with_wrong_name
+    name = 'wrong_name'
+
+    @dev.describe(name)
+
+    assert_match("No running dev environment by name: #{name}", Uffizzi.ui.last_message)
+  end
 end

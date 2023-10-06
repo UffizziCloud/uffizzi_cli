@@ -33,6 +33,9 @@ GROUP is one of the following:
  project
      Manage Uffizzi project resources including compose files for
      specifying compose environment (preview) configurations and secrets
+
+ dev
+     Creates a Uffizzi cluster preconfigured for development workflows
 .fi
 .SH "COMMAND"
 .nf
