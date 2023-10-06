@@ -83,18 +83,5 @@ class ClusterService
       regex = /\A[a-zA-Z0-9-]*\z/
       regex.match?(name)
     end
-
-    def get_current_context_cluster_name
-      kubeconfig_path = KubeconfigService.default_path
-      kubeconfig = KubeconfigService.read_kubeconfig(kubeconfig_path)
-      return if kubeconfig.nil?
-
-      context = KubeconfigService.get_current_context(kubeconfig)
-      return if context.nil?
-
-      return context.gsub(OPERATOR_PREFIX, '') if context.start_with?(OPERATOR_PREFIX)
-
-      context
-    end
   end
 end

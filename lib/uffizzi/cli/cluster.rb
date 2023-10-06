@@ -210,7 +210,8 @@ module Uffizzi
 
     def handle_update_kubeconfig_command(project_slug, command_args)
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
-      cluster_data = fetch_cluster_data(project_slug, command_args[:cluster_name])
+      cluster_name = command_args[:cluster_name]
+      cluster_data = fetch_cluster_data(project_slug, cluster_name)
 
       unless cluster_data[:kubeconfig].present?
         say_error_update_kubeconfig(cluster_data)
@@ -232,7 +233,7 @@ module Uffizzi
         new_kubeconfig
       end
 
-      update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
+      update_clusters_config(cluster_data[:id], name: cluster_name, kubeconfig_path: kubeconfig_path)
 
       return if options[:quiet]
 
@@ -240,7 +241,7 @@ module Uffizzi
     end
 
     def handle_sleep_command(project_slug, command_args)
-      cluster_name = command_args[:cluster_name] || ClusterService.get_current_context_cluster_name
+      cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster)[:name]
       return handle_missing_cluster_name_error if cluster_name.nil?
 
       response = scale_down_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
@@ -253,7 +254,7 @@ module Uffizzi
     end
 
     def handle_wake_command(project_slug, command_args)
-      cluster_name = command_args[:cluster_name] || ClusterService.get_current_context_cluster_name
+      cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster)[:name]
       return handle_missing_cluster_name_error if cluster_name.nil?
 
       response = scale_up_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
@@ -366,6 +367,7 @@ module Uffizzi
       is_update_current_context = options[:'update-current-context']
       parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
       rendered_cluster_data = render_cluster_data(cluster_data)
+      cluster_name = cluster_data[:name]
 
       Uffizzi.ui.enable_stdout
       Uffizzi.ui.say("Cluster with name: #{rendered_cluster_data[:name]} was created.")
@@ -377,7 +379,7 @@ module Uffizzi
       Uffizzi.ui.say(rendered_cluster_data) if Uffizzi.ui.output_format
 
       save_kubeconfig(parsed_kubeconfig, kubeconfig_path)
-      update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
+      update_clusters_config(cluster_data[:id], name: cluster_name, kubeconfig_path: kubeconfig_path)
       GithubService.write_to_github_env(rendered_cluster_data) if GithubService.github_actions_exists?
     end
 
@@ -406,6 +408,7 @@ module Uffizzi
     def update_clusters_config(id, params)
       clusters_config = Uffizzi::ConfigHelper.update_clusters_config_by_id(id, params)
       ConfigFile.write_option(:clusters, clusters_config)
+      ConfigFile.write_option(:current_cluster, ConfigHelper.cluster_config_by_id(id))
     end
 
     def render_cluster_data(cluster_data)
