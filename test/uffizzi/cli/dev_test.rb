@@ -82,7 +82,7 @@ class DevTest < Minitest::Test
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
     @mock_shell.promise_execute(/skaffold dev --filename/, stdout: 'Good')
-    @dev.options = command_options(detach: true)
+    @dev.options = command_options(quiet: true)
 
     @dev.start(@skaffold_file_path)
 
@@ -98,7 +98,7 @@ class DevTest < Minitest::Test
   def test_start_dev_as_daemon_when_deamon_already_run
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
     @mock_shell.promise_execute(/skaffold dev --filename/, stdout: 'Good')
-    @dev.options = command_options(detach: true)
+    @dev.options = command_options(quiet: true)
     File.write(DevService.pid_path, '1000')
     @mock_process.pid = 1000
 
