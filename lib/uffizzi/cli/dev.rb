@@ -10,18 +10,18 @@ module Uffizzi
     include ApiClient
 
     desc 'start [CONFIG]', 'Start dev environment'
-    method_option :detach, type: :boolean, aliases: :d
+    method_option :quiet, type: :boolean, aliases: :q
     method_option :'default-repo', type: :string
     method_option :kubeconfig, type: :string
     def start(config_path = 'skaffold.yaml')
       DevService.check_skaffold_existence
-      DevService.check_running_daemon if options[:detach]
+      DevService.check_running_daemon if options[:quiet]
       DevService.check_skaffold_config_existence(config_path)
       check_login
       cluster_id, cluster_name = start_create_cluster
       kubeconfig = wait_cluster_creation(cluster_name)
 
-      if options[:detach]
+      if options[:quiet]
         launch_demonise_skaffold(config_path)
       else
         DevService.start_basic_skaffold(config_path, options)
