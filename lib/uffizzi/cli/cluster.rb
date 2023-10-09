@@ -12,7 +12,6 @@ require 'uffizzi/services/kubeconfig_service'
 require 'uffizzi/services/cluster/disconnect_service'
 
 MANUAL = 'manual'
-DEFAULT_K8S_VERSION = '1.27'
 
 module Uffizzi
   class Cli::Cluster < Thor
@@ -118,8 +117,7 @@ module Uffizzi
 
       cluster_name = command_args[:name] || options[:name] || ClusterService.generate_name
       creation_source = options[:"creation-source"] || MANUAL
-      k8s_version = options[:k8s_version] || DEFAULT_K8S_VERSION
-      Uffizzi.ui.say_error_and_exit('k8s version should be formatted as [MAJOR].[MINOR].') unless valid_k8s_version?(k8s_version)
+      k8s_version = options[:k8s_version]
       Uffizzi.ui.say_error_and_exit("Cluster name: #{cluster_name} is not valid.") unless ClusterService.valid_name?(cluster_name)
 
       params = cluster_creation_params(
@@ -404,10 +402,6 @@ module Uffizzi
 
       previous_current_contexts = Uffizzi::ConfigHelper.set_previous_current_context_by_path(kubeconfig_path, current_context)
       ConfigFile.write_option(:previous_current_contexts, previous_current_contexts)
-    end
-
-    def valid_k8s_version?(version)
-      ['1.28', '1.27', '1.26'].include?(version)
     end
   end
 end
