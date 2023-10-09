@@ -25,6 +25,12 @@ uffizzi-cluster - manage clusters
      list
         List all clusters
 
+     sleep
+        Put a cluster to sleep (non-destructive)
+
+     wake
+        Wake a cluster that is sleeping
+
      update-kubeconfig
         Update kubeconfig file
 
