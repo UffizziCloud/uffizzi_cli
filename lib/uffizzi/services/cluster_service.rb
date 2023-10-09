@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'uffizzi/clients/api/api_client'
-require 'byebug'
 
 class ClusterService
   CLUSTER_STATE_DEPLOYING_NAMESPACE = 'deploying_namespace'
