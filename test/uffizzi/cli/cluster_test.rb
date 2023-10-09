@@ -479,9 +479,13 @@ class ClusterTest < Minitest::Test
       cluster_name: cluster_name,
     )
 
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_scaled_down.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
     @cluster.sleep(cluster_name)
 
     assert_requested(stubbed_uffizzi_cluster_scale_down_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
   end
 
   def test_scale_down_cluster_from_context
@@ -494,10 +498,13 @@ class ClusterTest < Minitest::Test
       @project_slug,
       cluster_name: cluster_name,
     )
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_scaled_down.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
 
     @cluster.sleep
 
     assert_requested(stubbed_uffizzi_cluster_scale_down_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
   end
 
   def test_scale_up_cluster

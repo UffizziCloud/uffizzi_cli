@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require 'uffizzi/clients/api/api_client'
+require 'byebug'
 
 class ClusterService
   CLUSTER_STATE_DEPLOYING_NAMESPACE = 'deploying_namespace'
   CLUSTER_STATE_DEPLOYING = 'deploying'
   CLUSTER_STATE_DEPLOYED = 'deployed'
+  CLUSTER_STATE_SCALING_DOWN = 'scaling_down'
   CLUSTER_STATE_SCALING_UP = 'scaling_up'
   CLUSTER_FAILED_SCALING_UP = 'failed_scaling_up'
   CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE = 'failed_deploy_namespace'
@@ -30,6 +32,10 @@ class ClusterService
 
     def scaling_up?(cluster_state)
       cluster_state === CLUSTER_STATE_SCALING_UP
+    end
+
+    def scaling_down?(cluster_state)
+      cluster_state === CLUSTER_STATE_SCALING_DOWN
     end
 
     def failed_scaling_up?(cluster_state)
@@ -66,6 +72,22 @@ class ClusterService
         return cluster_data unless scaling_up?(cluster_data[:state])
 
         sleep(5)
+      end
+    end
+
+    def wait_cluster_scale_down(project_slug, cluster_name)
+      loop do
+        params = {
+          cluster_name: cluster_name,
+        }
+        response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, params)
+        return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
+
+        cluster_data = response.dig(:body, :cluster)
+
+        return unless scaling_down?(cluster_data[:state])
+
+        sleep(3)
       end
     end
 

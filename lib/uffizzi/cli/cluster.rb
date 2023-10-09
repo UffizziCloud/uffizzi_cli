@@ -245,12 +245,14 @@ module Uffizzi
       return handle_missing_cluster_name_error if cluster_name.nil?
 
       response = scale_down_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
 
-      if ResponseHelper.ok?(response)
-        Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled down")
-      else
-        ResponseHelper.handle_failed_response(response)
-      end
+      spinner = TTY::Spinner.new("[:spinner] Scaling down cluster #{cluster_name}...", format: :dots)
+      spinner.auto_spin
+      ClusterService.wait_cluster_scale_down(project_slug, cluster_name)
+
+      spinner.success
+      Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled down")
     end
 
     def handle_wake_command(project_slug, command_args)
