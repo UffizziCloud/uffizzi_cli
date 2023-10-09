@@ -241,7 +241,7 @@ module Uffizzi
     end
 
     def handle_sleep_command(project_slug, command_args)
-      cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster).fetch(:name)
+      cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster)&.fetch(:name)
       return handle_missing_cluster_name_error if cluster_name.nil?
 
       response = scale_down_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
@@ -256,7 +256,7 @@ module Uffizzi
     end
 
     def handle_wake_command(project_slug, command_args)
-      cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster).fetch(:name)
+      cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster)&.fetch(:name)
       return handle_missing_cluster_name_error if cluster_name.nil?
 
       response = scale_up_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
