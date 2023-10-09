@@ -9,6 +9,7 @@ class ClusterService
   CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE = 'failed_deploy_namespace'
   CLUSTER_STATE_FAILED = 'failed'
   CLUSTER_NAME_MAX_LENGTH = 15
+  MANUAL_CREATION_SOURCE = 'manual'
 
   class << self
     include ApiClient

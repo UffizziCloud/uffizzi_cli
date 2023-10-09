@@ -5,6 +5,7 @@ require 'uffizzi/helpers/file_helper'
 
 module Uffizzi
   class ConfigFile
+    CONFIG_DIR = "#{Dir.home}/.config/uffizzi"
     CONFIG_PATH = "#{Dir.home}/.config/uffizzi/config_default.json"
 
     class << self

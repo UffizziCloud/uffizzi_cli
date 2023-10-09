@@ -11,8 +11,6 @@ require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/kubeconfig_service'
 require 'uffizzi/services/cluster/disconnect_service'
 
-MANUAL = 'manual'
-
 module Uffizzi
   class Cli::Cluster < Thor
     class Error < StandardError; end
@@ -115,7 +113,7 @@ module Uffizzi
       end
 
       cluster_name = command_args[:name] || options[:name] || ClusterService.generate_name
-      creation_source = options[:"creation-source"] || MANUAL
+      creation_source = options[:"creation-source"] || ClusterService::MANUAL_CREATION_SOURCE
 
       unless ClusterService.valid_name?(cluster_name)
         Uffizzi.ui.say_error_and_exit("Cluster name: #{cluster_name} is not valid.")

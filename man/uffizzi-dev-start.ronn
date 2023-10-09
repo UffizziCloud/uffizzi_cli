@@ -1,22 +1,90 @@
-uffizzi-dev-start - start development environment
+uffizzi-dev-start - start a development environment
 ================================================================
 
 ## SYNOPSIS
-    uffizzi dev start [SKAFFOLD_CONFIG_FILE_PATH]
+    uffizzi dev start [CONFIG_FILE] [FLAGS]
 
 ## DESCRIPTION
-    Creates a new cluster and start skaffold. If no SKAFFOLD_CONFIG_FILE_PATH is specified,
-    the default path will be used.
-    Default SKAFFOLD_CONFIG_FILE_PATH is 'skaffold.yaml'
+    Creates a Uffizzi cluster preconfigured for development
+    workflows, including building, pushing, and deploying
+    your changes every time project files are saved.
+    current-context is updated in kubeconfig file.
+
+    This command watches for file changes in a given local
+    project directory, as specified in your configuration file.
+    It then serializes those changes and redeploys them onto
+    a Uffizzi cluster.
+
+    The command looks for a configuration at the specified
+    path CONFIG_FILE. Skaffold configurations are currently
+    supported. For help creating a skaffold.yaml file, see:
+    https://skaffold.dev/docs/init/
+
+    If a kubeconfig exists
 
     For more information on Uffizzi clusters, see:
     https://docs.uffizzi.com/references/cli/
 
+## POSITIONAL ARGUMENTS
+    [CONFIG_FILE]
+        Path to the development environment configuration file.
+        Currently supports skaffold.yaml files.
+
+## FLAGS
+     --build="<local-or-remote>"
+        This option specifies whether to build images on the
+        local environment or on the remote Uffizzi cluster.
+        Possible values are "local" or "remote".
+
+     --default-repo="<container-registry-domain>"
+        A public or private repo used to push/pull build
+        artifacts. Overrides the global default image registry:
+        "registry.uffizzi.com". See `uffizzi connect -h` for
+        adding private registry credentials.
+
+     --quiet, -q
+        Run the development process in detached mode (i.e., in
+        the background). Without this option, logs are streamed
+        to the terminal in the foreground. Run 'uffizzi dev stop`
+        to stop the detached process.
+
+     --help, -h
+        Show this message and exit.
+
+     --kubeconfig="/path/to/your/kubeconfig"
+        Path to kubeconfig file. If this option is not specified,
+        this command looks for the file at ~/.kube/config.
+
 ## EXAMPLES
-    To start development environment, run:
+    If your configuration file is in the current working
+    directory and you want to use an auto-generated name,
+    run:
 
         $ uffizzi dev start
 
-    To start development environment with custom skaffold.yaml file, run:
+    To start a dev environment using a skaffold.yaml config
+    file in directory '~/foo', run:
 
-        $ uffizzi cluster create /path/to/skaffold.yaml
+        $ uffizzi dev start ~/foo/skaffold.yaml
+
+    To start a dev environment in quiet  mode,
+    run:
+
+        $ uffizzi dev start --quiet
+
+    To push your build artifacts to a private Docker Hub repo
+    called 'acme/foo', first add your Docker Hub credentials:
+
+        $ uffizzi connect docker-hub
+        (See `uffizzi connect -h` for other registry options)
+
+    ...then override the default repo:
+
+        $ uffizzi dev start \
+          --default-repo="hub.docker.com/acme/foo"
+
+    To start a dev environment using an alternate kubeconfig file,
+    run:
+
+        $ uffizzi dev start \
+          --kubeconfig="/path/to/alternate/kubeconfig"
