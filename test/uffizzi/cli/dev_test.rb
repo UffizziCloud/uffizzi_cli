@@ -106,7 +106,7 @@ class DevTest < Minitest::Test
       @dev.start(@skaffold_file_path)
     end
 
-    assert_match('You already start uffizzi', error.message)
+    assert_match('You have already started uffizzi', error.message)
   end
 
   def test_start_dev_without_skaffold_config
