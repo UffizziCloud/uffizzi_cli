@@ -11,6 +11,9 @@ require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/kubeconfig_service'
 require 'uffizzi/services/cluster/disconnect_service'
 
+MANUAL = 'manual'
+DEFAULT_K8S_VERSION = '1.27'
+
 module Uffizzi
   class Cli::Cluster < Thor
     class Error < StandardError; end
@@ -30,6 +33,7 @@ module Uffizzi
     method_option :'update-current-context', type: :boolean, required: false, default: true
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     method_option :'creation-source', required: false, type: :string
+    method_option :'k8s-version', required: false, type: :string, default: '1.27'
     def create(name = nil)
       run('create', { name: name })
     end
@@ -113,14 +117,17 @@ module Uffizzi
       end
 
       cluster_name = command_args[:name] || options[:name] || ClusterService.generate_name
-      creation_source = options[:"creation-source"] || ClusterService::MANUAL_CREATION_SOURCE
+      creation_source = options[:"creation-source"] || MANUAL
+      k8s_version = options[:k8s_version] || DEFAULT_K8S_VERSION
+      Uffizzi.ui.say_error_and_exit('k8s version should be formatted as [MAJOR].[MINOR].') unless valid_k8s_version?(k8s_version)
+      Uffizzi.ui.say_error_and_exit("Cluster name: #{cluster_name} is not valid.") unless ClusterService.valid_name?(cluster_name)
 
-      unless ClusterService.valid_name?(cluster_name)
-        Uffizzi.ui.say_error_and_exit("Cluster name: #{cluster_name} is not valid.")
-      end
-
-      manifest_file_path = options[:manifest]
-      params = cluster_creation_params(cluster_name, creation_source, manifest_file_path)
+      params = cluster_creation_params(
+        name: cluster_name,
+        creation_source: creation_source,
+        manifest_file_path: options[:manifest],
+        k8s_version: k8s_version,
+      )
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
 
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
@@ -239,7 +246,7 @@ module Uffizzi
       end
     end
 
-    def cluster_creation_params(name, creation_source, manifest_file_path)
+    def cluster_creation_params(name:, creation_source:, manifest_file_path:, k8s_version:)
       manifest_content = load_manifest_file(manifest_file_path)
       oidc_token = Uffizzi::ConfigFile.read_option(:oidc_token)
 
@@ -248,6 +255,7 @@ module Uffizzi
           name: name,
           manifest: manifest_content,
           creation_source: creation_source,
+          k8s_version: k8s_version,
         },
         token: oidc_token,
       }
@@ -396,6 +404,10 @@ module Uffizzi
 
       previous_current_contexts = Uffizzi::ConfigHelper.set_previous_current_context_by_path(kubeconfig_path, current_context)
       ConfigFile.write_option(:previous_current_contexts, previous_current_contexts)
+    end
+
+    def valid_k8s_version?(version)
+      ['1.28', '1.27', '1.26'].include?(version)
     end
   end
 end
