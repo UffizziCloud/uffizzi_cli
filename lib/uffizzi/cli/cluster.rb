@@ -32,7 +32,7 @@ module Uffizzi
     method_option :'update-current-context', type: :boolean, required: false, default: true
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     method_option :'creation-source', required: false, type: :string
-    method_option :'k8s-version', required: false, type: :string, default: '1.27'
+    method_option :'k8s-version', required: false, type: :string
     def create(name = nil)
       run('create', { name: name })
     end
@@ -117,7 +117,7 @@ module Uffizzi
 
       cluster_name = command_args[:name] || options[:name] || ClusterService.generate_name
       creation_source = options[:"creation-source"] || MANUAL
-      k8s_version = options[:k8s_version]
+      k8s_version = options[:"k8s-version"]
       Uffizzi.ui.say_error_and_exit("Cluster name: #{cluster_name} is not valid.") unless ClusterService.valid_name?(cluster_name)
 
       params = cluster_creation_params(
@@ -309,6 +309,7 @@ module Uffizzi
         status: cluster_data[:state],
         created: Time.strptime(cluster_data[:created_at], '%Y-%m-%dT%H:%M:%S.%N').strftime('%a %b %d %H:%M:%S %Y'),
         url: cluster_data[:host],
+        k8s_version: cluster_data[:k8s_version],
       }
 
       rendered_cluster_data = if Uffizzi.ui.output_format.nil?
