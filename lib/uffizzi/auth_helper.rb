@@ -17,7 +17,7 @@ module Uffizzi
       end
 
       def check_login(options = nil)
-        raise Uffizzi::Error.new('You are not logged in. Please run $uffizzi login first.') unless signed_in?
+        raise Uffizzi::Error.new('You are not logged in. Run `uffizzi login`.') unless signed_in?
         return unless options
 
         raise Uffizzi::Error.new('This command needs project to be set in config file') unless CommandService.project_set?(options)
