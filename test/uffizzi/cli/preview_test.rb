@@ -7,7 +7,7 @@ class PreviewTest < Minitest::Test
     @preview = Uffizzi::Cli::Preview.new
 
     sign_in
-    Uffizzi::ConfigFile.write_option(:project, 'dbp')
+    Uffizzi::ConfigFile.write_option(:project, 'uffizzi')
     @project_slug = Uffizzi::ConfigFile.read_option(:project)
     ENV.delete('IMAGE')
     ENV.delete('CONFIG_SOURCE')

@@ -5,7 +5,6 @@ require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
 require 'uffizzi/services/compose_file_service'
 require 'uffizzi/services/env_variables_service'
-require 'uffizzi/services/command_service'
 
 module Uffizzi
   class Cli::Project::Compose < Thor
@@ -29,7 +28,7 @@ module Uffizzi
     private
 
     def run(command)
-      Uffizzi::AuthHelper.check_login(options)
+      Uffizzi::AuthHelper.check_login(options[:project])
 
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       file_path = options[:file]

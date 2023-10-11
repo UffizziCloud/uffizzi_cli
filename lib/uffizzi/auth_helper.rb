@@ -16,11 +16,9 @@ module Uffizzi
         Uffizzi::Token.delete if Uffizzi::Token.exists?
       end
 
-      def check_login(options = nil)
+      def check_login(project_option)
         raise Uffizzi::Error.new('You are not logged in. Run `uffizzi login`.') unless signed_in?
-        return unless options
-
-        raise Uffizzi::Error.new('This command needs project to be set in config file') unless CommandService.project_set?(options)
+        raise Uffizzi::Error.new('This command needs project to be set in config file') unless project_set?(project_option)
       end
 
       private
@@ -33,6 +31,10 @@ module Uffizzi
 
       def authorized?
         ConfigFile.option_has_value?(:cookie) || Uffizzi::Token.exists?
+      end
+
+      def project_set?(project_option)
+        !project_option.nil? || (Uffizzi::ConfigFile.exists? && Uffizzi::ConfigFile.option_has_value?(:project))
       end
     end
   end

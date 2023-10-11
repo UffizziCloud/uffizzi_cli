@@ -4,7 +4,6 @@ require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/response_helper'
 require 'uffizzi/services/preview_service'
-require 'uffizzi/services/command_service'
 
 module Uffizzi
   class Cli::Preview::Service < Thor
@@ -12,7 +11,7 @@ module Uffizzi
 
     desc 'logs [LOGS_TYPE] [DEPLOYMENT_ID] [CONTAINER_NAME]', 'Show the logs for a container service of a preview'
     def logs(logs_type, deployment_name, container_name = args)
-      Uffizzi::AuthHelper.check_login(options)
+      Uffizzi::AuthHelper.check_login(options[:project])
 
       deployment_id = PreviewService.read_deployment_id(deployment_name)
       response = service_logs_response(logs_type, deployment_id, container_name)
@@ -27,7 +26,7 @@ module Uffizzi
 
     desc 'list [DEPLOYMENT_ID]', 'List the container services of a given compose environment (preview)'
     def list(deployment_name)
-      Uffizzi::AuthHelper.check_login(options)
+      Uffizzi::AuthHelper.check_login(options[:project])
 
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       server = ConfigFile.read_option(:server)

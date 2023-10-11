@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/dev_service'
 require 'uffizzi/services/kubeconfig_service'
@@ -15,7 +14,7 @@ module Uffizzi
     method_option :'default-repo', type: :string
     method_option :kubeconfig, type: :string
     def start(config_path = 'skaffold.yaml')
-      Uffizzi::AuthHelper.check_login(options)
+      Uffizzi::AuthHelper.check_login(options[:project])
       DevService.check_skaffold_existence
       DevService.check_running_daemon if options[:quiet]
       DevService.check_skaffold_config_existence(config_path)

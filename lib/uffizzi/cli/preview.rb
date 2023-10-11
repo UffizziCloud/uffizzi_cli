@@ -3,7 +3,6 @@
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/services/preview_service'
-require 'uffizzi/services/command_service'
 require 'uffizzi/services/github_service'
 
 module Uffizzi
@@ -55,7 +54,7 @@ module Uffizzi
 
     def run(command, file_path: nil, deployment_name: nil)
       Uffizzi.ui.output_format = options[:output]
-      Uffizzi::AuthHelper.check_login(options)
+      Uffizzi::AuthHelper.check_login(options[:project])
 
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
 

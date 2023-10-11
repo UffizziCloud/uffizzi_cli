@@ -6,7 +6,6 @@ require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/helpers/config_helper'
 require 'uffizzi/services/preview_service'
-require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/kubeconfig_service'
 require 'uffizzi/services/cluster/disconnect_service'
@@ -65,7 +64,7 @@ module Uffizzi
 
     def run(command, command_args = {})
       Uffizzi.ui.output_format = options[:output]
-      Uffizzi::AuthHelper.check_login(options)
+      Uffizzi::AuthHelper.check_login(options[:project])
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
 
       case command

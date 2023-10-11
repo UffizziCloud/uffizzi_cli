@@ -25,7 +25,7 @@ module Uffizzi
     private
 
     def run(command, account_name = nil)
-      Uffizzi::AuthHelper.check_login
+      Uffizzi::AuthHelper.check_login(options[:project])
 
       case command
       when 'list'
