@@ -31,10 +31,11 @@ uffizzi-dev-start - start a development environment
         Currently supports skaffold.yaml files.
 
 ## FLAGS
-     --build="<local-or-remote>"
-        This option specifies whether to build images on the
-        local environment or on the remote Uffizzi cluster.
-        Possible values are "local" or "remote".
+     --k8s-version=<api-version>
+        Specify which version of the Kubernetes API to use when creating 
+        the cluster, formatted as [MAJOR].[MINOR]. Defaults to 1.27. 
+        Minor versions point to the latest release of the corresponding k3s 
+        minor version. See https://github.com/k3s-io/k3s/releases
 
      --default-repo="<container-registry-domain>"
         A public or private repo used to push/pull build
