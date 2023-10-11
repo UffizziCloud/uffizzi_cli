@@ -10,7 +10,6 @@ require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/kubeconfig_service'
 require 'uffizzi/services/cluster/disconnect_service'
-require 'byebug'
 
 module Uffizzi
   class Cli::Cluster < Thor
