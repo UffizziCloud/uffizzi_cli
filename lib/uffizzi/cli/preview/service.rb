@@ -12,8 +12,7 @@ module Uffizzi
 
     desc 'logs [LOGS_TYPE] [DEPLOYMENT_ID] [CONTAINER_NAME]', 'Show the logs for a container service of a preview'
     def logs(logs_type, deployment_name, container_name = args)
-      return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      return Uffizzi.ui.say('This command needs project to be set in config file') unless CommandService.project_set?(options)
+      Uffizzi::AuthHelper.check_login(options)
 
       deployment_id = PreviewService.read_deployment_id(deployment_name)
       response = service_logs_response(logs_type, deployment_id, container_name)
@@ -28,8 +27,7 @@ module Uffizzi
 
     desc 'list [DEPLOYMENT_ID]', 'List the container services of a given compose environment (preview)'
     def list(deployment_name)
-      return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      return Uffizzi.ui.say('This command needs project to be set in config file') unless CommandService.project_set?(options)
+      Uffizzi::AuthHelper.check_login(options)
 
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       server = ConfigFile.read_option(:server)

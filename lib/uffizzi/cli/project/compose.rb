@@ -29,8 +29,7 @@ module Uffizzi
     private
 
     def run(command)
-      return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      return Uffizzi.ui.say('This command needs project to be set in config file') unless CommandService.project_set?(options)
+      Uffizzi::AuthHelper.check_login(options)
 
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
       file_path = options[:file]

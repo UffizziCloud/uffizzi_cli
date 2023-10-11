@@ -10,6 +10,7 @@ require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/kubeconfig_service'
 require 'uffizzi/services/cluster/disconnect_service'
+require 'byebug'
 
 module Uffizzi
   class Cli::Cluster < Thor
@@ -65,9 +66,7 @@ module Uffizzi
 
     def run(command, command_args = {})
       Uffizzi.ui.output_format = options[:output]
-      raise Uffizzi::Error.new('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      raise Uffizzi::Error.new('This command needs project to be set in config file') unless CommandService.project_set?(options)
-
+      Uffizzi::AuthHelper.check_login(options)
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
 
       case command
@@ -335,7 +334,6 @@ module Uffizzi
     end
 
     def save_kubeconfig(kubeconfig, kubeconfig_path)
-      kubeconfig_path = kubeconfig_path.nil? ? KubeconfigService.default_path : kubeconfig_path
       is_update_current_context = options[:'update-current-context']
 
       KubeconfigService.save_to_filepath(kubeconfig_path, kubeconfig) do |kubeconfig_by_path|
@@ -354,6 +352,8 @@ module Uffizzi
           merged_kubeconfig
         end
       end
+
+      Uffizzi.ui.say("Kubeconfig was updated by the path: #{kubeconfig_path}") if is_update_current_context
     end
 
     def update_clusters_config(id, params)

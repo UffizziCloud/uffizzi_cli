@@ -25,7 +25,7 @@ module Uffizzi
     private
 
     def run(command, account_name = nil)
-      return Uffizzi.ui.say('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
+      Uffizzi::AuthHelper.check_login
 
       case command
       when 'list'
