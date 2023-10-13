@@ -128,9 +128,5 @@ class ClusterService
         url: cluster_data[:host],
       }
     end
-
-    def stringify_render_data(data)
-      data.map { |k, v| "- #{k.to_s.upcase}: #{v}" }.join("\n").strip
-    end
   end
 end

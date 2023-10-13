@@ -55,9 +55,7 @@ module Uffizzi
       check_login
       dev_environment = get_dev_environment(name)
 
-      if dev_environment.nil? && name.present?
-        return Uffizzi.ui.say("No running dev environment by name: #{name}")
-      elsif dev_environment.nil?
+      if dev_environment.nil?
         return Uffizzi.ui.say('No running dev environments')
       end
 
@@ -65,9 +63,9 @@ module Uffizzi
       cluster_data = ClusterService.fetch_cluster_data(cluster_name, **cluster_api_connection_params)
       cluster_render_data = ClusterService.build_render_data(cluster_data)
       dev_environment_render_data = cluster_render_data.merge(config_path: dev_environment[:config_path])
-      rendered_data = dev_environment_render_data.map { |k, v| "- #{k.to_s.upcase}: #{v}" }.join("\n").strip
 
-      Uffizzi.ui.say(rendered_data)
+      Uffizzi.ui.output_format = Uffizzi::UI::Shell::PRETTY_LIST
+      Uffizzi.ui.say(dev_environment_render_data)
     end
 
     private
