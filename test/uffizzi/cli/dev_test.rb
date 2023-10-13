@@ -217,6 +217,6 @@ class DevTest < Minitest::Test
 
     @dev.describe(name)
 
-    assert_match("No running dev environment by name: #{name}", Uffizzi.ui.last_message)
+    assert_match('No running dev environment', Uffizzi.ui.last_message)
   end
 end

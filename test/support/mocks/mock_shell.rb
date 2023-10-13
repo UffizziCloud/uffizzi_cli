@@ -21,10 +21,6 @@ class MockShell
 
   attr_accessor :messages, :output_format, :stdout_pipe
 
-  PRETTY_JSON = 'pretty-json'
-  REGULAR_JSON = 'json'
-  GITHUB_ACTION = 'github-action'
-
   def initialize
     @messages = []
     @command_responses = []
@@ -112,12 +108,25 @@ class MockShell
     end
   end
 
+  def format_to_pretty_list(data)
+    case data
+    when Array
+      data.map { |v| format_to_pretty_list(v) }.join("\n\n")
+    when Hash
+      data.map { |k, v| "- #{k.to_s.upcase}: #{v}" }.join("\n").strip
+    else
+      data
+    end
+  end
+
   def format_message(message)
     case output_format
-    when PRETTY_JSON
+    when Uffizzi::UI::Shell::PRETTY_JSON
       format_to_pretty_json(message)
-    when REGULAR_JSON
+    when Uffizzi::UI::Shell::REGULAR_JSON
       format_to_json(message)
+    when Uffizzi::UI::Shell::PRETTY_LIST
+      format_to_pretty_list(message)
     else
       message
     end

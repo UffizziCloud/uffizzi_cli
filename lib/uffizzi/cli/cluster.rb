@@ -158,11 +158,8 @@ module Uffizzi
       cluster_data = ClusterService.fetch_cluster_data(command_args[:cluster_name], **cluster_api_connection_params)
       render_data = ClusterService.build_render_data(cluster_data)
 
-      if Uffizzi.ui.output_format.nil?
-        Uffizzi.ui.say(ClusterService.stringify_render_data(render_data))
-      else
-        Uffizzi.ui.say(render_data)
-      end
+      Uffizzi.ui.output_format = Uffizzi::UI::Shell::PRETTY_LIST
+      Uffizzi.ui.say(render_data)
     end
 
     def handle_delete_command(command_args)
