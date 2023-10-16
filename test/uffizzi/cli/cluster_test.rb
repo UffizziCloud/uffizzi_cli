@@ -11,7 +11,7 @@ class ClusterTest < Minitest::Test
     Uffizzi.stubs(:prompt).returns(@mock_prompt)
 
     sign_in
-    Uffizzi::ConfigFile.write_option(:project, 'dbp')
+    Uffizzi::ConfigFile.write_option(:project, 'uffizzi')
     @project_slug = Uffizzi::ConfigFile.read_option(:project)
     ENV['GITHUB_OUTPUT'] = '/tmp/.env'
     ENV['GITHUB_ACTIONS'] = 'true'

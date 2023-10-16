@@ -3,7 +3,6 @@
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/services/preview_service'
-require 'uffizzi/services/command_service'
 require 'uffizzi/services/github_service'
 
 module Uffizzi
@@ -55,8 +54,7 @@ module Uffizzi
 
     def run(command, file_path: nil, deployment_name: nil)
       Uffizzi.ui.output_format = options[:output]
-      raise Uffizzi::Error.new('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      raise Uffizzi::Error.new('This command needs project to be set in config file') unless CommandService.project_set?(options)
+      Uffizzi::AuthHelper.check_login(options[:project])
 
       project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
 

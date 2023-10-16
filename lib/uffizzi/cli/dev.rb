@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/dev_service'
 require 'uffizzi/services/kubeconfig_service'
+require 'uffizzi/auth_helper'
 
 module Uffizzi
   class Cli::Dev < Thor
@@ -14,10 +14,10 @@ module Uffizzi
     method_option :'default-repo', type: :string
     method_option :kubeconfig, type: :string
     def start(config_path = 'skaffold.yaml')
+      Uffizzi::AuthHelper.check_login(options[:project])
       DevService.check_skaffold_existence
       DevService.check_running_daemon if options[:quiet]
       DevService.check_skaffold_config_existence(config_path)
-      check_login
       cluster_id, cluster_name = start_create_cluster
       kubeconfig = wait_cluster_creation(cluster_name)
 
@@ -48,11 +48,6 @@ module Uffizzi
     end
 
     private
-
-    def check_login
-      raise Uffizzi::Error.new('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      raise Uffizzi::Error.new('This command needs project to be set in config file') unless CommandService.project_set?(options)
-    end
 
     def start_create_cluster
       cluster_name = ClusterService.generate_name

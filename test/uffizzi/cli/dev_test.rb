@@ -11,7 +11,7 @@ class DevTest < Minitest::Test
     Uffizzi.stubs(:prompt).returns(@mock_prompt)
 
     sign_in
-    Uffizzi::ConfigFile.write_option(:project, 'dbp')
+    Uffizzi::ConfigFile.write_option(:project, 'uffizzi')
     @project_slug = Uffizzi::ConfigFile.read_option(:project)
     tmp_dir_name = (Time.now.utc.to_f * 100_000).to_i
     @kubeconfig_path = "/tmp/test/#{tmp_dir_name}/test-kubeconfig.yaml"
