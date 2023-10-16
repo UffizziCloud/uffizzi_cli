@@ -8,16 +8,37 @@ class DevService
 
     DEFAULT_REGISTRY_REPO = 'registry.uffizzi.com'
 
-    def check_running_daemon
-      return unless File.exist?(pid_path)
+    def check_no_running_process
+      if process_running?
+        delete_pid
+        Uffizzi.ui.say_error_and_exit("You have already started uffizzi dev. To stop the process do 'uffizzi dev stop'")
+      end
+    end
 
-      pid = File.read(pid_path)
-      File.delete(pid_path) if pid.blank?
-      Uffizzi.process.kill(0, pid.to_i)
+    def check_running_process
+      unless process_running?
+        delete_pid
+        Uffizzi.ui.say_error_and_exit('Uffizzi dev is not running')
+      end
+    end
 
-      Uffizzi.ui.say_error_and_exit("You have already started uffizzi dev as daemon. To stop the process do 'uffizzi dev stop'")
+    def stop_process
+      pid = running_pid
+
+      Uffizzi.process.kill('QUIT', pid)
+      delete_pid
     rescue Errno::ESRCH
-      File.delete(pid_path)
+      delete_pid
+    end
+
+    def process_running?
+      pid = running_pid
+      return false unless pid.positive?
+
+      Uffizzi.process.kill(0, pid.to_i)
+      true
+    rescue Errno::ESRCH
+      false
     end
 
     def start_check_pid_file_existence
@@ -103,6 +124,30 @@ class DevService
       path = kubeconfig_path || KubeconfigService.default_path
 
       File.expand_path(path)
+    end
+
+    def running_pid
+      return nil.to_i unless File.exist?(pid_path)
+
+      File.read(pid_path).to_i
+    end
+
+    def delete_pid
+      File.delete(pid_path) if File.exist?(pid_path)
+    end
+
+    def set_dev_environment_config(cluster_name, config_path, options)
+      params = options.merge(config_path: File.expand_path(config_path))
+      new_dev_environment = Uffizzi::ConfigHelper.set_dev_environment(cluster_name, params)
+      Uffizzi::ConfigFile.write_option(:dev_environment, new_dev_environment)
+    end
+
+    def clear_dev_environment_config
+      Uffizzi::ConfigFile.write_option(:dev_environment, {})
+    end
+
+    def dev_environment
+      Uffizzi::ConfigHelper.dev_environment
     end
   end
 end
