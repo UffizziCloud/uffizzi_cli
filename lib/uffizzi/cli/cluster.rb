@@ -76,7 +76,6 @@ module Uffizzi
     def run(command, command_args = {})
       Uffizzi.ui.output_format = options[:output]
       Uffizzi::AuthHelper.check_login(options[:project])
-      project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
 
       case command
       when 'list'
@@ -124,16 +123,13 @@ module Uffizzi
       end
 
       cluster_name = command_args[:name] || options[:name] || ClusterService.generate_name
-      creation_source = options[:"creation-source"] || ClusterService::MANUAL_CREATION_SOURCE
-      k8s_version = options[:"k8s-version"]
       Uffizzi.ui.say_error_and_exit("Cluster name: #{cluster_name} is not valid.") unless ClusterService.valid_name?(cluster_name)
 
       unless ClusterService.valid_name?(cluster_name)
         Uffizzi.ui.say_error_and_exit("Cluster name: #{cluster_name} is not valid.")
       end
 
-      manifest_file_path = options[:manifest]
-      params = cluster_creation_params(cluster_name, creation_source, manifest_file_path)
+      params = cluster_creation_params(cluster_name)
       response = create_cluster(server, project_slug, params)
 
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
@@ -211,7 +207,8 @@ module Uffizzi
 
     def handle_update_kubeconfig_command(command_args)
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
-      cluster_data = ClusterService.fetch_cluster_data(command_args[:cluster_name], **cluster_api_connection_params)
+      cluster_name = command_args[:cluster_name]
+      cluster_data = ClusterService.fetch_cluster_data(cluster_name, **cluster_api_connection_params)
 
       unless cluster_data[:kubeconfig].present?
         say_error_update_kubeconfig(cluster_data)
@@ -289,11 +286,15 @@ module Uffizzi
       end
     end
 
-    def cluster_creation_params(name:, creation_source:, manifest_file_path:, k8s_version:)
+    def cluster_creation_params(cluster_name)
+      creation_source = options[:"creation-source"] || ClusterService::MANUAL_CREATION_SOURCE
+      manifest_file_path = options[:manifest]
+      k8s_version = options[:"k8s-version"]
       manifest_content = load_manifest_file(manifest_file_path)
+
       {
         cluster: {
-          name: name,
+          name: cluster_name,
           manifest: manifest_content,
           creation_source: creation_source,
           k8s_version: k8s_version,
@@ -438,7 +439,7 @@ module Uffizzi
     end
 
     def project_slug
-      @project_slug ||= ConfigFile.read_option(:project)
+      @project_slug ||= options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
     end
 
     def server

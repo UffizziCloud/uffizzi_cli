@@ -16,7 +16,7 @@ module Uffizzi
         Uffizzi::Token.delete if Uffizzi::Token.exists?
       end
 
-      def check_login(project_option)
+      def check_login(project_option = nil)
         raise Uffizzi::Error.new('You are not logged in. Run `uffizzi login`.') unless signed_in?
         raise Uffizzi::Error.new('This command needs project to be set in config file') unless project_set?(project_option)
       end
