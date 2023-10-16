@@ -8,7 +8,7 @@ class MockProcess
   end
 
   def kill(sig, pid)
-    return @pid if sig.zero? && pid == @pid
+    return @pid if (sig == 'QUIT' || sig.zero?) && pid == @pid
     raise Errno::ESRCH if pid != @pid
 
     @pid = nil

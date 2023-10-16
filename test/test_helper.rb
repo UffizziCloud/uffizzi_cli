@@ -34,6 +34,7 @@ FactoryBot.find_definitions
 
 class Minitest::Test
   TEST_CONFIG_PATH = 'tmp/config_default.json'
+  TEST_CONFIG_DIR = 'tmp/config_default.json'
   TEST_TOKEN_PATH = 'tmp/token_default.json'
   TEST_PID_PATH = 'tmp/dev.pid'
   TEST_DEV_LOGS_PATH = 'tmp/dev-logs.txt'
