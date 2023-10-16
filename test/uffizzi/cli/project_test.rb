@@ -5,6 +5,7 @@ require 'test_helper'
 class ProjectsTest < Minitest::Test
   def setup
     @project = Uffizzi::Cli::Project.new
+    Uffizzi::ConfigFile.write_option(:project, 'uffizzi')
 
     sign_in
   end

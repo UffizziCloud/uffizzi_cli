@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'uffizzi/services/command_service'
 require 'uffizzi/services/cluster_service'
 require 'uffizzi/services/dev_service'
 require 'uffizzi/services/kubeconfig_service'
+require 'uffizzi/auth_helper'
 
 module Uffizzi
   class Cli::Dev < Thor
@@ -13,11 +13,12 @@ module Uffizzi
     method_option :quiet, type: :boolean, aliases: :q
     method_option :'default-repo', type: :string
     method_option :kubeconfig, type: :string
+    method_option :'k8s-version', required: false, type: :string
     def start(config_path = 'skaffold.yaml')
+      Uffizzi::AuthHelper.check_login(options[:project])
       DevService.check_skaffold_existence
       DevService.check_running_daemon if options[:quiet]
       DevService.check_skaffold_config_existence(config_path)
-      check_login
       cluster_id, cluster_name = start_create_cluster
       kubeconfig = wait_cluster_creation(cluster_name)
 
@@ -49,15 +50,12 @@ module Uffizzi
 
     private
 
-    def check_login
-      raise Uffizzi::Error.new('You are not logged in.') unless Uffizzi::AuthHelper.signed_in?
-      raise Uffizzi::Error.new('This command needs project to be set in config file') unless CommandService.project_set?(options)
-    end
-
     def start_create_cluster
-      cluster_name = ClusterService.generate_name
-      creation_source = ClusterService::MANUAL_CREATION_SOURCE
-      params = cluster_creation_params(cluster_name, creation_source)
+      params = cluster_creation_params(
+        name: ClusterService.generate_name,
+        creation_source: ClusterService::MANUAL_CREATION_SOURCE,
+        k8s_version: options[:"k8s-version"],
+      )
       Uffizzi.ui.say('Start creating a cluster')
       response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
@@ -110,7 +108,7 @@ module Uffizzi
       ConfigFile.write_option(:clusters, clusters_config)
     end
 
-    def cluster_creation_params(name, creation_source)
+    def cluster_creation_params(name:, creation_source:, k8s_version:)
       oidc_token = Uffizzi::ConfigFile.read_option(:oidc_token)
 
       {
@@ -118,6 +116,7 @@ module Uffizzi
           name: name,
           manifest: nil,
           creation_source: creation_source,
+          k8s_version: k8s_version,
         },
         token: oidc_token,
       }

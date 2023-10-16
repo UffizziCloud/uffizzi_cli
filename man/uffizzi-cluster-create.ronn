@@ -1,3 +1,4 @@
+uffizzi cluster create -h
 uffizzi-cluster-create - create a cluster
 ================================================================
 
@@ -12,9 +13,17 @@ uffizzi-cluster-create - create a cluster
     https://docs.uffizzi.com/references/cli/
 
 ## FLAGS
+
     --name
         Option is deprecated and will be removed in the newer versions.
-        Please use a positional argument instead: uffizzi cluster create my-awesome-name.
+        Please use a positional argument instead: uffizzi cluster create 
+        my-awesome-name.
+
+    --k8s-version=<api-version>
+        Specify which version of the Kubernetes API to use when creating 
+        the cluster, formatted as [MAJOR].[MINOR]. Defaults to 1.27. 
+        Minor versions point to the latest release of the corresponding k3s 
+        minor version. See https://github.com/k3s-io/k3s/releases
 
     --kubeconfig="/path/to/your/kubeconfig"
         Path to kubeconfig file
