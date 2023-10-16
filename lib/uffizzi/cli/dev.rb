@@ -15,7 +15,7 @@ module Uffizzi
     method_option :kubeconfig, type: :string
     method_option :'k8s-version', required: false, type: :string
     def start(config_path = 'skaffold.yaml')
-      Uffizzi::AuthHelper.check_login(options[:project])
+      Uffizzi::AuthHelper.check_login
       DevService.check_skaffold_existence
       DevService.check_running_daemon if options[:quiet]
       DevService.check_skaffold_config_existence(config_path)
@@ -52,7 +52,7 @@ module Uffizzi
 
     desc 'describe [NAME]', 'Describe dev environment'
     def describe(name = nil)
-      check_login
+      Uffizzi::AuthHelper.check_login
       dev_environment = get_dev_environment(name)
 
       if dev_environment.nil?
@@ -71,11 +71,7 @@ module Uffizzi
     private
 
     def start_create_cluster
-      params = cluster_creation_params(
-        name: ClusterService.generate_name,
-        creation_source: ClusterService::MANUAL_CREATION_SOURCE,
-        k8s_version: options[:"k8s-version"],
-      )
+      params = cluster_creation_params
       Uffizzi.ui.say('Start creating a cluster')
       response = create_cluster(server, project_slug, params)
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
@@ -129,13 +125,13 @@ module Uffizzi
       ConfigFile.write_option(:clusters, clusters_config)
     end
 
-    def cluster_creation_params(name, creation_source)
+    def cluster_creation_params
       {
         cluster: {
-          name: name,
+          name: ClusterService.generate_name,
           manifest: nil,
-          creation_source: creation_source,
-          k8s_version: k8s_version,
+          creation_source: ClusterService::MANUAL_CREATION_SOURCE,
+          k8s_version: options[:"k8s-version"],
         },
         token: oidc_token,
       }
