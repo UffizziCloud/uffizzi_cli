@@ -25,7 +25,7 @@ module Uffizzi
     private
 
     def run(command, account_name = nil)
-      Uffizzi::AuthHelper.check_login(options[:project])
+      raise Uffizzi::Error.new('You are not logged in. Run `uffizzi login`.') unless Uffizzi::AuthHelper.signed_in?
 
       case command
       when 'list'
