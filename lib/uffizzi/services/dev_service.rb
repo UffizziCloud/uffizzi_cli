@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'byebug'
 require 'uffizzi/clients/api/api_client'
 
 class DevService
@@ -23,9 +24,11 @@ class DevService
     end
 
     def stop_process
-      pid = running_pid
+      dev_pid = running_pid
+      skaffold_pid = running_skaffold_pid
 
-      Uffizzi.process.kill('QUIT', pid)
+      Uffizzi.process.kill('INT', skaffold_pid)
+      Uffizzi.process.kill('INT', dev_pid)
       delete_pid
     rescue Errno::ESRCH
       delete_pid
@@ -55,6 +58,19 @@ class DevService
       cmd = build_skaffold_dev_command(config_path, options)
 
       Uffizzi.ui.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
+        pid = wait_thr.pid
+        regex = /\w*\s+\d+\s+#{pid}.*\sskaffold dev/
+        regex2 = /\w*\s+(\d+)\s+#{pid}.*\sskaffold dev/
+
+        ps_pipe = IO.popen('ps -ef')
+        # ps = ps_pipe.readlines.map { |l| l }
+        ps = ps_pipe.readlines.detect { |l| l.match?(regex) }
+        skaffold_pid = ps.match(regex2)[1]
+        byebug
+
+        # skaffold_pid = ps.select { |e| e.match?(%r(#{regex})) }.map { |e| e.lstrip.split(/\s+/) }.detect { |e| e[2].to_i == pid }[1].to_i
+
+        save_skaffold_pid(skaffold_pid)
         stdout_and_stderr.each { |l| Uffizzi.ui.say(l) }
         wait_thr.value
       end
@@ -101,6 +117,10 @@ class DevService
       File.join(Uffizzi::ConfigFile::CONFIG_DIR, 'uffizzi_dev.pid')
     end
 
+    def skaffold_pid_path
+      File.join(Uffizzi::ConfigFile::CONFIG_DIR, 'skaffold_dev.pid')
+    end
+
     def logs_path
       File.join(Uffizzi::ConfigFile::CONFIG_DIR, 'uffizzi_dev.log')
     end
@@ -132,8 +152,23 @@ class DevService
       File.read(pid_path).to_i
     end
 
+    def save_pid
+      File.write(pid_path, Uffizzi.process.pid)
+    end
+
     def delete_pid
       File.delete(pid_path) if File.exist?(pid_path)
+      File.delete(skaffold_pid_path) if File.exist?(skaffold_pid_path)
+    end
+
+    def running_skaffold_pid
+      return nil.to_i unless File.exist?(skaffold_pid_path)
+
+      File.read(skaffold_pid_path).to_i
+    end
+
+    def save_skaffold_pid(pid)
+      File.write(skaffold_pid_path, pid)
     end
 
     def set_dev_environment_config(cluster_name, config_path, options)
@@ -148,6 +183,10 @@ class DevService
 
     def dev_environment
       Uffizzi::ConfigHelper.dev_environment
+    end
+
+    def processes
+
     end
   end
 end

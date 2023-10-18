@@ -219,10 +219,10 @@ module Uffizzi
       Uffizzi.process.daemon(true)
 
       at_exit do
-        File.delete(DevService.pid_path) if File.exist?(DevService.pid_path)
+        DevService.delete_pid
       end
 
-      File.write(DevService.pid_path, Uffizzi.process.pid)
+      DevService.save_pid
       File.delete(DevService.logs_path) if File.exist?(DevService.logs_path)
       DevService.start_check_pid_file_existence
       DevService.start_demonised_skaffold(config_path, options)
@@ -232,10 +232,10 @@ module Uffizzi
 
     def launch_basic_skaffold(config_path)
       at_exit do
-        File.delete(DevService.pid_path) if File.exist?(DevService.pid_path)
+        DevService.delete_pid
       end
 
-      File.write(DevService.pid_path, Uffizzi.process.pid)
+      DevService.save_pid
       DevService.start_check_pid_file_existence
       DevService.start_basic_skaffold(config_path, options)
     end
