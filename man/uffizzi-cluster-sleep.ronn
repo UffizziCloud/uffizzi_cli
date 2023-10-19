@@ -1,0 +1,30 @@
+$ uffizzi cluster sleep -h
+uffizzi-cluster-sleep - put a cluster to sleep (non-destructive)
+================================================================
+
+## SYNOPSIS
+    uffizzi cluster sleep [CLUSTER_NAME]
+
+## DESCRIPTION
+    Scales a Uffizzi cluster down to zero resource utilization 
+    while keeping the namespace and any stateful resources,
+    like persistent volume claims. If no CLUSTER_NAME is 
+    specified, the kubeconfig current context is used.
+
+    For more information on Uffizzi clusters, see:
+    https://docs.uffizzi.com/references/cli/
+
+## OPTIONS
+    CLUSTER_NAME
+    The name of the target Uffizzi cluster
+
+## EXAMPLES
+    To put the Uffizzi cluster in the current context to 
+    sleep, run:
+
+        $ uffizzi cluster sleep
+
+    To put a Uffizzi cluster outside the current context to 
+    sleep, run:
+
+        $ uffizzi cluster sleep my-cluster

@@ -2,7 +2,7 @@
 
 module Uffizzi
   module ConfigHelper
-    CLUSTER_PARAMS = [:kubeconfig_path].freeze
+    CLUSTER_PARAMS = [:kubeconfig_path, :name].freeze
 
     class ConfigParamsError < StandardError
       def initialize(unavailable_params, key)
