@@ -1,0 +1,28 @@
+$ uffizzi cluster wake -h
+uffizzi-cluster-wake - wake a cluster that is sleeping
+================================================================
+
+## SYNOPSIS
+    uffizzi cluster wake [CLUSTER_NAME]
+
+## DESCRIPTION
+    Scales up a Uffizzi cluster to its original resource 
+    utilization from zero (see 'uffizzi cluster sleep -h'). 
+    If no CLUSTER_NAME is specified, the kubeconfig current 
+    context is used.
+
+    For more information on Uffizzi clusters, see:
+    https://docs.uffizzi.com/references/cli/
+
+## OPTIONS
+    CLUSTER_NAME
+    The name of the target Uffizzi cluster
+
+## EXAMPLES
+    To wake the Uffizzi cluster in the current context, run:
+
+        $ uffizzi cluster wake
+
+    To wake a Uffizzi cluster outside the current context, run:
+
+        $ uffizzi cluster wake my-cluster

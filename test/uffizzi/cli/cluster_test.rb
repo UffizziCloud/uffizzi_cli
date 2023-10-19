@@ -469,4 +469,78 @@ class ClusterTest < Minitest::Test
     assert_equal(2, kubeconfig_after_disconnect['contexts'].count)
     assert_equal(prev_current_context, kubeconfig_after_disconnect['current-context'])
   end
+
+  def test_scale_down_cluster
+    cluster_scale_down_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    cluster_name = 'my-cluster'
+    stubbed_uffizzi_cluster_scale_down_request = stub_uffizzi_scale_down_cluster(
+      cluster_scale_down_body,
+      @project_slug,
+      cluster_name: cluster_name,
+    )
+
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_scaled_down.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
+    @cluster.sleep(cluster_name)
+
+    assert_requested(stubbed_uffizzi_cluster_scale_down_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_scale_down_cluster_from_context
+    cluster_scale_down_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    cluster_name = 'my-cluster'
+    Uffizzi::ConfigFile.write_option(:current_cluster, { id: 1, name: cluster_name })
+
+    stubbed_uffizzi_cluster_scale_down_request = stub_uffizzi_scale_down_cluster(
+      cluster_scale_down_body,
+      @project_slug,
+      cluster_name: cluster_name,
+    )
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_scaled_down.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
+    @cluster.sleep
+
+    assert_requested(stubbed_uffizzi_cluster_scale_down_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_scale_up_cluster
+    cluster_scale_up_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    cluster_name = 'my-cluster'
+
+    stubbed_uffizzi_cluster_scale_up_request = stub_uffizzi_scale_up_cluster(
+      cluster_scale_up_body,
+      @project_slug,
+      cluster_name: cluster_name,
+    )
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
+    @cluster.wake(cluster_name)
+
+    assert_requested(stubbed_uffizzi_cluster_scale_up_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
+
+  def test_scale_up_cluster_from_context
+    cluster_scale_up_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    cluster_name = 'my-cluster'
+    Uffizzi::ConfigFile.write_option(:current_cluster, { id: 1, name: cluster_name })
+
+    stubbed_uffizzi_cluster_scale_up_request = stub_uffizzi_scale_up_cluster(
+      cluster_scale_up_body,
+      @project_slug,
+      cluster_name: cluster_name,
+    )
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+
+    @cluster.wake
+
+    assert_requested(stubbed_uffizzi_cluster_scale_up_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
+  end
 end

@@ -81,11 +81,12 @@ module Uffizzi
     def handle_succeed_cluster_creation(cluster_data)
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
       parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
+      cluster_name = cluster_data[:name]
 
-      Uffizzi.ui.say("Cluster with name: #{cluster_data[:name]} was created.")
+      Uffizzi.ui.say("Cluster with name: #{cluster_name} was created.")
 
       save_kubeconfig(parsed_kubeconfig, kubeconfig_path)
-      update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
+      update_clusters_config(cluster_data[:id], name: cluster_name, kubeconfig_path: kubeconfig_path)
     end
 
     def save_kubeconfig(kubeconfig, kubeconfig_path)

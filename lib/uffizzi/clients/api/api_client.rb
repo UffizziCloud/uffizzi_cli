@@ -262,6 +262,20 @@ module ApiClient
     build_response(response)
   end
 
+  def scale_down_cluster(server, project_slug, cluster_name)
+    uri = scale_down_cluster_uri(server, project_slug, cluster_name)
+    response = http_client.make_put_request(uri)
+
+    build_response(response)
+  end
+
+  def scale_up_cluster(server, project_slug, cluster_name)
+    uri = scale_up_cluster_uri(server, project_slug, cluster_name)
+    response = http_client.make_put_request(uri)
+
+    build_response(response)
+  end
+
   def create_access_token(server, session_id)
     uri = access_tokens_url(server)
 

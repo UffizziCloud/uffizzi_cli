@@ -22,7 +22,7 @@ module Uffizzi
       run('list')
     end
 
-    desc 'create [NAME]', 'Create a cluster'
+    desc 'create [CLUSTER_NAME]', 'Create a cluster'
     method_option :name, type: :string, required: false, aliases: '-n'
     method_option :kubeconfig, type: :string, required: false, aliases: '-k'
     method_option :manifest, type: :string, required: false, aliases: '-m'
@@ -34,13 +34,13 @@ module Uffizzi
       run('create', { name: name })
     end
 
-    desc 'describe [NAME]', 'Describe a cluster'
+    desc 'describe [CLUSTER_NAME]', 'Describe a cluster'
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     def describe(name)
       run('describe', cluster_name: name)
     end
 
-    desc 'delete [NAME]', 'Delete a cluster'
+    desc 'delete [CLUSTER_NAME]', 'Delete a cluster'
     method_option :'delete-config', required: false, type: :boolean, default: true
     def delete(name)
       run('delete', cluster_name: name)
@@ -59,6 +59,16 @@ module Uffizzi
     desc 'disconnect', 'Switch back to original kubeconfig current context'
     def disconnect
       run('disconnect')
+    end
+
+    desc 'sleep [CLUSTER_NAME]', 'Scales a Uffizzi cluster down to zero resource utilization'
+    def sleep(name = nil)
+      run('sleep', cluster_name: name)
+    end
+
+    desc 'wake [CLUSTER_NAME]', 'Scales up a Uffizzi cluster to its original resource'
+    def wake(name = nil)
+      run('wake', cluster_name: name)
     end
 
     private
@@ -81,6 +91,10 @@ module Uffizzi
         handle_update_kubeconfig_command(project_slug, command_args)
       when 'disconnect'
         ClusterDisconnectService.handle(options)
+      when 'sleep'
+        handle_sleep_command(project_slug, command_args)
+      when 'wake'
+        handle_wake_command(project_slug, command_args)
       end
     end
 
@@ -131,7 +145,7 @@ module Uffizzi
 
       if ClusterService.failed?(cluster_data[:state])
         spinner.error
-        Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")
+        Uffizzi.ui.say_error_and_exit("Cluster #{cluster_name} failed to be created.")
       end
 
       spinner.success
@@ -196,7 +210,8 @@ module Uffizzi
 
     def handle_update_kubeconfig_command(project_slug, command_args)
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
-      cluster_data = fetch_cluster_data(project_slug, command_args[:cluster_name])
+      cluster_name = command_args[:cluster_name]
+      cluster_data = fetch_cluster_data(project_slug, cluster_name)
 
       unless cluster_data[:kubeconfig].present?
         say_error_update_kubeconfig(cluster_data)
@@ -218,11 +233,46 @@ module Uffizzi
         new_kubeconfig
       end
 
-      update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
+      update_clusters_config(cluster_data[:id], name: cluster_name, kubeconfig_path: kubeconfig_path)
 
       return if options[:quiet]
 
       Uffizzi.ui.say("Kubeconfig was updated by the path: #{kubeconfig_path}")
+    end
+
+    def handle_sleep_command(project_slug, command_args)
+      cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster)&.fetch(:name)
+      return handle_missing_cluster_name_error if cluster_name.nil?
+
+      response = scale_down_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
+
+      spinner = TTY::Spinner.new("[:spinner] Scaling down cluster #{cluster_name}...", format: :dots)
+      spinner.auto_spin
+      ClusterService.wait_cluster_scale_down(project_slug, cluster_name)
+
+      spinner.success
+      Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled down")
+    end
+
+    def handle_wake_command(project_slug, command_args)
+      cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster)&.fetch(:name)
+      return handle_missing_cluster_name_error if cluster_name.nil?
+
+      response = scale_up_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
+      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
+
+      spinner = TTY::Spinner.new("[:spinner] Waking up cluster #{cluster_name}...", format: :dots)
+      spinner.auto_spin
+      cluster_data = ClusterService.wait_cluster_scale_up(project_slug, cluster_name)
+
+      if ClusterService.failed_scaling_up?(cluster_data[:state])
+        spinner.error
+        Uffizzi.ui.say_error_and_exit("Failed to wake up cluster #{cluster_name}.")
+      end
+
+      spinner.success
+      Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled up")
     end
 
     def say_error_update_kubeconfig(cluster_data)
@@ -321,6 +371,7 @@ module Uffizzi
       is_update_current_context = options[:'update-current-context']
       parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
       rendered_cluster_data = render_cluster_data(cluster_data)
+      cluster_name = cluster_data[:name]
 
       Uffizzi.ui.enable_stdout
       Uffizzi.ui.say("Cluster with name: #{rendered_cluster_data[:name]} was created.")
@@ -332,7 +383,7 @@ module Uffizzi
       Uffizzi.ui.say(rendered_cluster_data) if Uffizzi.ui.output_format
 
       save_kubeconfig(parsed_kubeconfig, kubeconfig_path)
-      update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
+      update_clusters_config(cluster_data[:id], name: cluster_name, kubeconfig_path: kubeconfig_path)
       GithubService.write_to_github_env(rendered_cluster_data) if GithubService.github_actions_exists?
     end
 
@@ -362,6 +413,7 @@ module Uffizzi
     def update_clusters_config(id, params)
       clusters_config = Uffizzi::ConfigHelper.update_clusters_config_by_id(id, params)
       ConfigFile.write_option(:clusters, clusters_config)
+      ConfigFile.write_option(:current_cluster, ConfigHelper.cluster_config_by_id(id))
     end
 
     def render_cluster_data(cluster_data)
@@ -399,6 +451,12 @@ module Uffizzi
 
       previous_current_contexts = Uffizzi::ConfigHelper.set_previous_current_context_by_path(kubeconfig_path, current_context)
       ConfigFile.write_option(:previous_current_contexts, previous_current_contexts)
+    end
+
+    def handle_missing_cluster_name_error
+      Uffizzi.ui.say("No kubeconfig found at #{KubeconfigService.default_path}")
+      Uffizzi.ui.say('Please update the current context or provide a cluster name.')
+      Uffizzi.ui.say('$uffizzi cluster sleep my-cluster')
     end
   end
 end
