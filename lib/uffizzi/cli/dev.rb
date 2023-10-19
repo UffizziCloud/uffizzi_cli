@@ -55,12 +55,14 @@ module Uffizzi
       DevService.check_skaffold_existence
       DevService.check_no_running_process!
       DevService.check_skaffold_config_existence(config_path)
-      DevService.set_startup_state
 
-      cluster_name = start_create_cluster
-      wait_cluster_creation(cluster_name)
-      DevService.set_dev_environment_config(cluster_name, config_path, options)
-      DevService.set_cluster_deployed_state
+      if dev_environment.empty?
+        DevService.set_startup_state
+        cluster_name = start_create_cluster
+        wait_cluster_creation(cluster_name)
+        DevService.set_dev_environment_config(cluster_name, config_path, options)
+        DevService.set_cluster_deployed_state
+      end
 
       if options[:quiet]
         launch_demonise_skaffold(config_path)
@@ -76,7 +78,7 @@ module Uffizzi
     end
 
     def handle_describe_command
-      DevService.check_running_process!
+      DevService.check_environment_exist!
 
       cluster_data = fetch_dev_env_cluster!
       cluster_render_data = ClusterService.build_render_data(cluster_data)
@@ -87,9 +89,12 @@ module Uffizzi
     end
 
     def handle_delete_command
-      DevService.check_running_process!
-      DevService.stop_process
-      Uffizzi.ui.say('Uffizzi dev was stopped')
+      DevService.check_environment_exist!
+
+      if DevService.process_running?
+        DevService.stop_process
+        Uffizzi.ui.say('Uffizzi dev was stopped')
+      end
 
       cluster_data = fetch_dev_env_cluster!
       handle_delete_cluster(cluster_data)

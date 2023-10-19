@@ -171,7 +171,7 @@ class DevTest < Minitest::Test
       @dev.describe
     end
 
-    assert_match('Uffizzi dev is not running', error.message)
+    assert_match('Uffizzi dev does not exist', error.message)
   end
 
   def test_stop_when_dev_exist
@@ -223,6 +223,6 @@ class DevTest < Minitest::Test
       @dev.delete
     end
 
-    assert_match('Uffizzi dev is not running', error.message)
+    assert_match('Uffizzi dev does not exist', error.message)
   end
 end
