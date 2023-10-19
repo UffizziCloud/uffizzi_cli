@@ -53,14 +53,14 @@ module Uffizzi
     def handle_start_command(command_args)
       config_path = command_args[:config_path]
       DevService.check_skaffold_existence
-      DevService.check_no_running_process
+      DevService.check_no_running_process!
       DevService.check_skaffold_config_existence(config_path)
+      DevService.set_startup_state
 
-      if DevService.dev_environment.empty?
-        cluster_name = start_create_cluster
-        wait_cluster_creation(cluster_name)
-        DevService.set_dev_environment_config(cluster_name, config_path, options)
-      end
+      cluster_name = start_create_cluster
+      wait_cluster_creation(cluster_name)
+      DevService.set_dev_environment_config(cluster_name, config_path, options)
+      DevService.set_cluster_deployed_state
 
       if options[:quiet]
         launch_demonise_skaffold(config_path)
@@ -70,27 +70,26 @@ module Uffizzi
     end
 
     def handle_stop_command
-      DevService.check_running_process
+      DevService.check_running_process!
       DevService.stop_process
       Uffizzi.ui.say('Uffizzi dev was stopped')
     end
 
     def handle_describe_command
-      DevService.check_running_process
+      DevService.check_running_process!
 
       cluster_data = fetch_dev_env_cluster!
       cluster_render_data = ClusterService.build_render_data(cluster_data)
-      dev_environment_render_data = cluster_render_data.merge(config_path: dev_environment![:config_path])
+      dev_environment_render_data = cluster_render_data.merge(config_path: dev_environment[:config_path])
 
       Uffizzi.ui.output_format = Uffizzi::UI::Shell::PRETTY_LIST
       Uffizzi.ui.say(dev_environment_render_data)
     end
 
     def handle_delete_command
-      if DevService.process_running?
-        DevService.stop_process
-        Uffizzi.ui.say('Uffizzi dev was stopped')
-      end
+      DevService.check_running_process!
+      DevService.stop_process
+      Uffizzi.ui.say('Uffizzi dev was stopped')
 
       cluster_data = fetch_dev_env_cluster!
       handle_delete_cluster(cluster_data)
@@ -241,15 +240,16 @@ module Uffizzi
     end
 
     def fetch_dev_env_cluster!
-      cluster_name = dev_environment![:cluster_name]
+      if DevService.startup?
+        Uffizzi.ui.say_error_and_exit('Dev environment not started yet')
+      end
+
+      cluster_name = dev_environment[:cluster_name]
       ClusterService.fetch_cluster_data(cluster_name, **cluster_api_connection_params)
     end
 
-    def dev_environment!
+    def dev_environment
       @dev_environment ||= DevService.dev_environment
-      Uffizzi.ui.say_error_and_exit('Dev environment does not exist') if @dev_environment.empty?
-
-      @dev_environment
     end
 
     def cluster_api_connection_params

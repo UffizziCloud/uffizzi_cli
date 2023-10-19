@@ -56,6 +56,10 @@ module Uffizzi
         $stdout.stat.pipe?
       end
 
+      def popen(command)
+        IO.popen(command)
+      end
+
       def popen2e(command, &block)
         Open3.popen2e(command, &block)
       end

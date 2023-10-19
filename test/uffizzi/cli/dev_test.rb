@@ -26,14 +26,17 @@ class DevTest < Minitest::Test
     stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
-    @mock_shell.promise_execute(/skaffold dev --filename/, stdout: 'Good')
+    @mock_shell.promise_execute(/ps -ef/, stdout: File.open(full_path_fixture('files/uffizzi/process_list.txt')))
+    @mock_shell.promise_execute(/skaffold dev --filename/, stdout: [], waiter: { pid: 4068842 })
 
     @dev.options = command_options(kubeconfig: @kubeconfig_path)
     @dev.start(@skaffold_file_path)
 
     cluster_from_config = Uffizzi::ConfigFile.read_option(:clusters)
+    dev_environment_from_config = Uffizzi::ConfigFile.read_option(:dev_environment)
 
     assert_equal(@kubeconfig_path, cluster_from_config.first[:kubeconfig_path])
+    assert_equal(DevService::CLUSTER_DEPLOYED_STATE, dev_environment_from_config[:state])
     assert_requested(stubbed_uffizzi_cluster_create_request)
     assert_requested(stubbed_uffizzi_cluster_get_request)
   end
@@ -56,15 +59,18 @@ class DevTest < Minitest::Test
     File.write(@kubeconfig_path, existing_kubeconfig.to_yaml)
 
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
-    @mock_shell.promise_execute(/skaffold dev --filename/, stdout: 'Good')
+    @mock_shell.promise_execute(/ps -ef/, stdout: File.open(full_path_fixture('files/uffizzi/process_list.txt')))
+    @mock_shell.promise_execute(/skaffold dev --filename/, stdout: [], waiter: { pid: 4068842 })
 
     @dev.options = command_options(kubeconfig: @kubeconfig_path)
     @dev.start(@skaffold_file_path)
 
     cluster_from_config = Uffizzi::ConfigFile.read_option(:clusters)
+    dev_environment_from_config = Uffizzi::ConfigFile.read_option(:dev_environment)
     current_kubeconfig = Psych.safe_load(File.read(@kubeconfig_path))
 
     assert_equal(@kubeconfig_path, cluster_from_config.first[:kubeconfig_path])
+    assert_equal(DevService::CLUSTER_DEPLOYED_STATE, dev_environment_from_config[:state])
     refute_equal(existing_kubeconfig['current-context'], current_kubeconfig['current-context'])
     assert_requested(stubbed_uffizzi_cluster_create_request)
     assert_requested(stubbed_uffizzi_cluster_get_request)
@@ -76,23 +82,27 @@ class DevTest < Minitest::Test
     stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
-    @mock_shell.promise_execute(/skaffold dev --filename/, stdout: 'Good')
+    @mock_shell.promise_execute(/ps -ef/, stdout: File.open(full_path_fixture('files/uffizzi/process_list.txt')))
+    @mock_shell.promise_execute(/skaffold dev --filename/, stdout: [], waiter: { pid: 4068842 })
     @dev.options = command_options(quiet: true)
 
     @dev.options = command_options(kubeconfig: @kubeconfig_path)
     @dev.start(@skaffold_file_path)
 
     cluster_from_config = Uffizzi::ConfigFile.read_option(:clusters)
+    dev_environment_from_config = Uffizzi::ConfigFile.read_option(:dev_environment)
 
     assert_equal(@kubeconfig_path, cluster_from_config.first[:kubeconfig_path])
+    assert_equal(DevService::CLUSTER_DEPLOYED_STATE, dev_environment_from_config[:state])
     assert_requested(stubbed_uffizzi_cluster_create_request)
     assert_requested(stubbed_uffizzi_cluster_get_request)
   end
 
   def test_start_dev_as_daemon_when_deamon_already_run
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
-    @mock_shell.promise_execute(/skaffold dev --filename/, stdout: 'Good')
     @dev.options = command_options(quiet: true)
+    dev_environment = { state: DevService::CLUSTER_DEPLOYED_STATE }
+    Uffizzi::ConfigFile.write_option(:dev_environment, dev_environment)
     File.write(DevService.pid_path, '1000')
     @mock_process.pid = 1000
 
@@ -123,9 +133,11 @@ class DevTest < Minitest::Test
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
     stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
-    @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
     skaffold_dev_regex = /skaffold dev --filename='.*' --default-repo='#{default_repo}' --kubeconfig='#{kubeconfig_path}'/
-    @mock_shell.promise_execute(skaffold_dev_regex, stdout: 'Good')
+
+    @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
+    @mock_shell.promise_execute(skaffold_dev_regex, stdout: [], waiter: { pid: 4068842 })
+    @mock_shell.promise_execute(/ps -ef/, stdout: File.open(full_path_fixture('files/uffizzi/process_list.txt')))
 
     @dev.options = command_options('default-repo': default_repo, kubeconfig: kubeconfig_path)
     @dev.start(@skaffold_file_path)
@@ -171,7 +183,10 @@ class DevTest < Minitest::Test
 
     @dev.stop
 
+    dev_environment_from_config = Uffizzi::ConfigFile.read_option(:dev_environment)
+
     assert_match('Uffizzi dev was stopped', Uffizzi.ui.last_message)
+    assert_match(cluster_name, dev_environment_from_config[:cluster_name])
   end
 
   def test_stop_when_dev_not_exist
@@ -195,7 +210,10 @@ class DevTest < Minitest::Test
 
     @dev.delete
 
+    dev_environment_from_config = Uffizzi::ConfigFile.read_option(:dev_environment)
+
     assert_match("Cluster #{cluster_name} deleted", Uffizzi.ui.last_message)
+    assert(true, dev_environment_from_config.present?)
     assert_requested(stubbed_uffizzi_cluster_get_request)
     assert_requested(stubbed_uffizzi_cluster_delete_request)
   end
@@ -205,6 +223,6 @@ class DevTest < Minitest::Test
       @dev.delete
     end
 
-    assert_match('Dev environment does not exist', error.message)
+    assert_match('Uffizzi dev is not running', error.message)
   end
 end

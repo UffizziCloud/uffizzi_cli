@@ -37,6 +37,7 @@ class Minitest::Test
   TEST_CONFIG_DIR = 'tmp/config_default.json'
   TEST_TOKEN_PATH = 'tmp/token_default.json'
   TEST_PID_PATH = 'tmp/dev.pid'
+  TEST_PID_PATH = 'tmp/skaffold_dev.pid'
   TEST_DEV_LOGS_PATH = 'tmp/dev-logs.txt'
 
   def before_setup
@@ -52,6 +53,7 @@ class Minitest::Test
     Uffizzi::Token.stubs(:token_path).returns(TEST_TOKEN_PATH)
     Uffizzi::ConfigFile.stubs(:config_path).returns(TEST_CONFIG_PATH)
     DevService.stubs(:pid_path).returns(TEST_PID_PATH)
+    DevService.stubs(:skaffold_pid_path).returns(TEST_PID_PATH)
     DevService.stubs(:logs_path).returns(TEST_DEV_LOGS_PATH)
   end
 

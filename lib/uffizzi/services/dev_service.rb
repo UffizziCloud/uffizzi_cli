@@ -1,24 +1,23 @@
 # frozen_string_literal: true
 
-require 'byebug'
 require 'uffizzi/clients/api/api_client'
 
 class DevService
+  DEFAULT_REGISTRY_REPO = 'registry.uffizzi.com'
+  STARTUP_STATE = 'startup'
+  CLUSTER_DEPLOYED_STATE = 'cluster_deployed'
+
   class << self
     include ApiClient
 
-    DEFAULT_REGISTRY_REPO = 'registry.uffizzi.com'
-
-    def check_no_running_process
-      if process_running?
-        delete_pid
+    def check_no_running_process!
+      if dev_environment.present? || process_running?
         Uffizzi.ui.say_error_and_exit("You have already started uffizzi dev. To stop the process do 'uffizzi dev stop'")
       end
     end
 
-    def check_running_process
-      unless process_running?
-        delete_pid
+    def check_running_process!
+      if dev_environment.blank? && !process_running?
         Uffizzi.ui.say_error_and_exit('Uffizzi dev is not running')
       end
     end
@@ -59,17 +58,7 @@ class DevService
 
       Uffizzi.ui.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
         pid = wait_thr.pid
-        regex = /\w*\s+\d+\s+#{pid}.*\sskaffold dev/
-        regex2 = /\w*\s+(\d+)\s+#{pid}.*\sskaffold dev/
-
-        ps_pipe = IO.popen('ps -ef')
-        # ps = ps_pipe.readlines.map { |l| l }
-        ps = ps_pipe.readlines.detect { |l| l.match?(regex) }
-        skaffold_pid = ps.match(regex2)[1]
-        byebug
-
-        # skaffold_pid = ps.select { |e| e.match?(%r(#{regex})) }.map { |e| e.lstrip.split(/\s+/) }.detect { |e| e[2].to_i == pid }[1].to_i
-
+        skaffold_pid = find_skaffold_pid(pid)
         save_skaffold_pid(skaffold_pid)
         stdout_and_stderr.each { |l| Uffizzi.ui.say(l) }
         wait_thr.value
@@ -81,6 +70,10 @@ class DevService
       cmd = build_skaffold_dev_command(config_path, options)
 
       Uffizzi.ui.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
+        pid = wait_thr.pid
+        skaffold_pid = find_skaffold_pid(pid)
+        save_skaffold_pid(skaffold_pid)
+
         File.open(logs_path, 'a') do |f|
           stdout_and_stderr.each do |line|
             f.puts(line)
@@ -177,6 +170,20 @@ class DevService
       Uffizzi::ConfigFile.write_option(:dev_environment, new_dev_environment)
     end
 
+    def set_startup_state
+      new_dev_environment = dev_environment.merge(state: STARTUP_STATE)
+      Uffizzi::ConfigFile.write_option(:dev_environment, new_dev_environment)
+    end
+
+    def set_cluster_deployed_state
+      new_dev_environment = dev_environment.merge(state: CLUSTER_DEPLOYED_STATE)
+      Uffizzi::ConfigFile.write_option(:dev_environment, new_dev_environment)
+    end
+
+    def startup?
+      dev_environment[:state] == STARTUP_STATE
+    end
+
     def clear_dev_environment_config
       Uffizzi::ConfigFile.write_option(:dev_environment, {})
     end
@@ -185,8 +192,13 @@ class DevService
       Uffizzi::ConfigHelper.dev_environment
     end
 
-    def processes
+    def find_skaffold_pid(ppid)
+      ppid_regex = /\w*\s+\d+\s+#{ppid}.*\sskaffold dev/
+      pid_regex = /\w*\s+(\d+)\s+#{ppid}.*\sskaffold dev/
 
+      io = Uffizzi.ui.popen('ps -ef')
+      ps = io.readlines.detect { |l| l.match?(ppid_regex) }
+      ps.match(pid_regex)[1]
     end
   end
 end
