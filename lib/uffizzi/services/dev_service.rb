@@ -11,14 +11,20 @@ class DevService
     include ApiClient
 
     def check_no_running_process!
-      if dev_environment.present? || process_running?
+      if process_running?
         Uffizzi.ui.say_error_and_exit("You have already started uffizzi dev. To stop the process do 'uffizzi dev stop'")
       end
     end
 
     def check_running_process!
-      if dev_environment.blank? && !process_running?
+      unless process_running?
         Uffizzi.ui.say_error_and_exit('Uffizzi dev is not running')
+      end
+    end
+
+    def check_environment_exist!
+      if dev_environment.empty?
+        Uffizzi.ui.say_error_and_exit('Uffizzi dev does not exist')
       end
     end
 
