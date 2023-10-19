@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class MockProcess
+  SINGALS = [0, 'QUIT', 'INT'].freeze
+
   attr_accessor :pid
 
   def initialize
@@ -8,7 +10,7 @@ class MockProcess
   end
 
   def kill(sig, pid)
-    return @pid if (sig == 'QUIT' || sig.zero?) && pid == @pid
+    return @pid if SINGALS.include?(sig) && pid == @pid
     raise Errno::ESRCH if pid != @pid
 
     @pid = nil
