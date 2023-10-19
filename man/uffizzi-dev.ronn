@@ -1,0 +1,43 @@
+uffizzi-dev - manage dev environments
+================================================================
+
+## SYNOPSIS
+    uffizzi dev COMMAND
+
+## DESCRIPTION
+    Manage Uffizzi development environments.
+
+    Use these commands for building, pushing, and deploying your
+    project changes to a remote development cluster. Cloud-based
+    dev environments offer many benefits compared to traditional
+    local development, including:
+      - More similar to production deployments
+      - Access to more memory and CPU for resource-intensive
+        apps
+      - Scalability and flexibility for microservices apps
+      - Faster build times
+      - Avoid accumulation of build artifacts on local machine
+      - App components available at public URLs or IP addresses
+      - TLS certificates for HTTPS
+      - Better team collaboration via shareable links
+
+    For more information on Uffizzi clusters, see:
+    https://docs.uffizzi.com/references/cli/
+
+## COMMANDS
+    COMMAND is one of the following:
+
+     start
+        Start a dev environment
+
+     stop
+        Stop a dev environment
+
+     describe
+        Display details of a dev environment
+
+     ingress
+        Display ingress hosts
+
+## HELP
+    Run 'uffizzi dev COMMAND --help' for more information on a command.
