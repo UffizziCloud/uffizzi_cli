@@ -15,67 +15,110 @@ module Uffizzi
     method_option :kubeconfig, type: :string
     method_option :'k8s-version', required: false, type: :string
     def start(config_path = 'skaffold.yaml')
-      Uffizzi::AuthHelper.check_login(options[:project])
-      DevService.check_skaffold_existence
-      DevService.check_running_daemon if options[:quiet]
-      DevService.check_skaffold_config_existence(config_path)
-      cluster_id, cluster_name = start_create_cluster
-      kubeconfig = wait_cluster_creation(cluster_name)
-
-      if options[:quiet]
-        launch_demonise_skaffold(config_path)
-      else
-        DevService.start_basic_skaffold(config_path, options)
-      end
-    ensure
-      if defined?(cluster_name).present? && defined?(cluster_id).present?
-        kubeconfig = defined?(kubeconfig).present? ? kubeconfig : nil
-        handle_delete_cluster(cluster_id, cluster_name, kubeconfig)
-      end
+      run('start', config_path: config_path)
     end
 
     desc 'stop', 'Stop dev environment'
     def stop
-      return Uffizzi.ui.say('Uffizzi dev is not running') unless File.exist?(DevService.pid_path)
+      run('stop')
+    end
 
-      pid = File.read(DevService.pid_path).to_i
-      File.delete(DevService.pid_path)
+    desc 'describe', 'Describe dev environment'
+    def describe
+      run('describe')
+    end
 
-      Uffizzi.process.kill('QUIT', pid)
-      Uffizzi.ui.say('Uffizzi dev was stopped')
-    rescue Errno::ESRCH
-      Uffizzi.ui.say('Uffizzi dev is not running')
-      File.delete(DevService.pid_path)
+    desc 'delete', 'Delete dev environment'
+    def delete
+      run('delete')
     end
 
     private
 
+    def run(command, command_args = {})
+      Uffizzi::AuthHelper.check_login
+
+      case command
+      when 'start'
+        handle_start_command(command_args)
+      when 'stop'
+        handle_stop_command
+      when 'describe'
+        handle_describe_command
+      when 'delete'
+        handle_delete_command
+      end
+    end
+
+    def handle_start_command(command_args)
+      config_path = command_args[:config_path]
+      DevService.check_skaffold_existence
+      DevService.check_no_running_process!
+      DevService.check_skaffold_config_existence(config_path)
+
+      if dev_environment.empty?
+        DevService.set_startup_state
+        cluster_name = start_create_cluster
+        wait_cluster_creation(cluster_name)
+        DevService.set_dev_environment_config(cluster_name, config_path, options)
+        DevService.set_cluster_deployed_state
+      end
+
+      if options[:quiet]
+        launch_demonise_skaffold(config_path)
+      else
+        launch_basic_skaffold(config_path)
+      end
+    end
+
+    def handle_stop_command
+      DevService.check_running_process!
+      DevService.stop_process
+      Uffizzi.ui.say('Uffizzi dev was stopped')
+    end
+
+    def handle_describe_command
+      DevService.check_environment_exist!
+
+      cluster_data = fetch_dev_env_cluster!
+      cluster_render_data = ClusterService.build_render_data(cluster_data)
+      dev_environment_render_data = cluster_render_data.merge(config_path: dev_environment[:config_path])
+
+      Uffizzi.ui.output_format = Uffizzi::UI::Shell::PRETTY_LIST
+      Uffizzi.ui.say(dev_environment_render_data)
+    end
+
+    def handle_delete_command
+      DevService.check_environment_exist!
+
+      if DevService.process_running?
+        DevService.stop_process
+        Uffizzi.ui.say('Uffizzi dev was stopped')
+      end
+
+      cluster_data = fetch_dev_env_cluster!
+      handle_delete_cluster(cluster_data)
+      DevService.clear_dev_environment_config
+    end
+
     def start_create_cluster
-      params = cluster_creation_params(
-        name: ClusterService.generate_name,
-        creation_source: ClusterService::MANUAL_CREATION_SOURCE,
-        k8s_version: options[:"k8s-version"],
-      )
+      params = cluster_creation_params
       Uffizzi.ui.say('Start creating a cluster')
-      response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
+      response = create_cluster(server, project_slug, params)
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
 
-      cluster_id = response.dig(:body, :cluster, :id)
-      cluster_name = response.dig(:body, :cluster, :name)
-
-      [cluster_id, cluster_name]
+      response.dig(:body, :cluster, :name)
     end
 
     def wait_cluster_creation(cluster_name)
       Uffizzi.ui.say('Checking the cluster status...')
-      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, ConfigFile.read_option(:oidc_token))
+      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, oidc_token)
 
       if ClusterService.failed?(cluster_data[:state])
         Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")
       end
 
       handle_succeed_cluster_creation(cluster_data)
-      parse_kubeconfig(cluster_data[:kubeconfig])
     end
 
     def handle_succeed_cluster_creation(cluster_data)
@@ -109,30 +152,30 @@ module Uffizzi
       ConfigFile.write_option(:clusters, clusters_config)
     end
 
-    def cluster_creation_params(name:, creation_source:, k8s_version:)
-      oidc_token = Uffizzi::ConfigFile.read_option(:oidc_token)
-
+    def cluster_creation_params
       {
         cluster: {
-          name: name,
+          name: ClusterService.generate_name,
           manifest: nil,
-          creation_source: creation_source,
-          k8s_version: k8s_version,
+          creation_source: ClusterService::MANUAL_CREATION_SOURCE,
+          k8s_version: options[:"k8s-version"],
         },
         token: oidc_token,
       }
     end
 
-    def handle_delete_cluster(cluster_id, cluster_name, kubeconfig)
-      return if cluster_id.nil? || cluster_name.nil?
+    def handle_delete_cluster(cluster_data)
+      cluster_id = cluster_data[:id]
+      cluster_name = cluster_data[:name]
+      kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
 
       exclude_kubeconfig(cluster_id, kubeconfig) if kubeconfig.present?
 
       params = {
         cluster_name: cluster_name,
-        oidc_token: ConfigFile.read_option(:oidc_token),
+        oidc_token: oidc_token,
       }
-      response = delete_cluster(ConfigFile.read_option(:server), project_slug, params)
+      response = delete_cluster(server, project_slug, params)
 
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say("Cluster #{cluster_name} deleted")
@@ -180,19 +223,58 @@ module Uffizzi
       Uffizzi.process.daemon(true)
 
       at_exit do
-        File.delete(DevService.pid_path) if File.exist?(DevService.pid_path)
+        DevService.delete_pid
       end
 
+      DevService.save_pid
       File.delete(DevService.logs_path) if File.exist?(DevService.logs_path)
-      File.write(DevService.pid_path, Uffizzi.process.pid)
       DevService.start_check_pid_file_existence
       DevService.start_demonised_skaffold(config_path, options)
     rescue StandardError => e
       File.open(DevService.logs_path, 'a') { |f| f.puts(e.message) }
     end
 
+    def launch_basic_skaffold(config_path)
+      at_exit do
+        DevService.delete_pid
+      end
+
+      DevService.save_pid
+      DevService.start_check_pid_file_existence
+      DevService.start_basic_skaffold(config_path, options)
+    end
+
+    def fetch_dev_env_cluster!
+      if DevService.startup?
+        Uffizzi.ui.say_error_and_exit('Dev environment not started yet')
+      end
+
+      cluster_name = dev_environment[:cluster_name]
+      ClusterService.fetch_cluster_data(cluster_name, **cluster_api_connection_params)
+    end
+
+    def dev_environment
+      @dev_environment ||= DevService.dev_environment
+    end
+
+    def cluster_api_connection_params
+      {
+        server: server,
+        project_slug: project_slug,
+        oidc_token: oidc_token,
+      }
+    end
+
     def project_slug
       @project_slug ||= ConfigFile.read_option(:project)
+    end
+
+    def oidc_token
+      @oidc_token ||= ConfigFile.read_option(:oidc_token)
+    end
+
+    def server
+      @server ||= ConfigFile.read_option(:server)
     end
   end
 end

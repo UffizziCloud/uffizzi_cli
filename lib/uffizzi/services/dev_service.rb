@@ -3,21 +3,50 @@
 require 'uffizzi/clients/api/api_client'
 
 class DevService
+  DEFAULT_REGISTRY_REPO = 'registry.uffizzi.com'
+  STARTUP_STATE = 'startup'
+  CLUSTER_DEPLOYED_STATE = 'cluster_deployed'
+
   class << self
     include ApiClient
 
-    DEFAULT_REGISTRY_REPO = 'registry.uffizzi.com'
+    def check_no_running_process!
+      if process_running?
+        Uffizzi.ui.say_error_and_exit("You have already started uffizzi dev. To stop the process do 'uffizzi dev stop'")
+      end
+    end
 
-    def check_running_daemon
-      return unless File.exist?(pid_path)
+    def check_running_process!
+      unless process_running?
+        Uffizzi.ui.say_error_and_exit('Uffizzi dev is not running')
+      end
+    end
 
-      pid = File.read(pid_path)
-      File.delete(pid_path) if pid.blank?
-      Uffizzi.process.kill(0, pid.to_i)
+    def check_environment_exist!
+      if dev_environment.empty?
+        Uffizzi.ui.say_error_and_exit('Uffizzi dev does not exist')
+      end
+    end
 
-      Uffizzi.ui.say_error_and_exit("You have already started uffizzi dev as daemon. To stop the process do 'uffizzi dev stop'")
+    def stop_process
+      dev_pid = running_pid
+      skaffold_pid = running_skaffold_pid
+
+      Uffizzi.process.kill('INT', skaffold_pid)
+      Uffizzi.process.kill('INT', dev_pid)
+      delete_pid
     rescue Errno::ESRCH
-      File.delete(pid_path)
+      delete_pid
+    end
+
+    def process_running?
+      pid = running_pid
+      return false unless pid.positive?
+
+      Uffizzi.process.kill(0, pid.to_i)
+      true
+    rescue Errno::ESRCH
+      false
     end
 
     def start_check_pid_file_existence
@@ -34,6 +63,9 @@ class DevService
       cmd = build_skaffold_dev_command(config_path, options)
 
       Uffizzi.ui.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
+        pid = wait_thr.pid
+        skaffold_pid = find_skaffold_pid(pid)
+        save_skaffold_pid(skaffold_pid)
         stdout_and_stderr.each { |l| Uffizzi.ui.say(l) }
         wait_thr.value
       end
@@ -44,6 +76,10 @@ class DevService
       cmd = build_skaffold_dev_command(config_path, options)
 
       Uffizzi.ui.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
+        pid = wait_thr.pid
+        skaffold_pid = find_skaffold_pid(pid)
+        save_skaffold_pid(skaffold_pid)
+
         File.open(logs_path, 'a') do |f|
           stdout_and_stderr.each do |line|
             f.puts(line)
@@ -80,6 +116,10 @@ class DevService
       File.join(Uffizzi::ConfigFile::CONFIG_DIR, 'uffizzi_dev.pid')
     end
 
+    def skaffold_pid_path
+      File.join(Uffizzi::ConfigFile::CONFIG_DIR, 'skaffold_dev.pid')
+    end
+
     def logs_path
       File.join(Uffizzi::ConfigFile::CONFIG_DIR, 'uffizzi_dev.log')
     end
@@ -103,6 +143,68 @@ class DevService
       path = kubeconfig_path || KubeconfigService.default_path
 
       File.expand_path(path)
+    end
+
+    def running_pid
+      return nil.to_i unless File.exist?(pid_path)
+
+      File.read(pid_path).to_i
+    end
+
+    def save_pid
+      File.write(pid_path, Uffizzi.process.pid)
+    end
+
+    def delete_pid
+      File.delete(pid_path) if File.exist?(pid_path)
+      File.delete(skaffold_pid_path) if File.exist?(skaffold_pid_path)
+    end
+
+    def running_skaffold_pid
+      return nil.to_i unless File.exist?(skaffold_pid_path)
+
+      File.read(skaffold_pid_path).to_i
+    end
+
+    def save_skaffold_pid(pid)
+      File.write(skaffold_pid_path, pid)
+    end
+
+    def set_dev_environment_config(cluster_name, config_path, options)
+      params = options.merge(config_path: File.expand_path(config_path))
+      new_dev_environment = Uffizzi::ConfigHelper.set_dev_environment(cluster_name, params)
+      Uffizzi::ConfigFile.write_option(:dev_environment, new_dev_environment)
+    end
+
+    def set_startup_state
+      new_dev_environment = dev_environment.merge(state: STARTUP_STATE)
+      Uffizzi::ConfigFile.write_option(:dev_environment, new_dev_environment)
+    end
+
+    def set_cluster_deployed_state
+      new_dev_environment = dev_environment.merge(state: CLUSTER_DEPLOYED_STATE)
+      Uffizzi::ConfigFile.write_option(:dev_environment, new_dev_environment)
+    end
+
+    def startup?
+      dev_environment[:state] == STARTUP_STATE
+    end
+
+    def clear_dev_environment_config
+      Uffizzi::ConfigFile.write_option(:dev_environment, {})
+    end
+
+    def dev_environment
+      Uffizzi::ConfigHelper.dev_environment
+    end
+
+    def find_skaffold_pid(ppid)
+      ppid_regex = /\w*\s+\d+\s+#{ppid}.*\sskaffold dev/
+      pid_regex = /\w*\s+(\d+)\s+#{ppid}.*\sskaffold dev/
+
+      io = Uffizzi.ui.popen('ps -ef')
+      ps = io.readlines.detect { |l| l.match?(ppid_regex) }
+      ps.match(pid_regex)[1]
     end
   end
 end

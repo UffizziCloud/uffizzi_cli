@@ -14,16 +14,26 @@ class MockShell
   end
 
   class MockProcessWaiter
+    def initialize(params = {})
+      @pid = params[:pid]
+    end
+
     def value
       MockProcessStatus.new(true)
+    end
+
+    def pid
+      @pid || generate_pid
+    end
+
+    private
+
+    def generate_pid
+      (Time.now.utc.to_f * 100_000).to_i
     end
   end
 
   attr_accessor :messages, :output_format, :stdout_pipe
-
-  PRETTY_JSON = 'pretty-json'
-  REGULAR_JSON = 'json'
-  GITHUB_ACTION = 'github-action'
 
   def initialize
     @messages = []
@@ -74,22 +84,27 @@ class MockShell
     @output_enabled = true
   end
 
+  def popen(command)
+    res = get_command_response(command)
+    res[:stdout]
+  end
+
   def popen2e(command)
-    stdout, stderr = get_command_response(command)
-    stdout_and_stderr = [stdout, stderr]
-    process_waiter = MockProcessWaiter.new
+    res = get_command_response(command)
+    stdout_and_stderr = [res[:stdout], res[:stderr]]
+    process_waiter = MockProcessWaiter.new(res[:waiter])
     block_given? ? yield(nil, stdout_and_stderr, process_waiter) : [nil, stdout_and_stderr, process_waiter]
   end
 
   def capture3(command, *_params)
-    stdout, stderr = get_command_response(command)
-    status = MockProcessStatus.new(stderr.nil?)
+    res = get_command_response(command)
+    status = MockProcessStatus.new(res[:stderr].nil?)
 
-    [stdout, stderr, status]
+    [res[:stdout], res[:stderr], status]
   end
 
-  def promise_execute(command, stdout: nil, stderr: nil)
-    @command_responses << { command: command, stdout: stdout, stderr: stderr }
+  def promise_execute(command, stdout: nil, stderr: nil, waiter: nil)
+    @command_responses << { command: command, stdout: stdout, stderr: stderr, waiter: waiter }
   end
 
   private
@@ -112,12 +127,25 @@ class MockShell
     end
   end
 
+  def format_to_pretty_list(data)
+    case data
+    when Array
+      data.map { |v| format_to_pretty_list(v) }.join("\n\n")
+    when Hash
+      data.map { |k, v| "- #{k.to_s.upcase}: #{v}" }.join("\n").strip
+    else
+      data
+    end
+  end
+
   def format_message(message)
     case output_format
-    when PRETTY_JSON
+    when Uffizzi::UI::Shell::PRETTY_JSON
       format_to_pretty_json(message)
-    when REGULAR_JSON
+    when Uffizzi::UI::Shell::REGULAR_JSON
       format_to_json(message)
+    when Uffizzi::UI::Shell::PRETTY_LIST
+      format_to_pretty_list(message)
     else
       message
     end
@@ -135,8 +163,9 @@ class MockShell
 
     stdout = @command_responses[response_index].fetch(:stdout)
     stderr = @command_responses[response_index].fetch(:stderr)
+    waiter = @command_responses[response_index].fetch(:waiter)
     @command_responses.delete_at(response_index)
 
-    [stdout, stderr]
+    { stdout: stdout, stderr: stderr, waiter: waiter }
   end
 end

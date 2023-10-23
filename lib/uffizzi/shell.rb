@@ -11,6 +11,7 @@ module Uffizzi
 
       PRETTY_JSON = 'pretty-json'
       REGULAR_JSON = 'json'
+      PRETTY_LIST = 'pretty-list'
 
       def initialize
         @shell = Thor::Shell::Basic.new
@@ -55,6 +56,10 @@ module Uffizzi
         $stdout.stat.pipe?
       end
 
+      def popen(command)
+        IO.popen(command)
+      end
+
       def popen2e(command, &block)
         Open3.popen2e(command, &block)
       end
@@ -73,12 +78,25 @@ module Uffizzi
         JSON.pretty_generate(data)
       end
 
+      def format_to_pretty_list(data)
+        case data
+        when Array
+          data.map { |v| format_to_pretty_list(v) }.join("\n\n")
+        when Hash
+          data.map { |k, v| "- #{k.to_s.upcase}: #{v}" }.join("\n").strip
+        else
+          data
+        end
+      end
+
       def format_message(message)
         case output_format
         when PRETTY_JSON
           format_to_pretty_json(message)
         when REGULAR_JSON
           format_to_json(message)
+        when PRETTY_LIST
+          format_to_pretty_list(message)
         else
           message
         end

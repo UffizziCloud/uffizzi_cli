@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'uffizzi/response_helper'
 require 'uffizzi/clients/api/api_client'
 
 class ClusterService
@@ -103,6 +104,29 @@ class ClusterService
 
       regex = /\A[a-zA-Z0-9-]*\z/
       regex.match?(name)
+    end
+
+    def fetch_cluster_data(cluster_name, server:, project_slug:, oidc_token:)
+      params = {
+        cluster_name: cluster_name,
+        oidc_token: oidc_token,
+      }
+      response = get_cluster(server, project_slug, params)
+
+      if Uffizzi::ResponseHelper.ok?(response)
+        response.dig(:body, :cluster)
+      else
+        Uffizzi::ResponseHelper.handle_failed_response(response)
+      end
+    end
+
+    def build_render_data(cluster_data)
+      {
+        name: cluster_data[:name],
+        status: cluster_data[:state],
+        created: Time.strptime(cluster_data[:created_at], '%Y-%m-%dT%H:%M:%S.%N').strftime('%a %b %d %H:%M:%S %Y'),
+        url: cluster_data[:host],
+      }
     end
   end
 end

@@ -76,19 +76,18 @@ module Uffizzi
     def run(command, command_args = {})
       Uffizzi.ui.output_format = options[:output]
       Uffizzi::AuthHelper.check_login(options[:project])
-      project_slug = options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
 
       case command
       when 'list'
-        handle_list_command(project_slug)
+        handle_list_command
       when 'create'
-        handle_create_command(project_slug, command_args)
+        handle_create_command(command_args)
       when 'describe'
-        handle_describe_command(project_slug, command_args)
+        handle_describe_command(command_args)
       when 'delete'
-        handle_delete_command(project_slug, command_args)
+        handle_delete_command(command_args)
       when 'update-kubeconfig'
-        handle_update_kubeconfig_command(project_slug, command_args)
+        handle_update_kubeconfig_command(command_args)
       when 'disconnect'
         ClusterDisconnectService.handle(options)
       when 'sleep'
@@ -98,13 +97,12 @@ module Uffizzi
       end
     end
 
-    def handle_list_command(project_slug)
+    def handle_list_command
       is_all = options[:all]
       response = if is_all
-        get_account_clusters(ConfigFile.read_option(:server), ConfigFile.read_option(:account, :id))
+        get_account_clusters(server, ConfigFile.read_option(:account, :id))
       else
-        oidc_token = ConfigFile.read_option(:oidc_token)
-        get_project_clusters(ConfigFile.read_option(:server), project_slug, oidc_token: oidc_token)
+        get_project_clusters(server, project_slug, oidc_token: oidc_token)
       end
 
       if ResponseHelper.ok?(response)
@@ -115,7 +113,7 @@ module Uffizzi
     end
 
     # rubocop:disable Metrics/PerceivedComplexity
-    def handle_create_command(project_slug, command_args)
+    def handle_create_command(command_args)
       Uffizzi.ui.disable_stdout if Uffizzi.ui.output_format
 
       if options[:name]
@@ -125,23 +123,20 @@ module Uffizzi
       end
 
       cluster_name = command_args[:name] || options[:name] || ClusterService.generate_name
-      creation_source = options[:"creation-source"] || ClusterService::MANUAL_CREATION_SOURCE
-      k8s_version = options[:"k8s-version"]
       Uffizzi.ui.say_error_and_exit("Cluster name: #{cluster_name} is not valid.") unless ClusterService.valid_name?(cluster_name)
 
-      params = cluster_creation_params(
-        name: cluster_name,
-        creation_source: creation_source,
-        manifest_file_path: options[:manifest],
-        k8s_version: k8s_version,
-      )
-      response = create_cluster(ConfigFile.read_option(:server), project_slug, params)
+      unless ClusterService.valid_name?(cluster_name)
+        Uffizzi.ui.say_error_and_exit("Cluster name: #{cluster_name} is not valid.")
+      end
+
+      params = cluster_creation_params(cluster_name)
+      response = create_cluster(server, project_slug, params)
 
       return ResponseHelper.handle_failed_response(response) unless ResponseHelper.created?(response)
 
       spinner = TTY::Spinner.new("[:spinner] Creating cluster #{cluster_name}...", format: :dots)
       spinner.auto_spin
-      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, ConfigFile.read_option(:oidc_token))
+      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, oidc_token)
 
       if ClusterService.failed?(cluster_data[:state])
         spinner.error
@@ -151,26 +146,28 @@ module Uffizzi
       spinner.success
       handle_succeed_create_response(cluster_data)
     rescue SystemExit, Interrupt, SocketError
-      handle_interrupt_creation(cluster_name, ConfigFile.read_option(:server), project_slug)
+      handle_interrupt_creation(cluster_name)
     end
     # rubocop:enable Metrics/PerceivedComplexity
 
-    def handle_describe_command(project_slug, command_args)
-      cluster_data = fetch_cluster_data(project_slug, command_args[:cluster_name])
+    def handle_describe_command(command_args)
+      cluster_data = ClusterService.fetch_cluster_data(command_args[:cluster_name], **cluster_api_connection_params)
+      render_data = ClusterService.build_render_data(cluster_data)
 
-      handle_succeed_describe(cluster_data)
+      Uffizzi.ui.output_format = Uffizzi::UI::Shell::PRETTY_LIST
+      Uffizzi.ui.say(render_data)
     end
 
-    def handle_delete_command(project_slug, command_args)
+    def handle_delete_command(command_args)
       cluster_name = command_args[:cluster_name]
       is_delete_kubeconfig = options[:'delete-config']
 
-      return handle_delete_cluster(project_slug, cluster_name) unless is_delete_kubeconfig
+      return handle_delete_cluster(cluster_name) unless is_delete_kubeconfig
 
-      cluster_data = fetch_cluster_data(project_slug, cluster_name)
+      cluster_data = ClusterService.fetch_cluster_data(cluster_name, **cluster_api_connection_params)
       kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
 
-      handle_delete_cluster(project_slug, cluster_name)
+      handle_delete_cluster(cluster_name)
       exclude_kubeconfig(cluster_data[:id], kubeconfig) if kubeconfig.present?
     end
 
@@ -194,12 +191,12 @@ module Uffizzi
       end
     end
 
-    def handle_delete_cluster(project_slug, cluster_name)
+    def handle_delete_cluster(cluster_name)
       params = {
         cluster_name: cluster_name,
-        oidc_token: ConfigFile.read_option(:oidc_token),
+        oidc_token: oidc_token,
       }
-      response = delete_cluster(ConfigFile.read_option(:server), project_slug, params)
+      response = delete_cluster(server, project_slug, params)
 
       if ResponseHelper.no_content?(response)
         Uffizzi.ui.say("Cluster #{cluster_name} deleted")
@@ -208,10 +205,10 @@ module Uffizzi
       end
     end
 
-    def handle_update_kubeconfig_command(project_slug, command_args)
+    def handle_update_kubeconfig_command(command_args)
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
       cluster_name = command_args[:cluster_name]
-      cluster_data = fetch_cluster_data(project_slug, cluster_name)
+      cluster_data = ClusterService.fetch_cluster_data(cluster_name, **cluster_api_connection_params)
 
       unless cluster_data[:kubeconfig].present?
         say_error_update_kubeconfig(cluster_data)
@@ -289,13 +286,15 @@ module Uffizzi
       end
     end
 
-    def cluster_creation_params(name:, creation_source:, manifest_file_path:, k8s_version:)
+    def cluster_creation_params(cluster_name)
+      creation_source = options[:"creation-source"] || ClusterService::MANUAL_CREATION_SOURCE
+      manifest_file_path = options[:manifest]
+      k8s_version = options[:"k8s-version"]
       manifest_content = load_manifest_file(manifest_file_path)
-      oidc_token = Uffizzi::ConfigFile.read_option(:oidc_token)
 
       {
         cluster: {
-          name: name,
+          name: cluster_name,
           manifest: manifest_content,
           creation_source: creation_source,
           k8s_version: k8s_version,
@@ -312,7 +311,7 @@ module Uffizzi
       raise Uffizzi::Error.new(e.message)
     end
 
-    def handle_interrupt_creation(cluster_name, server, project_slug)
+    def handle_interrupt_creation(cluster_name)
       deletion_response = delete_cluster(server, project_slug, cluster_name: cluster_name)
       deletion_message = if ResponseHelper.no_content?(deletion_response)
         "The cluster #{cluster_name} has been disabled."
@@ -346,24 +345,6 @@ module Uffizzi
           "- #{cluster[:name]}"
         end
       end.join("\n")
-    end
-
-    def handle_succeed_describe(cluster_data)
-      prepared_cluster_data = {
-        name: cluster_data[:name],
-        status: cluster_data[:state],
-        created: Time.strptime(cluster_data[:created_at], '%Y-%m-%dT%H:%M:%S.%N').strftime('%a %b %d %H:%M:%S %Y'),
-        url: cluster_data[:host],
-        k8s_version: cluster_data[:k8s_version],
-      }
-
-      rendered_cluster_data = if Uffizzi.ui.output_format.nil?
-        prepared_cluster_data.map { |k, v| "- #{k.to_s.upcase}: #{v}" }.join("\n").strip
-      else
-        prepared_cluster_data
-      end
-
-      Uffizzi.ui.say(rendered_cluster_data)
     end
 
     def handle_succeed_create_response(cluster_data)
@@ -432,20 +413,6 @@ module Uffizzi
       Psych.safe_load(Base64.decode64(kubeconfig))
     end
 
-    def fetch_cluster_data(project_slug, cluster_name)
-      params = {
-        cluster_name: cluster_name,
-        oidc_token: ConfigFile.read_option(:oidc_token),
-      }
-      response = get_cluster(ConfigFile.read_option(:server), project_slug, params)
-
-      if ResponseHelper.ok?(response)
-        response.dig(:body, :cluster)
-      else
-        ResponseHelper.handle_failed_response(response)
-      end
-    end
-
     def save_previous_current_context(kubeconfig_path, current_context)
       return if kubeconfig_path.nil? || ConfigHelper.previous_current_context_by_path(kubeconfig_path).present?
 
@@ -457,6 +424,26 @@ module Uffizzi
       Uffizzi.ui.say("No kubeconfig found at #{KubeconfigService.default_path}")
       Uffizzi.ui.say('Please update the current context or provide a cluster name.')
       Uffizzi.ui.say('$uffizzi cluster sleep my-cluster')
+    end
+
+    def cluster_api_connection_params
+      {
+        server: server,
+        project_slug: project_slug,
+        oidc_token: oidc_token,
+      }
+    end
+
+    def oidc_token
+      @oidc_token ||= ConfigFile.read_option(:oidc_token)
+    end
+
+    def project_slug
+      @project_slug ||= options[:project].nil? ? ConfigFile.read_option(:project) : options[:project]
+    end
+
+    def server
+      @server ||= ConfigFile.read_option(:server)
     end
   end
 end

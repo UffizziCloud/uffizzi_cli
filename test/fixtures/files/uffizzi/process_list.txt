@@ -1,0 +1,6 @@
+zipofar  4051120       1  0 окт18 pts/17 00:00:00 sh -c skaffold dev --filename='/home/zipofar/test/skaffold/examples/ruby2/skaffold_dev.yaml' --default-repo='registry.uffizzi.com' --kubeconfig='/home/zipofar/.kube/config'
+zipofar  4051122 4051120  0 окт18 pts/17 00:00:11 skaffold dev --filename=/home/zipofar/test/skaffold/examples/ruby2/skaffold_dev.yaml --default-repo=registry.uffizzi.com --kubeconfig=/home/zipofar/.kube/config
+zipofar  4068798 3369035  2 14:41 pts/17   00:00:01 uffizzi dev start /home/zipofar/test/skaffold/examples/ruby2/skaffold_dev.yaml
+zipofar  4068842 4068798  0 14:41 pts/17   00:00:00 sh -c skaffold dev --filename='/home/zipofar/test/skaffold/examples/ruby2/skaffold_dev.yaml' --default-repo='registry.uffizzi.com' --kubeconfig='/home/zipofar/.kube/config'
+zipofar  4068844 4068842  1 14:41 pts/17   00:00:00 skaffold dev --filename=/home/zipofar/test/skaffold/examples/ruby2/skaffold_dev.yaml --default-repo=registry.uffizzi.com --kubeconfig=/home/zipofar/.kube/config
+zipofar  4069308 4029397  0 14:42 pts/12   00:00:00 grep --color=auto --exclude-dir=.bzr --exclude-dir=CVS --exclude-dir=.git --exclude-dir=.hg --exclude-dir=.svn --exclude-dir=.idea --exclude-dir=.tox skaff
