@@ -38,7 +38,6 @@ class MockPrompt
 
   def get_answer(question)
     answer_index = @question_answers.index do |question_answer|
-      question_answer[:question] == question
       case question_answer[:question]
       when Regexp
         question_answer[:question].match?(question)
