@@ -222,8 +222,8 @@ module Uffizzi
     def launch_demonise_skaffold(config_path)
       Uffizzi.process.daemon(true)
 
-      at_exit do
-        DevService.delete_pid
+      Uffizzi.at_exit do
+        DevService.stop_process
       end
 
       DevService.save_pid
@@ -235,8 +235,8 @@ module Uffizzi
     end
 
     def launch_basic_skaffold(config_path)
-      at_exit do
-        DevService.delete_pid
+      Uffizzi.at_exit do
+        DevService.stop_process
       end
 
       DevService.save_pid

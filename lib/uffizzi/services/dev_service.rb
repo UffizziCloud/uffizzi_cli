@@ -32,11 +32,25 @@ class DevService
       dev_pid = running_pid
       skaffold_pid = running_skaffold_pid
 
-      Uffizzi.process.kill('INT', skaffold_pid)
-      Uffizzi.process.kill('INT', dev_pid)
+      begin
+        Uffizzi.process.kill('INT', skaffold_pid)
+      rescue Errno::ESRCH
+      end
+
+      wait_process_stop(skaffold_pid)
       delete_pid
+
+      Uffizzi.process.kill('INT', dev_pid)
     rescue Errno::ESRCH
       delete_pid
+    end
+
+    def wait_process_stop(pid)
+      loop do
+        Uffizzi.process.kill(0, pid)
+        sleep(1)
+      end
+    rescue Errno::ESRCH
     end
 
     def process_running?
@@ -50,9 +64,9 @@ class DevService
     end
 
     def start_check_pid_file_existence
-      Thread.new do
+      Uffizzi.thread.new do
         loop do
-          Uffizzi.process.kill('QUIT', Uffizzi.process.pid) unless File.exist?(pid_path)
+          stop_process unless File.exist?(pid_path)
           sleep(1)
         end
       end
@@ -61,6 +75,8 @@ class DevService
     def start_basic_skaffold(config_path, options)
       Uffizzi.ui.say('Start skaffold')
       cmd = build_skaffold_dev_command(config_path, options)
+
+      Uffizzi.signal.trap('INT') {}
 
       Uffizzi.ui.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
         pid = wait_thr.pid
