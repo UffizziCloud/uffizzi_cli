@@ -1,0 +1,27 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-DEV\-INGRESS" "" "October 2023" ""
+.SH "NAME"
+\fBuffizzi\-dev\-ingress\fR
+.P
+$ uffizzi dev ingress \-h uffizzi\-dev\-ingress \- show the dev environment ingress ================================================================
+.SH "SYNOPSIS"
+.nf
+uffizzi dev ingress COMMAND
+.fi
+.SH "DESCRIPTION"
+.nf
+Show the dev environment ingress
+
+For more information on Uffizzi clusters, see:
+https://docs\.uffizzi\.com/references/cli/
+.fi
+.SH "COMMANDS"
+.nf
+COMMAND is one of the following:
+
+ open
+    Open the dev environment ingress hosts in browser
+.fi
+.SH "Run \'uffizzi dev ingress COMMAND \-\-help\' for more information on a command\."
+
