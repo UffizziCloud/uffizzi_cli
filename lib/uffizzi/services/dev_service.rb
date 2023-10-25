@@ -232,9 +232,9 @@ class DevService
       end
 
       # HACK: For Linux
-      parent_process = processes.detect do |ps|
-        ps.gsub(/\s+/, ' ').lstrip.split[2].to_s == pid.to_s
-      end
+      parent_process = processes
+        .map { |ps| ps.gsub(/\s+/, ' ').lstrip.split }
+        .detect { |ps| ps[2].to_s == pid.to_s }
 
       parent_process[1]
     end
