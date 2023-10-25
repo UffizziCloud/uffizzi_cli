@@ -214,13 +214,29 @@ class DevService
       Uffizzi::ConfigHelper.dev_environment
     end
 
-    def find_skaffold_pid(ppid)
-      ppid_regex = /\w*\s+\d+\s+#{ppid}.*\sskaffold dev/
-      pid_regex = /\w*\s+(\d+)\s+#{ppid}.*\sskaffold dev/
-
+    def find_skaffold_pid(pid)
+      pid_regex = /\w*#{pid}.*skaffold dev/
       io = Uffizzi.ui.popen('ps -ef')
-      ps = io.readlines.detect { |l| l.match?(ppid_regex) }
-      ps.match(pid_regex)[1]
+      processes = io.readlines.select { |l| l.match?(pid_regex) }
+
+      if processes.count.zero?
+        raise StandardError.new('Can\'t find skaffold process pid')
+      end
+
+      # HACK: For MacOS
+      if processes.count == 1
+        current_pid = processes[0].gsub(/\s+/, ' ').lstrip.split[1]
+        return pid if current_pid.to_s == pid.to_s
+
+        raise StandardError.new('Can\'t find skaffold process pid')
+      end
+
+      # HACK: For Linux
+      parent_process = processes.detect do |ps|
+        ps.gsub(/\s+/, ' ').lstrip.split[2].to_s == pid.to_s
+      end
+
+      parent_process[1]
     end
   end
 end

@@ -68,7 +68,7 @@ gem_uninstall:
 	gem uninstall uffizzi-cli
 
 gem_reinstall:
-	rm uffizzi-cli-*.gem -f
+	ls -la | grep uffizzi-cli- | rm -f
 	make gem_uninstall
 	make gem_build_install
 
