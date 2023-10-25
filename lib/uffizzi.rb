@@ -38,7 +38,19 @@ module Uffizzi
     end
 
     def process
-      @process ||= Process
+      Process
+    end
+
+    def signal
+      Signal
+    end
+
+    def thread
+      Thread
+    end
+
+    def at_exit(&block)
+      Kernel.at_exit(&block)
     end
   end
 end

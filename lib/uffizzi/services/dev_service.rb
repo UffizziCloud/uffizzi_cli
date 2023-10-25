@@ -32,11 +32,25 @@ class DevService
       dev_pid = running_pid
       skaffold_pid = running_skaffold_pid
 
-      Uffizzi.process.kill('INT', skaffold_pid)
-      Uffizzi.process.kill('INT', dev_pid)
+      begin
+        Uffizzi.process.kill('INT', skaffold_pid)
+      rescue Errno::ESRCH
+      end
+
+      wait_process_stop(skaffold_pid)
       delete_pid
+
+      Uffizzi.process.kill('INT', dev_pid)
     rescue Errno::ESRCH
       delete_pid
+    end
+
+    def wait_process_stop(pid)
+      loop do
+        Uffizzi.process.kill(0, pid)
+        sleep(1)
+      end
+    rescue Errno::ESRCH
     end
 
     def process_running?
@@ -50,9 +64,9 @@ class DevService
     end
 
     def start_check_pid_file_existence
-      Thread.new do
+      Uffizzi.thread.new do
         loop do
-          Uffizzi.process.kill('QUIT', Uffizzi.process.pid) unless File.exist?(pid_path)
+          stop_process unless File.exist?(pid_path)
           sleep(1)
         end
       end
@@ -61,6 +75,8 @@ class DevService
     def start_basic_skaffold(config_path, options)
       Uffizzi.ui.say('Start skaffold')
       cmd = build_skaffold_dev_command(config_path, options)
+
+      Uffizzi.signal.trap('INT') {}
 
       Uffizzi.ui.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
         pid = wait_thr.pid
@@ -198,13 +214,29 @@ class DevService
       Uffizzi::ConfigHelper.dev_environment
     end
 
-    def find_skaffold_pid(ppid)
-      ppid_regex = /\w*\s+\d+\s+#{ppid}.*\sskaffold dev/
-      pid_regex = /\w*\s+(\d+)\s+#{ppid}.*\sskaffold dev/
-
+    def find_skaffold_pid(pid)
+      pid_regex = /\w*#{pid}.*skaffold dev/
       io = Uffizzi.ui.popen('ps -ef')
-      ps = io.readlines.detect { |l| l.match?(ppid_regex) }
-      ps.match(pid_regex)[1]
+      processes = io.readlines.select { |l| l.match?(pid_regex) }
+
+      if processes.count.zero?
+        raise StandardError.new('Can\'t find skaffold process pid')
+      end
+
+      # HACK: For MacOS
+      if processes.count == 1
+        current_pid = processes[0].gsub(/\s+/, ' ').lstrip.split[1]
+        return pid if current_pid.to_s == pid.to_s
+
+        raise StandardError.new('Can\'t find skaffold process pid')
+      end
+
+      # HACK: For Linux
+      parent_process = processes
+        .map { |ps| ps.gsub(/\s+/, ' ').lstrip.split }
+        .detect { |ps| ps[2].to_s == pid.to_s }
+
+      parent_process[1]
     end
   end
 end

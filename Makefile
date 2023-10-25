@@ -67,6 +67,11 @@ gem_build_install:
 gem_uninstall:
 	gem uninstall uffizzi-cli
 
+gem_reinstall:
+	ls -la | grep uffizzi-cli- | rm -f
+	make gem_uninstall
+	make gem_build_install
+
 brew_add_tap:
 	brew tap UffizziCloud/tap
 
