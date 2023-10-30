@@ -20,8 +20,6 @@ uffizzi-dev-start - start a development environment
     supported. For help creating a skaffold.yaml file, see:
     https://skaffold.dev/docs/init/
 
-    If a kubeconfig exists
-
     For more information on Uffizzi clusters, see:
     https://docs.uffizzi.com/references/cli/
 
@@ -72,17 +70,6 @@ uffizzi-dev-start - start a development environment
     run:
 
         $ uffizzi dev start --quiet
-
-    To push your build artifacts to a private Docker Hub repo
-    called 'acme/foo', first add your Docker Hub credentials:
-
-        $ uffizzi connect docker-hub
-        (See `uffizzi connect -h` for other registry options)
-
-    ...then override the default repo:
-
-        $ uffizzi dev start \
-          --default-repo="hub.docker.com/acme/foo"
 
     To start a dev environment using an alternate kubeconfig file,
     run:
