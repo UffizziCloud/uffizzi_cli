@@ -293,6 +293,13 @@ module ApiClient
     build_response(response)
   end
 
+  def get_cluster_ingresses(server, project_slug, params)
+    uri = project_cluster_ingresses_uri(server, project_slug, cluster_name: params[:cluster_name], oidc_token: params[:oidc_token])
+    response = http_client.make_get_request(uri)
+
+    build_response(response)
+  end
+
   def get_access_token(server, code)
     uri = access_token_url(server, code)
     response = http_client.make_get_request(uri)

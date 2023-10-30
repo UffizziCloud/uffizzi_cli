@@ -1,0 +1,21 @@
+$ uffizzi dev ingress -h
+uffizzi-dev-ingress - show the dev environment ingress
+================================================================
+
+## SYNOPSIS
+    uffizzi dev ingress COMMAND
+
+## DESCRIPTION
+    Show the dev environment ingress
+
+    For more information on Uffizzi clusters, see:
+    https://docs.uffizzi.com/references/cli/
+
+## COMMANDS
+    COMMAND is one of the following:
+
+     open
+        Open the dev environment ingress hosts in browser
+
+##
+Run 'uffizzi dev ingress COMMAND --help' for more information on a command.

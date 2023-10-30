@@ -104,6 +104,12 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/clusters?token=#{oidc_token}"
   end
 
+  def project_cluster_ingresses_uri(server, project_slug, cluster_name:, oidc_token:)
+    url = "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}/ingresses"
+
+    oidc_token.nil? ? url : url + "?token=#{oidc_token}"
+  end
+
   def cluster_uri(server, project_slug, cluster_name:, oidc_token:)
     return "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}" if oidc_token.nil?
 
