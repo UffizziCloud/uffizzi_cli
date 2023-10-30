@@ -125,7 +125,7 @@ class ClusterService
         name: cluster_data[:name],
         status: cluster_data[:state],
         created: Time.strptime(cluster_data[:created_at], '%Y-%m-%dT%H:%M:%S.%N').strftime('%a %b %d %H:%M:%S %Y'),
-        url: cluster_data[:host],
+        host: cluster_data[:host],
       }
     end
   end

@@ -3,7 +3,7 @@ uffizzi-dev-describe - show metadata for a dev environment
 ================================================================
 
 ## SYNOPSIS
-    uffizzi dev describe <NAME>
+    uffizzi dev describe
 
 ## DESCRIPTION
     Shows metadata for a dev environment
@@ -14,11 +14,6 @@ uffizzi-dev-describe - show metadata for a dev environment
 
     For more information on Uffizzi clusters, see:
     https://docs.uffizzi.com/references/cli/
-
-## POSITIONAL ARGUMENTS
-    [NAME]
-        NAME for the dev environment you want to describe.
-        This is an optional argument.
 
 ## EXAMPLES
     The following command prints metadata for the dev
