@@ -1,0 +1,18 @@
+$ uffizzi dev ingress -h
+uffizzi-dev-ingress-open - open the dev environment ingress hosts in browser
+================================================================
+
+## SYNOPSIS
+    uffizzi dev ingress open
+
+## DESCRIPTION
+    Open the dev environment ingress hosts in browser
+
+    For more information on Uffizzi clusters, see:
+    https://docs.uffizzi.com/references/cli/
+
+## EXAMPLES
+    The following command open the dev environment
+    ingress hosts in browser:
+
+        $ uffizzi dev ingress open

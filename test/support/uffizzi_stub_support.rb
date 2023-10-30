@@ -188,6 +188,12 @@ module UffizziStubSupport
     stub_request(:get, uri).to_return(status: 200, body: body.to_json)
   end
 
+  def stub_get_cluster_ingresses_request(body, project_slug, cluster_name)
+    uri = project_cluster_ingresses_uri(Uffizzi.configuration.server, project_slug, cluster_name: cluster_name, oidc_token: nil)
+
+    stub_request(:get, uri).to_return(status: 200, body: body.to_json)
+  end
+
   def stub_uffizzi_get_clusters(body, project_slug)
     uri = project_clusters_uri(Uffizzi.configuration.server, project_slug, oidc_token: nil)
     stub_request(:get, uri).to_return(status: 200, body: body.to_json)

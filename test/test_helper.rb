@@ -52,6 +52,7 @@ class Minitest::Test
     Uffizzi.stubs(:signal).returns(MockSignal)
     Uffizzi.stubs(:thread).returns(MockSignal)
     Uffizzi.stubs(:at_exit).returns(nil)
+    Uffizzi.stubs(:launchy).returns(MockLaunchy)
     Uffizzi::ConfigFile.stubs(:config_path).returns(TEST_CONFIG_PATH)
     Uffizzi::Token.stubs(:token_path).returns(TEST_TOKEN_PATH)
     Uffizzi::ConfigFile.stubs(:config_path).returns(TEST_CONFIG_PATH)

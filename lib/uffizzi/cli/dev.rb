@@ -9,6 +9,10 @@ module Uffizzi
   class Cli::Dev < Thor
     include ApiClient
 
+    desc 'ingress', 'Show the compose dev environment ingress info'
+    require_relative 'dev/ingress'
+    subcommand 'ingress', Uffizzi::Cli::Dev::Ingress
+
     desc 'start [CONFIG]', 'Start dev environment'
     method_option :quiet, type: :boolean, aliases: :q
     method_option :'default-repo', type: :string

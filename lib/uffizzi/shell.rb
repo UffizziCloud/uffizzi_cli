@@ -83,7 +83,7 @@ module Uffizzi
         when Array
           data.map { |v| format_to_pretty_list(v) }.join("\n\n")
         when Hash
-          data.map { |k, v| "- #{k.to_s.upcase}: #{v}" }.join("\n").strip
+          data.map { |k, v| "- #{k.to_s.capitalize.gsub('_', ' ')}: #{v}" }.join("\n").strip
         else
           data
         end

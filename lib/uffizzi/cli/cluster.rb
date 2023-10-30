@@ -7,6 +7,11 @@ require 'uffizzi/auth_helper'
 require 'uffizzi/helpers/config_helper'
 require 'uffizzi/services/preview_service'
 require 'uffizzi/services/cluster_service'
+require 'uffizzi/services/cluster/common_service'
+require 'uffizzi/services/cluster/create_service'
+require 'uffizzi/services/cluster/delete_service'
+require 'uffizzi/services/cluster/list_service'
+require 'uffizzi/services/cluster/update_kubeconfig_service'
 require 'uffizzi/services/kubeconfig_service'
 require 'uffizzi/services/cluster/disconnect_service'
 
@@ -164,31 +169,11 @@ module Uffizzi
 
       return handle_delete_cluster(cluster_name) unless is_delete_kubeconfig
 
-      cluster_data = ClusterService.fetch_cluster_data(cluster_name, **cluster_api_connection_params)
-      kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
+      cluster_data = ClusterService.fetch_cluster_data(command_args[:cluster_name], **cluster_api_connection_params)
+      kubeconfig = ClusterCommonService.parse_kubeconfig(cluster_data[:kubeconfig])
 
       handle_delete_cluster(cluster_name)
-      exclude_kubeconfig(cluster_data[:id], kubeconfig) if kubeconfig.present?
-    end
-
-    def exclude_kubeconfig(cluster_id, kubeconfig)
-      cluster_config = Uffizzi::ConfigHelper.cluster_config_by_id(cluster_id)
-      return if cluster_config.nil?
-
-      kubeconfig_path = cluster_config[:kubeconfig_path]
-      ConfigFile.write_option(:clusters, Uffizzi::ConfigHelper.clusters_config_without(cluster_id))
-
-      KubeconfigService.save_to_filepath(kubeconfig_path, kubeconfig) do |kubeconfig_by_path|
-        if kubeconfig_by_path.nil?
-          msg = "Warning: kubeconfig at path #{kubeconfig_path} does not exist"
-          return Uffizzi.ui.say(msg)
-        end
-
-        new_kubeconfig = KubeconfigService.exclude(kubeconfig_by_path, kubeconfig)
-        first_context = KubeconfigService.get_first_context(new_kubeconfig)
-        new_current_context = first_context.present? ? first_context['name'] : nil
-        KubeconfigService.update_current_context(new_kubeconfig, new_current_context)
-      end
+      ClusterDeleteService.exclude_kubeconfig(cluster_data[:id], kubeconfig) if kubeconfig.present?
     end
 
     def handle_delete_cluster(cluster_name)
@@ -211,10 +196,10 @@ module Uffizzi
       cluster_data = ClusterService.fetch_cluster_data(cluster_name, **cluster_api_connection_params)
 
       unless cluster_data[:kubeconfig].present?
-        say_error_update_kubeconfig(cluster_data)
+        ClusterUpdateKubeconfigService.say_error_update_kubeconfig(cluster_data)
       end
 
-      parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
+      parsed_kubeconfig = ClusterCommonService.parse_kubeconfig(cluster_data[:kubeconfig])
 
       return Uffizzi.ui.say(parsed_kubeconfig.to_yaml) if options[:print]
 
@@ -226,11 +211,11 @@ module Uffizzi
         next new_kubeconfig if kubeconfig_by_path.nil?
 
         previous_current_context = KubeconfigService.get_current_context(kubeconfig_by_path)
-        save_previous_current_context(kubeconfig_path, previous_current_context)
+        ClusterCommonService.save_previous_current_context(kubeconfig_path, previous_current_context)
         new_kubeconfig
       end
 
-      update_clusters_config(cluster_data[:id], name: cluster_name, kubeconfig_path: kubeconfig_path)
+      ClusterCommonService.update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
 
       return if options[:quiet]
 
@@ -287,10 +272,9 @@ module Uffizzi
     end
 
     def cluster_creation_params(cluster_name)
+      manifest_content = load_manifest_file(options[:manifest])
       creation_source = options[:"creation-source"] || ClusterService::MANUAL_CREATION_SOURCE
-      manifest_file_path = options[:manifest]
       k8s_version = options[:"k8s-version"]
-      manifest_content = load_manifest_file(manifest_file_path)
 
       {
         cluster: {
@@ -327,7 +311,7 @@ module Uffizzi
       raise Uffizzi::Error.new('The project has no active clusters') if clusters.empty?
 
       clusters_data = if Uffizzi.ui.output_format.nil?
-        render_plain_cluster_list(clusters)
+        ClusterListService.render_plain_clusters(clusters)
       else
         clusters.map { |c| c.slice(:name, :project) }
       end
@@ -335,24 +319,11 @@ module Uffizzi
       Uffizzi.ui.say(clusters_data)
     end
 
-    def render_plain_cluster_list(clusters)
-      clusters.map do |cluster|
-        project_name = cluster.dig(:project, :name)
-
-        if project_name.present?
-          "- Cluster name: #{cluster[:name].strip} Project name: #{project_name.strip}"
-        else
-          "- #{cluster[:name]}"
-        end
-      end.join("\n")
-    end
-
     def handle_succeed_create_response(cluster_data)
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
       is_update_current_context = options[:'update-current-context']
-      parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
-      rendered_cluster_data = render_cluster_data(cluster_data)
-      cluster_name = cluster_data[:name]
+      parsed_kubeconfig = ClusterCommonService.parse_kubeconfig(cluster_data[:kubeconfig])
+      rendered_cluster_data = build_render_cluster_data!(cluster_data)
 
       Uffizzi.ui.enable_stdout
       Uffizzi.ui.say("Cluster with name: #{rendered_cluster_data[:name]} was created.")
@@ -363,42 +334,13 @@ module Uffizzi
 
       Uffizzi.ui.say(rendered_cluster_data) if Uffizzi.ui.output_format
 
-      save_kubeconfig(parsed_kubeconfig, kubeconfig_path)
-      update_clusters_config(cluster_data[:id], name: cluster_name, kubeconfig_path: kubeconfig_path)
+      ClusterCreateService.save_kubeconfig(parsed_kubeconfig, kubeconfig_path, is_update_current_context)
+      ClusterCommonService.update_clusters_config(cluster_data[:id], name: cluster_data[:name], kubeconfig_path: kubeconfig_path)
       GithubService.write_to_github_env(rendered_cluster_data) if GithubService.github_actions_exists?
     end
 
-    def save_kubeconfig(kubeconfig, kubeconfig_path)
-      is_update_current_context = options[:'update-current-context']
-
-      KubeconfigService.save_to_filepath(kubeconfig_path, kubeconfig) do |kubeconfig_by_path|
-        merged_kubeconfig = KubeconfigService.merge(kubeconfig_by_path, kubeconfig)
-
-        if is_update_current_context
-          new_current_context = KubeconfigService.get_current_context(kubeconfig)
-          new_kubeconfig = KubeconfigService.update_current_context(merged_kubeconfig, new_current_context)
-
-          next new_kubeconfig if kubeconfig_by_path.nil?
-
-          previous_current_context = KubeconfigService.get_current_context(kubeconfig_by_path)
-          save_previous_current_context(kubeconfig_path, previous_current_context)
-          new_kubeconfig
-        else
-          merged_kubeconfig
-        end
-      end
-
-      Uffizzi.ui.say("Kubeconfig was updated by the path: #{kubeconfig_path}") if is_update_current_context
-    end
-
-    def update_clusters_config(id, params)
-      clusters_config = Uffizzi::ConfigHelper.update_clusters_config_by_id(id, params)
-      ConfigFile.write_option(:clusters, clusters_config)
-      ConfigFile.write_option(:current_cluster, ConfigHelper.cluster_config_by_id(id))
-    end
-
-    def render_cluster_data(cluster_data)
-      kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
+    def build_render_cluster_data!(cluster_data)
+      kubeconfig = ClusterCommonService.parse_kubeconfig(cluster_data[:kubeconfig])
       raise Uffizzi::Error.new('The kubeconfig data is empty') unless kubeconfig
 
       new_cluster_data = cluster_data.slice(:name)
@@ -411,13 +353,6 @@ module Uffizzi
       return if kubeconfig.nil?
 
       Psych.safe_load(Base64.decode64(kubeconfig))
-    end
-
-    def save_previous_current_context(kubeconfig_path, current_context)
-      return if kubeconfig_path.nil? || ConfigHelper.previous_current_context_by_path(kubeconfig_path).present?
-
-      previous_current_contexts = Uffizzi::ConfigHelper.set_previous_current_context_by_path(kubeconfig_path, current_context)
-      ConfigFile.write_option(:previous_current_contexts, previous_current_contexts)
     end
 
     def handle_missing_cluster_name_error

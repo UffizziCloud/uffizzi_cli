@@ -6,6 +6,7 @@ require 'sentry-ruby'
 require 'active_support'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/object/blank'
+require 'launchy'
 
 require 'thor'
 require 'uffizzi/error'
@@ -51,6 +52,10 @@ module Uffizzi
 
     def at_exit(&block)
       Kernel.at_exit(&block)
+    end
+
+    def launchy
+      Launchy
     end
   end
 end
