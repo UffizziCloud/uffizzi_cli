@@ -1,0 +1,24 @@
+uffizzi dev delete -h
+uffizzi-dev-delete - delete a development environment
+================================================================
+
+## SYNOPSIS
+    uffizzi dev delete
+
+## DESCRIPTION
+    Deletes a dev environment and associated Uffizzi 
+    cluster resources, including any persistent
+    volumes, and the namespace itself. The Uffizzi
+    cluster config is deleted from the kubeconfig file.
+
+    For more information on Uffizzi clusters, see:
+    https://docs.uffizzi.com/references/cli/
+
+## FLAGS
+     --help, -h
+        Show this message and exit.
+
+## EXAMPLES
+    To delete a dev environment, run:
+
+        $ uffizzi dev delete
