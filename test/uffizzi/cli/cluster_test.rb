@@ -3,6 +3,7 @@
 require 'psych'
 require 'base64'
 require 'test_helper'
+
 class ClusterTest < Minitest::Test
   def setup
     @cluster = Uffizzi::Cli::Cluster.new

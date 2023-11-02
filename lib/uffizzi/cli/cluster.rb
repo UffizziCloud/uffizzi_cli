@@ -174,6 +174,7 @@ module Uffizzi
 
       handle_delete_cluster(cluster_name)
       ClusterDeleteService.exclude_kubeconfig(cluster_data[:id], kubeconfig) if kubeconfig.present?
+      DevService.clear_dev_environment_config if DevService.dev_environment[:cluster_name] == cluster_name
     end
 
     def handle_delete_cluster(cluster_name)
