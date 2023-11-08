@@ -328,6 +328,13 @@ module ApiClient
     build_response(response)
   end
 
+  def get_account_user_project_clusters(server, account_id, project_slug, params = {})
+    uri = account_user_project_clusters_uri(server, account_id, project_slug, params)
+    response = http_client.make_get_request(uri)
+
+    build_response(response)
+  end
+
   def create_account_controller_settings(server, account_id, params = {})
     uri = account_controller_settings_uri(server, account_id)
     response = http_client.make_post_request(uri, params)

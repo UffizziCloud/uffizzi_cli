@@ -14,6 +14,7 @@ class ClusterService
   CLUSTER_STATE_FAILED = 'failed'
   CLUSTER_NAME_MAX_LENGTH = 15
   MANUAL_CREATION_SOURCE = 'manual'
+  DEV_CLUSTER_KIND = 'dev'
 
   class << self
     include ApiClient
@@ -127,6 +128,10 @@ class ClusterService
         created: Time.strptime(cluster_data[:created_at], '%Y-%m-%dT%H:%M:%S.%N').strftime('%a %b %d %H:%M:%S %Y'),
         host: cluster_data[:host],
       }
+    end
+
+    def dev_cluster?(cluster_data)
+      cluster_data[:kind] == DEV_CLUSTER_KIND
     end
   end
 end

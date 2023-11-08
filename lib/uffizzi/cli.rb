@@ -135,6 +135,7 @@ module Uffizzi
         when Interrupt
           nil
         when StandardError
+          puts exception.backtrace
           raise Uffizzi::CliError.new(exception.message)
         else
           raise exception

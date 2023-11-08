@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'uffizzi/services/cluster_service'
+require 'uffizzi/services/cluster/delete_service'
 require 'uffizzi/services/dev_service'
 require 'uffizzi/services/kubeconfig_service'
 require 'uffizzi/auth_helper'
@@ -55,16 +56,34 @@ module Uffizzi
     end
 
     def handle_start_command(command_args)
-      config_path = command_args[:config_path]
       DevService.check_skaffold_existence
-      DevService.check_no_running_process!
-      DevService.check_skaffold_config_existence(config_path)
 
-      if dev_environment.empty?
+      config_path = command_args[:config_path]
+      DevService.check_skaffold_config_existence(config_path)
+      dev_cluster = DevService.account_user_project_dev_cluster(server, account_id, project_slug)
+
+      if try_to_start_second_dev_env?(dev_cluster)
+        msg = 'Dev cluster already exists. ' \
+              "Before you create a new dev cluster, you must delete the existing one: $ uffizzi cluster delete #{dev_cluster[:name]}"
+        Uffizzi.ui.say_error_and_exit(msg)
+      end
+
+      if dev_cluster_already_deleted?(dev_cluster)
+        DevService.clear_after_delete(dev_environment[:cluster_id], dev_environment[:encoded_kubeconfig])
+        answer = Uffizzi.prompt.yes?('The previous development environment has been deleted. Do you want to start a new one?')
+
+        return unless answer
+      end
+
+      DevService.check_no_running_process!
+
+      unless DevService.dev_environment_exist?
         DevService.set_startup_state
         cluster_name = start_create_cluster
-        wait_cluster_creation(cluster_name)
-        DevService.set_dev_environment_config(cluster_name, config_path, options)
+        cluster_data = wait_cluster_creation(cluster_name)
+        DevService.set_dev_environment_config(cluster_name, config_path: config_path,
+                                                            cluster_id: cluster_data[:id],
+                                                            encoded_kubeconfig: cluster_data[:kubeconfig])
         DevService.set_cluster_deployed_state
       end
 
@@ -101,8 +120,8 @@ module Uffizzi
       end
 
       cluster_data = fetch_dev_env_cluster!
-      handle_delete_cluster(cluster_data)
-      DevService.clear_dev_environment_config
+      ClusterDeleteService.delete(cluster_data[:name], cluster_api_connection_params)
+      DevService.clear_after_delete(cluster_data[:id], cluster_data[:kubeconfig])
     end
 
     def start_create_cluster
@@ -127,33 +146,15 @@ module Uffizzi
 
     def handle_succeed_cluster_creation(cluster_data)
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
-      parsed_kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
+      parsed_kubeconfig = ClusterCommonService.parse_kubeconfig(cluster_data[:kubeconfig])
       cluster_name = cluster_data[:name]
 
       Uffizzi.ui.say("Cluster with name: #{cluster_name} was created.")
 
-      save_kubeconfig(parsed_kubeconfig, kubeconfig_path)
-      update_clusters_config(cluster_data[:id], name: cluster_name, kubeconfig_path: kubeconfig_path)
-    end
+      ClusterCreateService.save_kubeconfig(parsed_kubeconfig, kubeconfig_path, update_current_context: true)
+      ClusterCommonService.update_clusters_config(cluster_data[:id], name: cluster_name, kubeconfig_path: kubeconfig_path)
 
-    def save_kubeconfig(kubeconfig, kubeconfig_path)
-      KubeconfigService.save_to_filepath(kubeconfig_path, kubeconfig) do |kubeconfig_by_path|
-        merged_kubeconfig = KubeconfigService.merge(kubeconfig_by_path, kubeconfig)
-
-        new_current_context = KubeconfigService.get_current_context(kubeconfig)
-        new_kubeconfig = KubeconfigService.update_current_context(merged_kubeconfig, new_current_context)
-
-        next new_kubeconfig if kubeconfig_by_path.nil?
-
-        previous_current_context = KubeconfigService.get_current_context(kubeconfig_by_path)
-        save_previous_current_context(kubeconfig_path, previous_current_context)
-        new_kubeconfig
-      end
-    end
-
-    def update_clusters_config(id, params)
-      clusters_config = Uffizzi::ConfigHelper.update_clusters_config_by_id(id, params)
-      ConfigFile.write_option(:clusters, clusters_config)
+      cluster_data
     end
 
     def cluster_creation_params
@@ -163,64 +164,10 @@ module Uffizzi
           manifest: nil,
           creation_source: ClusterService::MANUAL_CREATION_SOURCE,
           k8s_version: options[:"k8s-version"],
+          kind: ClusterService::DEV_CLUSTER_KIND,
         },
         token: oidc_token,
       }
-    end
-
-    def handle_delete_cluster(cluster_data)
-      cluster_id = cluster_data[:id]
-      cluster_name = cluster_data[:name]
-      kubeconfig = parse_kubeconfig(cluster_data[:kubeconfig])
-
-      exclude_kubeconfig(cluster_id, kubeconfig) if kubeconfig.present?
-
-      params = {
-        cluster_name: cluster_name,
-        oidc_token: oidc_token,
-      }
-      response = delete_cluster(server, project_slug, params)
-
-      if ResponseHelper.no_content?(response)
-        Uffizzi.ui.say("Cluster #{cluster_name} deleted")
-      else
-        ResponseHelper.handle_failed_response(response)
-      end
-    end
-
-    def exclude_kubeconfig(cluster_id, kubeconfig)
-      cluster_config = Uffizzi::ConfigHelper.cluster_config_by_id(cluster_id)
-      return if cluster_config.nil?
-
-      kubeconfig_path = cluster_config[:kubeconfig_path]
-      ConfigFile.write_option(:clusters, Uffizzi::ConfigHelper.clusters_config_without(cluster_id))
-
-      KubeconfigService.save_to_filepath(kubeconfig_path, kubeconfig) do |kubeconfig_by_path|
-        return if kubeconfig_by_path.nil?
-
-        new_kubeconfig = KubeconfigService.exclude(kubeconfig_by_path, kubeconfig)
-        new_current_context = find_previous_current_context(new_kubeconfig, kubeconfig_path)
-        KubeconfigService.update_current_context(new_kubeconfig, new_current_context)
-      end
-    end
-
-    def find_previous_current_context(kubeconfig, kubeconfig_path)
-      prev_current_context = Uffizzi::ConfigHelper.previous_current_context_by_path(kubeconfig_path)&.fetch(:current_context, nil)
-
-      if KubeconfigService.find_cluster_contexts_by_name(kubeconfig, prev_current_context).present?
-        prev_current_context
-      end
-    end
-
-    def save_previous_current_context(kubeconfig_path, current_context)
-      previous_current_contexts = Uffizzi::ConfigHelper.set_previous_current_context_by_path(kubeconfig_path, current_context)
-      ConfigFile.write_option(:previous_current_contexts, previous_current_contexts)
-    end
-
-    def parse_kubeconfig(kubeconfig)
-      return if kubeconfig.nil?
-
-      Psych.safe_load(Base64.decode64(kubeconfig))
     end
 
     def launch_demonise_skaffold(config_path)
@@ -233,6 +180,7 @@ module Uffizzi
       DevService.save_pid
       File.delete(DevService.logs_path) if File.exist?(DevService.logs_path)
       DevService.start_check_pid_file_existence
+      DevService.run_check_cluster_existence(server, account_id, project_slug)
       DevService.start_demonised_skaffold(config_path, options)
     rescue StandardError => e
       File.open(DevService.logs_path, 'a') { |f| f.puts(e.message) }
@@ -245,6 +193,7 @@ module Uffizzi
 
       DevService.save_pid
       DevService.start_check_pid_file_existence
+      DevService.run_check_cluster_existence(server, account_id, project_slug)
       DevService.start_basic_skaffold(config_path, options)
     end
 
@@ -258,7 +207,15 @@ module Uffizzi
     end
 
     def dev_environment
-      @dev_environment ||= DevService.dev_environment
+      DevService.dev_environment
+    end
+
+    def dev_cluster_already_deleted?(dev_cluster)
+      DevService.dev_environment_exist? && dev_cluster.blank?
+    end
+
+    def try_to_start_second_dev_env?(dev_cluster)
+      !DevService.dev_environment_exist? && dev_cluster.present?
     end
 
     def cluster_api_connection_params
@@ -279,6 +236,10 @@ module Uffizzi
 
     def server
       @server ||= ConfigFile.read_option(:server)
+    end
+
+    def account_id
+      @account_id ||= ConfigFile.read_option(:account, :id)
     end
   end
 end

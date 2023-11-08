@@ -40,10 +40,6 @@ class KubeconfigService
       kubeconfig['current-context']
     end
 
-    def get_first_context(kubeconfig)
-      get_cluster_contexts(kubeconfig)[0]
-    end
-
     def get_current_cluster_name(kubeconfig)
       get_cluster_contexts(kubeconfig)
         .detect { |c| c['name'] == get_current_context(kubeconfig) }
