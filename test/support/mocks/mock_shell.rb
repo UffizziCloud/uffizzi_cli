@@ -2,6 +2,7 @@
 
 class MockShell
   class ExitError < StandardError; end
+
   class MockProcessStatus
     def initialize(success)
       @success = success
@@ -107,23 +108,6 @@ class MockShell
   end
 
   private
-
-  def get_command_response(command)
-    response_index = @command_responses.index do |command_response|
-      case command_response[:command]
-      when Regexp
-        command_response[:command].match?(command)
-      else
-        command_response[:command] == command
-      end
-    end
-
-    stdout = @command_responses[response_index].fetch(:stdout)
-    stderr = @command_responses[response_index].fetch(:stderr)
-    @command_responses.delete_at(response_index)
-
-    [stdout, stderr]
-  end
 
   def format_to_json(data)
     data.to_json

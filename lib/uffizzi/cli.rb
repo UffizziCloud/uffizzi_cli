@@ -79,6 +79,10 @@ module Uffizzi
     require_relative 'cli/install'
     subcommand 'install', Cli::Install
 
+    desc 'uninstall', 'uninstall'
+    require_relative 'cli/uninstall'
+    subcommand 'uninstall', Cli::Uninstall
+
     map preview: :compose
 
     class << self

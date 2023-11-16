@@ -2,316 +2,251 @@
 
 require 'uffizzi'
 require 'uffizzi/config_file'
+require 'uffizzi/services/kubeconfig_service'
 
 module Uffizzi
   class Cli::Install < Thor
-    HELM_REPO_NAME = 'uffizzi'
-    HELM_DEPLOYED_STATUS = 'deployed'
-    CHART_NAME = 'uffizzi-app'
-    VALUES_FILE_NAME = 'helm_values.yaml'
-    DEFAULT_NAMESPACE = 'uffizzi'
-    DEFAULT_APP_PREFIX = 'uffizzi'
-    DEFAULT_CLUSTER_ISSUER = 'letsencrypt'
+    include ApiClient
 
-    desc 'application', 'Install uffizzi to cluster'
+    default_task :controller
+
+    desc 'controller [HOSTNMAE]', 'Install uffizzi controller to cluster'
     method_option :namespace, type: :string
-    method_option :domain, type: :string
-    method_option :'user-email', type: :string
-    method_option :'user-password', type: :string
+    method_option :email, type: :string, required: true
+    method_option :context, type: :string
     method_option :issuer, type: :string, enum: ['letsencrypt', 'zerossl']
-    method_option :repo, type: :string
-    method_option :'print-values', type: :boolean
-    def application
-      run_installation do
-        if options.except(:repo, :'print-values').present?
-          build_installation_options
-        else
-          ask_installation_params
-        end
-      end
-    end
+    method_option :'repo-url', type: :string
+    def controller(hostname)
+      Uffizzi::AuthHelper.check_login
 
-    desc 'wildcard-tls', 'Add wildcard tls from files'
-    method_option :domain, type: :string
-    method_option :cert, type: :string
-    method_option :key, type: :string
-    method_option :namespace, type: :string
-    method_option :repo, type: :string
-    def wildcard_tls
-      kubectl_exists?
+      InstallService.kubectl_exists?
+      InstallService.helm_exists?
 
-      params = if options.except(:repo).present? && wildcard_tls_options_valid?
-        {
-          namespace: options[:namespace] || DEFAULT_NAMESPACE,
-          domain: options[:domain],
-          wildcard_cert_path: options[:cert],
-          wildcard_key_path: options[:key],
-        }
-      else
-        namespace = Uffizzi.prompt.ask('Namespace: ', required: true, default: DEFAULT_NAMESPACE)
-        domain = Uffizzi.prompt.ask('Root Domain: ', required: true, default: 'example.com')
-        wildcard_cert_paths = ask_wildcard_cert(has_user_wildcard_cert: true, domain: domain)
-
-        { namespace: namespace, domain: domain }.merge(wildcard_cert_paths)
+      if options[:context].present? && options[:context] != InstallService.kubeconfig_current_context
+        InstallService.set_current_context(options[:context])
       end
 
-      kubectl_add_wildcard_tls(params)
-      helm_values = helm_get_values(namespace, namespace)
-      helm_values['uffizzi-controller']['tlsPerDeploymentEnabled'] = false.to_s
-      create_helm_values_file(helm_values)
-      helm_set_repo unless options[:repo]
-      helm_install(release_name: namespace, namespace: namespace, repo: options[:repo])
-    end
+      ask_confirmation
 
-    default_task :application
+      uri = parse_hostname(hostname)
+      installation_options = build_installation_options(uri)
+      check_existence_controller_settings(uri, installation_options)
+      helm_values = build_helm_values(installation_options)
+
+      InstallService.create_helm_values_file(helm_values)
+      helm_set_repo
+      InstallService.helm_install!(namespace)
+      InstallService.delete_helm_values_file
+      Uffizzi.ui.say('Helm release is deployed')
+
+      controller_setting_params = build_controller_setting_params(uri, installation_options)
+      create_controller_settings(controller_setting_params) if existing_controller_setting.blank?
+      Uffizzi.ui.say('Controller settings are saved')
+      say_success(uri)
+    end
 
     private
 
-    def wildcard_tls_options_valid?
-      required_options = [:namespace, :domain, :cert, :key]
-      missing_options = required_options - options.symbolize_keys.keys
-
-      return true if missing_options.empty?
-
-      rendered_missing_options = missing_options.map { |o| "'--#{o}'" }.join(', ')
-
-      Uffizzi.ui.say_error_and_exit("No value provided for required options #{rendered_missing_options}")
-    end
-
-    def run_installation
-      kubectl_exists?
-      helm_exists?
-      params = yield
-      helm_values = build_helm_values(params)
-      return Uffizzi.ui.say(helm_values.to_yaml) if options[:'print-values']
-
-      namespace = params[:namespace]
-      release_name = params[:namespace]
-
-      create_helm_values_file(helm_values)
-      helm_set_repo unless options[:repo]
-      helm_install(release_name: release_name, namespace: namespace, repo: options[:repo])
-      delete_helm_values_file
-
-      ingress_ip = get_web_ingress_ip_address(release_name, namespace)
-
-      Uffizzi.ui.say('Helm release is deployed')
-      Uffizzi.ui.say("The uffizzi application url is 'https://#{DEFAULT_APP_PREFIX}.#{params[:domain]}'")
-      Uffizzi.ui.say("Create a DNS A record for domain '*.#{params[:domain]}' with value '#{ingress_ip}'")
-    end
-
-    def get_web_ingress_ip_address(release_name, namespace)
-      Uffizzi.ui.say('Getting an ingress ip address...')
-
-      10.times do
-        web_ingress = kubectl_get_web_ingress(release_name, namespace)
-        ingresses = web_ingress.dig('status', 'loadBalancer', 'ingress') || []
-        ip_address = ingresses.first&.fetch('ip', nil)
-
-        return ip_address if ip_address.present?
-
-        sleep(1)
-      end
-
-      Uffizzi.ui.say_error_and_exit('We can`t get the uffizzi ingress ip address')
-    end
-
-    def kubectl_exists?
-      cmd = 'kubectl version -o json'
-      execute_command(cmd, say: false).present?
-    end
-
-    def helm_exists?
-      cmd = 'helm version --short'
-      execute_command(cmd, say: false).present?
-    end
-
     def helm_set_repo
-      repo = helm_repo_search
-      return if repo.present?
+      return if InstallService.helm_repo_search.present?
 
-      helm_repo_add
+      InstallService.helm_repo_add(options[:'repo-url'])
     end
 
-    def helm_repo_add
-      cmd = "helm repo add #{HELM_REPO_NAME} https://uffizzicloud.github.io/uffizzi"
-      execute_command(cmd)
-    end
-
-    def helm_repo_search
-      cmd = "helm search repo #{HELM_REPO_NAME}/#{CHART_NAME} -o json"
-
-      execute_command(cmd) do |result, err|
-        err.present? ? nil : JSON.parse(result)
-      end
-    end
-
-    def helm_install(release_name:, namespace:, repo:)
-      Uffizzi.ui.say('Start helm release installation')
-
-      repo = repo || "#{HELM_REPO_NAME}/#{CHART_NAME}"
-      cmd = "helm upgrade #{release_name} #{repo}" \
-        " --values #{helm_values_file_path}" \
-        " --namespace #{namespace}" \
-        ' --create-namespace' \
-        ' --install' \
-        ' --output json'
-
-      res = execute_command(cmd, say: false)
-      info = JSON.parse(res)['info']
-
-      return if info['status'] == HELM_DEPLOYED_STATUS
-
-      Uffizzi.ui.say_error_and_exit(info)
-    end
-
-    def helm_get_values(release_name, namespace)
-      cmd = "helm get values #{release_name} -n #{namespace} -o json"
-      res = execute_command(cmd, say: false)
-      JSON.parse(res)
-    end
-
-    def kubectl_add_wildcard_tls(params)
-      cmd = "kubectl create secret tls wildcard.#{params.fetch(:domain)}" \
-            " --cert=#{params.fetch(:wildcard_cert_path)}" \
-            " --key=#{params.fetch(:wildcard_key_path)}" \
-            " --namespace #{params.fetch(:namespace)}"
-
-      execute_command(cmd)
-    end
-
-    def kubectl_get_web_ingress(release_name, namespace)
-      cmd = "kubectl get ingress/#{release_name}-web-ingress -n #{namespace} -o json"
-
-      res = execute_command(cmd, say: false)
-      JSON.parse(res)
-    end
-
-    def ask_wildcard_cert(has_user_wildcard_cert: nil, domain: nil)
-      has_user_wildcard_cert ||= Uffizzi.prompt.yes?('Uffizzi use a wildcard tls certificate. Do you have it?')
-
-      if !has_user_wildcard_cert
-        Uffizzi.ui.say('Uffizzi does not work properly without a wildcard certificate.')
-        Uffizzi.ui.say('You can add wildcard cert later with command:')
-        Uffizzi.ui.say("uffizzi install wildcard-tls --domain #{domain} --cert /path/to/cert --key /path/to/key")
-
-        return {}
-      end
-
-      cert_path = Uffizzi.prompt.ask('Path to cert: ', required: true)
-      Uffizzi.ui.say_error_and_exit("File '#{cert_path}' does not exists") unless File.exist?(cert_path)
-
-      key_path = Uffizzi.prompt.ask('Path to key: ', required: true)
-      Uffizzi.ui.say_error_and_exit("File '#{key_path}' does not exists") unless File.exist?(key_path)
-
-      { wildcard_cert_path: cert_path, wildcard_key_path: key_path }
-    end
-
-    def ask_installation_params
-      namespace = Uffizzi.prompt.ask('Namespace: ', required: true, default: DEFAULT_NAMESPACE)
-      domain = Uffizzi.prompt.ask('Root domain: ', required: true, default: 'example.com')
-      user_email = Uffizzi.prompt.ask('First user email: ', required: true, default: "admin@#{domain}")
-      user_password = Uffizzi.prompt.ask('First user password: ', required: true, default: generate_password)
-      wildcard_cert_paths = ask_wildcard_cert(domain: domain)
-
+    def build_installation_options(uri)
       {
-        namespace: namespace,
-        domain: domain,
-        user_email: user_email,
-        user_password: user_password,
+        uri: uri,
+        controller_username: Faker::Lorem.characters(number: 10),
         controller_password: generate_password,
-        cert_email: user_email,
-        cluster_issuer: DEFAULT_CLUSTER_ISSUER,
-      }.merge(wildcard_cert_paths)
-    end
-
-    def build_installation_options
-      {
-        namespace: options[:namespace] || DEFAULT_NAMESPACE,
-        domain: options[:domain],
-        user_email: options[:'user-email'] || "admin@#{options[:domain]}",
-        user_password: options[:'user-password'] || generate_password,
-        controller_password: generate_password,
-        cert_email: options[:'user-email'],
-        cluster_issuer: options[:issuer] || DEFAULT_CLUSTER_ISSUER,
+        cert_email: options[:email],
+        cluster_issuer: options[:issuer] || InstallService::DEFAULT_CLUSTER_ISSUER,
       }
     end
 
-    def build_helm_values(params)
-      domain = params.fetch(:domain)
-      namespace = params.fetch(:namespace)
-      app_host = [DEFAULT_APP_PREFIX, domain].join('.')
+    def wait_ip
+      spinner = TTY::Spinner.new('[:spinner] Waiting IP addess...', format: :dots)
+      spinner.auto_spin
 
+      ip = nil
+      try = 0
+
+      loop do
+        ip = InstallService.get_controller_ip(namespace)
+        break if ip.present?
+
+        if try == 30
+          spinner.error
+
+          return 'unknown'
+        end
+
+        try += 1
+        sleep(2)
+      end
+
+      spinner.success
+
+      ip
+    end
+
+    def wait_certificate_request_ready(uri)
+      spinner = TTY::Spinner.new('[:spinner] Waiting create certificate for controller host...', format: :dots)
+      spinner.auto_spin
+
+      try = 0
+
+      loop do
+        requests = InstallService.get_certificate_request(namespace, uri)
+        break if requests.all? { |r| r['status'].downcase == 'true' }
+
+        if try == 60
+          spinner.error
+
+          return Uffizzi.ui.say('Stop waiting creation certificate')
+        end
+
+        try += 1
+        sleep(2)
+      end
+
+      spinner.success
+    end
+
+    def build_helm_values(params)
       {
-        app_url: "https://#{app_host}",
-        webHostname: app_host,
-        allowed_hosts: app_host,
-        managed_dns_zone_dns_name: domain,
         global: {
           uffizzi: {
-            firstUser: {
-              email: params.fetch(:user_email),
-              password: params.fetch(:user_password),
-            },
             controller: {
-              password: params.fetch(:controller_password),
+              username: params[:controller_username],
+              password: params[:controller_password],
             },
           },
         },
-        'uffizzi-controller' => {
-          ingress: {
-            disabled: true,
-          },
-          clusterIssuer: params.fetch(:cluster_issuer),
-          tlsPerDeploymentEnabled: true.to_s,
-          certEmail: params.fetch(:cert_email),
-          'ingress-nginx' => {
-            controller: {
-              ingressClassResource: {
-                default: true,
-              },
-              extraArgs: {
-                'default-ssl-certificate' => "#{namespace}/wildcard.#{domain}",
-              },
+        clusterIssuer: params.fetch(:cluster_issuer),
+        tlsPerDeploymentEnabled: true.to_s,
+        certEmail: params.fetch(:cert_email),
+        'ingress-nginx' => {
+          controller: {
+            ingressClassResource: {
+              default: true,
             },
           },
+        },
+        ingress: {
+          hostname: InstallService.build_controller_host(params[:uri].host),
         },
       }.deep_stringify_keys
-    end
-
-    def execute_command(command, say: true)
-      stdout_str, stderr_str, status = Uffizzi.ui.capture3(command)
-
-      return yield(stdout_str, stderr_str) if block_given?
-
-      Uffizzi.ui.say_error_and_exit(stderr_str) unless status.success?
-
-      say ? Uffizzi.ui.say(stdout_str) : stdout_str
-    rescue Errno::ENOENT => e
-      Uffizzi.ui.say_error_and_exit(e.message)
-    end
-
-    def create_helm_values_file(values)
-      FileUtils.mkdir_p(helm_values_dir_path) unless File.directory?(helm_values_dir_path)
-      File.write(helm_values_file_path, values.to_yaml)
-    end
-
-    def delete_helm_values_file
-      File.delete(helm_values_file_path) if File.exist?(helm_values_file_path)
-    end
-
-    def helm_values_file_path
-      File.join(helm_values_dir_path, VALUES_FILE_NAME)
-    end
-
-    def helm_values_dir_path
-      File.dirname(Uffizzi::ConfigFile.config_path)
     end
 
     def generate_password
       hexatridecimal_base = 36
       length = 8
       rand(hexatridecimal_base**length).to_s(hexatridecimal_base)
+    end
+
+    def check_existence_controller_settings(uri, installation_options)
+      return if existing_controller_setting.blank?
+
+      Uffizzi.ui.say_error_and_exit('Installation canceled') unless update_and_continue?
+
+      controller_setting_params = build_controller_setting_params(uri, installation_options)
+      update_controller_settings(existing_controller_setting[:id], controller_setting_params)
+    end
+
+    def ask_confirmation
+      msg = "\r\n"\
+            'This command will install Uffizzi into the default namespace of'\
+            " the '#{InstallService.kubeconfig_current_context}' context."\
+            "\r\n"\
+            "To install in a different place, use options '--namespace' and/or '--context'."\
+            "\r\n\r\n"\
+            "After installation, new environments created for account '#{account_name}' will be deployed to this host cluster."\
+            "\r\n\r\n"
+
+      Uffizzi.ui.say(msg)
+
+      question = 'Okay to proceed?'
+      Uffizzi.ui.say_error_and_exit('Installation canceled') unless Uffizzi.prompt.yes?(question)
+    end
+
+    def update_and_continue?
+      msg = "\r\n"\
+            'You already have installation controller params. '\
+            "\r\n"\
+            'You can update previous params and continue installation or cancel installation.'\
+            "\r\n"
+
+      Uffizzi.ui.say(msg)
+
+      question = 'Do you want update the controller settings?'
+      Uffizzi.prompt.yes?(question)
+    end
+
+    def fetch_controller_settings
+      response = get_account_controller_settings(server, account_id)
+      return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
+
+      response.dig(:body, :controller_settings)
+    end
+
+    def update_controller_settings(controller_setting_id, params)
+      response = update_account_controller_settings(server, account_id, controller_setting_id, params)
+      Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
+    end
+
+    def create_controller_settings(params)
+      response = create_account_controller_settings(server, account_id, params)
+      Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.created?(response)
+    end
+
+    def build_controller_setting_params(uri, installation_options)
+      {
+        url: URI::HTTPS.build(host: InstallService.build_controller_host(uri.host)).to_s,
+        managed_dns_zone: uri.host,
+        login: installation_options[:controller_username],
+        password: installation_options[:controller_password],
+      }
+    end
+
+    def say_success(uri)
+      ip_address = wait_ip
+      wait_certificate_request_ready(uri)
+
+      msg = 'Your Uffizzi controller is ready. To configure DNS,'\
+            " create a record for the hostname '*.#{uri.host}' pointing to '#{ip_address}'"
+      Uffizzi.ui.say(msg)
+    end
+
+    def parse_hostname(hostname)
+      uri = URI.parse(hostname)
+      host = uri.host || hostname
+
+      case uri
+      when URI::HTTP, URI::HTTPS
+        uri
+      else
+        URI::HTTPS.build(host: host)
+      end
+    end
+
+    def namespace
+      options[:namespace] || InstallService::DEFAULT_NAMESPACE
+    end
+
+    def server
+      @server ||= ConfigFile.read_option(:server)
+    end
+
+    def account_id
+      @account_id ||= ConfigFile.read_option(:account, :id)
+    end
+
+    def account_name
+      @account_name ||= ConfigFile.read_option(:account, :name)
+    end
+
+    def existing_controller_setting
+      @existing_controller_setting ||= fetch_controller_settings[0]
     end
   end
 end

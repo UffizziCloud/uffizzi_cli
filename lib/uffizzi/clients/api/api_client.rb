@@ -321,6 +321,34 @@ module ApiClient
     build_response(response)
   end
 
+  def get_account_controller_settings(server, account_id)
+    uri = account_controller_settings_uri(server, account_id)
+    response = http_client.make_get_request(uri)
+
+    build_response(response)
+  end
+
+  def create_account_controller_settings(server, account_id, params = {})
+    uri = account_controller_settings_uri(server, account_id)
+    response = http_client.make_post_request(uri, params)
+
+    build_response(response)
+  end
+
+  def update_account_controller_settings(server, account_id, id, params = {})
+    uri = account_controller_setting_uri(server, account_id, id)
+    response = http_client.make_put_request(uri, params)
+
+    build_response(response)
+  end
+
+  def delete_account_controller_settings(server, account_id, id)
+    uri = account_controller_setting_uri(server, account_id, id)
+    response = http_client.make_delete_request(uri)
+
+    build_response(response)
+  end
+
   private
 
   def http_client

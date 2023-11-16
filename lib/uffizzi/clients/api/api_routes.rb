@@ -139,4 +139,12 @@ module ApiRoutes
   def account_clusters_uri(server, account_id)
     "#{server}/api/cli/v1/accounts/#{account_id}/clusters"
   end
+
+  def account_controller_settings_uri(server, account_id)
+    "#{server}/api/cli/v1/accounts/#{account_id}/controller_settings"
+  end
+
+  def account_controller_setting_uri(server, account_id, id)
+    "#{server}/api/cli/v1/accounts/#{account_id}/controller_settings/#{id}"
+  end
 end
