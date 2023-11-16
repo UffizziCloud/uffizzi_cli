@@ -181,13 +181,6 @@ module UffizziStubSupport
     stub_request(:post, uri).to_return(status: 201, body: body.to_json)
   end
 
-  def stub_get_cluster_request(body, project_slug)
-    uri = cluster_uri(Uffizzi.configuration.server, project_slug, cluster_name: nil, oidc_token: nil)
-    uri = %r{#{uri}([A-Za-z0-9\-_]+)}
-
-    stub_request(:get, uri).to_return(status: 200, body: body.to_json)
-  end
-
   def stub_get_cluster_ingresses_request(body, project_slug, cluster_name)
     uri = project_cluster_ingresses_uri(Uffizzi.configuration.server, project_slug, cluster_name: cluster_name, oidc_token: nil)
 
@@ -228,5 +221,29 @@ module UffizziStubSupport
     uri = "#{Uffizzi.configuration.server}/api/cli/v1/access_tokens"
 
     stub_request(:post, uri).to_return(status: 201, body: body.to_json)
+  end
+
+  def stub_get_account_controller_settings_request(body, account_id)
+    uri = account_controller_settings_uri(Uffizzi.configuration.server, account_id)
+
+    stub_request(:get, uri).to_return(status: 200, body: body.to_json)
+  end
+
+  def stub_create_account_controller_settings_request(body, account_id)
+    uri = account_controller_settings_uri(Uffizzi.configuration.server, account_id)
+
+    stub_request(:post, uri).to_return(status: 201, body: body.to_json)
+  end
+
+  def stub_update_account_controller_settings_request(body, account_id, controller_settings_id)
+    uri = account_controller_setting_uri(Uffizzi.configuration.server, account_id, controller_settings_id)
+
+    stub_request(:put, uri).to_return(status: 200, body: body.to_json)
+  end
+
+  def stub_delete_account_controller_settings_request(account_id, controller_settings_id)
+    uri = account_controller_setting_uri(Uffizzi.configuration.server, account_id, controller_settings_id)
+
+    stub_request(:delete, uri).to_return(status: 204, body: '')
   end
 end

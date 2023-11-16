@@ -85,4 +85,8 @@ class Minitest::Test
   def render_server_error(error)
     "#{Uffizzi::RESPONSE_SERVER_ERROR_HEADER}#{error}"
   end
+
+  def tmp_dir_name
+    (Time.now.utc.to_f * 100_000).to_i
+  end
 end
