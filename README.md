@@ -1,6 +1,6 @@
 # Uffizzi CLI
 
-A command-line interace (CLI) for the [Uffizzi API](https://github.com/UffizziCloud/uffizzi)
+The official command-line interace (CLI) for the [Uffizzi API](https://github.com/UffizziCloud/uffizzi)
 
 ## Installation
 
