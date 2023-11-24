@@ -103,7 +103,7 @@ class InstallService
       res = execute_command(cmd, say: false)
       certificate_request = JSON.parse(res)['items'].detect { |i| i['metadata']['name'].include?(uri.host) }
 
-      return if certificate_request.nil?
+      return [] if certificate_request.nil?
 
       conditions = certificate_request.dig('status', 'conditions') || []
       conditions.map { |c| c.slice('type', 'status') }

@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-LOGIN" "" "September 2023" ""
+.TH "UFFIZZI\-LOGIN" "" "November 2023" ""
 .SH "NAME"
 \fBuffizzi\-login\fR \- login to Uffizzi to view and manage your previews\.
 .SH "SYNOPSIS"

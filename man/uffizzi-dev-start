@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-DEV\-START" "" "October 2023" ""
+.TH "UFFIZZI\-DEV\-START" "" "November 2023" ""
 .SH "NAME"
 \fBuffizzi\-dev\-start\fR \- start a development environment
 .SH "SYNOPSIS"
@@ -23,8 +23,6 @@ The command looks for a configuration at the specified
 path CONFIG_FILE\. Skaffold configurations are currently
 supported\. For help creating a skaffold\.yaml file, see:
 https://skaffold\.dev/docs/init/
-
-If a kubeconfig exists
 
 For more information on Uffizzi clusters, see:
 https://docs\.uffizzi\.com/references/cli/
@@ -79,17 +77,6 @@ To start a dev environment in quiet  mode,
 run:
 
     $ uffizzi dev start \-\-quiet
-
-To push your build artifacts to a private Docker Hub repo
-called \'acme/foo\', first add your Docker Hub credentials:
-
-    $ uffizzi connect docker\-hub
-    (See `uffizzi connect \-h` for other registry options)
-
-\|\.\|\.\|\.then override the default repo:
-
-    $ uffizzi dev start \e
-      \-\-default\-repo="hub\.docker\.com/acme/foo"
 
 To start a dev environment using an alternate kubeconfig file,
 run:
