@@ -1,0 +1,33 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-DEV\-DELETE" "" "November 2023" ""
+.SH "NAME"
+\fBuffizzi\-dev\-delete\fR
+.P
+uffizzi dev delete \-h uffizzi\-dev\-delete \- delete a development environment ================================================================
+.SH "SYNOPSIS"
+.nf
+uffizzi dev delete
+.fi
+.SH "DESCRIPTION"
+.nf
+Deletes a dev environment and associated Uffizzi
+cluster resources, including any persistent
+volumes, and the namespace itself\. The Uffizzi
+cluster config is deleted from the kubeconfig file\.
+
+For more information on Uffizzi clusters, see:
+https://docs\.uffizzi\.com/references/cli/
+.fi
+.SH "FLAGS"
+.nf
+ \-\-help, \-h
+    Show this message and exit\.
+.fi
+.SH "EXAMPLES"
+.nf
+To delete a dev environment, run:
+
+    $ uffizzi dev delete
+.fi
+
