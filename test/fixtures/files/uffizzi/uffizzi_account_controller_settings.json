@@ -1,0 +1,9 @@
+{
+  "controller_settings": [
+    {
+      "id": 1,
+      "url": "https://controller.my-host.com",
+      "managed_dns_zone": "my-host.com"
+    }
+  ]
+}

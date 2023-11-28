@@ -1,0 +1,57 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-INSTALL" "" "November 2023" ""
+.SH "NAME"
+\fBuffizzi\-install\fR
+.P
+$ uffizzi install help uffizzi\-install \- install the uffizzi platform ================================================================
+.SH "SYNOPSIS"
+.nf
+uffizzi install [HOSTNAME]
+.fi
+.SH "DESCRIPTION"
+.nf
+Install the Uffizzi platform on a host cluster\. By default, this command uses your
+kubeconfig current context as the host\.
+
+The output of this command is an IP address or hostname where your instance of
+the Uffizzi controller service is available\. Uffizzi expects this service to be publicly
+available at the specified HOSTNAME\. Before you can create Uffizzi environments
+on your installation, be sure to configure your DNS to point HOSTNAME to the IP
+or hostname output by this command\.
+
+If you\'re looking for an air\-gapped or local installation of Uffizzi, please contact
+sales@uffizzi\.com or try the open\-source version (docs\.uffizzi\.com/open\-source)\.
+
+EMAIL is a business email, required for letsencrypt cert authority\.
+
+For more information on the Uffizzi installation process, see:
+https://docs\.uffizzi\.com/cli/commands/install
+.fi
+.SH "FLAGS"
+.nf
+\-\-email
+    A business email required for letsencrypt
+
+ \-\-context
+    The name of the kubeconfig context to use
+
+ \-\-namespace
+    The namespace where Uffizzi platform will be installed
+
+\-\-help
+    Display this help page and exit
+.fi
+.SH "EXAMPLES"
+.nf
+To install Uffizzi using the current context at hostname
+\'uffizzi\.example\.com\', run:
+
+    $ uffizzi install uffizzi\.example\.com \-\-email="jdoe@example\.com"
+
+To install Uffizzi using context \'foo\' and namespace \'bar\', run:
+
+    $ uffizzi install uffizzi\.example\.com \-\-email="jdoe@example\.com" \e
+      \-\-context=\'foo\' \-\-namespace=\'bar\'
+.fi
+

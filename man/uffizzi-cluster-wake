@@ -1,0 +1,37 @@
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "UFFIZZI\-CLUSTER\-WAKE" "" "November 2023" ""
+.SH "NAME"
+\fBuffizzi\-cluster\-wake\fR
+.P
+$ uffizzi cluster wake \-h uffizzi\-cluster\-wake \- wake a cluster that is sleeping ================================================================
+.SH "SYNOPSIS"
+.nf
+uffizzi cluster wake [CLUSTER_NAME]
+.fi
+.SH "DESCRIPTION"
+.nf
+Scales up a Uffizzi cluster to its original resource
+utilization from zero (see \'uffizzi cluster sleep \-h\')\.
+If no CLUSTER_NAME is specified, the kubeconfig current
+context is used\.
+
+For more information on Uffizzi clusters, see:
+https://docs\.uffizzi\.com/references/cli/
+.fi
+.SH "OPTIONS"
+.nf
+CLUSTER_NAME
+The name of the target Uffizzi cluster
+.fi
+.SH "EXAMPLES"
+.nf
+To wake the Uffizzi cluster in the current context, run:
+
+    $ uffizzi cluster wake
+
+To wake a Uffizzi cluster outside the current context, run:
+
+    $ uffizzi cluster wake my\-cluster
+.fi
+

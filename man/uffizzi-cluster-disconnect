@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "UFFIZZI\-CLUSTER\-DISCONNECT" "" "September 2023" ""
+.TH "UFFIZZI\-CLUSTER\-DISCONNECT" "" "November 2023" ""
 .SH "NAME"
 \fBuffizzi\-cluster\-disconnect\fR \- disconnect from current cluster context
 .SH "SYNOPSIS"
