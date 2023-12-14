@@ -166,28 +166,21 @@ module Uffizzi
     def handle_delete_command(command_args)
       cluster_name = command_args[:cluster_name]
       is_delete_kubeconfig = options[:'delete-config']
-
-      return handle_delete_cluster(cluster_name) unless is_delete_kubeconfig
-
       cluster_data = ClusterService.fetch_cluster_data(command_args[:cluster_name], **cluster_api_connection_params)
-      kubeconfig = ClusterCommonService.parse_kubeconfig(cluster_data[:kubeconfig])
 
-      handle_delete_cluster(cluster_name)
+      return handle_delete_dev_cluster(cluster_name) if ClusterService.dev_cluster?(cluster_data)
+      return ClusterDeleteService.delete(cluster_name, cluster_api_connection_params) unless is_delete_kubeconfig
+
+      kubeconfig = ClusterCommonService.parse_kubeconfig(cluster_data[:kubeconfig])
+      ClusterDeleteService.delete(cluster_name, cluster_api_connection_params)
       ClusterDeleteService.exclude_kubeconfig(cluster_data[:id], kubeconfig) if kubeconfig.present?
     end
 
-    def handle_delete_cluster(cluster_name)
-      params = {
-        cluster_name: cluster_name,
-        oidc_token: oidc_token,
-      }
-      response = delete_cluster(server, project_slug, params)
+    def handle_delete_dev_cluster(cluster_name)
+      question = 'You are about to delete the dev cluster. Do you wish to proceed?'
+      return unless Uffizzi.prompt.yes?(question)
 
-      if ResponseHelper.no_content?(response)
-        Uffizzi.ui.say("Cluster #{cluster_name} deleted")
-      else
-        ResponseHelper.handle_failed_response(response)
-      end
+      ClusterDeleteService.delete(cluster_name, cluster_api_connection_params)
     end
 
     def handle_update_kubeconfig_command(command_args)
@@ -215,7 +208,7 @@ module Uffizzi
         new_kubeconfig
       end
 
-      ClusterCommonService.update_clusters_config(cluster_data[:id], kubeconfig_path: kubeconfig_path)
+      ClusterCommonService.update_clusters_config(cluster_data[:id], name: cluster_data[:name], kubeconfig_path: kubeconfig_path)
 
       return if options[:quiet]
 
@@ -334,7 +327,7 @@ module Uffizzi
 
       Uffizzi.ui.say(rendered_cluster_data) if Uffizzi.ui.output_format
 
-      ClusterCreateService.save_kubeconfig(parsed_kubeconfig, kubeconfig_path, is_update_current_context)
+      ClusterCreateService.save_kubeconfig(parsed_kubeconfig, kubeconfig_path, update_current_context: is_update_current_context)
       ClusterCommonService.update_clusters_config(cluster_data[:id], name: cluster_data[:name], kubeconfig_path: kubeconfig_path)
       GithubService.write_to_github_env(rendered_cluster_data) if GithubService.github_actions_exists?
     end

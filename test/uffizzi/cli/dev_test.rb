@@ -21,13 +21,18 @@ class DevTest < Minitest::Test
   end
 
   def test_start_dev
-    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_deploying.json')
-    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_dev_deploying.json')
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_dev_deployed.json')
     stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+    account_user_project_clusters_get_body = json_fixture('files/uffizzi/uffizzi_account_user_project_clusters_empty.json')
+    stub_get_account_user_project_cluster_request(account_user_project_clusters_get_body, 1, @project_slug)
+
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
     @mock_shell.promise_execute(/ps -ef/, stdout: File.open(full_path_fixture('files/uffizzi/process_list.txt')))
     @mock_shell.promise_execute(/skaffold dev --filename/, stdout: [], waiter: { pid: 4068842 })
+
+    Uffizzi::ConfigFile.write_option(:dev_environment, {})
 
     @dev.options = command_options(kubeconfig: @kubeconfig_path)
     @dev.start(@skaffold_file_path)
@@ -42,10 +47,12 @@ class DevTest < Minitest::Test
   end
 
   def test_start_dev_with_existed_current_context
-    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_deploying.json')
-    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_dev_deploying.json')
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_dev_deployed.json')
     stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+    account_user_project_clusters_get_body = json_fixture('files/uffizzi/uffizzi_account_user_project_clusters_empty.json')
+    stub_get_account_user_project_cluster_request(account_user_project_clusters_get_body, 1, @project_slug)
 
     existing_kubeconfig = Psych.safe_load(Base64.decode64(cluster_get_body.dig(:cluster, :kubeconfig))).deep_dup
     existing_kubeconfig['users'][0]['name'] = 'another-user-name'
@@ -62,6 +69,8 @@ class DevTest < Minitest::Test
     @mock_shell.promise_execute(/ps -ef/, stdout: File.open(full_path_fixture('files/uffizzi/process_list.txt')))
     @mock_shell.promise_execute(/skaffold dev --filename/, stdout: [], waiter: { pid: 4068842 })
 
+    Uffizzi::ConfigFile.write_option(:dev_environment, {})
+
     @dev.options = command_options(kubeconfig: @kubeconfig_path)
     @dev.start(@skaffold_file_path)
 
@@ -77,14 +86,19 @@ class DevTest < Minitest::Test
   end
 
   def test_start_dev_as_daemon
-    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_deploying.json')
-    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_dev_deploying.json')
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_dev_deployed.json')
     stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+    account_user_project_clusters_get_body = json_fixture('files/uffizzi/uffizzi_account_user_project_clusters_empty.json')
+    stub_get_account_user_project_cluster_request(account_user_project_clusters_get_body, 1, @project_slug)
+
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
     @mock_shell.promise_execute(/ps -ef/, stdout: File.open(full_path_fixture('files/uffizzi/process_list.txt')))
     @mock_shell.promise_execute(/skaffold dev --filename/, stdout: [], waiter: { pid: 4068842 })
     @dev.options = command_options(quiet: true)
+
+    Uffizzi::ConfigFile.write_option(:dev_environment, {})
 
     @dev.options = command_options(kubeconfig: @kubeconfig_path)
     @dev.start(@skaffold_file_path)
@@ -99,9 +113,12 @@ class DevTest < Minitest::Test
   end
 
   def test_start_dev_as_daemon_when_deamon_already_run
+    account_user_project_clusters_get_body = json_fixture('files/uffizzi/uffizzi_account_user_project_clusters_deployed.json')
+    stub_get_account_user_project_cluster_request(account_user_project_clusters_get_body, 1, @project_slug)
+
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
     @dev.options = command_options(quiet: true)
-    dev_environment = { state: DevService::CLUSTER_DEPLOYED_STATE }
+    dev_environment = { state: DevService::CLUSTER_DEPLOYED_STATE, cluster_id: 1, cluster_name: 'my-cluster' }
     Uffizzi::ConfigFile.write_option(:dev_environment, dev_environment)
     File.write(DevService.pid_path, '1000')
     @mock_process.pid = 1000
@@ -129,11 +146,15 @@ class DevTest < Minitest::Test
   def test_start_dev_with_kubeconfig_and_default_repo_flags
     default_repo = 'ttl.sh'
     kubeconfig_path = '/tmp/some_path'
-    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_deploying.json')
-    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    cluster_create_body = json_fixture('files/uffizzi/uffizzi_cluster_dev_deploying.json')
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_dev_deployed.json')
     stubbed_uffizzi_cluster_create_request = stub_uffizzi_create_cluster(cluster_create_body, @project_slug)
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+    user_project_clusters_get_body = json_fixture('files/uffizzi/uffizzi_account_user_project_clusters_empty.json')
+    stubbed_get_dev_cluster_request = stub_get_account_user_project_cluster_request(user_project_clusters_get_body, 1, @project_slug)
     skaffold_dev_regex = /skaffold dev --filename='.*' --default-repo='#{default_repo}' --kubeconfig='#{kubeconfig_path}'/
+
+    Uffizzi::ConfigFile.write_option(:dev_environment, {})
 
     @mock_shell.promise_execute(/skaffold version/, stdout: 'v.2.7.1')
     @mock_shell.promise_execute(skaffold_dev_regex, stdout: [], waiter: { pid: 4068842 })
@@ -147,15 +168,17 @@ class DevTest < Minitest::Test
     assert_equal(kubeconfig_path, cluster_from_config.first[:kubeconfig_path])
     assert_requested(stubbed_uffizzi_cluster_create_request)
     assert_requested(stubbed_uffizzi_cluster_get_request)
+    assert_requested(stubbed_get_dev_cluster_request)
   end
 
   def test_describe_single_dev
-    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_dev_deployed.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
 
     config_path = '/skaffold.yaml'
     cluster_name = cluster_get_body.dig(:cluster, :name)
-    dev_environment = { cluster_name: cluster_name, config_path: config_path }
+    cluster_id = cluster_get_body.dig(:cluster, :id)
+    dev_environment = { cluster_name: cluster_name, config_path: config_path, cluster_id: cluster_id }
     Uffizzi::ConfigFile.write_option(:dev_environment, dev_environment)
     File.write(DevService.pid_path, @mock_process.pid)
 
@@ -177,7 +200,7 @@ class DevTest < Minitest::Test
   def test_stop_when_dev_exist
     config_path = '/skaffold.yaml'
     cluster_name = 'my-cluster'
-    dev_environment = { cluster_name: cluster_name, config_path: config_path }
+    dev_environment = { cluster_name: cluster_name, config_path: config_path, cluster_id: 1 }
     Uffizzi::ConfigFile.write_option(:dev_environment, dev_environment)
     File.write(DevService.pid_path, @mock_process.pid)
 
@@ -198,13 +221,13 @@ class DevTest < Minitest::Test
   end
 
   def test_delete_when_dev_exist
-    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_dev_deployed.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
 
     config_path = '/skaffold.yaml'
     cluster_name = cluster_get_body.dig(:cluster, :name)
-    dev_environment = { cluster_name: cluster_name, config_path: config_path }
+    dev_environment = { cluster_name: cluster_name, config_path: config_path, cluster_id: 1 }
     Uffizzi::ConfigFile.write_option(:dev_environment, dev_environment)
     File.write(DevService.pid_path, @mock_process.pid)
 

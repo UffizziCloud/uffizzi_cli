@@ -1,0 +1,11 @@
+{
+  "cluster": {
+    "id": 1,
+    "name": "uffizzi-test-cluster",
+    "state": "deploying",
+    "kubeconfig": "",
+    "kind": "dev",
+    "created_at": "2023-07-15T15:33:41.590Z",
+    "host": ""
+  }
+}

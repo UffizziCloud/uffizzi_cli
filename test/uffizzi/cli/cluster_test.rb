@@ -3,6 +3,7 @@
 require 'psych'
 require 'base64'
 require 'test_helper'
+
 class ClusterTest < Minitest::Test
   def setup
     @cluster = Uffizzi::Cli::Cluster.new
@@ -265,10 +266,13 @@ class ClusterTest < Minitest::Test
 
   def test_delete_cluster
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
+    clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
 
     @cluster.delete('cluster-name')
 
     assert_requested(stubbed_uffizzi_cluster_delete_request)
+    assert_requested(stubbed_uffizzi_cluster_get_request)
   end
 
   def test_delete_cluster_with_flag_delete_config_and_single_cluster_in_kubeconfig
@@ -299,7 +303,6 @@ class ClusterTest < Minitest::Test
   def test_delete_cluster_with_flag_delete_config_and_multiply_clusters_in_kubeconfig
     clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
     kubeconfig = Psych.safe_load(Base64.decode64(clusters_get_body[:cluster][:kubeconfig]))
-    clusters_config = [{ id: clusters_get_body[:cluster][:id], kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path }]
 
     another_cluster = kubeconfig['clusters'][0].deep_dup
     another_context = kubeconfig['contexts'][0].deep_dup
@@ -314,9 +317,15 @@ class ClusterTest < Minitest::Test
     kubeconfig['contexts'] << another_context
     kubeconfig['users'] << another_user
 
+    clusters_config = [{ id: clusters_get_body[:cluster][:id], kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path }]
+    previous_current_contexts = [
+      { current_context: another_context['name'], kubeconfig_path: Uffizzi.configuration.default_kubeconfig_path },
+    ]
+
     FileUtils.mkdir_p(File.dirname(Uffizzi.configuration.default_kubeconfig_path))
     File.write(Uffizzi.configuration.default_kubeconfig_path, kubeconfig.to_yaml)
     Uffizzi::ConfigFile.write_option(:clusters, clusters_config)
+    Uffizzi::ConfigFile.write_option(:previous_current_contexts, previous_current_contexts)
 
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)

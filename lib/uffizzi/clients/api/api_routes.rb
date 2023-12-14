@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'uri'
 require 'cgi'
 
 module ApiRoutes
@@ -116,6 +117,12 @@ module ApiRoutes
     "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}?token=#{oidc_token}"
   end
 
+  def account_user_project_clusters_uri(server, account_id, project_slug, params = {})
+    path = "/api/cli/v1/accounts/#{account_id}/user/projects/#{project_slug}/clusters"
+
+    build_uri(server, path, params)
+  end
+
   def scale_up_cluster_uri(server, project_slug, cluster_name)
     "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}/scale_up"
   end
@@ -146,5 +153,19 @@ module ApiRoutes
 
   def account_controller_setting_uri(server, account_id, id)
     "#{server}/api/cli/v1/accounts/#{account_id}/controller_settings/#{id}"
+  end
+
+  private
+
+  def build_uri(server, path, params = {})
+    uri = URI.parse(server)
+    host = uri.scheme.nil? ? server : uri.host
+    query = URI.encode_www_form(params)
+
+    if uri.scheme == 'http'
+      URI::HTTP.build(host: host, path: path, query: query, port: uri.port).to_s
+    else
+      URI::HTTPS.build(host: host, path: path, query: query, port: uri.port).to_s
+    end
   end
 end
