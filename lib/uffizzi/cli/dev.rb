@@ -116,7 +116,7 @@ module Uffizzi
 
     def wait_cluster_creation(cluster_name)
       Uffizzi.ui.say('Checking the cluster status...')
-      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, oidc_token)
+      cluster_data = ClusterService.wait_cluster_deploy(cluster_name, cluster_api_connection_params)
 
       if ClusterService.failed?(cluster_data[:state])
         Uffizzi.ui.say_error_and_exit("Cluster with name: #{cluster_name} failed to be created.")

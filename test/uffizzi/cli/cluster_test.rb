@@ -214,6 +214,24 @@ class ClusterTest < Minitest::Test
     File.delete(new_file)
   end
 
+  def test_update_kubeconfig_if_cluster_is_sleeping
+    cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_scaled_down.json')
+    stubbed_get_cluster_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+    cluster_scale_up_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
+    cluster_name = 'my-cluster'
+
+    stubbed_uffizzi_cluster_scale_up_request = stub_uffizzi_scale_up_cluster(
+      cluster_scale_up_body,
+      @project_slug,
+      cluster_name: cluster_name,
+    )
+
+    @cluster.update_kubeconfig(cluster_name)
+
+    assert_requested(stubbed_get_cluster_request, times: 2)
+    assert_requested(stubbed_uffizzi_cluster_scale_up_request)
+  end
+
   def test_update_kubeconfig_if_kubeconfig_is_empty_and_cluster_is_deploying
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deploying.json')
     stub_get_cluster_request(cluster_get_body, @project_slug)

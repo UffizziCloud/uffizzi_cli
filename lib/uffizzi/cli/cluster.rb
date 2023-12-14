@@ -141,7 +141,7 @@ module Uffizzi
 
       spinner = TTY::Spinner.new("[:spinner] Creating cluster #{cluster_name}...", format: :dots)
       spinner.auto_spin
-      cluster_data = ClusterService.wait_cluster_deploy(project_slug, cluster_name, oidc_token)
+      cluster_data = ClusterService.wait_cluster_deploy(cluster_name, cluster_api_connection_params)
 
       if ClusterService.failed?(cluster_data[:state])
         spinner.error
@@ -194,6 +194,9 @@ module Uffizzi
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
       cluster_name = command_args[:cluster_name]
       cluster_data = ClusterService.fetch_cluster_data(cluster_name, **cluster_api_connection_params)
+      if ClusterService.scaled_down?(cluster_data[:state])
+        handle_scale_up_cluster(cluster_name, cluster_api_connection_params)
+      end
 
       unless cluster_data[:kubeconfig].present?
         ClusterUpdateKubeconfigService.say_error_update_kubeconfig(cluster_data)
@@ -222,39 +225,18 @@ module Uffizzi
       Uffizzi.ui.say("Kubeconfig was updated by the path: #{kubeconfig_path}")
     end
 
-    def handle_sleep_command(project_slug, command_args)
+    def handle_sleep_command(_project_slug, command_args)
       cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster)&.fetch(:name)
       return handle_missing_cluster_name_error if cluster_name.nil?
 
-      response = scale_down_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
-      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
-
-      spinner = TTY::Spinner.new("[:spinner] Scaling down cluster #{cluster_name}...", format: :dots)
-      spinner.auto_spin
-      ClusterService.wait_cluster_scale_down(project_slug, cluster_name)
-
-      spinner.success
-      Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled down")
+      handle_scale_down_cluster(cluster_name, cluster_api_connection_params)
     end
 
-    def handle_wake_command(project_slug, command_args)
+    def handle_wake_command(_project_slug, command_args)
       cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster)&.fetch(:name)
       return handle_missing_cluster_name_error if cluster_name.nil?
 
-      response = scale_up_cluster(ConfigFile.read_option(:server), project_slug, cluster_name)
-      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
-
-      spinner = TTY::Spinner.new("[:spinner] Waking up cluster #{cluster_name}...", format: :dots)
-      spinner.auto_spin
-      cluster_data = ClusterService.wait_cluster_scale_up(project_slug, cluster_name)
-
-      if ClusterService.failed_scaling_up?(cluster_data[:state])
-        spinner.error
-        Uffizzi.ui.say_error_and_exit("Failed to wake up cluster #{cluster_name}.")
-      end
-
-      spinner.success
-      Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled up")
+      handle_scale_up_cluster(cluster_name, cluster_api_connection_params)
     end
 
     def say_error_update_kubeconfig(cluster_data)
@@ -353,6 +335,35 @@ module Uffizzi
       return if kubeconfig.nil?
 
       Psych.safe_load(Base64.decode64(kubeconfig))
+    end
+
+    def handle_scale_up_cluster(cluster_name, cluster_api_connection_params)
+      response = scale_up_cluster(cluster_api_connection_params[:server], project_slug, cluster_name)
+      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
+
+      spinner = TTY::Spinner.new("[:spinner] Waking up cluster #{cluster_name}...", format: :dots)
+      spinner.auto_spin
+      cluster_data = ClusterService.wait_cluster_scale_up(cluster_name, cluster_api_connection_params)
+
+      if ClusterService.failed_scaling_up?(cluster_data[:state])
+        spinner.error
+        Uffizzi.ui.say_error_and_exit("Failed to wake up cluster #{cluster_name}.")
+      end
+
+      spinner.success
+      Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled up")
+    end
+
+    def handle_scale_down_cluster(cluster_name, cluster_api_connection_params)
+      response = scale_down_cluster(cluster_api_connection_params[:server], project_slug, cluster_name)
+      return ResponseHelper.handle_failed_response(response) unless ResponseHelper.ok?(response)
+
+      spinner = TTY::Spinner.new("[:spinner] Scaling down cluster #{cluster_name}...", format: :dots)
+      spinner.auto_spin
+      ClusterService.wait_cluster_scale_down(cluster_name, cluster_api_connection_params)
+
+      spinner.success
+      Uffizzi.ui.say("Cluster #{cluster_name} was successfully scaled down")
     end
 
     def handle_missing_cluster_name_error
