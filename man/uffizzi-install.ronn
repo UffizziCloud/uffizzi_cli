@@ -1,50 +1,52 @@
-$ uffizzi install help
-uffizzi-install - install the uffizzi platform
+$ uffizzi -h
+uffizzi - manage Uffizzi resources
 ================================================================
 
 ## SYNOPSIS
-    uffizzi install [HOSTNAME]
+    uffizzi GROUP | COMMAND
 
 ## DESCRIPTION
-    Install the Uffizzi platform on a host cluster. By default, this command uses your
-    kubeconfig current context as the host.
+    The uffizzi CLI manages authentication, configuration, and
+    interaction with Uffizzi APIs.
 
-    The output of this command is an IP address or hostname where your instance of
-    the Uffizzi controller service is available. Uffizzi expects this service to be publicly
-    available at the specified HOSTNAME. Before you can create Uffizzi environments
-    on your installation, be sure to configure your DNS to point HOSTNAME to the IP
-    or hostname output by this command.
+    For more information on the uffizzi CLI, see:
+    https://docs.uffizzi.com/references/cli/
 
-    If you're looking for an air-gapped or local installation of Uffizzi, please contact
-    sales@uffizzi.com or try the open-source version (docs.uffizzi.com/open-source).
+## GROUP
+    GROUP is one of the following:
+     cluster
+         Manage virtual clusters
 
-    EMAIL is a business email, required for letsencrypt cert authority.
+     config
+         Configure the uffizzi CLI
 
-    For more information on the Uffizzi installation process, see:
-    https://docs.uffizzi.com/cli/commands/install
+     connect
+         Grant a Uffizzi user account access to external services
 
-## FLAGS
+     compose
+         Manage Uffizzi compose environments (previews) and view logs
 
-    --email
-        A business email required for letsencrypt
+     dev
+         Creates a Uffizzi cluster preconfigured for development workflows
 
-     --context
-        The name of the kubeconfig context to use
+     install
+         Install the Uffizzi platform data plane on a host cluster.
 
-     --namespace
-        The namespace where Uffizzi platform will be installed
+     project
+         Manage Uffizzi project resources including compose files for
+         specifying compose environment (preview) configurations and secrets
 
-    --help
-        Display this help page and exit
+## COMMAND
+    COMMAND is one of the following:
 
-## EXAMPLES
+     help
+         Show uffizzi documentation
 
-    To install Uffizzi using the current context at hostname
-    'uffizzi.example.com', run:
+     login
+         Log in to a Uffizzi user account
 
-        $ uffizzi install uffizzi.example.com --email="jdoe@example.com"
+     logout
+         Log out of a Uffizzi user account
 
-    To install Uffizzi using context 'foo' and namespace 'bar', run:
-
-        $ uffizzi install uffizzi.example.com --email="jdoe@example.com" \
-          --context='foo' --namespace='bar'
+     version
+         Print version information for uffizzi CLI
