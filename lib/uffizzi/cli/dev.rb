@@ -62,7 +62,7 @@ module Uffizzi
       DevService.check_skaffold_config_existence(config_path)
       dev_cluster = DevService.account_user_project_dev_cluster(server, account_id, project_slug)
 
-      if try_to_start_second_dev_env?(dev_cluster)
+      if try_to_start_dev_env_for_existed_cluster?(dev_cluster)
         msg = 'Dev cluster already exists. ' \
               "Before you create a new dev cluster, you must delete the existing one: $ uffizzi cluster delete #{dev_cluster[:name]}"
         Uffizzi.ui.say_error_and_exit(msg)
@@ -214,7 +214,7 @@ module Uffizzi
       DevService.dev_environment_exist? && dev_cluster.blank?
     end
 
-    def try_to_start_second_dev_env?(dev_cluster)
+    def try_to_start_dev_env_for_existed_cluster?(dev_cluster)
       !DevService.dev_environment_exist? && dev_cluster.present?
     end
 

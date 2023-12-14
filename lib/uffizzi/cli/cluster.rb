@@ -177,7 +177,7 @@ module Uffizzi
     end
 
     def handle_delete_dev_cluster(cluster_name)
-      question = 'You delete dev cluster. Continue?'
+      question = 'You are about to delete the dev cluster. Do you wish to proceed?'
       return unless Uffizzi.prompt.yes?(question)
 
       ClusterDeleteService.delete(cluster_name, cluster_api_connection_params)
