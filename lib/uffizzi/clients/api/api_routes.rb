@@ -125,7 +125,7 @@ module ApiRoutes
   end
 
   def sync_cluster_uri(server, project_slug, cluster_name)
-    "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}/sync_cluster"
+    "#{server}/api/cli/v1/projects/#{project_slug}/clusters/#{cluster_name}/sync"
   end
 
   def access_token_url(server, code)

@@ -221,12 +221,12 @@ module Uffizzi
 
       Uffizzi.ui.say("Kubeconfig was updated by the path: #{kubeconfig_path}")
 
-      synced_cluster_data = ClusterService.sync_cluster_data(command_args[:cluster_name], **cluster_api_connection_params)
+      synced_cluster_data = ClusterService.sync_cluster_data(command_args[:cluster_name], server: server, project_slug: project_slug)
+      cluster_state = synced_cluster_data[:state]
+      return if ClusterService.deployed?(cluster_state)
 
-      if ClusterService.scaled_down?(synced_cluster_data[:state])
-        Uffizzi.ui.say('The cluster is scaled down.')
-        handle_scale_up_cluster(cluster_name, cluster_api_connection_params)
-      end
+      Uffizzi.ui.say(ClusterService.cluster_status_text_map[cluster_state])
+      handle_scale_up_cluster(cluster_name, cluster_api_connection_params) if ClusterService.scaled_down?(cluster_state)
     end
 
     def handle_sleep_command(command_args)

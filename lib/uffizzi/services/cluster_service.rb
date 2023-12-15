@@ -121,5 +121,16 @@ class ClusterService
         host: cluster_data[:host],
       }
     end
+
+    def cluster_status_text_map
+      {
+        CLUSTER_STATE_SCALING_UP => 'The cluster is scaling up',
+        CLUSTER_STATE_SCALED_DOWN => 'The cluster is scaled down',
+        CLUSTER_STATE_SCALING_DOWN => 'The cluster is scaling down',
+        CLUSTER_FAILED_SCALING_UP => 'The cluster failed scaling up',
+        CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE => 'The cluster failed',
+        CLUSTER_STATE_FAILED => 'The cluster failed',
+      }
+    end
   end
 end
