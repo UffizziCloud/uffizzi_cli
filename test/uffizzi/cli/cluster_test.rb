@@ -17,6 +17,7 @@ class ClusterTest < Minitest::Test
     Uffizzi.ui.output_format = nil
     tmp_dir_name = (Time.now.utc.to_f * 100_000).to_i
     @kubeconfig_path = "/tmp/test/#{tmp_dir_name}/test-kubeconfig.yaml"
+    @cluster_name = 'cluster-name'
   end
 
   def teardown
@@ -138,6 +139,7 @@ class ClusterTest < Minitest::Test
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
     kubeconfig_from_backend = Psych.safe_load(Base64.decode64(cluster_get_body[:cluster][:kubeconfig]))
+    stubbed_uffizzi_sync_cluster_request = stub_uffizzi_sync_cluster(cluster_get_body, @project_slug, cluster_name: @cluster_name)
 
     kubeconfig_from_filesystem = kubeconfig_from_backend.deep_dup
     cluster_name_from_filesystem = 'filesystem_cluster_name'
@@ -151,9 +153,10 @@ class ClusterTest < Minitest::Test
     FileUtils.mkdir_p(File.dirname(@kubeconfig_path))
     File.write(@kubeconfig_path, kubeconfig_from_filesystem.to_yaml)
 
-    @cluster.update_kubeconfig('cluster_name')
+    @cluster.update_kubeconfig(@cluster_name)
 
     assert_requested(stubbed_uffizzi_cluster_get_request)
+    assert_requested(stubbed_uffizzi_sync_cluster_request)
 
     updated_kubeconfig = Psych.safe_load(File.read(@kubeconfig_path))
     assert_equal(2, updated_kubeconfig['clusters'].size)
@@ -170,6 +173,7 @@ class ClusterTest < Minitest::Test
 
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+    stubbed_uffizzi_sync_cluster_request = stub_uffizzi_sync_cluster(cluster_get_body, @project_slug, cluster_name: @cluster_name)
     kubeconfig_from_backend = Psych.safe_load(Base64.decode64(cluster_get_body[:cluster][:kubeconfig]))
 
     kubeconfig_from_filesystem = kubeconfig_from_backend.deep_dup
@@ -182,9 +186,10 @@ class ClusterTest < Minitest::Test
     FileUtils.mkdir_p(File.dirname(@kubeconfig_path))
     File.write(@kubeconfig_path, kubeconfig_from_filesystem.to_yaml)
 
-    @cluster.update_kubeconfig('cluster_name')
+    @cluster.update_kubeconfig(@cluster_name)
 
     assert_requested(stubbed_uffizzi_cluster_get_request)
+    assert_requested(stubbed_uffizzi_sync_cluster_request)
 
     updated_kubeconfig = Psych.safe_load(File.read(@kubeconfig_path))
     assert_equal(1, updated_kubeconfig['clusters'].size)
@@ -201,14 +206,16 @@ class ClusterTest < Minitest::Test
   def test_update_kubeconfig_if_kubeconfig_option_is_empty
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
+    stubbed_uffizzi_sync_cluster_request = stub_uffizzi_sync_cluster(cluster_get_body, @project_slug, cluster_name: @cluster_name)
     kubeconfig_from_backend = Psych.safe_load(Base64.decode64(cluster_get_body[:cluster][:kubeconfig]))
 
-    @cluster.update_kubeconfig('cluster_name')
+    @cluster.update_kubeconfig(@cluster_name)
 
     new_file = File.expand_path(Uffizzi.configuration.default_kubeconfig_path)
     kubeconfig_from_file = Psych.safe_load(File.read(new_file))
 
     assert_requested(stubbed_uffizzi_cluster_get_request)
+    assert_requested(stubbed_uffizzi_sync_cluster_request)
     assert_equal(kubeconfig_from_backend['clusters'][0]['name'], kubeconfig_from_file['clusters'][0]['name'])
 
     File.delete(new_file)
@@ -218,17 +225,17 @@ class ClusterTest < Minitest::Test
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_scaled_down.json')
     stubbed_get_cluster_request = stub_get_cluster_request(cluster_get_body, @project_slug)
     cluster_scale_up_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
-    cluster_name = 'my-cluster'
-
+    stubbed_uffizzi_sync_cluster_request = stub_uffizzi_sync_cluster(cluster_get_body, @project_slug, cluster_name: @cluster_name)
     stubbed_uffizzi_cluster_scale_up_request = stub_uffizzi_scale_up_cluster(
       cluster_scale_up_body,
       @project_slug,
-      cluster_name: cluster_name,
+      cluster_name: @cluster_name,
     )
 
-    @cluster.update_kubeconfig(cluster_name)
+    @cluster.update_kubeconfig(@cluster_name)
 
     assert_requested(stubbed_get_cluster_request, times: 2)
+    assert_requested(stubbed_uffizzi_sync_cluster_request)
     assert_requested(stubbed_uffizzi_cluster_scale_up_request)
   end
 
@@ -237,7 +244,7 @@ class ClusterTest < Minitest::Test
     stub_get_cluster_request(cluster_get_body, @project_slug)
 
     error = assert_raises(MockShell::ExitError) do
-      @cluster.update_kubeconfig('cluster_name')
+      @cluster.update_kubeconfig(@cluster_name)
     end
 
     assert_match('is empty', error.message)
@@ -248,7 +255,7 @@ class ClusterTest < Minitest::Test
     stub_get_cluster_request(cluster_get_body, @project_slug)
 
     error = assert_raises(MockShell::ExitError) do
-      @cluster.update_kubeconfig('cluster_name')
+      @cluster.update_kubeconfig(@cluster_name)
     end
 
     assert_match('is empty', error.message)
@@ -265,7 +272,7 @@ class ClusterTest < Minitest::Test
     File.write(@kubeconfig_path, kubeconfig_from_filesystem)
 
     error = assert_raises(KubeconfigService::InvalidKubeconfigError) do
-      @cluster.update_kubeconfig('cluster_name')
+      @cluster.update_kubeconfig(@cluster_name)
     end
 
     assert_requested(stubbed_uffizzi_cluster_get_request)
@@ -276,7 +283,7 @@ class ClusterTest < Minitest::Test
     clusters_get_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(clusters_get_body, @project_slug)
 
-    @cluster.describe('cluster-name')
+    @cluster.describe(@cluster_name)
 
     assert_requested(stubbed_uffizzi_cluster_get_request)
   end
@@ -284,7 +291,7 @@ class ClusterTest < Minitest::Test
   def test_delete_cluster
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
 
-    @cluster.delete('cluster-name')
+    @cluster.delete(@cluster_name)
 
     assert_requested(stubbed_uffizzi_cluster_delete_request)
   end
@@ -302,7 +309,7 @@ class ClusterTest < Minitest::Test
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
 
     @cluster.options = command_options('delete-config': true)
-    @cluster.delete('cluster-name')
+    @cluster.delete(@cluster_name)
 
     kubeconfig_after_exclude = Psych.safe_load(File.read(Uffizzi.configuration.default_kubeconfig_path))
 
@@ -340,7 +347,7 @@ class ClusterTest < Minitest::Test
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
 
     @cluster.options = command_options('delete-config': true)
-    @cluster.delete('cluster-name')
+    @cluster.delete(@cluster_name)
 
     kubeconfig_after_exclude = Psych.safe_load(File.read(Uffizzi.configuration.default_kubeconfig_path))
 
@@ -362,7 +369,7 @@ class ClusterTest < Minitest::Test
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
 
     @cluster.options = command_options('delete-config': true)
-    @cluster.delete('cluster-name')
+    @cluster.delete(@cluster_name)
 
     assert_match('Warning', Uffizzi.ui.last_message)
     refute(File.exist?(Uffizzi.configuration.default_kubeconfig_path))
@@ -386,7 +393,7 @@ class ClusterTest < Minitest::Test
     stubbed_uffizzi_cluster_delete_request = stub_uffizzi_delete_cluster(@project_slug)
 
     @cluster.options = command_options('delete-config': true)
-    @cluster.delete('cluster-name')
+    @cluster.delete(@cluster_name)
 
     kubeconfig_after_exclude = Psych.safe_load(File.read(Uffizzi.configuration.default_kubeconfig_path))
 
@@ -489,17 +496,16 @@ class ClusterTest < Minitest::Test
 
   def test_scale_down_cluster
     cluster_scale_down_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
-    cluster_name = 'my-cluster'
     stubbed_uffizzi_cluster_scale_down_request = stub_uffizzi_scale_down_cluster(
       cluster_scale_down_body,
       @project_slug,
-      cluster_name: cluster_name,
+      cluster_name: @cluster_name,
     )
 
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_scaled_down.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
 
-    @cluster.sleep(cluster_name)
+    @cluster.sleep(@cluster_name)
 
     assert_requested(stubbed_uffizzi_cluster_scale_down_request)
     assert_requested(stubbed_uffizzi_cluster_get_request)
@@ -507,13 +513,12 @@ class ClusterTest < Minitest::Test
 
   def test_scale_down_cluster_from_context
     cluster_scale_down_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
-    cluster_name = 'my-cluster'
-    Uffizzi::ConfigFile.write_option(:current_cluster, { id: 1, name: cluster_name })
+    Uffizzi::ConfigFile.write_option(:current_cluster, { id: 1, name: @cluster_name })
 
     stubbed_uffizzi_cluster_scale_down_request = stub_uffizzi_scale_down_cluster(
       cluster_scale_down_body,
       @project_slug,
-      cluster_name: cluster_name,
+      cluster_name: @cluster_name,
     )
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_scaled_down.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
@@ -526,17 +531,16 @@ class ClusterTest < Minitest::Test
 
   def test_scale_up_cluster
     cluster_scale_up_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
-    cluster_name = 'my-cluster'
 
     stubbed_uffizzi_cluster_scale_up_request = stub_uffizzi_scale_up_cluster(
       cluster_scale_up_body,
       @project_slug,
-      cluster_name: cluster_name,
+      cluster_name: @cluster_name,
     )
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)
 
-    @cluster.wake(cluster_name)
+    @cluster.wake(@cluster_name)
 
     assert_requested(stubbed_uffizzi_cluster_scale_up_request)
     assert_requested(stubbed_uffizzi_cluster_get_request)
@@ -544,13 +548,12 @@ class ClusterTest < Minitest::Test
 
   def test_scale_up_cluster_from_context
     cluster_scale_up_body = json_fixture('files/uffizzi/uffizzi_cluster_describe.json')
-    cluster_name = 'my-cluster'
-    Uffizzi::ConfigFile.write_option(:current_cluster, { id: 1, name: cluster_name })
+    Uffizzi::ConfigFile.write_option(:current_cluster, { id: 1, name: @cluster_name })
 
     stubbed_uffizzi_cluster_scale_up_request = stub_uffizzi_scale_up_cluster(
       cluster_scale_up_body,
       @project_slug,
-      cluster_name: cluster_name,
+      cluster_name: @cluster_name,
     )
     cluster_get_body = json_fixture('files/uffizzi/uffizzi_cluster_deployed.json')
     stubbed_uffizzi_cluster_get_request = stub_get_cluster_request(cluster_get_body, @project_slug)

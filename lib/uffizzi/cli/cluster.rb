@@ -96,9 +96,9 @@ module Uffizzi
       when 'disconnect'
         ClusterDisconnectService.handle(options)
       when 'sleep'
-        handle_sleep_command(project_slug, command_args)
+        handle_sleep_command(command_args)
       when 'wake'
-        handle_wake_command(project_slug, command_args)
+        handle_wake_command(command_args)
       end
     end
 
@@ -194,9 +194,6 @@ module Uffizzi
       kubeconfig_path = options[:kubeconfig] || KubeconfigService.default_path
       cluster_name = command_args[:cluster_name]
       cluster_data = ClusterService.fetch_cluster_data(cluster_name, **cluster_api_connection_params)
-      if ClusterService.scaled_down?(cluster_data[:state])
-        handle_scale_up_cluster(cluster_name, cluster_api_connection_params)
-      end
 
       unless cluster_data[:kubeconfig].present?
         ClusterUpdateKubeconfigService.say_error_update_kubeconfig(cluster_data)
@@ -223,16 +220,23 @@ module Uffizzi
       return if options[:quiet]
 
       Uffizzi.ui.say("Kubeconfig was updated by the path: #{kubeconfig_path}")
+
+      synced_cluster_data = ClusterService.sync_cluster_data(command_args[:cluster_name], **cluster_api_connection_params)
+
+      if ClusterService.scaled_down?(synced_cluster_data[:state])
+        Uffizzi.ui.say('The cluster is scaled down.')
+        handle_scale_up_cluster(cluster_name, cluster_api_connection_params)
+      end
     end
 
-    def handle_sleep_command(_project_slug, command_args)
+    def handle_sleep_command(command_args)
       cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster)&.fetch(:name)
       return handle_missing_cluster_name_error if cluster_name.nil?
 
       handle_scale_down_cluster(cluster_name, cluster_api_connection_params)
     end
 
-    def handle_wake_command(_project_slug, command_args)
+    def handle_wake_command(command_args)
       cluster_name = command_args[:cluster_name] || ConfigFile.read_option(:current_cluster)&.fetch(:name)
       return handle_missing_cluster_name_error if cluster_name.nil?
 
@@ -347,7 +351,7 @@ module Uffizzi
 
       if ClusterService.failed_scaling_up?(cluster_data[:state])
         spinner.error
-        Uffizzi.ui.say_error_and_exit("Failed to wake up cluster #{cluster_name}.")
+        Uffizzi.ui.say_error_and_exit("Failed to scale up cluster #{cluster_name}.")
       end
 
       spinner.success

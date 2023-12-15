@@ -103,6 +103,16 @@ class ClusterService
       end
     end
 
+    def sync_cluster_data(cluster_name, server:, project_slug:)
+      response = sync_cluster(server, project_slug, cluster_name)
+
+      if Uffizzi::ResponseHelper.ok?(response)
+        response.dig(:body, :cluster)
+      else
+        Uffizzi::ResponseHelper.handle_failed_response(response)
+      end
+    end
+
     def build_render_data(cluster_data)
       {
         name: cluster_data[:name],
