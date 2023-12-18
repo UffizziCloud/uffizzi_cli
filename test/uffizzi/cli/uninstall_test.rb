@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'byebug'
 require 'psych'
 require 'base64'
 require 'test_helper'
