@@ -83,6 +83,10 @@ module Uffizzi
     require_relative 'cli/uninstall'
     subcommand 'uninstall', Cli::Uninstall
 
+    desc 'status', 'status'
+    require_relative 'cli/status'
+    subcommand 'status', Cli::Status
+
     map preview: :compose
 
     class << self

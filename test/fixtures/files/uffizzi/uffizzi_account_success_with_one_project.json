@@ -1,6 +1,6 @@
 {
   "account":
-    { 
+    {
       "id": 1,
       "name": "test",
       "projects": [
@@ -8,6 +8,9 @@
           "id": 1,
           "slug": "uffizzi-test-slug-1"
         }
-      ]
+      ],
+      "api_url": "http://app.uffizzi.com",
+      "vclusters_controller_url": "http://controller.uffizzi.com",
+      "product_name": "Starter Plan"
     }
 }
