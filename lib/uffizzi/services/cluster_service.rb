@@ -8,6 +8,7 @@ class ClusterService
   CLUSTER_STATE_DEPLOYING = 'deploying'
   CLUSTER_STATE_DEPLOYED = 'deployed'
   CLUSTER_STATE_SCALING_DOWN = 'scaling_down'
+  CLUSTER_STATE_SCALED_DOWN = 'scaled_down'
   CLUSTER_STATE_SCALING_UP = 'scaling_up'
   CLUSTER_FAILED_SCALING_UP = 'failed_scaling_up'
   CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE = 'failed_deploy_namespace'
@@ -38,53 +39,35 @@ class ClusterService
       cluster_state === CLUSTER_STATE_SCALING_DOWN
     end
 
+    def scaled_down?(cluster_state)
+      cluster_state === CLUSTER_STATE_SCALED_DOWN
+    end
+
     def failed_scaling_up?(cluster_state)
       cluster_state === CLUSTER_FAILED_SCALING_UP
     end
 
-    def wait_cluster_deploy(project_slug, cluster_name, oidc_token)
+    def wait_cluster_deploy(cluster_name, cluster_api_connection_params)
       loop do
-        params = {
-          cluster_name: cluster_name,
-          oidc_token: oidc_token,
-        }
-        response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, params)
-        return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
-
-        cluster_data = response.dig(:body, :cluster)
-
+        cluster_data = fetch_cluster_data(cluster_name, **cluster_api_connection_params)
         return cluster_data unless deploying?(cluster_data[:state])
 
         sleep(5)
       end
     end
 
-    def wait_cluster_scale_up(project_slug, cluster_name)
+    def wait_cluster_scale_up(cluster_name, cluster_api_connection_params)
       loop do
-        params = {
-          cluster_name: cluster_name,
-        }
-        response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, params)
-        return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
-
-        cluster_data = response.dig(:body, :cluster)
-
+        cluster_data = fetch_cluster_data(cluster_name, **cluster_api_connection_params)
         return cluster_data unless scaling_up?(cluster_data[:state])
 
         sleep(5)
       end
     end
 
-    def wait_cluster_scale_down(project_slug, cluster_name)
+    def wait_cluster_scale_down(cluster_name, cluster_api_connection_params)
       loop do
-        params = {
-          cluster_name: cluster_name,
-        }
-        response = get_cluster(Uffizzi::ConfigFile.read_option(:server), project_slug, params)
-        return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
-
-        cluster_data = response.dig(:body, :cluster)
-
+        cluster_data = fetch_cluster_data(cluster_name, **cluster_api_connection_params)
         return unless scaling_down?(cluster_data[:state])
 
         sleep(3)
@@ -120,12 +103,33 @@ class ClusterService
       end
     end
 
+    def sync_cluster_data(cluster_name, server:, project_slug:)
+      response = sync_cluster(server, project_slug, cluster_name)
+
+      if Uffizzi::ResponseHelper.ok?(response)
+        response.dig(:body, :cluster)
+      else
+        Uffizzi::ResponseHelper.handle_failed_response(response)
+      end
+    end
+
     def build_render_data(cluster_data)
       {
         name: cluster_data[:name],
         status: cluster_data[:state],
         created: Time.strptime(cluster_data[:created_at], '%Y-%m-%dT%H:%M:%S.%N').strftime('%a %b %d %H:%M:%S %Y'),
         host: cluster_data[:host],
+      }
+    end
+
+    def cluster_status_text_map
+      {
+        CLUSTER_STATE_SCALING_UP => 'The cluster is scaling up',
+        CLUSTER_STATE_SCALED_DOWN => 'The cluster is scaled down',
+        CLUSTER_STATE_SCALING_DOWN => 'The cluster is scaling down',
+        CLUSTER_FAILED_SCALING_UP => 'The cluster failed scaling up',
+        CLUSTER_STATE_FAILED_DEPLOY_NAMESPACE => 'The cluster failed',
+        CLUSTER_STATE_FAILED => 'The cluster failed',
       }
     end
   end

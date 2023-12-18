@@ -276,6 +276,13 @@ module ApiClient
     build_response(response)
   end
 
+  def sync_cluster(server, project_slug, cluster_name)
+    uri = sync_cluster_uri(server, project_slug, cluster_name)
+    response = http_client.make_put_request(uri)
+
+    build_response(response)
+  end
+
   def create_access_token(server, session_id)
     uri = access_tokens_url(server)
 

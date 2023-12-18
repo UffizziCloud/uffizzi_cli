@@ -218,6 +218,12 @@ module UffizziStubSupport
     stub_request(:put, uri).to_return(status: 200, body: body.to_json)
   end
 
+  def stub_uffizzi_sync_cluster(body, project_slug, cluster_name:)
+    uri = sync_cluster_uri(Uffizzi.configuration.server, project_slug, cluster_name)
+
+    stub_request(:put, uri).to_return(status: 200, body: body.to_json)
+  end
+
   def stub_get_token_request(body)
     uri = %r{#{Uffizzi.configuration.server}/api/cli/v1/access_tokens/([A-Za-z0-9\-_]+)}
 
