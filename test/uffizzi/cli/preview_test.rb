@@ -274,19 +274,19 @@ class PreviewTest < Minitest::Test
           use_kind: 'config_map',
         },
         {
-          content: "UE9TVEdSRVNfVVNFUj1wb3N0Z3JlcyBQT1NUR1JFU19QQVNTV09SRD1wb3N0\nZ3Jlcw==\n",
+          content: "UE9TVEdSRVNfVVNFUj1wb3N0Z3JlcwpQT1NUR1JFU19QQVNTV09SRD1wb3N0\nZ3Jlcw==\n",
           path: 'local.env',
           source: 'local.env',
           use_kind: 'config_map',
         },
         {
-          content: "c2VydmVyIHsgbGlzdGVuICAgICAgIDg4ODg7IHNlcnZlcl9uYW1lICBsb2Nh\nbGhvc3Q7IGxvY2F0aW9uIC8geyBwcm94eV9wYXNzICAgICAgaHR0cDovLzEy\nNy4wLjAuMTo4MDg4LzsgfSBsb2NhdGlvbiAvdm90ZS8geyBwcm94eV9wYXNz\nICAgICAgaHR0cDovLzEyNy4wLjAuMTo4ODg4LzsgfSB9\n",
+          content: "c2VydmVyIHsKICAgICAgICAgICAgICAgbGlzdGVuICAgICAgIDg4ODg7CiAg\nICAgICAgICAgICAgIHNlcnZlcl9uYW1lICBsb2NhbGhvc3Q7CiAgICAgICAg\nICAgICAgIGxvY2F0aW9uIC8gewogICAgICAgICAgICAgICAgIHByb3h5X3Bh\nc3MgICAgICBodHRwOi8vMTI3LjAuMC4xOjgwODgvOwogICAgICAgICAgICAg\nICB9CiAgICAgICAgICAgICAgIGxvY2F0aW9uIC92b3RlLyB7CiAgICAgICAg\nICAgICAgICAgcHJveHlfcGFzcyAgICAgIGh0dHA6Ly8xMjcuMC4wLjE6ODg4\nOC87CiAgICAgICAgICAgICAgIH0KfQ==\n",
           path: 'config_files/config_file.conf',
           source: 'config_files/config_file.conf',
           use_kind: 'config_map',
         },
         {
-          content: "c2VydmVyIHsgbGlzdGVuICAgICAgIDgwODA7IHNlcnZlcl9uYW1lICBsb2Nh\nbGhvc3Q7IGxvY2F0aW9uIC8geyBwcm94eV9wYXNzICAgICAgaHR0cDovLzEy\nNy4wLjAuMTo4MDg4LzsgfSBsb2NhdGlvbiAvdm90ZS8geyBwcm94eV9wYXNz\nICAgICAgaHR0cDovLzEyNy4wLjAuMTo4ODg4LzsgfSB9\n",
+          content: "c2VydmVyIHsKICAgICAgICAgICAgICAgbGlzdGVuICAgICAgIDgwODA7CiAg\nICAgICAgICAgICAgIHNlcnZlcl9uYW1lICBsb2NhbGhvc3Q7CiAgICAgICAg\nICAgICAgIGxvY2F0aW9uIC8gewogICAgICAgICAgICAgICAgIHByb3h5X3Bh\nc3MgICAgICBodHRwOi8vMTI3LjAuMC4xOjgwODgvOwogICAgICAgICAgICAg\nICB9CiAgICAgICAgICAgICAgIGxvY2F0aW9uIC92b3RlLyB7CiAgICAgICAg\nICAgICAgICAgcHJveHlfcGFzcyAgICAgIGh0dHA6Ly8xMjcuMC4wLjE6ODg4\nOC87CiAgICAgICAgICAgICAgIH0KfQ==\n",
           path: 'vote.conf',
           source: 'vote.conf',
           use_kind: 'config_map',
