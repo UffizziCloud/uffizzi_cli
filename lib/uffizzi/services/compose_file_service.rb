@@ -35,7 +35,7 @@ class ComposeFileService
 
     def prepare_dependency_configs_files(dependency_file_paths, compose_file_dir)
       dependency_file_paths.map do |dependency_file_path|
-        dependency_file_content = Psych.load(File.read("#{compose_file_dir}/#{dependency_file_path}"))
+        dependency_file_content = File.read("#{compose_file_dir}/#{dependency_file_path}")
 
         {
           path: dependency_file_path,
