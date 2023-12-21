@@ -20,6 +20,11 @@ jobs:
       - code-quality
     uses: ./.github/workflows/gem-release.yml
     secrets: inherit
+  docker-image-release:
+    needs:
+      - code-quality
+    uses: ./.github/workflows/docker-image-release.yml
+    secrets: inherit
   make-binary:
     needs:
       - code-quality
