@@ -17,6 +17,8 @@ class InstallTest < Minitest::Test
   def test_install
     host = 'my-host.com'
     account_id = 1
+    account_name = 'some_account'
+    Uffizzi::ConfigFile.write_option(:account, { 'id' => account_id, 'name' => account_name })
 
     @mock_shell.promise_execute(/kubectl version/, stdout: '1.23.00')
     @mock_shell.promise_execute(/helm version/, stdout: '3.00')
@@ -56,8 +58,10 @@ class InstallTest < Minitest::Test
     @mock_prompt.promise_question_answer('Okay to proceed?', 'y')
 
     empty_controller_settings_body = json_fixture('files/uffizzi/uffizzi_account_controller_settings_empty.json')
+    account_body = json_fixture('files/uffizzi/uffizzi_account_success_with_installation.json')
     stub_get_account_controller_settings_request(empty_controller_settings_body, account_id)
     stub_create_account_controller_settings_request({}, account_id)
+    stub_update_account_success(account_body, account_name)
 
     @install.options = command_options(email: 'admin@my-domain.com')
     @install.controller(host)
@@ -108,9 +112,10 @@ class InstallTest < Minitest::Test
     @mock_prompt.promise_question_answer('Okay to proceed?', 'y')
     @mock_prompt.promise_question_answer('Do you want update the controller settings?', 'y')
 
-    body = json_fixture('files/uffizzi/uffizzi_account_controller_settings.json')
-    stub_get_account_controller_settings_request(body, account_id)
-    stub_update_account_controller_settings_request(body, account_id, body[:controller_settings][0][:id])
+    account_controller_settings_body = json_fixture('files/uffizzi/uffizzi_account_controller_settings.json')
+    stub_get_account_controller_settings_request(account_controller_settings_body, account_id)
+    stub_update_account_controller_settings_request(account_controller_settings_body, account_id,
+                                                    account_controller_settings_body[:controller_settings][0][:id])
 
     @install.options = command_options(email: 'admin@my-domain.com')
     @install.controller(host)
