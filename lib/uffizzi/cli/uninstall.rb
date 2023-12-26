@@ -26,6 +26,7 @@ module Uffizzi
 
       ask_confirmation
       delete_controller_settings
+      unset_account_installation
       InstallService.helm_uninstall!(namespace)
 
       helm_unset_repo
@@ -73,6 +74,15 @@ module Uffizzi
       else
         ResponseHelper.handle_failed_response(response)
       end
+    end
+
+    def unset_account_installation
+      params = {
+        installation_type: nil,
+      }
+
+      response = update_account(server, account_name, params)
+      Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
     end
 
     def namespace
