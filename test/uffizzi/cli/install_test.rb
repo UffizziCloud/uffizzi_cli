@@ -55,8 +55,8 @@ class InstallTest < Minitest::Test
     @mock_shell.promise_execute(/kubectl get certificaterequests/, stdout: cert_request_answer.to_json)
     @mock_prompt.promise_question_answer('Okay to proceed?', 'y')
 
-    empty_body = json_fixture('files/uffizzi/uffizzi_account_controller_settings_empty.json')
-    stub_get_account_controller_settings_request(empty_body, account_id)
+    empty_controller_settings_body = json_fixture('files/uffizzi/uffizzi_account_controller_settings_empty.json')
+    stub_get_account_controller_settings_request(empty_controller_settings_body, account_id)
     stub_create_account_controller_settings_request({}, account_id)
 
     @install.options = command_options(email: 'admin@my-domain.com')
