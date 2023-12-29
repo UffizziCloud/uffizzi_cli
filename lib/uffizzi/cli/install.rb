@@ -3,6 +3,7 @@
 require 'uffizzi'
 require 'uffizzi/config_file'
 require 'uffizzi/services/kubeconfig_service'
+require 'uffizzi/services/account_service'
 
 module Uffizzi
   class Cli::Install < Thor
@@ -40,7 +41,12 @@ module Uffizzi
       Uffizzi.ui.say('Helm release is deployed')
 
       controller_setting_params = build_controller_setting_params(uri, installation_options)
-      create_controller_settings(controller_setting_params) if existing_controller_setting.blank?
+
+      if existing_controller_setting.blank?
+        create_controller_settings(controller_setting_params)
+        set_account_installation
+      end
+
       Uffizzi.ui.say('Controller settings are saved')
       say_success(uri)
     end
@@ -187,6 +193,15 @@ module Uffizzi
       return Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
 
       response.dig(:body, :controller_settings)
+    end
+
+    def set_account_installation
+      params = {
+        installation_type: AccountService::SELF_HOSTED_CONTROLLER_INSTALLATION_TYPE,
+      }
+
+      response = update_account(server, account_name, params)
+      Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.ok?(response)
     end
 
     def update_controller_settings(controller_setting_id, params)

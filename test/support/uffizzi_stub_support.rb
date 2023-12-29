@@ -50,6 +50,12 @@ module UffizziStubSupport
     stub_request(:get, url).to_return(status: 200, body: body.to_json)
   end
 
+  def stub_update_account_success(body, account_name)
+    url = account_uri(Uffizzi.configuration.server, account_name)
+
+    stub_request(:put, url).to_return(status: 200, body: body.to_json)
+  end
+
   def stub_uffizzi_account_projects_success(body, account_id)
     url = account_projects_uri(Uffizzi.configuration.server, account_id)
 

@@ -87,6 +87,13 @@ module ApiClient
     build_response(response)
   end
 
+  def update_account(server, account_name, params)
+    uri = account_uri(server, account_name)
+    response = http_client.make_put_request(uri, params)
+
+    build_response(response)
+  end
+
   def create_project(server, account_id, params)
     uri = create_projects_uri(server, account_id)
     response = http_client.make_post_request(uri, params)
