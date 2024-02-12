@@ -11,7 +11,7 @@ module Uffizzi
 
     default_task :controller
 
-    desc 'controller [HOSTNMAE]', 'Install uffizzi controller to cluster'
+    desc 'controller [HOSTNAME]', 'Install uffizzi controller to cluster'
     method_option :namespace, type: :string
     method_option :email, type: :string, required: true
     method_option :context, type: :string
@@ -20,14 +20,14 @@ module Uffizzi
     def controller(hostname)
       Uffizzi::AuthHelper.check_login
 
-      InstallService.kubectl_exists?
-      InstallService.helm_exists?
+      # InstallService.kubectl_exists?
+      # InstallService.helm_exists?
 
       if options[:context].present? && options[:context] != InstallService.kubeconfig_current_context
         InstallService.set_current_context(options[:context])
       end
 
-      ask_confirmation
+      ask_confirmation(options[:namespace])
 
       uri = parse_hostname(hostname)
       installation_options = build_installation_options(uri)
@@ -159,16 +159,8 @@ module Uffizzi
       update_controller_settings(existing_controller_setting[:id], controller_setting_params)
     end
 
-    def ask_confirmation
-      msg = "\r\n"\
-            'This command will install Uffizzi into the default namespace of'\
-            " the '#{InstallService.kubeconfig_current_context}' context."\
-            "\r\n"\
-            "To install in a different place, use options '--namespace' and/or '--context'."\
-            "\r\n\r\n"\
-            "After installation, new environments created for account '#{account_name}' will be deployed to this host cluster."\
-            "\r\n\r\n"
-
+    def ask_confirmation(namespace)
+      msg = namespace.present? ? custom_namespace_installation_message(namespace) : default_installation_message
       Uffizzi.ui.say(msg)
 
       question = 'Okay to proceed?'
@@ -262,6 +254,26 @@ module Uffizzi
 
     def existing_controller_setting
       @existing_controller_setting ||= fetch_controller_settings[0]
+    end
+
+    def default_installation_message
+      "\r\n"\
+      "This command will install Uffizzi into the 'default' namespace of"\
+      " the '#{InstallService.kubeconfig_current_context}' context."\
+      "\r\n"\
+      "To install in a different place, use options '--namespace' and/or '--context'."\
+      "\r\n\r\n"\
+      "After installation, new environments created for account '#{account_name}' will be deployed to this host cluster."\
+      "\r\n\r\n"
+    end
+
+    def custom_namespace_installation_message(namespace)
+      "\r\n"\
+      "This command will install Uffizzi into the '#{namespace}' namespace of"\
+      " the '#{InstallService.kubeconfig_current_context}' context."\
+      "\r\n\r\n"\
+      "After installation, new environments created for account '#{account_name}' will be deployed to this host cluster."\
+      "\r\n\r\n"
     end
   end
 end
