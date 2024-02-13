@@ -11,7 +11,7 @@ module Uffizzi
 
     default_task :controller
 
-    desc 'controller [HOSTNMAE]', 'Install uffizzi controller to cluster'
+    desc 'controller [HOSTNAME]', 'Install uffizzi controller to cluster'
     method_option :namespace, type: :string
     method_option :context, type: :string
     def controller
