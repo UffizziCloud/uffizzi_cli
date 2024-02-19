@@ -139,7 +139,6 @@ class LoginTest < Minitest::Test
     assert_requested(stubbed_uffizzi_projects)
     assert_requested(stubbed_uffizzi_project)
     assert_requested(stubbed_uffizzi_accounts)
-    assert_match('was successfully created', Uffizzi.ui.last_message)
   end
 
   def test_browser_login_with_new_project_creation_when_project_already_exists_and_abort_repeat

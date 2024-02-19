@@ -17,8 +17,8 @@ module Uffizzi
         ConfigFile.option_has_value?(option) ? ConfigFile.read_option(option) : nil
       end
 
-      def account_config(id, name = nil)
-        { id: id, name: name }
+      def account_config(id:, name: nil, has_installation: false, vclusters_controller_url: nil)
+        { id: id, name: name, has_installation: has_installation, vclusters_controller_url: vclusters_controller_url }
       end
 
       def update_clusters_config_by_id(id, params)
@@ -58,6 +58,10 @@ module Uffizzi
 
       def dev_environment
         read_option_from_config(:dev_environment) || {}
+      end
+
+      def read_account_config
+        read_option_from_config(:account)
       end
 
       private

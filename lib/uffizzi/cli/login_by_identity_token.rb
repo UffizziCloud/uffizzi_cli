@@ -41,7 +41,7 @@ module Uffizzi
     def handle_succeed_response(response, server, oidc_token)
       ConfigFile.write_option(:server, server)
       ConfigFile.write_option(:cookie, response[:headers])
-      ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(response[:body][:account_id]))
+      ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(id: response[:body][:account_id]))
       ConfigFile.write_option(:project, response[:body][:project_slug])
       ConfigFile.write_option(:oidc_token, oidc_token)
 

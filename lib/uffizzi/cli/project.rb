@@ -171,10 +171,11 @@ module Uffizzi
     def set_default_project(project)
       ConfigFile.write_option(:project, project[:slug])
       account = project[:account]
-      return ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(account[:id], account[:name])) if account
+      account_config = Uffizzi::ConfigHelper.account_config(id: account[:id], name: account[:name])
+      return ConfigFile.write_option(:account, account_config) if account
 
       # For core versions < core_v2.2.3
-      ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(project[:account_id]))
+      ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(id: project[:account_id]))
     end
   end
 end
