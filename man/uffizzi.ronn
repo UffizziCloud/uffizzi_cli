@@ -25,12 +25,19 @@ uffizzi - manage Uffizzi resources
      compose
          Manage Uffizzi compose environments (previews) and view logs
 
+     dev
+         Creates a Uffizzi cluster preconfigured for development workflows
+
+     install
+         Install the Uffizzi platform data plane on a host cluster.
+
      project
          Manage Uffizzi project resources including compose files for
          specifying compose environment (preview) configurations and secrets
 
-     dev
-         Creates a Uffizzi cluster preconfigured for development workflows
+     uninstall
+         Uninstall the Uffizzi platform data plane from a host cluster. Updates CLI 
+         to use Uffizzi Cloud as the default API.
 
 ## COMMAND
     COMMAND is one of the following:
