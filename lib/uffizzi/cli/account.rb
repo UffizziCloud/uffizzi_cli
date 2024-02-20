@@ -76,7 +76,7 @@ module Uffizzi
       account = response[:body][:account]
       account_id = account[:id]
       account_name = account[:name]
-      ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(account_id, account_name))
+      ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(id: account_id, name: account_name))
       Uffizzi.ui.say("The account with name '#{account_name}' was set as default.")
 
       projects = account[:projects]
