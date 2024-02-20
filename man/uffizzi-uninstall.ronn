@@ -1,0 +1,23 @@
+$ uffizzi uninstall help
+uffizzi-uninstall - uninstall the uffizzi platform
+================================================================
+
+## SYNOPSIS
+    uffizzi uninstall
+
+## DESCRIPTION
+    Uninstall the Uffizzi platform data plane (controller and operator) from a host cluster. 
+
+    For more information on the Uffizzi installation process, see:
+    https://docs.uffizzi.com/install/platform
+
+## FLAGS
+
+    --help
+        Display this help page and exit
+
+## EXAMPLES
+
+    To uninstall Uffizzi, run:
+
+        $ uffizzi uninstall

@@ -71,6 +71,7 @@ module Uffizzi
       Uffizzi.ui.say('Login successful')
 
       set_current_account_and_project
+      Uffizzi.ui.say(installation_message)
     end
 
     def open_browser(url)
@@ -88,7 +89,7 @@ module Uffizzi
 
       if ENV.fetch('CI_PIPELINE_RUN', false)
         account = response[:body][:user][:default_account]
-        return ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(account[:id]))
+        return ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(id: account[:id]))
       end
 
       set_current_account_and_project
@@ -123,7 +124,7 @@ module Uffizzi
       accounts = accounts_response[:body][:accounts]
       if accounts.length == 1
         current_account = accounts.first
-        ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(current_account[:id], current_account[:name]))
+        ConfigFile.write_option(:account, account_config(current_account))
         return current_account[:id]
       end
       question = 'Select an account:'
@@ -131,9 +132,9 @@ module Uffizzi
         { name: account[:name], value: account[:id] }
       end
       account_id = Uffizzi.prompt.select(question, choices)
-      account_name = accounts.detect { |account| account[:id] == account_id }[:name]
+      selected_account = accounts.detect { |account| account[:id] == account_id }
 
-      ConfigFile.write_option(:account, Uffizzi::ConfigHelper.account_config(account_id, account_name))
+      ConfigFile.write_option(:account, account_config(selected_account))
 
       account_id
     end
@@ -210,6 +211,38 @@ module Uffizzi
       ConfigFile.write_option(:project, project[:slug])
 
       Uffizzi.ui.say("Project #{project[:name]} was successfully created")
+    end
+
+    def installation_message
+      account_config = ConfigHelper.read_account_config
+      if account_config[:has_installation]
+        "\r\n\r\n"\
+        '####################################################################' \
+        "\r\n\r\n"\
+        "Your CLI is configured to use '#{account_config[:vclusters_controller_url]}'." \
+        "\r\n\r\n"\
+        'Run `uffizzi config -h` to see CLI configuration options.'\
+        "\r\n\r\n"
+      else
+        "\r\n\r\n"\
+        '####################################################################'\
+        "\r\n\r\n"\
+        'Your CLI is configured to use https://app.uffizzi.com (Uffizzi Cloud).'\
+        "\r\n\r\n"\
+        'Run `uffizzi config -h` to see CLI configuration options.'\
+        "\r\n"\
+        'Run `uffizzi install -h` to see self-hosted installation options.'\
+        "\r\n\r\n"
+      end
+    end
+
+    def account_config(account_data)
+      Uffizzi::ConfigHelper.account_config(
+        id: account_data[:id],
+        name: account_data[:name],
+        has_installation: account_data[:has_installation],
+        vclusters_controller_url: account_data[:vclusters_controller_url],
+      )
     end
   end
 end

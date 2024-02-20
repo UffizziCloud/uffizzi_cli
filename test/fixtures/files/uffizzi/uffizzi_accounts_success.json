@@ -2,11 +2,14 @@
   "accounts": [
     { 
       "id": 1,
-      "name": "uffizzi"
+      "name": "uffizzi",
+      "has_installation": false,
+      "vclusters_controller_url": "https://controller.uclusters.app.uffizzi.com"
     },
     {
       "id": 2,
-      "name": "hello-world"
+      "name": "hello-world",
+      "vclusters_controller_url": "https://controller.uclusters.app.uffizzi.com"
     }
   ]
 }

@@ -91,5 +91,5 @@ Uffizzi supports a [Homebrew tap package] (https://github.com/UffizziCloud/homeb
 4. Copy over the contents of the existing [Formula](https://github.com/UffizziCloud/homebrew-tap/blob/main/Formula/uffizzi.rb) from the master, replacing the sha and the url for the ones from the newly created Formula.
 5. Update the `resource "uffizzi-cli"` to the latest gem and add new dependencies if needed.
 6. Run `HOMEBREW_NO_INSTALL_FROM_API=1 brew install --build-from-source --verbose --debug uffizzi` and manually test the new uffizzi version (make sure that all other homebrew uffizzi versions are uninstalled).
-7. Run `brew audit --strict --online` to check if the Formula adheres to the Homebrew style.
+7. Run `brew audit --strict --online uffizzi` to check if the Formula adheres to the Homebrew style.
 8. If tests and audit pass, create a PR into master in the UffizziCloud/homebrew-tap [repository] (https://github.com/UffizziCloud/homebrew-tap) with the new Formula.
