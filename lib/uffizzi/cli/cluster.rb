@@ -35,6 +35,7 @@ module Uffizzi
     method_option :output, required: false, type: :string, aliases: '-o', enum: ['json', 'pretty-json']
     method_option :'creation-source', required: false, type: :string
     method_option :'k8s-version', required: false, type: :string
+    method_option :'node-selector', required: false, type: :string
     def create(name = nil)
       run('create', { name: name })
     end
@@ -261,6 +262,7 @@ module Uffizzi
       manifest_content = load_manifest_file(options[:manifest])
       creation_source = options[:"creation-source"] || ClusterService::MANUAL_CREATION_SOURCE
       k8s_version = options[:"k8s-version"]
+      node_selector = options[:"node-selector"]
 
       {
         cluster: {
@@ -268,6 +270,7 @@ module Uffizzi
           manifest: manifest_content,
           creation_source: creation_source,
           k8s_version: k8s_version,
+          node_selector: node_selector,
         },
         token: oidc_token,
       }
