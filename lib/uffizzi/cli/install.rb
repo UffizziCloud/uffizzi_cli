@@ -17,7 +17,7 @@ module Uffizzi
     method_option :context, type: :string
     method_option :issuer, type: :string, enum: ['letsencrypt', 'zerossl']
     method_option :'repo-url', type: :string
-    method_option :'node-selector', required: false, type: :string
+    method_option :'node-selector-template', required: false, type: :string
     def controller(hostname)
       Uffizzi::AuthHelper.check_login
 
