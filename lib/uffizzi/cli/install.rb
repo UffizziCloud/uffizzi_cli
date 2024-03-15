@@ -17,6 +17,7 @@ module Uffizzi
     method_option :context, type: :string
     method_option :issuer, type: :string, enum: ['letsencrypt', 'zerossl']
     method_option :'repo-url', type: :string
+    method_option :'node-selector-template', required: false, type: :string
     def controller(hostname)
       Uffizzi::AuthHelper.check_login
 
@@ -66,6 +67,7 @@ module Uffizzi
         controller_password: generate_password,
         cert_email: options[:email],
         cluster_issuer: options[:issuer] || InstallService::DEFAULT_CLUSTER_ISSUER,
+        node_selector_template: options[:"node-selector-template"],
       }
     end
 
@@ -212,6 +214,7 @@ module Uffizzi
         managed_dns_zone: uri.host,
         login: installation_options[:controller_username],
         password: installation_options[:controller_password],
+        node_selector_template: installation_options[:node_selector_template],
       }
     end
 

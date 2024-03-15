@@ -7,6 +7,7 @@ require 'active_support'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/object/blank'
 require 'launchy'
+require 'base64'
 
 require 'thor'
 require 'uffizzi/error'
