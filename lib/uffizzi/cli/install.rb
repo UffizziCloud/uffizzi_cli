@@ -82,7 +82,7 @@ module Uffizzi
         ip = InstallService.get_controller_ip(namespace)
         break if ip.present?
 
-        if try == 30
+        if try == 90
           spinner.error
 
           return 'unknown'
