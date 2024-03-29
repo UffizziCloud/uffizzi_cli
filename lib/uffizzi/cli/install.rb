@@ -72,7 +72,7 @@ module Uffizzi
     end
 
     def wait_ip
-      spinner = TTY::Spinner.new('[:spinner] Waiting IP addess...', format: :dots)
+      spinner = TTY::Spinner.new('[:spinner] Waiting on IP address...', format: :dots)
       spinner.auto_spin
 
       ip = nil
