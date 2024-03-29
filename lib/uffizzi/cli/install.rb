@@ -97,29 +97,6 @@ module Uffizzi
       ip
     end
 
-    def wait_certificate_request_ready(uri)
-      spinner = TTY::Spinner.new('[:spinner] Waiting create certificate for controller host...', format: :dots)
-      spinner.auto_spin
-
-      try = 0
-
-      loop do
-        requests = InstallService.get_certificate_request(namespace, uri)
-        break if requests.all? { |r| r['status'].downcase == 'true' }
-
-        if try == 60
-          spinner.error
-
-          return Uffizzi.ui.say('Stop waiting creation certificate')
-        end
-
-        try += 1
-        sleep(2)
-      end
-
-      spinner.success
-    end
-
     def build_helm_values(params)
       {
         global: {
@@ -220,7 +197,6 @@ module Uffizzi
 
     def say_success(uri)
       ip_address = wait_ip
-      wait_certificate_request_ready(uri)
 
       msg = 'Your Uffizzi controller is ready. To configure DNS,'\
             " create a record for the hostname '*.#{uri.host}' pointing to '#{ip_address}'"
