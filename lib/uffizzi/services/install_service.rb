@@ -130,6 +130,14 @@ class InstallService
       File.dirname(Uffizzi::ConfigFile.config_path)
     end
 
+    def current_namespace
+      path = KubeconfigService.default_path
+      kubeconfig = KubeconfigService.read_kubeconfig(path)
+      return if kubeconfig.nil?
+
+      KubeconfigService.get_current_namespace(kubeconfig)
+    end
+
     private
 
     def execute_command(command, say: true, skip_error: false)
