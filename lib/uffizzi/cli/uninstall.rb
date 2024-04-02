@@ -86,7 +86,7 @@ module Uffizzi
     end
 
     def namespace
-      options[:namespace] || InstallService.current_namespace || InstallService::DEFAULT_NAMESPACE
+      options[:namespace] || InstallService.current_namespace
     end
 
     def server

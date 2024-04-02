@@ -135,7 +135,7 @@ class InstallService
       kubeconfig = KubeconfigService.read_kubeconfig(path)
       return if kubeconfig.nil?
 
-      KubeconfigService.get_current_namespace(kubeconfig)
+      KubeconfigService.get_current_namespace(kubeconfig) || DEFAULT_NAMESPACE
     end
 
     private
