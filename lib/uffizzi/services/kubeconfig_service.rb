@@ -50,6 +50,12 @@ class KubeconfigService
         .dig('context', 'cluster')
     end
 
+    def get_current_namespace(kubeconfig)
+      get_cluster_contexts(kubeconfig)
+        .detect { |c| c['name'] == get_current_context(kubeconfig) }
+        .dig('context', 'namespace')
+    end
+
     def get_cluster_contexts(kubeconfig)
       kubeconfig.fetch('contexts', [])
     end
