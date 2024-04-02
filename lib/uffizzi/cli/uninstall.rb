@@ -12,7 +12,7 @@ module Uffizzi
     default_task :controller
 
     desc 'controller [HOSTNAME]', 'Install uffizzi controller to cluster'
-    method_option :namespace, type: :string
+    method_option :namespace, type: :string, aliases: '-n'
     method_option :context, type: :string
     def controller
       Uffizzi::AuthHelper.check_login

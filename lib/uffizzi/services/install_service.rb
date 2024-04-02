@@ -98,17 +98,6 @@ class InstallService
       load_balancers.map { |i| i['ip'] }[0]
     end
 
-    def get_certificate_request(namespace, uri)
-      cmd = "kubectl get certificaterequests -n #{namespace} -o json"
-      res = execute_command(cmd, say: false)
-      certificate_request = JSON.parse(res)['items'].detect { |i| i['metadata']['name'].include?(uri.host) }
-
-      return [] if certificate_request.nil?
-
-      conditions = certificate_request.dig('status', 'conditions') || []
-      conditions.map { |c| c.slice('type', 'status') }
-    end
-
     def build_controller_host(host)
       [DEFAULT_CONTROLLER_DOMAIN_PREFIX, host].join('.')
     end
