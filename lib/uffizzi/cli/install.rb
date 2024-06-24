@@ -71,16 +71,16 @@ module Uffizzi
       }
     end
 
-    def wait_ip
+    def wait_endpoint
       spinner = TTY::Spinner.new('[:spinner] Waiting on IP address...', format: :dots)
       spinner.auto_spin
 
-      ip = nil
+      endpoint = nil
       try = 0
 
       loop do
-        ip = InstallService.get_controller_ip(namespace)
-        break if ip.present?
+        endpoint = InstallService.get_controller_endpoint(namespace)
+        break if endpoint.present?
 
         if try == 90
           spinner.error
@@ -94,7 +94,7 @@ module Uffizzi
 
       spinner.success
 
-      ip
+      endpoint
     end
 
     def build_helm_values(params)
@@ -196,10 +196,10 @@ module Uffizzi
     end
 
     def say_success(uri)
-      ip_address = wait_ip
+      endpoint = wait_endpoint
 
       msg = 'Your Uffizzi controller is ready. To configure DNS,'\
-            " create a record for the hostname '*.#{uri.host}' pointing to '#{ip_address}'"
+            " create a record for the hostname '*.#{uri.host}' pointing to '#{endpoint}'"
       Uffizzi.ui.say(msg)
     end
 
