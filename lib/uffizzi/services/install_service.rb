@@ -85,7 +85,7 @@ class InstallService
       execute_command(cmd, say: false) { |stdout| stdout.present? && stdout.chop }
     end
 
-    def get_controller_ip(namespace)
+    def get_controller_endpoint(namespace)
       cmd = "kubectl get ingress -n #{namespace} -o json"
       res = execute_command(cmd, say: false)
       ingress = JSON.parse(res)['items'].detect { |i| i['metadata']['name'] = INGRESS_NAME }
@@ -95,7 +95,10 @@ class InstallService
       load_balancers = ingress.dig('status', 'loadBalancer', 'ingress')
       return if load_balancers.blank?
 
-      load_balancers.map { |i| i['ip'] }[0]
+      ip = load_balancers.map { |i| i['ip'] }[0]
+      return ip if ip.present?
+
+      load_balancers.map { |i| i['hostname'] }[0]
     end
 
     def build_controller_host(host)
