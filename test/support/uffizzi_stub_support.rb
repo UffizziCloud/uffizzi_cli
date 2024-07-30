@@ -44,6 +44,12 @@ module UffizziStubSupport
     stub_request(:get, url).to_return(status: 200, body: body.to_json)
   end
 
+  def stub_uffizzi_check_can_install_success(account_id)
+    url = account_can_install_uri(Uffizzi.configuration.server, account_id)
+
+    stub_request(:get, url).to_return(status: 200)
+  end
+
   def stub_uffizzi_account_success(body, account_name)
     url = account_uri(Uffizzi.configuration.server, account_name)
 
