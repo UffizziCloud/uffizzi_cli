@@ -11,6 +11,10 @@ module ApiRoutes
     "#{server}/api/cli/v1/accounts/#{account_name}"
   end
 
+  def account_can_install_uri(server, account_id)
+    "#{server}/api/cli/v1/accounts/#{account_id}/check_can_install"
+  end
+
   def compose_file_uri(server, project_slug)
     "#{server}/api/cli/v1/projects/#{project_slug}/compose_file"
   end

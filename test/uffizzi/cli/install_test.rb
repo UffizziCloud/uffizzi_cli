@@ -62,6 +62,7 @@ class InstallTest < Minitest::Test
     stub_get_account_controller_settings_request(empty_controller_settings_body, account_id)
     stub_create_account_controller_settings_request({}, account_id)
     stub_update_account_success(account_body, account_name)
+    stub_uffizzi_check_can_install_success(account_id)
 
     @install.options = command_options(email: 'admin@my-domain.com')
     @install.controller(host)
@@ -116,6 +117,7 @@ class InstallTest < Minitest::Test
     stub_get_account_controller_settings_request(account_controller_settings_body, account_id)
     stub_update_account_controller_settings_request(account_controller_settings_body, account_id,
                                                     account_controller_settings_body[:controller_settings][0][:id])
+    stub_uffizzi_check_can_install_success(account_id)
 
     @install.options = command_options(email: 'admin@my-domain.com')
     @install.controller(host)
