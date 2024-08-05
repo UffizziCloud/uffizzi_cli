@@ -20,9 +20,10 @@ module Uffizzi
     method_option :'node-selector-template', required: false, type: :string
     def controller(hostname)
       Uffizzi::AuthHelper.check_login
+      check_account_can_install
 
-      # InstallService.kubectl_exists?
-      # InstallService.helm_exists?
+      InstallService.kubectl_exists?
+      InstallService.helm_exists?
 
       if options[:context].present? && options[:context] != InstallService.kubeconfig_current_context
         InstallService.set_current_context(options[:context])
@@ -182,7 +183,18 @@ module Uffizzi
 
     def create_controller_settings(params)
       response = create_account_controller_settings(server, account_id, params)
-      Uffizzi::ResponseHelper.handle_failed_response(response) unless Uffizzi::ResponseHelper.created?(response)
+      unless Uffizzi::ResponseHelper.created?(response)
+        Uffizzi::ResponseHelper.handle_failed_response(response)
+        raise Uffizzi::Error.new
+      end
+    end
+
+    def check_account_can_install
+      response = check_can_install(server, account_id)
+      unless Uffizzi::ResponseHelper.ok?(response)
+        Uffizzi::ResponseHelper.handle_failed_response(response)
+        raise Uffizzi::Error.new
+      end
     end
 
     def build_controller_setting_params(uri, installation_options)

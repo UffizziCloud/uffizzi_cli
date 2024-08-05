@@ -44,6 +44,14 @@ module ApiClient
     build_response(response)
   end
 
+  def check_can_install(server, account_id)
+    uri = account_can_install_uri(server, account_id)
+
+    response = http_client.make_get_request(uri)
+
+    build_response(response)
+  end
+
   def fetch_projects(server)
     uri = projects_uri(server)
     response = http_client.make_get_request(uri)
