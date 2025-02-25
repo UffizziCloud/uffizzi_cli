@@ -1,3 +1,4 @@
+# Builder stage
 FROM ruby:3.0.3-alpine AS builder
 
 RUN apk --update add --no-cache \
@@ -29,13 +30,11 @@ COPY . .
 
 RUN bundle exec rake install
 
-# M-M-M-M-MULTISTAGE!!!
-FROM ruby:3.0.3 AS shell
+FROM ruby:3.0.3-alpine AS shell
 
-RUN apt-get update && apt-get install -y \
-    vim \
+RUN apk --update add --no-cache \
     bash \
-    && rm -rf /var/lib/apt/lists/*
+    vim
 
 WORKDIR /root/
 
