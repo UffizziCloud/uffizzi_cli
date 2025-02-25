@@ -67,13 +67,13 @@ jobs:
           chmod +x ./rubyc
           ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=${{ env.DARWIN_BIN_PATH }}
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: matrix.os == 'ubuntu-20.04'
         with: 
           name: ${{ env.LINUX_BIN_PATH }}
           path: ${{ env.LINUX_BIN_PATH }}
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: matrix.os == 'macos-12'
         with: 
           name: ${{ env.DARWIN_BIN_PATH }}
