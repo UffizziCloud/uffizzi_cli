@@ -1,0 +1,15 @@
+services:
+  hello-world:
+    image: ${IMAGE:-nginx}
+    environment:
+      KEY: 'lkjlkjk@^$lkjj'
+
+configs:
+  vote_conf:
+    file: ./vote.conf
+  defaulf_conf:
+    file: config_files/config_file.conf
+
+x-uffizzi-ingress:
+  service: hello-world
+  port: $PORT
