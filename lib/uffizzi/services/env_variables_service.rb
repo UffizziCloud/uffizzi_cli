@@ -7,7 +7,7 @@ require 'base64'
 class EnvVariablesService
   class << self
     def substitute_env_variables(compose_file_data)
-      compose_file_data.gsub(/\${1,2}\{?([?:\-_A-Za-z0-9]+)\}?/) do |variable|
+      compose_file_data.gsub(/(?<![^ \t\n])\${1,2}\{?([?:\-_A-Za-z0-9]+)\}?/) do |variable|
         next variable if variable.start_with?('$$')
 
         variable_content = variable.match(/[?:\-_A-Za-z0-9]+/).to_s
