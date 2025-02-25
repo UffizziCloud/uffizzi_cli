@@ -426,7 +426,6 @@ class PreviewTest < Minitest::Test
     stubbed_uffizzi_preview_create = stub_uffizzi_preview_create_success(create_body, @project_slug)
     ENV['IMAGE'] = 'nginx'
     ENV['CONFIG_SOURCE'] = 'vote.conf'
-
     error = assert_raises(Uffizzi::Error) do
       @preview.create('test/compose_files/test_compose_with_env_vars.yml')
     end
@@ -682,5 +681,24 @@ class PreviewTest < Minitest::Test
                    " started_at: #{k8s_container_last_state[:started_at]}\n"\
                    " finished_at: #{k8s_container_last_state[:finished_at]}\n"
     assert_equal(render_server_error(expected_msg), error.message)
+  end
+
+  def test_preview_update_with_env_var_containing_dollar_sign_success
+    update_body = json_fixture('files/uffizzi/uffizzi_preview_create_success.json')
+    activity_items_body = json_fixture('files/uffizzi/uffizzi_preview_activity_items_deployed.json')
+    deployment_id = update_body[:deployment][:id]
+    stubbed_uffizzi_preview_update = stub_uffizzi_preview_update_success(update_body, @project_slug, deployment_id)
+    stubbed_uffizzi_preview_deploy_containers = stub_uffizzi_preview_deploy_containers_success(@project_slug, deployment_id)
+    stubbed_uffizzi_preview_activity_items = stub_uffizzi_preview_activity_items_success(activity_items_body, @project_slug, deployment_id)
+    ENV['PORT'] = '80'
+
+    @preview.update("deployment-#{deployment_id}", 'test/compose_files/test_compose_with_env_vars_with_dollar_sign.yml')
+
+    *_, url_message, proxy_url_message = Uffizzi.ui.messages
+    assert_equal("Deployment url: https://#{update_body[:deployment][:preview_url]}", url_message)
+    assert_equal("Deployment proxy url: https://#{update_body[:deployment][:proxy_preview_url]}", proxy_url_message)
+    assert_requested(stubbed_uffizzi_preview_activity_items, times: 2)
+    assert_requested(stubbed_uffizzi_preview_deploy_containers)
+    assert_requested(stubbed_uffizzi_preview_update)
   end
 end
