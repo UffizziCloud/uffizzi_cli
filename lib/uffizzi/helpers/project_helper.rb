@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ffaker'
+require 'faker'
 
 module Uffizzi
   module ProjectHelper
@@ -34,7 +34,7 @@ module Uffizzi
       end
 
       def generate_name
-        FFaker::Lorem.word
+        Faker::Lorem.word
       end
     end
   end

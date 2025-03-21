@@ -28,8 +28,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'activesupport'
   spec.add_dependency 'awesome_print'
-  # Added ffaker for runtime because rubyc used for linux bin generation has Ruby version 2.7 and the faker library is incompatible
-  spec.add_dependency 'ffaker', '~> 2.22'
+  spec.add_dependency 'faker', '< 3.0'
   spec.add_dependency 'launchy'
   spec.add_dependency 'minitar'
   spec.add_dependency 'open3'
@@ -45,7 +44,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'deepsort', '~> 0.4.5'
   spec.add_development_dependency 'factory_bot'
   spec.add_development_dependency 'fakefs'
-  spec.add_development_dependency 'faker'
   spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'minitest-power_assert'
   spec.add_development_dependency 'mocha'

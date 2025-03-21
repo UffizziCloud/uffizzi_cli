@@ -4,7 +4,7 @@ PATH
     uffizzi-cli (2.4.16)
       activesupport
       awesome_print
-      ffaker (~> 2.22)
+      faker (< 3.0)
       launchy
       minitar
       open3
@@ -33,18 +33,17 @@ GEM
     childprocess (5.1.0)
       logger (~> 1.5)
     coderay (1.1.3)
-    concurrent-ruby (1.1.9)
+    concurrent-ruby (1.3.5)
     crack (0.4.5)
       rexml
     deepsort (0.4.5)
     factory_bot (6.2.0)
       activesupport (>= 5.0.0)
     fakefs (1.8.0)
-    faker (3.5.1)
+    faker (2.23.0)
       i18n (>= 1.8.11, < 2)
-    ffaker (2.24.0)
     hashdiff (1.0.1)
-    i18n (1.8.11)
+    i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     kramdown (2.3.1)
       rexml
@@ -148,7 +147,6 @@ DEPENDENCIES
   deepsort (~> 0.4.5)
   factory_bot
   fakefs
-  faker
   minitest
   minitest-power_assert
   mocha

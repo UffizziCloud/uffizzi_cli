@@ -64,7 +64,7 @@ module Uffizzi
     def build_installation_options(uri)
       {
         uri: uri,
-        controller_username: FFaker::Lorem.characters(10),
+        controller_username: Faker::Lorem.characters(number: 10),
         controller_password: generate_password,
         cert_email: options[:email],
         cluster_issuer: options[:issuer] || InstallService::DEFAULT_CLUSTER_ISSUER,

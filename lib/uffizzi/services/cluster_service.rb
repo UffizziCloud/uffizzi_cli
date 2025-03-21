@@ -75,7 +75,7 @@ class ClusterService
     end
 
     def generate_name
-      name = FFaker::InternetSE.domain_word[0..CLUSTER_NAME_MAX_LENGTH]
+      name = Faker::Internet.domain_word[0..CLUSTER_NAME_MAX_LENGTH]
 
       return name if valid_name?(name)
 

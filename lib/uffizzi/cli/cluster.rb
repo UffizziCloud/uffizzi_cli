@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'psych'
-require 'ffaker'
+require 'faker'
 require 'uffizzi'
 require 'uffizzi/auth_helper'
 require 'uffizzi/helpers/config_helper'
