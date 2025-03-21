@@ -34,7 +34,8 @@ FROM ruby:3.0.3-alpine AS shell
 
 RUN apk --update add --no-cache \
     bash \
-    vim
+    vim \
+    curl
 
 WORKDIR /root/
 
