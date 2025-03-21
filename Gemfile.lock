@@ -4,6 +4,7 @@ PATH
     uffizzi-cli (2.4.16)
       activesupport
       awesome_print
+      ffaker (~> 2.22)
       launchy
       minitar
       open3
@@ -41,6 +42,7 @@ GEM
     fakefs (1.8.0)
     faker (3.5.1)
       i18n (>= 1.8.11, < 2)
+    ffaker (2.24.0)
     hashdiff (1.0.1)
     i18n (1.8.11)
       concurrent-ruby (~> 1.0)
