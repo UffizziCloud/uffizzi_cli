@@ -11,7 +11,7 @@ jobs:
   make-binary:
     strategy:
       matrix:
-        os: [ubuntu-20.04, macos-12]
+        os: [ubuntu-20.04, macos-13]
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
@@ -21,7 +21,7 @@ jobs:
           sudo apt update
           sudo apt install -y build-essential squashfs-tools curl gcc make bison
       - name: 'Install MacOs dependencies'
-        if: matrix.os == 'macos-12'
+        if: matrix.os == 'macos-13'
         run: |
           brew install squashfs
       - uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
           chmod +x ./rubyc
           BUNDLE_WITHOUT=development:test ./rubyc --openssl-dir=/etc/ssl ./uffizzi --output=${{ inputs.linux-bin-path }}
       - name: 'Create Darwin Bin'
-        if: matrix.os == 'macos-12'
+        if: matrix.os == 'macos-13'
         run: |
           export PATH="$(brew --prefix)/opt/openssl@1.1/bin:$PATH"
           export LDFLAGS="-L$(brew --prefix)/opt/openssl@1.1/lib"
@@ -55,7 +55,7 @@ jobs:
           path: ${{ inputs.linux-bin-path }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
-        if: matrix.os == 'macos-12'
+        if: matrix.os == 'macos-13'
         with:
           name: ${{ inputs.darwin-bin-path }}
           path: ${{ inputs.darwin-bin-path }}
