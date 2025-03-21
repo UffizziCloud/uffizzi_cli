@@ -4,9 +4,9 @@ PATH
     uffizzi-cli (2.4.16)
       activesupport
       awesome_print
-      faker
       launchy
       minitar
+      open3
       securerandom
       sentry-ruby
       thor
@@ -146,10 +146,10 @@ DEPENDENCIES
   deepsort (~> 0.4.5)
   factory_bot
   fakefs
+  faker
   minitest
   minitest-power_assert
   mocha
-  open3
   pry-byebug
   pry-inline
   rake
