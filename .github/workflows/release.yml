@@ -51,4 +51,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ env.RELEASE_VERSION }}
           name: ${{ env.RELEASE_VERSION }}
+          files: |
+            ${{ github.workspace }}/${{ env.LINUX_BIN_PATH }}
+            ${{ github.workspace }}/${{ env.DARWIN_BIN_PATH }}
           generate_release_notes: true
