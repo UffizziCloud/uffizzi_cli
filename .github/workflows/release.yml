@@ -37,6 +37,14 @@ jobs:
     needs:
       - make-binary
     steps:
+      - name: Download Linux Bin
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.LINUX_BIN_PATH }}
+      - name: Download Macos Bin
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.DARWIN_BIN_PATH }}
       - name: Generate release notes
         uses: softprops/action-gh-release@v2
         with:
