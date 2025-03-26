@@ -1,6 +1,6 @@
 # Uffizzi CLI
 
-A command-line interace (CLI) for the [Uffizzi API](https://github.com/UffizziCloud/uffizzi)
+The official command-line interace (CLI) for the [Uffizzi API](https://github.com/UffizziCloud/uffizzi)
 
 ## Installation
 
@@ -8,7 +8,7 @@ See the [Uffizzi Documentation](https://docs.uffizzi.com) for installation instr
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/UffizziCloud/uffizzi_cli. See `CONTRIBUTING.md` in this repository.
+Bug reports and pull requests are welcome. See [`CONTRIBUTING.md`](CONTRIBUTING.md) in this repository.
 
 ## License
 
